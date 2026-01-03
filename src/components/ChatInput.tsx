@@ -12,7 +12,7 @@ interface ChatInputProps {
 
 const ChatInput = ({ onSend, isLoading, disabled }: ChatInputProps) => {
   const [input, setInput] = useState("");
-  const { t, isArabic } = useLanguage();
+  const { t, isRTL } = useLanguage();
 
   const handleSend = () => {
     if (input.trim() && !isLoading && !disabled) {
@@ -37,10 +37,10 @@ const ChatInput = ({ onSend, isLoading, disabled }: ChatInputProps) => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder={t("اسأل عن مناسك الحج...", "Ask about Hajj rituals...")}
+              placeholder={t("askPlaceholder")}
               className="min-h-[48px] max-h-32 resize-none bg-card border-border rounded-2xl pr-4 pl-4 py-3 text-sm placeholder:text-muted-foreground focus-visible:ring-primary"
               disabled={isLoading || disabled}
-              dir={isArabic ? "rtl" : "ltr"}
+              dir={isRTL ? "rtl" : "ltr"}
             />
           </div>
           <Button
@@ -57,7 +57,7 @@ const ChatInput = ({ onSend, isLoading, disabled }: ChatInputProps) => {
           </Button>
         </div>
         <p className="text-xs text-muted-foreground text-center mt-2">
-          {t("للاستشارات الفقهية راجع عالماً متخصصاً", "Consult a qualified scholar for religious rulings")}
+          {t("consultScholar")}
         </p>
       </div>
     </div>

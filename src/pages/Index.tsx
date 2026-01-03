@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect } from "react";
 import IslamicHeader from "@/components/IslamicHeader";
 import ChatMessage from "@/components/ChatMessage";
 import ChatInput from "@/components/ChatInput";
@@ -12,9 +12,8 @@ import { Button } from "@/components/ui/button";
 
 const Index = () => {
   const { messages, isLoading, sendMessage, clearChat } = useHajjChat();
-  const { t } = useLanguage();
+  const { t, isRTL } = useLanguage();
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [mapExpanded, setMapExpanded] = useState(false);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -25,19 +24,16 @@ const Index = () => {
   const hasMessages = messages.length > 0;
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col" dir={isRTL ? "rtl" : "ltr"}>
       <IslamicHeader />
 
       {/* Main Content */}
       <main className="flex-1 pt-14 pb-32">
         {hasMessages ? (
           <div className="relative">
-            {/* Map Card - Collapsible */}
+            {/* Map Card - Collapsed */}
             <div className="container max-w-2xl mx-auto px-4 py-2">
-              <HajjMap 
-                isExpanded={mapExpanded} 
-                onToggleExpand={() => setMapExpanded(!mapExpanded)} 
-              />
+              <HajjMap />
             </div>
 
             {/* Clear Chat Button */}
@@ -49,12 +45,12 @@ const Index = () => {
                 className="text-xs text-muted-foreground hover:text-foreground"
               >
                 <RotateCcw className="w-3 h-3 mr-1" />
-                {t("محادثة جديدة", "New Conversation")}
+                {t("newConversation")}
               </Button>
             </div>
 
             {/* Messages */}
-            <ScrollArea className="h-[calc(100vh-280px)]" ref={scrollRef}>
+            <ScrollArea className="h-[calc(100vh-320px)]" ref={scrollRef}>
               <div className="container max-w-2xl mx-auto px-4 py-4 space-y-4">
                 {messages.map((message, index) => (
                   <ChatMessage

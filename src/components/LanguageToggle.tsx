@@ -1,26 +1,31 @@
-import { useLanguage } from "@/contexts/LanguageContext";
-import { Button } from "@/components/ui/button";
-import { Languages } from "lucide-react";
+import { useLanguage, LANGUAGES, Language } from "@/contexts/LanguageContext";
+import { Globe } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const LanguageToggle = () => {
   const { language, setLanguage } = useLanguage();
 
-  const toggleLanguage = () => {
-    setLanguage(language === "ar" ? "en" : "ar");
-  };
-
   return (
-    <Button
-      variant="ghost"
-      size="sm"
-      onClick={toggleLanguage}
-      className="h-8 px-2 text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
-    >
-      <Languages className="w-4 h-4 mr-1" />
-      <span className="text-xs font-medium">
-        {language === "ar" ? "EN" : "عربي"}
-      </span>
-    </Button>
+    <Select value={language} onValueChange={(val) => setLanguage(val as Language)}>
+      <SelectTrigger className="w-auto h-8 px-2 bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/20">
+        <Globe className="w-4 h-4 mr-1" />
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent className="bg-card border-border z-50">
+        {LANGUAGES.map((lang) => (
+          <SelectItem key={lang.code} value={lang.code} className="cursor-pointer">
+            <span className="font-medium">{lang.nativeName}</span>
+            <span className="text-muted-foreground ml-2 text-xs">({lang.name})</span>
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 };
 

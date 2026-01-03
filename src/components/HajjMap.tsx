@@ -3,10 +3,9 @@ import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { useHajjLocation, HAJJ_LOCATIONS, HAJJ_STAGES } from "@/hooks/useHajjLocation";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { MapPin, Navigation, RefreshCw, Loader2, AlertCircle, ChevronUp, ChevronDown } from "lucide-react";
+import { Link } from "react-router-dom";
+import { MapPin, Navigation, RefreshCw, Loader2, AlertCircle, Maximize2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-const MAPBOX_TOKEN = "pk.placeholder"; // Will be replaced by edge function
 
 interface HajjMapProps {
   isExpanded?: boolean;
@@ -18,9 +17,11 @@ const HajjMap = ({ isExpanded = false, onToggleExpand }: HajjMapProps) => {
   const map = useRef<mapboxgl.Map | null>(null);
   const userMarker = useRef<mapboxgl.Marker | null>(null);
   const { lat, lng, stage, stageInfo, error, isLoading, refresh } = useHajjLocation();
-  const { t, isArabic } = useLanguage();
+  const { t, language } = useLanguage();
   const [mapToken, setMapToken] = useState<string | null>(null);
   const [mapError, setMapError] = useState<string | null>(null);
+
+  const isArabic = language === "ar" || language === "ur";
 
   // Fetch Mapbox token from edge function
   useEffect(() => {
@@ -130,19 +131,11 @@ const HajjMap = ({ isExpanded = false, onToggleExpand }: HajjMapProps) => {
     });
   }, [lat, lng]);
 
-  const flyToLocation = (targetLng: number, targetLat: number) => {
-    map.current?.flyTo({
-      center: [targetLng, targetLat],
-      zoom: 15,
-      duration: 1500,
-    });
-  };
-
   if (mapError) {
     return (
       <div className="bg-destructive/10 border border-destructive/20 rounded-2xl p-4 flex items-center gap-3">
         <AlertCircle className="w-5 h-5 text-destructive" />
-        <span className="text-sm text-destructive">{t("تعذر تحميل الخريطة", "Unable to load map")}</span>
+        <span className="text-sm text-destructive">{t("unableToLoadMap")}</span>
       </div>
     );
   }
@@ -150,23 +143,17 @@ const HajjMap = ({ isExpanded = false, onToggleExpand }: HajjMapProps) => {
   return (
     <div className="bg-card rounded-2xl border border-border overflow-hidden shadow-soft">
       {/* Header */}
-      <div 
-        className="flex items-center justify-between p-3 bg-primary/5 border-b border-border cursor-pointer"
-        onClick={onToggleExpand}
-      >
+      <div className="flex items-center justify-between p-3 bg-primary/5 border-b border-border">
         <div className="flex items-center gap-2">
           <MapPin className="w-4 h-4 text-primary" />
-          <span className="text-sm font-medium">{t("موقعك الحالي", "Your Location")}</span>
+          <span className="text-sm font-medium">{t("yourLocation")}</span>
         </div>
         <div className="flex items-center gap-2">
           <Button
             variant="ghost"
             size="icon"
             className="h-8 w-8"
-            onClick={(e) => {
-              e.stopPropagation();
-              refresh();
-            }}
+            onClick={refresh}
           >
             {isLoading ? (
               <Loader2 className="w-4 h-4 animate-spin" />
@@ -174,13 +161,11 @@ const HajjMap = ({ isExpanded = false, onToggleExpand }: HajjMapProps) => {
               <RefreshCw className="w-4 h-4" />
             )}
           </Button>
-          {onToggleExpand && (
-            isExpanded ? (
-              <ChevronDown className="w-4 h-4 text-muted-foreground" />
-            ) : (
-              <ChevronUp className="w-4 h-4 text-muted-foreground" />
-            )
-          )}
+          <Link to="/map">
+            <Button variant="ghost" size="icon" className="h-8 w-8">
+              <Maximize2 className="w-4 h-4" />
+            </Button>
+          </Link>
         </div>
       </div>
 
@@ -212,13 +197,13 @@ const HajjMap = ({ isExpanded = false, onToggleExpand }: HajjMapProps) => {
       />
 
       {/* Next Step & Tips */}
-      {isExpanded && stage !== "unknown" && (
+      {stage !== "unknown" && (
         <div className="p-3 space-y-3">
           {/* Next Step */}
           <div className="flex items-start gap-2">
             <Navigation className="w-4 h-4 text-islamic-gold mt-0.5" />
             <div>
-              <p className="text-xs text-muted-foreground">{t("الخطوة التالية", "Next Step")}</p>
+              <p className="text-xs text-muted-foreground">{t("nextStep")}</p>
               <p className="text-sm font-medium">
                 {isArabic ? stageInfo.nextStageAr : stageInfo.nextStageEn}
               </p>
@@ -227,34 +212,15 @@ const HajjMap = ({ isExpanded = false, onToggleExpand }: HajjMapProps) => {
 
           {/* Tips */}
           <div className="bg-muted/30 rounded-xl p-3">
-            <p className="text-xs text-muted-foreground mb-2">{t("نصائح", "Tips")}</p>
+            <p className="text-xs text-muted-foreground mb-2">{t("tips")}</p>
             <ul className="space-y-1">
-              {(isArabic ? stageInfo.tipsAr : stageInfo.tipsEn).map((tip, i) => (
+              {(isArabic ? stageInfo.tipsAr : stageInfo.tipsEn).slice(0, 2).map((tip, i) => (
                 <li key={i} className="text-xs flex items-start gap-2">
                   <span className="text-islamic-gold">•</span>
                   <span>{tip}</span>
                 </li>
               ))}
             </ul>
-          </div>
-
-          {/* Quick Nav Buttons */}
-          <div className="flex flex-wrap gap-2">
-            {[
-              { key: "kaaba", loc: HAJJ_LOCATIONS.kaaba },
-              { key: "mina", loc: HAJJ_LOCATIONS.mina },
-              { key: "arafat", loc: HAJJ_LOCATIONS.arafat },
-            ].map(({ key, loc }) => (
-              <Button
-                key={key}
-                variant="outline"
-                size="sm"
-                className="text-xs h-7"
-                onClick={() => flyToLocation(loc.lng, loc.lat)}
-              >
-                {isArabic ? HAJJ_STAGES[key as keyof typeof HAJJ_STAGES].nameAr : HAJJ_STAGES[key as keyof typeof HAJJ_STAGES].nameEn}
-              </Button>
-            ))}
           </div>
         </div>
       )}
@@ -265,7 +231,7 @@ const HajjMap = ({ isExpanded = false, onToggleExpand }: HajjMapProps) => {
           <AlertCircle className="w-4 h-4 text-destructive" />
           <span className="text-xs text-destructive">{error}</span>
           <Button variant="ghost" size="sm" className="ml-auto text-xs" onClick={refresh}>
-            {t("حاول مجدداً", "Try Again")}
+            {t("tryAgain")}
           </Button>
         </div>
       )}
