@@ -2,6 +2,7 @@ import { useState, KeyboardEvent } from "react";
 import { Send, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface ChatInputProps {
   onSend: (message: string) => void;
@@ -11,6 +12,7 @@ interface ChatInputProps {
 
 const ChatInput = ({ onSend, isLoading, disabled }: ChatInputProps) => {
   const [input, setInput] = useState("");
+  const { t, isArabic } = useLanguage();
 
   const handleSend = () => {
     if (input.trim() && !isLoading && !disabled) {
@@ -35,10 +37,10 @@ const ChatInput = ({ onSend, isLoading, disabled }: ChatInputProps) => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="اسأل عن مناسك الحج... / Ask about Hajj rituals..."
+              placeholder={t("اسأل عن مناسك الحج...", "Ask about Hajj rituals...")}
               className="min-h-[48px] max-h-32 resize-none bg-card border-border rounded-2xl pr-4 pl-4 py-3 text-sm placeholder:text-muted-foreground focus-visible:ring-primary"
               disabled={isLoading || disabled}
-              dir="auto"
+              dir={isArabic ? "rtl" : "ltr"}
             />
           </div>
           <Button
@@ -55,7 +57,7 @@ const ChatInput = ({ onSend, isLoading, disabled }: ChatInputProps) => {
           </Button>
         </div>
         <p className="text-xs text-muted-foreground text-center mt-2">
-          Powered by AI • للاستشارات الفقهية راجع عالماً متخصصاً
+          {t("للاستشارات الفقهية راجع عالماً متخصصاً", "Consult a qualified scholar for religious rulings")}
         </p>
       </div>
     </div>

@@ -1,4 +1,5 @@
 import { MapPin, BookOpen, Heart, AlertCircle } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface QuickActionsProps {
   onSelect: (question: string) => void;
@@ -7,37 +8,43 @@ interface QuickActionsProps {
 const quickActions = [
   {
     icon: MapPin,
-    label: "خطوات الطواف",
+    labelAr: "خطوات الطواف",
     labelEn: "Tawaf Steps",
-    question: "What are the steps for performing Tawaf around the Kaaba?",
+    questionAr: "ما هي خطوات الطواف حول الكعبة؟",
+    questionEn: "What are the steps for performing Tawaf around the Kaaba?",
   },
   {
     icon: BookOpen,
-    label: "أدعية الحج",
+    labelAr: "أدعية الحج",
     labelEn: "Hajj Duas",
-    question: "What are the most important duas to recite during Hajj?",
+    questionAr: "ما هي أهم الأدعية خلال الحج؟",
+    questionEn: "What are the most important duas to recite during Hajj?",
   },
   {
     icon: AlertCircle,
-    label: "محظورات الإحرام",
+    labelAr: "محظورات الإحرام",
     labelEn: "Ihram Rules",
-    question: "What actions are prohibited while in the state of Ihram?",
+    questionAr: "ما هي الأفعال المحظورة أثناء الإحرام؟",
+    questionEn: "What actions are prohibited while in the state of Ihram?",
   },
   {
     icon: Heart,
-    label: "يوم عرفة",
+    labelAr: "يوم عرفة",
     labelEn: "Day of Arafat",
-    question: "What should I do on the Day of Arafat?",
+    questionAr: "ماذا أفعل في يوم عرفة؟",
+    questionEn: "What should I do on the Day of Arafat?",
   },
 ];
 
 const QuickActions = ({ onSelect }: QuickActionsProps) => {
+  const { isArabic } = useLanguage();
+
   return (
     <div className="grid grid-cols-2 gap-3 px-4">
       {quickActions.map((action, index) => (
         <button
           key={index}
-          onClick={() => onSelect(action.question)}
+          onClick={() => onSelect(isArabic ? action.questionAr : action.questionEn)}
           className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-card border border-border hover:border-primary/30 hover:bg-primary/5 transition-all duration-200 shadow-soft hover:shadow-elevated group"
           style={{ animationDelay: `${index * 100}ms` }}
         >
@@ -46,9 +53,11 @@ const QuickActions = ({ onSelect }: QuickActionsProps) => {
           </div>
           <div className="text-center">
             <p className="font-arabic text-sm font-semibold text-foreground">
-              {action.label}
+              {isArabic ? action.labelAr : action.labelEn}
             </p>
-            <p className="text-xs text-muted-foreground">{action.labelEn}</p>
+            <p className="text-xs text-muted-foreground">
+              {isArabic ? action.labelEn : action.labelAr}
+            </p>
           </div>
         </button>
       ))}
