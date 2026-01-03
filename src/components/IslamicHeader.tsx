@@ -1,6 +1,8 @@
-import { Compass } from "lucide-react";
+import { Compass, MapPin } from "lucide-react";
+import { Link } from "react-router-dom";
 import LanguageToggle from "./LanguageToggle";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { Button } from "@/components/ui/button";
 
 const IslamicHeader = () => {
   const { t } = useLanguage();
@@ -14,18 +16,21 @@ const IslamicHeader = () => {
           </div>
           <div>
             <h1 className="font-arabic text-lg font-bold text-primary-foreground leading-tight">
-              {t("دليل الحج", "Hajj Guide")}
+              {t("hajjGuide")}
             </h1>
             <p className="text-xs text-primary-foreground/70">
-              {t("مرشدك الذكي", "Your AI Guide")}
+              {t("yourAIGuide")}
             </p>
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <Link to="/map">
+            <Button variant="ghost" size="sm" className="h-8 px-2 text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10">
+              <MapPin className="w-4 h-4 mr-1" />
+              <span className="text-xs">{t("liveMap")}</span>
+            </Button>
+          </Link>
           <LanguageToggle />
-          <div className="font-arabic text-islamic-gold text-sm">
-            {t("بسم الله", "Bismillah")}
-          </div>
         </div>
       </div>
     </header>
