@@ -10,6 +10,7 @@ import RitualDetailPage from "./pages/RitualDetailPage";
 import RulesBriefingPage from "./pages/RulesBriefingPage";
 import RulesSectionPage from "./pages/RulesSectionPage";
 import FamilyViewPage from "./pages/FamilyViewPage";
+import FamilyDashboardPage from "./pages/FamilyDashboardPage";
 import MapPage from "./pages/MapPage";
 import AuthPage from "./pages/AuthPage";
 import FamilyPage from "./pages/FamilyPage";
@@ -31,6 +32,7 @@ const App = () => (
             <Route path="/rules" element={<RulesBriefingPage />} />
             <Route path="/rules/:sectionId" element={<RulesSectionPage />} />
             <Route path="/family-status" element={<FamilyViewPage />} />
+            <Route path="/family-dashboard" element={<FamilyDashboardPage />} />
             <Route path="/family" element={<FamilyPage />} />
             <Route path="/map" element={<MapPage />} />
             <Route path="/auth" element={<AuthPage />} />
