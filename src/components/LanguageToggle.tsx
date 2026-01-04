@@ -1,31 +1,51 @@
 import { useLanguage, LANGUAGES, Language } from "@/contexts/LanguageContext";
-import { Globe } from "lucide-react";
+import { Globe, Check } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const LanguageToggle = () => {
-  const { language, setLanguage } = useLanguage();
+  const { language, setLanguage, isRTL } = useLanguage();
+  const currentLang = LANGUAGES.find((l) => l.code === language);
 
   return (
-    <Select value={language} onValueChange={(val) => setLanguage(val as Language)}>
-      <SelectTrigger className="w-auto h-8 px-2 bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/20">
-        <Globe className="w-4 h-4 mr-1" />
-        <SelectValue />
-      </SelectTrigger>
-      <SelectContent className="bg-card border-border z-50">
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button 
+          variant="outline" 
+          size="sm"
+          className="h-9 sm:h-10 px-2 sm:px-3 gap-1.5 bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/20"
+        >
+          <Globe className="w-4 h-4" />
+          <span className="hidden sm:inline">{currentLang?.nativeName}</span>
+          <span className="sm:hidden">{currentLang?.code.toUpperCase()}</span>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent 
+        align={isRTL ? "start" : "end"} 
+        className="w-48 bg-popover border border-border shadow-lg z-[100]"
+      >
         {LANGUAGES.map((lang) => (
-          <SelectItem key={lang.code} value={lang.code} className="cursor-pointer">
-            <span className="font-medium">{lang.nativeName}</span>
-            <span className="text-muted-foreground ml-2 text-xs">({lang.name})</span>
-          </SelectItem>
+          <DropdownMenuItem
+            key={lang.code}
+            onClick={() => setLanguage(lang.code)}
+            className="h-11 sm:h-12 text-sm sm:text-base cursor-pointer flex items-center justify-between"
+          >
+            <div className="flex flex-col">
+              <span className="font-medium">{lang.nativeName}</span>
+              <span className="text-xs text-muted-foreground">{lang.name}</span>
+            </div>
+            {language === lang.code && (
+              <Check className="w-4 h-4 text-primary" />
+            )}
+          </DropdownMenuItem>
         ))}
-      </SelectContent>
-    </Select>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 
