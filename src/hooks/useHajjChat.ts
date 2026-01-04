@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 type Message = {
   role: "user" | "assistant";
@@ -12,6 +13,7 @@ export const useHajjChat = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const { language } = useLanguage();
 
   const sendMessage = useCallback(async (userMessage: string) => {
     const userMsg: Message = { role: "user", content: userMessage };
@@ -40,7 +42,7 @@ export const useHajjChat = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
-        body: JSON.stringify({ messages: [...messages, userMsg] }),
+        body: JSON.stringify({ messages: [...messages, userMsg], language }),
       });
 
       if (!response.ok) {
@@ -140,7 +142,7 @@ export const useHajjChat = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [messages, toast]);
+  }, [messages, toast, language]);
 
   const clearChat = useCallback(() => {
     setMessages([]);
