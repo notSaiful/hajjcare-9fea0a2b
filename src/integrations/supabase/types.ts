@@ -21,6 +21,7 @@ export type Database = {
           id: string
           invite_code: string
           name: string
+          user_id: string | null
         }
         Insert: {
           created_at?: string
@@ -28,6 +29,7 @@ export type Database = {
           id?: string
           invite_code?: string
           name: string
+          user_id?: string | null
         }
         Update: {
           created_at?: string
@@ -35,6 +37,7 @@ export type Database = {
           id?: string
           invite_code?: string
           name?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -45,6 +48,7 @@ export type Database = {
           joined_at: string
           member_id: string
           member_name: string
+          user_id: string | null
         }
         Insert: {
           group_id: string
@@ -52,6 +56,7 @@ export type Database = {
           joined_at?: string
           member_id: string
           member_name: string
+          user_id?: string | null
         }
         Update: {
           group_id?: string
@@ -59,6 +64,7 @@ export type Database = {
           joined_at?: string
           member_id?: string
           member_name?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -79,6 +85,7 @@ export type Database = {
           longitude: number
           member_id: string
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           current_stage?: string | null
@@ -88,6 +95,7 @@ export type Database = {
           longitude: number
           member_id: string
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           current_stage?: string | null
@@ -97,6 +105,7 @@ export type Database = {
           longitude?: number
           member_id?: string
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -108,21 +117,61 @@ export type Database = {
           },
         ]
       }
+      profiles: {
+        Row: {
+          created_at: string
+          emergency_contact: string | null
+          full_name: string | null
+          id: string
+          phone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          emergency_contact?: string | null
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          emergency_contact?: string | null
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      upsert_member_location: {
-        Args: {
-          p_current_stage: string
-          p_group_id: string
-          p_latitude: number
-          p_longitude: number
-          p_member_id: string
-        }
-        Returns: undefined
-      }
+      upsert_member_location:
+        | {
+            Args: {
+              p_current_stage: string
+              p_group_id: string
+              p_latitude: number
+              p_longitude: number
+            }
+            Returns: undefined
+          }
+        | {
+            Args: {
+              p_current_stage: string
+              p_group_id: string
+              p_latitude: number
+              p_longitude: number
+              p_member_id: string
+            }
+            Returns: undefined
+          }
     }
     Enums: {
       [_ in never]: never
