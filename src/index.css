@@ -1,126 +1,129 @@
-@import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Sans+Arabic:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Islamic Design System - Inspired by Mosque Architecture */
+/* Government-Grade Safety Design System */
+/* Calm, Authoritative, Panic-Reducing */
 
 @layer base {
   :root {
-    /* Islamic Color Palette */
-    --background: 45 30% 97%;
-    --foreground: 160 45% 15%;
+    /* Calm Teal - Primary (Trust, Safety, Islam-aligned) */
+    --background: 160 15% 97%;
+    --foreground: 160 30% 15%;
 
-    --card: 45 35% 95%;
-    --card-foreground: 160 45% 15%;
+    --card: 0 0% 100%;
+    --card-foreground: 160 30% 15%;
 
-    --popover: 45 35% 95%;
-    --popover-foreground: 160 45% 15%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 160 30% 15%;
 
-    /* Deep Emerald Green - Islamic Primary */
-    --primary: 170 60% 25%;
-    --primary-foreground: 45 50% 95%;
+    /* Calm Teal Primary */
+    --primary: 168 45% 32%;
+    --primary-foreground: 0 0% 100%;
 
-    /* Warm Sand */
-    --secondary: 35 35% 85%;
-    --secondary-foreground: 160 45% 15%;
+    /* Sand/Beige Secondary */
+    --secondary: 35 30% 92%;
+    --secondary-foreground: 160 30% 15%;
 
-    /* Muted Sage */
-    --muted: 45 20% 90%;
-    --muted-foreground: 160 20% 40%;
+    /* Muted */
+    --muted: 160 10% 94%;
+    --muted-foreground: 160 15% 45%;
 
-    /* Gold Accent */
-    --accent: 43 75% 50%;
-    --accent-foreground: 160 45% 15%;
+    /* Accent - Subtle teal */
+    --accent: 168 30% 90%;
+    --accent-foreground: 168 45% 25%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 45 25% 85%;
-    --input: 45 25% 88%;
-    --ring: 170 60% 25%;
+    --border: 160 15% 88%;
+    --input: 160 15% 92%;
+    --ring: 168 45% 32%;
 
-    --radius: 1rem;
+    --radius: 0.75rem;
 
-    /* Custom Islamic tokens */
-    --islamic-emerald: 170 60% 25%;
-    --islamic-gold: 43 75% 50%;
-    --islamic-cream: 45 50% 95%;
-    --islamic-sand: 35 35% 85%;
-    --islamic-dark: 160 45% 15%;
-    
-    /* Gradients */
-    --gradient-islamic: linear-gradient(135deg, hsl(170 60% 25%) 0%, hsl(170 50% 35%) 100%);
-    --gradient-gold: linear-gradient(135deg, hsl(43 75% 50%) 0%, hsl(35 80% 55%) 100%);
-    --gradient-cream: linear-gradient(180deg, hsl(45 50% 97%) 0%, hsl(35 35% 90%) 100%);
+    /* Status Colors - ONLY for status indication */
+    --status-safe: 152 60% 40%;
+    --status-safe-bg: 152 50% 95%;
+    --status-assistance: 38 92% 50%;
+    --status-assistance-bg: 38 80% 95%;
+    --status-emergency: 0 72% 51%;
+    --status-emergency-bg: 0 60% 97%;
 
-    /* Shadows */
-    --shadow-soft: 0 4px 20px -5px hsl(160 45% 15% / 0.1);
-    --shadow-elevated: 0 10px 40px -10px hsl(160 45% 15% / 0.15);
-    --shadow-glow: 0 0 30px hsl(43 75% 50% / 0.3);
+    /* Calm tokens */
+    --calm-teal: 168 45% 32%;
+    --calm-teal-light: 168 35% 45%;
+    --calm-sand: 35 30% 92%;
+    --calm-cream: 40 30% 97%;
+
+    /* Shadows - Subtle, calming */
+    --shadow-soft: 0 2px 8px -2px hsl(160 30% 15% / 0.08);
+    --shadow-card: 0 4px 12px -4px hsl(160 30% 15% / 0.1);
 
     --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-foreground: 160 30% 15%;
+    --sidebar-primary: 168 45% 32%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 168 30% 95%;
+    --sidebar-accent-foreground: 168 45% 25%;
+    --sidebar-border: 160 15% 90%;
+    --sidebar-ring: 168 45% 32%;
   }
 
   .dark {
-    --background: 160 40% 8%;
-    --foreground: 45 50% 95%;
+    --background: 160 20% 10%;
+    --foreground: 160 10% 95%;
 
-    --card: 160 35% 12%;
-    --card-foreground: 45 50% 95%;
+    --card: 160 20% 14%;
+    --card-foreground: 160 10% 95%;
 
-    --popover: 160 35% 12%;
-    --popover-foreground: 45 50% 95%;
+    --popover: 160 20% 14%;
+    --popover-foreground: 160 10% 95%;
 
-    --primary: 170 50% 40%;
-    --primary-foreground: 160 40% 8%;
+    --primary: 168 40% 45%;
+    --primary-foreground: 160 20% 10%;
 
-    --secondary: 160 30% 18%;
-    --secondary-foreground: 45 50% 95%;
+    --secondary: 160 15% 20%;
+    --secondary-foreground: 160 10% 95%;
 
-    --muted: 160 25% 20%;
-    --muted-foreground: 45 30% 70%;
+    --muted: 160 15% 18%;
+    --muted-foreground: 160 10% 60%;
 
-    --accent: 43 70% 55%;
-    --accent-foreground: 160 40% 8%;
+    --accent: 168 25% 25%;
+    --accent-foreground: 168 30% 85%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 62% 45%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 160 25% 20%;
-    --input: 160 25% 20%;
-    --ring: 170 50% 40%;
+    --border: 160 15% 20%;
+    --input: 160 15% 18%;
+    --ring: 168 40% 45%;
 
-    --islamic-emerald: 170 50% 40%;
-    --islamic-gold: 43 70% 55%;
-    --islamic-cream: 160 35% 12%;
-    --islamic-sand: 160 30% 18%;
-    --islamic-dark: 45 50% 95%;
+    --status-safe: 152 50% 50%;
+    --status-safe-bg: 152 40% 15%;
+    --status-assistance: 38 80% 55%;
+    --status-assistance-bg: 38 60% 15%;
+    --status-emergency: 0 65% 55%;
+    --status-emergency-bg: 0 50% 15%;
 
-    --gradient-islamic: linear-gradient(135deg, hsl(170 50% 35%) 0%, hsl(170 45% 45%) 100%);
-    --gradient-gold: linear-gradient(135deg, hsl(43 70% 55%) 0%, hsl(35 75% 60%) 100%);
-    --gradient-cream: linear-gradient(180deg, hsl(160 40% 8%) 0%, hsl(160 35% 12%) 100%);
+    --calm-teal: 168 40% 45%;
+    --calm-teal-light: 168 30% 55%;
+    --calm-sand: 160 15% 20%;
+    --calm-cream: 160 20% 14%;
 
-    --shadow-soft: 0 4px 20px -5px hsl(0 0% 0% / 0.3);
-    --shadow-elevated: 0 10px 40px -10px hsl(0 0% 0% / 0.4);
-    --shadow-glow: 0 0 30px hsl(43 70% 55% / 0.2);
+    --shadow-soft: 0 2px 8px -2px hsl(0 0% 0% / 0.3);
+    --shadow-card: 0 4px 12px -4px hsl(0 0% 0% / 0.4);
 
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-background: 160 20% 10%;
+    --sidebar-foreground: 160 10% 95%;
+    --sidebar-primary: 168 40% 45%;
+    --sidebar-primary-foreground: 160 20% 10%;
+    --sidebar-accent: 160 15% 18%;
+    --sidebar-accent-foreground: 160 10% 95%;
+    --sidebar-border: 160 15% 20%;
+    --sidebar-ring: 168 40% 45%;
   }
 }
 
@@ -130,52 +133,78 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased;
-    font-family: 'Noto Sans Arabic', sans-serif;
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Noto Sans', 'Noto Sans Arabic', 'Noto Sans Devanagari', sans-serif;
+    /* Minimum readable size for elderly users */
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  /* High legibility for stressed users */
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    letter-spacing: -0.01em;
   }
 }
 
 @layer utilities {
-  .font-arabic {
-    font-family: 'Amiri', serif;
+  /* Status badges */
+  .status-safe {
+    @apply bg-[hsl(var(--status-safe-bg))] text-[hsl(var(--status-safe))] border-[hsl(var(--status-safe))];
   }
 
-  .islamic-pattern {
-    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L60 30L30 60L0 30L30 0z' fill='none' stroke='%23d4af37' stroke-width='0.5' opacity='0.15'/%3E%3C/svg%3E");
+  .status-assistance {
+    @apply bg-[hsl(var(--status-assistance-bg))] text-[hsl(var(--status-assistance))] border-[hsl(var(--status-assistance))];
   }
 
-  .text-gradient-gold {
-    background: var(--gradient-gold);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+  .status-emergency {
+    @apply bg-[hsl(var(--status-emergency-bg))] text-[hsl(var(--status-emergency))] border-[hsl(var(--status-emergency))];
   }
 
-  .animate-fade-up {
-    animation: fadeUp 0.6s ease-out forwards;
+  /* Large touch targets for elderly/stressed users */
+  .touch-target {
+    @apply min-h-[56px] min-w-[56px];
   }
 
-  .animate-pulse-soft {
-    animation: pulseSoft 2s ease-in-out infinite;
+  .touch-target-lg {
+    @apply min-h-[72px] min-w-[72px];
   }
 
-  @keyframes fadeUp {
+  /* Calm animations - minimal, purposeful */
+  .animate-fade-in {
+    animation: fadeIn 0.4s ease-out forwards;
+  }
+
+  @keyframes fadeIn {
     from {
       opacity: 0;
-      transform: translateY(20px);
     }
     to {
       opacity: 1;
-      transform: translateY(0);
     }
   }
 
-  @keyframes pulseSoft {
+  /* Subtle pulse for status indicators only */
+  .pulse-status {
+    animation: pulseStatus 3s ease-in-out infinite;
+  }
+
+  @keyframes pulseStatus {
     0%, 100% {
       opacity: 1;
     }
     50% {
-      opacity: 0.7;
+      opacity: 0.85;
     }
+  }
+
+  /* High contrast text for readability */
+  .text-high-contrast {
+    @apply text-foreground font-medium;
+  }
+
+  /* RTL support */
+  [dir="rtl"] .rtl-flip {
+    transform: scaleX(-1);
   }
 }
