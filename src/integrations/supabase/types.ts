@@ -158,6 +158,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      is_member_of_group: { Args: { p_group_id: string }; Returns: boolean }
       upsert_member_location:
         | {
             Args: {
