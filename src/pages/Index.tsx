@@ -4,8 +4,11 @@ import ChatMessage from "@/components/ChatMessage";
 import ChatInput from "@/components/ChatInput";
 import WelcomeScreen from "@/components/WelcomeScreen";
 import HajjMap from "@/components/HajjMap";
+import { FamilyGroupPanel } from "@/components/FamilyGroupPanel";
 import { useHajjChat } from "@/hooks/useHajjChat";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useFamilyGroup } from "@/hooks/useFamilyGroup";
+import { useHajjLocation } from "@/hooks/useHajjLocation";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -13,7 +16,16 @@ import { Button } from "@/components/ui/button";
 const Index = () => {
   const { messages, isLoading, sendMessage, clearChat } = useHajjChat();
   const { t, isRTL } = useLanguage();
+  const { group, updateLocation } = useFamilyGroup();
+  const { lat, lng, stage } = useHajjLocation();
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Update family group with location
+  useEffect(() => {
+    if (group && lat && lng) {
+      updateLocation(lat, lng, stage);
+    }
+  }, [group, lat, lng, stage, updateLocation]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -32,8 +44,9 @@ const Index = () => {
         {hasMessages ? (
           <div className="relative">
             {/* Map Card - Collapsed */}
-            <div className="container max-w-2xl mx-auto px-4 py-2">
+            <div className="container max-w-2xl mx-auto px-4 py-2 space-y-2">
               <HajjMap />
+              <FamilyGroupPanel />
             </div>
 
             {/* Clear Chat Button */}
@@ -50,7 +63,7 @@ const Index = () => {
             </div>
 
             {/* Messages */}
-            <ScrollArea className="h-[calc(100vh-320px)]" ref={scrollRef}>
+            <ScrollArea className="h-[calc(100vh-380px)]" ref={scrollRef}>
               <div className="container max-w-2xl mx-auto px-4 py-4 space-y-4">
                 {messages.map((message, index) => (
                   <ChatMessage

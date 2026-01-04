@@ -14,13 +14,115 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      family_groups: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          invite_code: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          id?: string
+          invite_code?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          invite_code?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      group_members: {
+        Row: {
+          group_id: string
+          id: string
+          joined_at: string
+          member_id: string
+          member_name: string
+        }
+        Insert: {
+          group_id: string
+          id?: string
+          joined_at?: string
+          member_id: string
+          member_name: string
+        }
+        Update: {
+          group_id?: string
+          id?: string
+          joined_at?: string
+          member_id?: string
+          member_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_members_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "family_groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      member_locations: {
+        Row: {
+          current_stage: string | null
+          group_id: string
+          id: string
+          latitude: number
+          longitude: number
+          member_id: string
+          updated_at: string
+        }
+        Insert: {
+          current_stage?: string | null
+          group_id: string
+          id?: string
+          latitude: number
+          longitude: number
+          member_id: string
+          updated_at?: string
+        }
+        Update: {
+          current_stage?: string | null
+          group_id?: string
+          id?: string
+          latitude?: number
+          longitude?: number
+          member_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "member_locations_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "family_groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      upsert_member_location: {
+        Args: {
+          p_current_stage: string
+          p_group_id: string
+          p_latitude: number
+          p_longitude: number
+          p_member_id: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
