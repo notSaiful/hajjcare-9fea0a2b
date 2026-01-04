@@ -439,7 +439,7 @@ interface LanguageContextType {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
-  const [language, setLanguage] = useState<Language>("ar");
+  const [language, setLanguage] = useState<Language>("en");
 
   const t = (key: TranslationKey) => translations[language][key] || translations.en[key];
   const currentLang = LANGUAGES.find(l => l.code === language)!;
