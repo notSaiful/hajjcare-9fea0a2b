@@ -142,7 +142,6 @@ export const CALMING_MESSAGE: Record<Language, { main: string; secondary: string
 
 export const DASHBOARD_LABELS: Record<Language, {
   title: string;
-  lastUpdated: string;
   pilgrimName: string;
   shareConsent: string;
   shareEnabled: string;
@@ -159,7 +158,6 @@ export const DASHBOARD_LABELS: Record<Language, {
 }> = {
   en: {
     title: "Family Status",
-    lastUpdated: "Last updated",
     pilgrimName: "Pilgrim",
     shareConsent: "Family Sharing",
     shareEnabled: "Family can see your status",
@@ -176,7 +174,6 @@ export const DASHBOARD_LABELS: Record<Language, {
   },
   ar: {
     title: "حالة العائلة",
-    lastUpdated: "آخر تحديث",
     pilgrimName: "الحاج",
     shareConsent: "مشاركة مع العائلة",
     shareEnabled: "العائلة تستطيع رؤية حالتك",
@@ -193,7 +190,6 @@ export const DASHBOARD_LABELS: Record<Language, {
   },
   ur: {
     title: "خاندان کی حالت",
-    lastUpdated: "آخری اپڈیٹ",
     pilgrimName: "حاجی",
     shareConsent: "خاندان سے شیئرنگ",
     shareEnabled: "خاندان آپ کی حالت دیکھ سکتا ہے",
@@ -210,7 +206,6 @@ export const DASHBOARD_LABELS: Record<Language, {
   },
   hi: {
     title: "परिवार की स्थिति",
-    lastUpdated: "अंतिम अपडेट",
     pilgrimName: "हाजी",
     shareConsent: "परिवार शेयरिंग",
     shareEnabled: "परिवार आपकी स्थिति देख सकता है",
@@ -227,7 +222,6 @@ export const DASHBOARD_LABELS: Record<Language, {
   },
   tr: {
     title: "Aile Durumu",
-    lastUpdated: "Son güncelleme",
     pilgrimName: "Hacı",
     shareConsent: "Aile Paylaşımı",
     shareEnabled: "Aile durumunuzu görebilir",
@@ -244,7 +238,6 @@ export const DASHBOARD_LABELS: Record<Language, {
   },
   ru: {
     title: "Статус семьи",
-    lastUpdated: "Последнее обновление",
     pilgrimName: "Паломник",
     shareConsent: "Семейный доступ",
     shareEnabled: "Семья может видеть ваш статус",

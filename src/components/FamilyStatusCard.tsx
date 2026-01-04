@@ -5,18 +5,26 @@ import {
   DASHBOARD_LABELS,
   PilgrimStatus 
 } from "@/data/familyDashboardContent";
-import { Circle, Info } from "lucide-react";
+import { Circle, Shield } from "lucide-react";
 
 interface FamilyStatusCardProps {
   status: PilgrimStatus;
   pilgrimName: string;
-  lastUpdated?: string;
 }
 
+/**
+ * Family Status Card - "No News = All Is Well" Protocol
+ * 
+ * This component follows strict silence-based reassurance rules:
+ * - NO timestamps (creates refresh anxiety)
+ * - NO loading indicators
+ * - NO activity animations
+ * - NO refresh buttons
+ * - One signal, one message, calm presentation
+ */
 export const FamilyStatusCard = ({ 
   status, 
   pilgrimName, 
-  lastUpdated 
 }: FamilyStatusCardProps) => {
   const { language, isRTL } = useLanguage();
   
@@ -52,44 +60,25 @@ export const FamilyStatusCard = ({
 
   const colors = getStatusColorClasses(statusContent.color);
 
-  const formatTime = (dateStr: string) => {
-    const date = new Date(dateStr);
-    return date.toLocaleString([], { 
-      month: "short",
-      day: "numeric",
-      hour: "2-digit", 
-      minute: "2-digit" 
-    });
-  };
-
   return (
     <div 
       className="flex flex-col items-center justify-center min-h-[60vh] px-6"
       dir={isRTL ? "rtl" : "ltr"}
     >
-      {/* Main Status Card - Large, centered, calm */}
+      {/* Main Status Card - Static, calm, no activity indicators */}
       <div 
         className={`
           w-full max-w-md p-8 rounded-3xl border-2
           ${colors.bg} ${colors.border} ${colors.glow}
           flex flex-col items-center gap-6
-          transition-all duration-500 ease-in-out
         `}
       >
-        {/* Status Icon - Large, pulsing for normal */}
-        <div className={`relative ${status === "normal" ? "animate-pulse" : ""}`}>
+        {/* Status Icon - Static, no animations */}
+        <div className="relative">
           <Circle 
             className={`w-24 h-24 ${colors.icon}`} 
             fill="currentColor"
             strokeWidth={0}
-          />
-          <div 
-            className={`
-              absolute inset-0 w-24 h-24 rounded-full
-              ${colors.icon} opacity-20
-              ${status === "normal" ? "animate-ping" : ""}
-            `}
-            style={{ animationDuration: "3s" }}
           />
         </div>
 
@@ -108,23 +97,18 @@ export const FamilyStatusCard = ({
           {statusContent.description}
         </p>
 
-        {/* Last Updated - subtle */}
-        {lastUpdated && (
-          <p className="text-sm text-muted-foreground/70">
-            {labels.lastUpdated}: {formatTime(lastUpdated)}
-          </p>
-        )}
+        {/* NO TIMESTAMP - Silence protocol */}
       </div>
 
-      {/* Permanent Calming Message - Always visible */}
+      {/* Permanent Calming Message - ALWAYS visible, NEVER hidden */}
       <div className="mt-8 w-full max-w-md">
-        <div className="flex items-start gap-3 p-4 bg-muted/50 rounded-xl border border-border/50">
-          <Info className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-          <div className="space-y-1">
-            <p className="text-sm font-medium text-foreground">
+        <div className="flex items-start gap-3 p-5 bg-primary/5 rounded-xl border border-primary/20">
+          <Shield className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+          <div className="space-y-2">
+            <p className="text-base font-medium text-foreground leading-snug">
               {calmingMessage.main}
             </p>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-sm text-muted-foreground leading-relaxed">
               {calmingMessage.secondary}
             </p>
           </div>
