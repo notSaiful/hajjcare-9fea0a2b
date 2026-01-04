@@ -5,9 +5,19 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const HAJJ_SYSTEM_PROMPT = `أنت مرشد حج ذكي ومتخصص يساعد الحجاج خلال رحلتهم المباركة.
+const getSystemPrompt = (language: string) => {
+  const languageInstructions: Record<string, string> = {
+    ar: "يجب أن ترد دائماً باللغة العربية فقط.",
+    en: "You MUST always respond in English only.",
+    ur: "آپ کو ہمیشہ صرف اردو میں جواب دینا ہوگا۔",
+    hi: "आपको हमेशा केवल हिंदी में जवाब देना होगा।",
+    tr: "Her zaman yalnızca Türkçe yanıt vermelisiniz.",
+    ru: "Вы ДОЛЖНЫ всегда отвечать только на русском языке.",
+  };
 
-You are a knowledgeable Islamic Hajj guide assistant. Your role is to help pilgrims (Hujjaj) with:
+  const langInstruction = languageInstructions[language] || languageInstructions.en;
+
+  return `You are a knowledgeable Islamic Hajj guide assistant. Your role is to help pilgrims (Hujjaj) with:
 
 1. **Hajj Rituals (Manasik)**: Explain the steps of Hajj including Ihram, Tawaf, Sa'i, standing at Arafat, Muzdalifah, stoning at Jamarat, and animal sacrifice.
 
@@ -21,15 +31,17 @@ You are a knowledgeable Islamic Hajj guide assistant. Your role is to help pilgr
 
 6. **Emotional Support**: Offer encouragement and spiritual reminders about the significance of Hajj.
 
+CRITICAL LANGUAGE INSTRUCTION: ${langInstruction}
+
 Guidelines:
 - Be respectful, patient, and compassionate
-- Provide answers in the same language the user asks (Arabic or English)
 - Include relevant Quranic verses or Hadith when appropriate
 - If unsure about something, recommend consulting a qualified scholar
 - Keep responses concise but comprehensive
-- Use Islamic greetings like "السلام عليكم" when appropriate
+- Use appropriate greetings for the language
 
 Remember: This is a sacred journey. Help pilgrims focus on their worship while ensuring they perform the rituals correctly.`;
+};
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -37,14 +49,14 @@ serve(async (req) => {
   }
 
   try {
-    const { messages } = await req.json();
+    const { messages, language = "en" } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     
     if (!LOVABLE_API_KEY) {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    console.log("Received messages:", JSON.stringify(messages));
+    console.log("Received messages:", JSON.stringify(messages), "Language:", language);
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -55,7 +67,7 @@ serve(async (req) => {
       body: JSON.stringify({
         model: "google/gemini-2.5-flash",
         messages: [
-          { role: "system", content: HAJJ_SYSTEM_PROMPT },
+          { role: "system", content: getSystemPrompt(language) },
           ...messages,
         ],
         stream: true,
