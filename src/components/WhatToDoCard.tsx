@@ -83,26 +83,26 @@ export const WhatToDoCard = ({
 
   return (
     <Card className={`bg-card shadow-card border-2 border-border ${className}`}>
-      <CardContent className="p-5 space-y-4">
+      <CardContent className="p-4 sm:p-5 space-y-3 sm:space-y-4">
         {/* Status Badge */}
-        <div className="flex items-center justify-between">
-          <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-sm font-bold ${getStatusColor()}`}>
+        <div className="flex items-center justify-between gap-2">
+          <div className={`inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full border text-xs sm:text-sm font-bold ${getStatusColor()}`}>
             <span>{statusLabel}</span>
           </div>
           
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
             {/* Voice button */}
             <Button
               variant="ghost"
               size="icon"
               onClick={speakInstruction}
-              className="h-10 w-10"
+              className="h-9 w-9 sm:h-10 sm:w-10"
               aria-label={isSpeaking ? "Stop speaking" : "Read aloud"}
             >
               {isSpeaking ? (
-                <VolumeX className="w-5 h-5 text-primary" />
+                <VolumeX className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
               ) : (
-                <Volume2 className="w-5 h-5 text-muted-foreground" />
+                <Volume2 className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
               )}
             </Button>
 
@@ -112,25 +112,25 @@ export const WhatToDoCard = ({
                 variant="ghost"
                 size="icon"
                 onClick={onRefresh}
-                className="h-10 w-10"
+                className="h-9 w-9 sm:h-10 sm:w-10"
                 aria-label="Refresh"
               >
-                <RotateCcw className="w-4 h-4 text-muted-foreground" />
+                <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground" />
               </Button>
             )}
           </div>
         </div>
 
         {/* Main Instruction */}
-        <div className="flex items-start gap-4">
-          <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-            <ArrowRight className={`w-5 h-5 text-primary ${isRTL ? "rtl-flip" : ""}`} />
+        <div className="flex items-start gap-3 sm:gap-4">
+          <div className="flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-primary/10 flex items-center justify-center">
+            <ArrowRight className={`w-4 h-4 sm:w-5 sm:h-5 text-primary ${isRTL ? "rtl-flip" : ""}`} />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">
+            <p className="text-[10px] sm:text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1.5 sm:mb-2">
               {t("whatToDoNow")}
             </p>
-            <p className="text-lg font-medium text-foreground leading-relaxed">
+            <p className="text-base sm:text-lg font-medium text-foreground leading-relaxed">
               {instruction}
             </p>
           </div>
@@ -138,8 +138,8 @@ export const WhatToDoCard = ({
 
         {/* Safety Reminder */}
         {safety && (
-          <div className="bg-muted/50 rounded-lg p-3 ml-14">
-            <p className="text-sm text-muted-foreground">
+          <div className="bg-muted/50 rounded-lg p-2.5 sm:p-3 ml-12 sm:ml-14">
+            <p className="text-xs sm:text-sm text-muted-foreground">
               {safety}
             </p>
           </div>
@@ -147,15 +147,15 @@ export const WhatToDoCard = ({
 
         {/* Last Updated */}
         {lastUpdated && (
-          <div className="flex items-center gap-1 text-xs text-muted-foreground ml-14">
-            <Clock className="w-3 h-3" />
+          <div className="flex items-center gap-1 text-[10px] sm:text-xs text-muted-foreground ml-12 sm:ml-14">
+            <Clock className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
             <span>{formatTime(lastUpdated)}</span>
           </div>
         )}
 
         {/* Failsafe indicator (subtle) */}
         {isFailsafe && (
-          <p className="text-xs text-muted-foreground/60 text-center mt-2">
+          <p className="text-[10px] sm:text-xs text-muted-foreground/60 text-center mt-2">
             {language === "ar" ? "اتبع الإرشادات الرسمية" : 
              language === "ur" ? "سرکاری ہدایات پر عمل کریں" :
              language === "hi" ? "आधिकारिक निर्देशों का पालन करें" :

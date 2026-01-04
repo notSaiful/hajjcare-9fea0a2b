@@ -59,54 +59,54 @@ const FamilyPage = () => {
       
       {/* Header */}
       <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b border-border/50">
-        <div className="container max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
+        <div className="container max-w-3xl mx-auto px-3 sm:px-4 py-3 flex items-center justify-between">
           <Link to="/">
-            <Button variant="ghost" size="sm" className="gap-2">
+            <Button variant="ghost" size="sm" className="gap-2 h-9 sm:h-10">
               <ArrowLeft className="w-4 h-4" />
-              {isRTL ? "العودة" : "Back"}
+              <span className="hidden sm:inline">{isRTL ? "العودة" : "Back"}</span>
             </Button>
           </Link>
           <div className="flex items-center gap-2">
-            <img src={logo} alt="Logo" className="w-8 h-8 rounded-full" />
-            <span className="font-semibold">{t("familyGroup")}</span>
+            <img src={logo} alt="Logo" className="w-7 h-7 sm:w-8 sm:h-8 rounded-full" />
+            <span className="font-semibold text-sm sm:text-base">{t("familyGroup")}</span>
           </div>
-          <div className="w-20" /> {/* Spacer for centering */}
+          <div className="w-16 sm:w-20" /> {/* Spacer for centering */}
         </div>
       </header>
 
-      <main className="container max-w-2xl mx-auto px-4 py-6 space-y-6">
+      <main className="container max-w-2xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
         {/* Family Group Panel */}
         <FamilyGroupPanel />
 
         {/* Family Members Map View */}
         {group && otherMembers.length > 0 && (
           <Card className="bg-card/50 backdrop-blur">
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <MapPin className="h-5 w-5 text-primary" />
+            <CardHeader className="pb-2 sm:pb-3 px-4 sm:px-6">
+              <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                <MapPin className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                 {isRTL ? "مواقع الأعضاء" : "Member Locations"}
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
+            <CardContent className="px-4 sm:px-6">
+              <div className="space-y-2.5 sm:space-y-3">
                 {otherMembers.map((loc) => (
                   <div 
                     key={loc.member_id}
-                    className="flex items-center justify-between p-3 bg-muted/50 rounded-xl"
+                    className="flex items-center justify-between p-2.5 sm:p-3 bg-muted/50 rounded-xl"
                   >
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
-                        <Users className="w-5 h-5 text-blue-500" />
+                    <div className="flex items-center gap-2.5 sm:gap-3">
+                      <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
+                        <Users className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500" />
                       </div>
                       <div>
-                        <p className="font-medium">{loc.member_name}</p>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="font-medium text-sm sm:text-base">{loc.member_name}</p>
+                        <p className="text-[11px] sm:text-xs text-muted-foreground">
                           {new Date(loc.updated_at).toLocaleTimeString()}
                         </p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="flex items-center gap-1 text-sm">
+                      <div className="flex items-center gap-1 text-xs sm:text-sm">
                         <MapPin className="w-3 h-3 text-primary" />
                         <span className="font-medium">{getStageLabel(loc.current_stage)}</span>
                       </div>
@@ -116,7 +116,7 @@ const FamilyPage = () => {
               </div>
               
               <Link to="/map" className="block mt-4">
-                <Button variant="outline" className="w-full">
+                <Button variant="outline" className="w-full h-10 sm:h-11">
                   {isRTL ? "عرض على الخريطة" : "View on Map"}
                 </Button>
               </Link>
@@ -127,9 +127,9 @@ const FamilyPage = () => {
         {/* Empty State */}
         {group && otherMembers.length === 0 && (
           <Card className="bg-card/50 backdrop-blur">
-            <CardContent className="py-8 text-center">
-              <Users className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
-              <p className="text-muted-foreground">
+            <CardContent className="py-6 sm:py-8 text-center">
+              <Users className="w-10 h-10 sm:w-12 sm:h-12 text-muted-foreground mx-auto mb-2.5 sm:mb-3" />
+              <p className="text-sm sm:text-base text-muted-foreground">
                 {isRTL 
                   ? "شارك رمز الدعوة مع عائلتك للانضمام" 
                   : "Share the invite code with your family to join"

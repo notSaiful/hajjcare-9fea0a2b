@@ -40,15 +40,15 @@ export const StatusBadge = ({ status, className = "" }: StatusBadgeProps) => {
   return (
     <div
       className={`
-        flex items-center justify-center gap-3 
-        px-6 py-4 rounded-xl border-2
+        flex items-center justify-center gap-2.5 sm:gap-3 
+        px-4 sm:px-6 py-3 sm:py-4 rounded-xl border-2
         ${config.bgClass} ${config.textClass} ${config.borderClass}
         ${status === "safe" ? "pulse-status" : ""}
         ${className}
       `}
     >
-      <Icon className="w-6 h-6 flex-shrink-0" strokeWidth={2.5} />
-      <span className="text-lg font-semibold">{t(config.labelKey)}</span>
+      <Icon className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" strokeWidth={2.5} />
+      <span className="text-base sm:text-lg font-semibold">{t(config.labelKey)}</span>
     </div>
   );
 };

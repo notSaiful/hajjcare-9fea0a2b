@@ -42,11 +42,11 @@ const Index = () => {
       <IslamicHeader />
 
       {/* Main Content */}
-      <main className="flex-1 pt-14 pb-32">
+      <main className="flex-1 pt-14 pb-28 sm:pb-32">
         {hasMessages ? (
           <div className="relative">
             {/* Map Card - Collapsed */}
-            <div className="container max-w-2xl mx-auto px-4 py-2 space-y-2">
+            <div className="container max-w-3xl mx-auto px-3 sm:px-4 py-2 space-y-2">
               <HajjMap />
             </div>
 
@@ -56,7 +56,7 @@ const Index = () => {
                 variant="ghost"
                 size="sm"
                 onClick={clearChat}
-                className="text-xs text-muted-foreground hover:text-foreground"
+                className="text-xs text-muted-foreground hover:text-foreground h-8 sm:h-9"
               >
                 <RotateCcw className="w-3 h-3 mr-1" />
                 {t("newConversation")}
@@ -64,8 +64,8 @@ const Index = () => {
             </div>
 
             {/* Messages */}
-            <ScrollArea className="h-[calc(100vh-320px)]" ref={scrollRef}>
-              <div className="container max-w-2xl mx-auto px-4 py-4 space-y-4">
+            <ScrollArea className="h-[calc(100vh-280px)] sm:h-[calc(100vh-320px)]" ref={scrollRef}>
+              <div className="container max-w-3xl mx-auto px-3 sm:px-4 py-3 sm:py-4 space-y-3 sm:space-y-4">
                 {messages.map((message, index) => (
                   <ChatMessage
                     key={index}
@@ -82,7 +82,7 @@ const Index = () => {
             </ScrollArea>
 
             {/* Floating Voice Button */}
-            <div className="fixed bottom-28 left-1/2 -translate-x-1/2 z-30">
+            <div className="fixed bottom-24 sm:bottom-28 left-1/2 -translate-x-1/2 z-30">
               <VoiceAssistant />
             </div>
           </div>

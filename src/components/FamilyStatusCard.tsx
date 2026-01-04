@@ -62,38 +62,38 @@ export const FamilyStatusCard = ({
 
   return (
     <div 
-      className="flex flex-col items-center justify-center min-h-[60vh] px-6"
+      className="flex flex-col items-center justify-center min-h-[50vh] sm:min-h-[60vh] px-4 sm:px-6"
       dir={isRTL ? "rtl" : "ltr"}
     >
       {/* Main Status Card - Static, calm, no activity indicators */}
       <div 
         className={`
-          w-full max-w-md p-8 rounded-3xl border-2
+          w-full max-w-md p-5 sm:p-8 rounded-2xl sm:rounded-3xl border-2
           ${colors.bg} ${colors.border} ${colors.glow}
-          flex flex-col items-center gap-6
+          flex flex-col items-center gap-4 sm:gap-6
         `}
       >
         {/* Status Icon - Static, no animations */}
         <div className="relative">
           <Circle 
-            className={`w-24 h-24 ${colors.icon}`} 
+            className={`w-16 h-16 sm:w-24 sm:h-24 ${colors.icon}`} 
             fill="currentColor"
             strokeWidth={0}
           />
         </div>
 
         {/* Status Label */}
-        <h2 className="text-2xl font-bold text-foreground text-center">
+        <h2 className="text-xl sm:text-2xl font-bold text-foreground text-center">
           {statusContent.label}
         </h2>
 
         {/* Pilgrim Name */}
-        <p className="text-lg text-muted-foreground text-center">
+        <p className="text-base sm:text-lg text-muted-foreground text-center">
           {labels.pilgrimName}: <span className="font-medium text-foreground">{pilgrimName}</span>
         </p>
 
         {/* Status Description */}
-        <p className="text-center text-muted-foreground leading-relaxed">
+        <p className="text-center text-sm sm:text-base text-muted-foreground leading-relaxed">
           {statusContent.description}
         </p>
 
@@ -101,14 +101,14 @@ export const FamilyStatusCard = ({
       </div>
 
       {/* Permanent Calming Message - ALWAYS visible, NEVER hidden */}
-      <div className="mt-8 w-full max-w-md">
-        <div className="flex items-start gap-3 p-5 bg-primary/5 rounded-xl border border-primary/20">
-          <Shield className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-          <div className="space-y-2">
-            <p className="text-base font-medium text-foreground leading-snug">
+      <div className="mt-5 sm:mt-8 w-full max-w-md">
+        <div className="flex items-start gap-2.5 sm:gap-3 p-4 sm:p-5 bg-primary/5 rounded-xl border border-primary/20">
+          <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-primary flex-shrink-0 mt-0.5" />
+          <div className="space-y-1.5 sm:space-y-2">
+            <p className="text-sm sm:text-base font-medium text-foreground leading-snug">
               {calmingMessage.main}
             </p>
-            <p className="text-sm text-muted-foreground leading-relaxed">
+            <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
               {calmingMessage.secondary}
             </p>
           </div>

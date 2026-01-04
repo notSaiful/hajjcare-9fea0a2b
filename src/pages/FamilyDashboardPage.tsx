@@ -121,22 +121,22 @@ const FamilyDashboardPage = () => {
     <div className="min-h-screen bg-background" dir={isRTL ? "rtl" : "ltr"}>
       <SimpleHeader />
 
-      <main className="container max-w-lg mx-auto px-4 py-6">
+      <main className="container max-w-2xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6">
         {/* Back Button */}
         <Link to="/">
-          <Button variant="ghost" size="sm" className="gap-2 -ml-2 mb-4">
+          <Button variant="ghost" size="sm" className="gap-2 -ml-2 mb-3 sm:mb-4 h-10 sm:h-9 text-sm">
             {isRTL ? <ArrowRight className="w-4 h-4" /> : <ArrowLeft className="w-4 h-4" />}
             {language === "en" ? "Back" : language === "ar" ? "رجوع" : "واپس"}
           </Button>
         </Link>
 
-        <h1 className="text-heading font-semibold mb-6">{labels.title}</h1>
+        <h1 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-6">{labels.title}</h1>
 
         {!group ? (
           <Card className="bg-card">
-            <CardContent className="py-8 text-center">
-              <Users className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-              <p className="text-muted-foreground mb-4">
+            <CardContent className="py-6 sm:py-8 text-center px-4">
+              <Users className="w-10 h-10 sm:w-12 sm:h-12 text-muted-foreground mx-auto mb-3 sm:mb-4" />
+              <p className="text-sm sm:text-base text-muted-foreground mb-4">
                 {language === "en" 
                   ? "Join a family group to use the status dashboard" 
                   : language === "ar"
@@ -145,19 +145,19 @@ const FamilyDashboardPage = () => {
                 }
               </p>
               <Link to="/family">
-                <Button>{language === "en" ? "Family Group" : language === "ar" ? "مجموعة العائلة" : "فیملی گروپ"}</Button>
+                <Button className="h-11 sm:h-10">{language === "en" ? "Family Group" : language === "ar" ? "مجموعة العائلة" : "فیملی گروپ"}</Button>
               </Link>
             </CardContent>
           </Card>
         ) : (
           <Tabs defaultValue="pilgrim" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-6">
-              <TabsTrigger value="pilgrim" className="gap-2">
-                <Settings className="w-4 h-4" />
+            <TabsList className="grid w-full grid-cols-2 mb-4 sm:mb-6 h-11 sm:h-10">
+              <TabsTrigger value="pilgrim" className="gap-1.5 sm:gap-2 text-xs sm:text-sm">
+                <Settings className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 {labels.pilgrimView}
               </TabsTrigger>
-              <TabsTrigger value="family" className="gap-2">
-                <Eye className="w-4 h-4" />
+              <TabsTrigger value="family" className="gap-1.5 sm:gap-2 text-xs sm:text-sm">
+                <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 {labels.familyView}
               </TabsTrigger>
             </TabsList>
@@ -177,9 +177,9 @@ const FamilyDashboardPage = () => {
             <TabsContent value="family" className="mt-0">
               {visibleMembers.length === 0 ? (
                 <Card className="bg-card">
-                  <CardContent className="py-8 text-center">
-                    <Eye className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                    <p className="text-muted-foreground mb-6">
+                  <CardContent className="py-6 sm:py-8 text-center px-4">
+                    <Eye className="w-10 h-10 sm:w-12 sm:h-12 text-muted-foreground mx-auto mb-3 sm:mb-4" />
+                    <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-6">
                       {language === "en" 
                         ? "No family members are sharing their status" 
                         : language === "ar"
@@ -188,13 +188,13 @@ const FamilyDashboardPage = () => {
                       }
                     </p>
                     {/* Always show calming message */}
-                    <div className="flex items-start gap-3 p-4 bg-primary/5 rounded-xl border border-primary/20 text-left">
-                      <Shield className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <div className="flex items-start gap-2.5 sm:gap-3 p-3 sm:p-4 bg-primary/5 rounded-xl border border-primary/20 text-left">
+                      <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-primary flex-shrink-0 mt-0.5" />
                       <div className="space-y-1">
-                        <p className="text-sm font-medium text-foreground">
+                        <p className="text-xs sm:text-sm font-medium text-foreground">
                           {calmingMessage.main}
                         </p>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-[11px] sm:text-xs text-muted-foreground">
                           {calmingMessage.secondary}
                         </p>
                       </div>
@@ -202,7 +202,7 @@ const FamilyDashboardPage = () => {
                   </CardContent>
                 </Card>
               ) : (
-                <div className="space-y-6">
+                <div className="space-y-4 sm:space-y-6">
                   {visibleMembers.map(([memberId, data]) => (
                     <FamilyStatusCard
                       key={memberId}

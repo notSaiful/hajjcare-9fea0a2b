@@ -49,41 +49,41 @@ const PreparePage = () => {
     <div className="min-h-screen bg-background" dir={isRTL ? "rtl" : "ltr"}>
       <SimpleHeader />
 
-      <main className="container max-w-lg mx-auto px-4 py-6 space-y-6">
+      <main className="container max-w-2xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
         {/* Back Button */}
         <Link to="/">
-          <Button variant="ghost" size="sm" className="gap-2 -ml-2">
+          <Button variant="ghost" size="sm" className="gap-2 -ml-2 h-10 sm:h-9 text-sm">
             {isRTL ? <ArrowRight className="w-4 h-4" /> : <ArrowLeft className="w-4 h-4" />}
             {labels.back[language] || labels.back.en}
           </Button>
         </Link>
 
         {/* Header */}
-        <div className="space-y-2">
-          <h1 className="text-2xl font-bold">{labels.title[language] || labels.title.en}</h1>
-          <p className="text-muted-foreground">{labels.subtitle[language] || labels.subtitle.en}</p>
+        <div className="space-y-1.5 sm:space-y-2">
+          <h1 className="text-xl sm:text-2xl font-bold">{labels.title[language] || labels.title.en}</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">{labels.subtitle[language] || labels.subtitle.en}</p>
         </div>
 
         {/* Progress */}
         <div className="space-y-2">
-          <div className="flex justify-between text-sm">
+          <div className="flex justify-between text-xs sm:text-sm">
             <span className="text-muted-foreground">{completedCount} / {MANASIK_RITUALS.length}</span>
             <span className="font-medium text-primary">{progress}%</span>
           </div>
-          <div className="h-3 bg-muted rounded-full overflow-hidden">
+          <div className="h-2.5 sm:h-3 bg-muted rounded-full overflow-hidden">
             <div className="h-full bg-primary transition-all duration-500 rounded-full" style={{ width: `${progress}%` }} />
           </div>
         </div>
 
         {progress === 100 && (
-          <div className="p-4 bg-status-safe/10 border border-status-safe/30 rounded-xl text-center">
-            <Check className="w-8 h-8 text-status-safe mx-auto mb-2" />
-            <p className="text-status-safe font-semibold">{labels.complete[language] || labels.complete.en}</p>
+          <div className="p-3 sm:p-4 bg-status-safe/10 border border-status-safe/30 rounded-xl text-center">
+            <Check className="w-6 h-6 sm:w-8 sm:h-8 text-status-safe mx-auto mb-2" />
+            <p className="text-sm sm:text-base text-status-safe font-semibold">{labels.complete[language] || labels.complete.en}</p>
           </div>
         )}
 
         {/* Ritual List */}
-        <div className="space-y-3">
+        <div className="space-y-2.5 sm:space-y-3">
           {MANASIK_RITUALS.map((ritual) => {
             const isCompleted = completedSteps.includes(ritual.id);
             const isUnlocked = isStepUnlocked(ritual.order);
@@ -97,20 +97,20 @@ const PreparePage = () => {
                 }`}
                 onClick={() => isUnlocked && navigate(`/prepare/${ritual.id}`)}
               >
-                <CardContent className="p-4 flex items-center gap-4">
-                  <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${
+                <CardContent className="p-3 sm:p-4 flex items-center gap-3 sm:gap-4">
+                  <div className={`flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-sm sm:text-base ${
                     isCompleted ? "bg-status-safe text-white" :
                     isUnlocked ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
                   }`}>
-                    {isCompleted ? <Check className="w-5 h-5" /> :
-                     !isUnlocked ? <Lock className="w-4 h-4" /> :
+                    {isCompleted ? <Check className="w-4 h-4 sm:w-5 sm:h-5" /> :
+                     !isUnlocked ? <Lock className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> :
                      <span className="font-semibold">{ritual.order}</span>}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className={`font-semibold ${isCompleted ? "text-status-safe" : "text-foreground"}`}>
+                    <p className={`font-semibold text-sm sm:text-base ${isCompleted ? "text-status-safe" : "text-foreground"}`}>
                       {ritual.title[language] || ritual.title.en}
                     </p>
-                    <p className="text-sm text-muted-foreground truncate">
+                    <p className="text-xs sm:text-sm text-muted-foreground truncate">
                       {!isUnlocked ? (labels.locked[language] || labels.locked.en) : (ritual.description[language] || ritual.description.en)}
                     </p>
                   </div>
@@ -118,10 +118,10 @@ const PreparePage = () => {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className={`flex-shrink-0 ${isCompleted ? "text-status-safe" : ""}`}
+                      className={`flex-shrink-0 h-9 w-9 sm:h-10 sm:w-10 p-0 ${isCompleted ? "text-status-safe" : ""}`}
                       onClick={(e) => toggleComplete(ritual.id, e)}
                     >
-                      {isCompleted ? <Check className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
+                      {isCompleted ? <Check className="w-4 h-4 sm:w-5 sm:h-5" /> : <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />}
                     </Button>
                   )}
                 </CardContent>

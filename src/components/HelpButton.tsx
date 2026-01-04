@@ -74,17 +74,17 @@ export const HelpButton = () => {
       size="lg"
       variant={isConnected ? "secondary" : "default"}
       className={`
-        w-full h-touch-lg rounded-xl text-lg font-semibold
-        flex items-center justify-center gap-3
+        w-full h-12 sm:h-14 rounded-xl text-base sm:text-lg font-semibold
+        flex items-center justify-center gap-2.5 sm:gap-3
         ${isConnected ? "bg-secondary" : "bg-primary hover:bg-primary/90"}
       `}
     >
       {isConnecting ? (
-        <Loader2 className="w-6 h-6 animate-spin" />
+        <Loader2 className="w-5 h-5 sm:w-6 sm:h-6 animate-spin" />
       ) : isConnected ? (
-        <MicOff className="w-6 h-6" />
+        <MicOff className="w-5 h-5 sm:w-6 sm:h-6" />
       ) : (
-        <Mic className="w-6 h-6" />
+        <Mic className="w-5 h-5 sm:w-6 sm:h-6" />
       )}
       <span>
         {isConnecting

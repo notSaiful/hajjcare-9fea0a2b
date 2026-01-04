@@ -60,19 +60,19 @@ export const FamilyGroupPanel = () => {
   if (!isAuthenticated) {
     return (
       <Card className="bg-card/50 backdrop-blur border-border/50">
-        <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <Users className="h-5 w-5 text-primary" />
+        <CardHeader className="pb-2 sm:pb-3 px-4 sm:px-6">
+          <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+            <Users className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
             {t("familyGroup")}
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="text-center py-4">
-            <Lock className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-            <p className="text-sm text-muted-foreground mb-3">
+        <CardContent className="px-4 sm:px-6">
+          <div className="text-center py-3 sm:py-4">
+            <Lock className="w-7 h-7 sm:w-8 sm:h-8 text-muted-foreground mx-auto mb-2" />
+            <p className="text-xs sm:text-sm text-muted-foreground mb-3">
               {isRTL ? "سجل دخولك للانضمام لمجموعة عائلية" : "Sign in to join a family group"}
             </p>
-            <Button onClick={() => navigate("/auth")} size="sm">
+            <Button onClick={() => navigate("/auth")} size="sm" className="h-9 sm:h-10">
               {isRTL ? "تسجيل الدخول" : "Sign In"}
             </Button>
           </div>
@@ -84,62 +84,64 @@ export const FamilyGroupPanel = () => {
   if (!group) {
     return (
       <Card className="bg-card/50 backdrop-blur border-border/50">
-        <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <Users className="h-5 w-5 text-primary" />
+        <CardHeader className="pb-2 sm:pb-3 px-4 sm:px-6">
+          <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+            <Users className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
             {t("familyGroup")}
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-3 sm:space-y-4 px-4 sm:px-6">
           {!showCreateForm && !showJoinForm ? (
             <div className="flex gap-2">
               <Button 
                 variant="outline" 
-                className="flex-1"
+                className="flex-1 h-10 sm:h-11 text-sm"
                 onClick={() => setShowCreateForm(true)}
               >
-                <Plus className="h-4 w-4 mr-2" />
+                <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
                 {t("create")}
               </Button>
               <Button 
                 variant="outline" 
-                className="flex-1"
+                className="flex-1 h-10 sm:h-11 text-sm"
                 onClick={() => setShowJoinForm(true)}
               >
-                <UserPlus className="h-4 w-4 mr-2" />
+                <UserPlus className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
                 {t("join")}
               </Button>
             </div>
           ) : showCreateForm ? (
-            <div className="space-y-3">
+            <div className="space-y-2.5 sm:space-y-3">
               <Input
                 placeholder={t("groupName")}
                 value={groupName}
                 onChange={(e) => setGroupName(e.target.value)}
                 dir={isRTL ? "rtl" : "ltr"}
+                className="h-10 sm:h-11"
               />
               <div className="flex gap-2">
-                <Button onClick={handleCreate} disabled={isLoading} className="flex-1">
+                <Button onClick={handleCreate} disabled={isLoading} className="flex-1 h-10 sm:h-11">
                   {t("create")}
                 </Button>
-                <Button variant="ghost" onClick={() => setShowCreateForm(false)}>
+                <Button variant="ghost" onClick={() => setShowCreateForm(false)} className="h-10 sm:h-11">
                   {t("cancel")}
                 </Button>
               </div>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-2.5 sm:space-y-3">
               <Input
                 placeholder={t("inviteCode")}
                 value={inviteCode}
                 onChange={(e) => setInviteCode(e.target.value)}
                 dir="ltr"
+                className="h-10 sm:h-11"
               />
               <div className="flex gap-2">
-                <Button onClick={handleJoin} disabled={isLoading} className="flex-1">
+                <Button onClick={handleJoin} disabled={isLoading} className="flex-1 h-10 sm:h-11">
                   {t("join")}
                 </Button>
-                <Button variant="ghost" onClick={() => setShowJoinForm(false)}>
+                <Button variant="ghost" onClick={() => setShowJoinForm(false)} className="h-10 sm:h-11">
                   {t("cancel")}
                 </Button>
               </div>
@@ -152,31 +154,31 @@ export const FamilyGroupPanel = () => {
 
   return (
     <Card className="bg-card/50 backdrop-blur border-border/50">
-      <CardHeader className="pb-3">
+      <CardHeader className="pb-2 sm:pb-3 px-4 sm:px-6">
         <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <Users className="h-5 w-5 text-primary" />
+          <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+            <Users className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
             {group.name}
           </CardTitle>
-          <div className="flex gap-2">
-            <Button variant="ghost" size="icon" onClick={copyInviteLink}>
-              <Copy className="h-4 w-4" />
+          <div className="flex gap-1 sm:gap-2">
+            <Button variant="ghost" size="icon" onClick={copyInviteLink} className="h-8 w-8 sm:h-9 sm:w-9">
+              <Copy className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             </Button>
-            <Button variant="ghost" size="icon" onClick={leaveGroup}>
-              <LogOut className="h-4 w-4" />
+            <Button variant="ghost" size="icon" onClick={leaveGroup} className="h-8 w-8 sm:h-9 sm:w-9">
+              <LogOut className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             </Button>
           </div>
         </div>
-        <p className="text-xs text-muted-foreground">
+        <p className="text-[11px] sm:text-xs text-muted-foreground">
           {t("inviteCode")}: <span className="font-mono">{group.invite_code}</span>
         </p>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-4 sm:px-6">
         <div className="space-y-2">
-          <p className="text-sm font-medium text-muted-foreground">
+          <p className="text-xs sm:text-sm font-medium text-muted-foreground">
             {t("members")} ({members.length})
           </p>
-          <div className="space-y-2 max-h-48 overflow-y-auto">
+          <div className="space-y-1.5 sm:space-y-2 max-h-40 sm:max-h-48 overflow-y-auto">
             {members.map((member) => {
               const location = memberLocations.find(l => l.member_id === member.member_id);
               const isMe = member.member_id === memberId || member.user_id === memberId;
@@ -184,18 +186,18 @@ export const FamilyGroupPanel = () => {
               return (
                 <div 
                   key={member.id || member.member_id} 
-                  className={`flex items-center justify-between p-2 rounded-lg ${isMe ? "bg-primary/10" : "bg-muted/50"}`}
+                  className={`flex items-center justify-between p-2 sm:p-2.5 rounded-lg ${isMe ? "bg-primary/10" : "bg-muted/50"}`}
                 >
                   <div className="flex items-center gap-2">
-                    <div className={`w-2 h-2 rounded-full ${location ? "bg-green-500" : "bg-muted-foreground"}`} />
-                    <span className="text-sm font-medium">
+                    <div className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${location ? "bg-green-500" : "bg-muted-foreground"}`} />
+                    <span className="text-xs sm:text-sm font-medium">
                       {member.member_name}
-                      {isMe && <span className="text-xs text-muted-foreground ml-1">({t("you")})</span>}
+                      {isMe && <span className="text-[10px] sm:text-xs text-muted-foreground ml-1">({t("you")})</span>}
                     </span>
                   </div>
                   {location && (
-                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                      <MapPin className="h-3 w-3" />
+                    <div className="flex items-center gap-1 text-[10px] sm:text-xs text-muted-foreground">
+                      <MapPin className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                       <span>{getStageLabel(location.current_stage)}</span>
                     </div>
                   )}
