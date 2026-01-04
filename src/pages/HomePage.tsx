@@ -39,7 +39,7 @@ const HomePage = () => {
     <div className="min-h-screen bg-background" dir={isRTL ? "rtl" : "ltr"}>
       <SimpleHeader />
 
-      <main className="container max-w-lg mx-auto px-4 py-6 space-y-6">
+      <main className="container max-w-2xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
         {/* 1. Current Status - Most prominent */}
         <div className="animate-fade-in">
           <StatusBadge status={status} className="w-full" />

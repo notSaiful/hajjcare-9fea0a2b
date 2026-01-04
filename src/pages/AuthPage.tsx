@@ -116,40 +116,40 @@ const AuthPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4" dir={isRTL ? "rtl" : "ltr"}>
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4 py-8 sm:p-6" dir={isRTL ? "rtl" : "ltr"}>
       <div className="absolute inset-0 islamic-pattern opacity-20 pointer-events-none" />
       
-      <div className="mb-6 animate-fade-up">
-        <img src={logo} alt="Hajj Guide" className="w-24 h-24 rounded-full shadow-glow" />
+      <div className="mb-4 sm:mb-6 animate-fade-up">
+        <img src={logo} alt="Hajj Guide" className="w-20 h-20 sm:w-24 sm:h-24 rounded-full shadow-glow" />
       </div>
       
-      <Card className="w-full max-w-md bg-card/90 backdrop-blur shadow-elevated animate-fade-up" style={{ animationDelay: "100ms" }}>
-        <CardHeader className="text-center pb-2">
-          <CardTitle className="font-arabic text-2xl">
+      <Card className="w-full max-w-sm sm:max-w-md bg-card/90 backdrop-blur shadow-elevated animate-fade-up" style={{ animationDelay: "100ms" }}>
+        <CardHeader className="text-center pb-2 px-4 sm:px-6">
+          <CardTitle className="font-arabic text-xl sm:text-2xl">
             {isSignUp 
               ? (isRTL ? "إنشاء حساب" : "Create Account") 
               : (isRTL ? "تسجيل الدخول" : "Sign In")
             }
           </CardTitle>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-xs sm:text-sm text-muted-foreground">
             {isSignUp 
               ? (isRTL ? "انضم إلى دليل الحج الذكي" : "Join the AI Hajj Guide") 
               : (isRTL ? "أهلاً بعودتك" : "Welcome back")
             }
           </p>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+        <CardContent className="px-4 sm:px-6">
+          <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
             {isSignUp && (
-              <div className="space-y-2">
+              <div className="space-y-1.5 sm:space-y-2">
                 <div className="relative">
-                  <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     type="text"
                     placeholder={isRTL ? "الاسم الكامل" : "Full Name"}
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    className="pl-10"
+                    className="pl-10 h-11 sm:h-12 text-base"
                     dir={isRTL ? "rtl" : "ltr"}
                   />
                 </div>
@@ -159,15 +159,15 @@ const AuthPage = () => {
               </div>
             )}
             
-            <div className="space-y-2">
+            <div className="space-y-1.5 sm:space-y-2">
               <div className="relative">
-                <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   type="email"
                   placeholder={isRTL ? "البريد الإلكتروني" : "Email"}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 h-11 sm:h-12 text-base"
                   dir="ltr"
                 />
               </div>
@@ -176,15 +176,15 @@ const AuthPage = () => {
               )}
             </div>
             
-            <div className="space-y-2">
+            <div className="space-y-1.5 sm:space-y-2">
               <div className="relative">
-                <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   type="password"
                   placeholder={isRTL ? "كلمة المرور" : "Password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 h-11 sm:h-12 text-base"
                   dir="ltr"
                 />
               </div>
@@ -193,7 +193,7 @@ const AuthPage = () => {
               )}
             </div>
             
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            <Button type="submit" className="w-full h-11 sm:h-12 text-base" disabled={isLoading}>
               {isLoading ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
               ) : isSignUp ? (
