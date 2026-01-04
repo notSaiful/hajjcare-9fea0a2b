@@ -44,7 +44,32 @@ type TranslationKey =
   | "members"
   | "you"
   | "copied"
-  | "inviteLinkCopied";
+  | "inviteLinkCopied"
+  // New government-grade keys
+  | "statusSafe"
+  | "statusAssistance"
+  | "statusEmergency"
+  | "whatToDoNow"
+  | "needHelp"
+  | "helpConnecting"
+  | "helpConnected"
+  | "helpSpeakNow"
+  | "helpEndCall"
+  | "helpError"
+  | "helpTryAgain"
+  | "emergency"
+  | "emergencyConfirmTitle"
+  | "emergencyConfirmDesc"
+  | "emergencyConfirm"
+  | "preparation"
+  | "signIn"
+  | "signOut"
+  | "noUpdateMeansNormal"
+  | "familyStatus"
+  | "lastUpdate"
+  | "preparationProgress"
+  | "stepComplete"
+  | "stepPending";
 
 const translations: Record<Language, Record<TranslationKey, string>> = {
   en: {
@@ -81,6 +106,30 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     you: "you",
     copied: "Copied!",
     inviteLinkCopied: "Invite link copied to clipboard",
+    statusSafe: "You are Safe",
+    statusAssistance: "Assistance Active",
+    statusEmergency: "Emergency Being Managed",
+    whatToDoNow: "What to do now",
+    needHelp: "Need Help",
+    helpConnecting: "Connecting...",
+    helpConnected: "Connected",
+    helpSpeakNow: "You can speak now",
+    helpEndCall: "End Call",
+    helpError: "Connection Error",
+    helpTryAgain: "Please try again",
+    emergency: "Emergency",
+    emergencyConfirmTitle: "Confirm Emergency",
+    emergencyConfirmDesc: "This will alert emergency services. Only use for real emergencies.",
+    emergencyConfirm: "Yes, I Need Emergency Help",
+    preparation: "Preparation",
+    signIn: "Sign In",
+    signOut: "Sign Out",
+    noUpdateMeansNormal: "No update means everything is normal",
+    familyStatus: "Family Status",
+    lastUpdate: "Last update",
+    preparationProgress: "Preparation Progress",
+    stepComplete: "Complete",
+    stepPending: "Pending",
   },
   ar: {
     hajjGuide: "دليل الحج",
@@ -116,6 +165,30 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     you: "أنت",
     copied: "تم النسخ!",
     inviteLinkCopied: "تم نسخ رابط الدعوة",
+    statusSafe: "أنت بأمان",
+    statusAssistance: "المساعدة جارية",
+    statusEmergency: "جاري التعامل مع الطوارئ",
+    whatToDoNow: "ما يجب فعله الآن",
+    needHelp: "أحتاج مساعدة",
+    helpConnecting: "جاري الاتصال...",
+    helpConnected: "تم الاتصال",
+    helpSpeakNow: "يمكنك التحدث الآن",
+    helpEndCall: "إنهاء المكالمة",
+    helpError: "خطأ في الاتصال",
+    helpTryAgain: "يرجى المحاولة مجدداً",
+    emergency: "طوارئ",
+    emergencyConfirmTitle: "تأكيد الطوارئ",
+    emergencyConfirmDesc: "سيتم تنبيه خدمات الطوارئ. استخدم فقط للحالات الحقيقية.",
+    emergencyConfirm: "نعم، أحتاج مساعدة طارئة",
+    preparation: "التحضير",
+    signIn: "تسجيل الدخول",
+    signOut: "تسجيل الخروج",
+    noUpdateMeansNormal: "عدم وجود تحديث يعني أن كل شيء طبيعي",
+    familyStatus: "حالة العائلة",
+    lastUpdate: "آخر تحديث",
+    preparationProgress: "تقدم التحضير",
+    stepComplete: "مكتمل",
+    stepPending: "قيد الانتظار",
   },
   ur: {
     hajjGuide: "حج گائیڈ",
@@ -151,6 +224,30 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     you: "آپ",
     copied: "کاپی ہوگیا!",
     inviteLinkCopied: "دعوتی لنک کاپی ہوگیا",
+    statusSafe: "آپ محفوظ ہیں",
+    statusAssistance: "مدد جاری ہے",
+    statusEmergency: "ایمرجنسی کا انتظام ہو رہا ہے",
+    whatToDoNow: "اب کیا کریں",
+    needHelp: "مدد چاہیے",
+    helpConnecting: "جڑ رہا ہے...",
+    helpConnected: "جڑ گیا",
+    helpSpeakNow: "اب بولیں",
+    helpEndCall: "کال ختم کریں",
+    helpError: "کنکشن میں خرابی",
+    helpTryAgain: "دوبارہ کوشش کریں",
+    emergency: "ایمرجنسی",
+    emergencyConfirmTitle: "ایمرجنسی کی تصدیق",
+    emergencyConfirmDesc: "ایمرجنسی سروسز کو الرٹ کیا جائے گا۔ صرف اصل ایمرجنسی کے لیے استعمال کریں۔",
+    emergencyConfirm: "ہاں، مجھے فوری مدد چاہیے",
+    preparation: "تیاری",
+    signIn: "سائن ان",
+    signOut: "سائن آؤٹ",
+    noUpdateMeansNormal: "کوئی اپڈیٹ نہ ہونے کا مطلب سب ٹھیک ہے",
+    familyStatus: "خاندان کی حالت",
+    lastUpdate: "آخری اپڈیٹ",
+    preparationProgress: "تیاری کی پیشرفت",
+    stepComplete: "مکمل",
+    stepPending: "زیر التواء",
   },
   hi: {
     hajjGuide: "हज गाइड",
@@ -186,6 +283,30 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     you: "आप",
     copied: "कॉपी किया!",
     inviteLinkCopied: "आमंत्रण लिंक कॉपी किया गया",
+    statusSafe: "आप सुरक्षित हैं",
+    statusAssistance: "सहायता सक्रिय",
+    statusEmergency: "आपातकाल का प्रबंधन हो रहा है",
+    whatToDoNow: "अभी क्या करें",
+    needHelp: "मदद चाहिए",
+    helpConnecting: "जुड़ रहा है...",
+    helpConnected: "जुड़ गया",
+    helpSpeakNow: "अब बोलें",
+    helpEndCall: "कॉल समाप्त करें",
+    helpError: "कनेक्शन त्रुटि",
+    helpTryAgain: "पुनः प्रयास करें",
+    emergency: "आपातकाल",
+    emergencyConfirmTitle: "आपातकाल की पुष्टि",
+    emergencyConfirmDesc: "आपातकालीन सेवाओं को सूचित किया जाएगा। केवल वास्तविक आपात स्थिति के लिए उपयोग करें।",
+    emergencyConfirm: "हाँ, मुझे आपातकालीन मदद चाहिए",
+    preparation: "तैयारी",
+    signIn: "साइन इन",
+    signOut: "साइन आउट",
+    noUpdateMeansNormal: "कोई अपडेट न होने का मतलब सब ठीक है",
+    familyStatus: "परिवार की स्थिति",
+    lastUpdate: "अंतिम अपडेट",
+    preparationProgress: "तैयारी की प्रगति",
+    stepComplete: "पूर्ण",
+    stepPending: "लंबित",
   },
   tr: {
     hajjGuide: "Hac Rehberi",
@@ -221,6 +342,30 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     you: "siz",
     copied: "Kopyalandı!",
     inviteLinkCopied: "Davet linki kopyalandı",
+    statusSafe: "Güvendesiniz",
+    statusAssistance: "Yardım Aktif",
+    statusEmergency: "Acil Durum Yönetiliyor",
+    whatToDoNow: "Şimdi ne yapmalı",
+    needHelp: "Yardım Lazım",
+    helpConnecting: "Bağlanıyor...",
+    helpConnected: "Bağlandı",
+    helpSpeakNow: "Şimdi konuşabilirsiniz",
+    helpEndCall: "Aramayı Bitir",
+    helpError: "Bağlantı Hatası",
+    helpTryAgain: "Lütfen tekrar deneyin",
+    emergency: "Acil Durum",
+    emergencyConfirmTitle: "Acil Durumu Onayla",
+    emergencyConfirmDesc: "Acil servisler uyarılacak. Sadece gerçek acil durumlar için kullanın.",
+    emergencyConfirm: "Evet, Acil Yardım Lazım",
+    preparation: "Hazırlık",
+    signIn: "Giriş Yap",
+    signOut: "Çıkış Yap",
+    noUpdateMeansNormal: "Güncelleme olmaması her şeyin yolunda olduğu anlamına gelir",
+    familyStatus: "Aile Durumu",
+    lastUpdate: "Son güncelleme",
+    preparationProgress: "Hazırlık İlerlemesi",
+    stepComplete: "Tamamlandı",
+    stepPending: "Beklemede",
   },
   ru: {
     hajjGuide: "Гид по Хаджу",
@@ -256,6 +401,30 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     you: "вы",
     copied: "Скопировано!",
     inviteLinkCopied: "Ссылка скопирована",
+    statusSafe: "Вы в безопасности",
+    statusAssistance: "Помощь активна",
+    statusEmergency: "Экстренная ситуация управляется",
+    whatToDoNow: "Что делать сейчас",
+    needHelp: "Нужна помощь",
+    helpConnecting: "Подключение...",
+    helpConnected: "Подключено",
+    helpSpeakNow: "Говорите сейчас",
+    helpEndCall: "Завершить звонок",
+    helpError: "Ошибка подключения",
+    helpTryAgain: "Попробуйте снова",
+    emergency: "Экстренная ситуация",
+    emergencyConfirmTitle: "Подтвердите экстренную ситуацию",
+    emergencyConfirmDesc: "Экстренные службы будут уведомлены. Используйте только для реальных экстренных ситуаций.",
+    emergencyConfirm: "Да, мне нужна экстренная помощь",
+    preparation: "Подготовка",
+    signIn: "Войти",
+    signOut: "Выйти",
+    noUpdateMeansNormal: "Отсутствие обновлений означает, что все в порядке",
+    familyStatus: "Статус семьи",
+    lastUpdate: "Последнее обновление",
+    preparationProgress: "Прогресс подготовки",
+    stepComplete: "Завершено",
+    stepPending: "Ожидается",
   },
 };
 

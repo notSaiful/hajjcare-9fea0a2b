@@ -4,7 +4,9 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from "@/contexts/LanguageContext";
-import Index from "./pages/Index";
+import HomePage from "./pages/HomePage";
+import PreparePage from "./pages/PreparePage";
+import FamilyViewPage from "./pages/FamilyViewPage";
 import MapPage from "./pages/MapPage";
 import AuthPage from "./pages/AuthPage";
 import FamilyPage from "./pages/FamilyPage";
@@ -20,10 +22,12 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/auth" element={<AuthPage />} />
-            <Route path="/map" element={<MapPage />} />
+            <Route path="/" element={<HomePage />} />
+            <Route path="/prepare" element={<PreparePage />} />
+            <Route path="/family-status" element={<FamilyViewPage />} />
             <Route path="/family" element={<FamilyPage />} />
+            <Route path="/map" element={<MapPage />} />
+            <Route path="/auth" element={<AuthPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
