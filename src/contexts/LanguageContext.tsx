@@ -46,6 +46,7 @@ type TranslationKey =
   | "copied"
   | "inviteLinkCopied"
   // New government-grade keys
+  | "currentStatus"
   | "statusSafe"
   | "statusAssistance"
   | "statusEmergency"
@@ -106,6 +107,7 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     you: "you",
     copied: "Copied!",
     inviteLinkCopied: "Invite link copied to clipboard",
+    currentStatus: "Current Status",
     statusSafe: "You are Safe",
     statusAssistance: "Assistance Active",
     statusEmergency: "Emergency Being Managed",
@@ -165,6 +167,7 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     you: "أنت",
     copied: "تم النسخ!",
     inviteLinkCopied: "تم نسخ رابط الدعوة",
+    currentStatus: "الحالة الحالية",
     statusSafe: "أنت بأمان",
     statusAssistance: "المساعدة جارية",
     statusEmergency: "جاري التعامل مع الطوارئ",
@@ -224,6 +227,7 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     you: "آپ",
     copied: "کاپی ہوگیا!",
     inviteLinkCopied: "دعوتی لنک کاپی ہوگیا",
+    currentStatus: "موجودہ حالت",
     statusSafe: "آپ محفوظ ہیں",
     statusAssistance: "مدد جاری ہے",
     statusEmergency: "ایمرجنسی کا انتظام ہو رہا ہے",
@@ -283,6 +287,7 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     you: "आप",
     copied: "कॉपी किया!",
     inviteLinkCopied: "आमंत्रण लिंक कॉपी किया गया",
+    currentStatus: "वर्तमान स्थिति",
     statusSafe: "आप सुरक्षित हैं",
     statusAssistance: "सहायता सक्रिय",
     statusEmergency: "आपातकाल का प्रबंधन हो रहा है",
@@ -342,6 +347,7 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     you: "siz",
     copied: "Kopyalandı!",
     inviteLinkCopied: "Davet linki kopyalandı",
+    currentStatus: "Mevcut Durum",
     statusSafe: "Güvendesiniz",
     statusAssistance: "Yardım Aktif",
     statusEmergency: "Acil Durum Yönetiliyor",
@@ -401,6 +407,7 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     you: "вы",
     copied: "Скопировано!",
     inviteLinkCopied: "Ссылка скопирована",
+    currentStatus: "Текущий статус",
     statusSafe: "Вы в безопасности",
     statusAssistance: "Помощь активна",
     statusEmergency: "Экстренная ситуация управляется",

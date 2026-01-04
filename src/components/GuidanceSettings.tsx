@@ -84,38 +84,61 @@ export const GuidanceSettings = () => {
   };
 
   return (
-    <Card className="border border-border">
+    <Card className="border border-border/60 rounded-2xl overflow-hidden bg-card/80 backdrop-blur-sm">
       <CardContent className="p-0">
+        {/* Collapsible Header */}
         <Button
           variant="ghost"
-          className="w-full flex items-center justify-between p-4 h-auto"
+          className="
+            w-full flex items-center justify-between 
+            p-4 sm:p-5 h-auto 
+            rounded-none
+            hover:bg-muted/50
+            transition-colors duration-300
+          "
           onClick={() => setIsExpanded(!isExpanded)}
         >
           <div className="flex items-center gap-3">
-            <Settings className="w-5 h-5 text-muted-foreground" />
-            <span className="font-medium">{labels.settings[language] || labels.settings.en}</span>
+            <div className="w-9 h-9 rounded-xl bg-muted/60 flex items-center justify-center">
+              <Settings className="w-4 h-4 text-muted-foreground" />
+            </div>
+            <span className="font-medium text-sm sm:text-base">
+              {labels.settings[language] || labels.settings.en}
+            </span>
           </div>
-          {isExpanded ? (
-            <ChevronUp className="w-5 h-5 text-muted-foreground" />
-          ) : (
-            <ChevronDown className="w-5 h-5 text-muted-foreground" />
-          )}
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center">
+            {isExpanded ? (
+              <ChevronUp className="w-5 h-5 text-muted-foreground transition-transform duration-300" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-muted-foreground transition-transform duration-300" />
+            )}
+          </div>
         </Button>
 
-        {isExpanded && (
-          <div className="px-4 pb-4 space-y-4 border-t border-border pt-4">
+        {/* Expandable Content */}
+        <div 
+          className={`
+            overflow-hidden transition-all duration-300 ease-out
+            ${isExpanded ? "max-h-96 opacity-100" : "max-h-0 opacity-0"}
+          `}
+        >
+          <div className="px-4 sm:px-5 pb-5 space-y-5 border-t border-border/50 pt-5">
             {/* Phase Selector */}
-            <div className="space-y-2">
-              <Label className="text-sm font-medium">
+            <div className="space-y-2.5">
+              <Label className="text-sm font-medium text-muted-foreground">
                 {labels.phase[language] || labels.phase.en}
               </Label>
               <Select value={currentPhase} onValueChange={handlePhaseChange}>
-                <SelectTrigger className="w-full">
+                <SelectTrigger className="w-full h-12 rounded-xl border-border/60 bg-background/50 focus:bg-background transition-colors duration-300">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="rounded-xl border-border/50 bg-popover/95 backdrop-blur-md">
                   {PHASES.map((phase) => (
-                    <SelectItem key={phase.value} value={phase.value}>
+                    <SelectItem 
+                      key={phase.value} 
+                      value={phase.value}
+                      className="h-11 rounded-lg cursor-pointer"
+                    >
                       {phase.label[language] || phase.label.en}
                     </SelectItem>
                   ))}
@@ -124,22 +147,23 @@ export const GuidanceSettings = () => {
             </div>
 
             {/* Elderly Toggle */}
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
+            <div className="flex items-center justify-between gap-4 p-3 sm:p-4 bg-muted/30 rounded-xl border border-border/30">
+              <div className="space-y-1">
                 <Label className="text-sm font-medium">
                   {labels.elderly[language] || labels.elderly.en}
                 </Label>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-muted-foreground leading-relaxed">
                   {labels.elderlyDesc[language] || labels.elderlyDesc.en}
                 </p>
               </div>
               <Switch
                 checked={isElderly}
                 onCheckedChange={toggleElderly}
+                className="data-[state=checked]:bg-primary"
               />
             </div>
           </div>
-        )}
+        </div>
       </CardContent>
     </Card>
   );
