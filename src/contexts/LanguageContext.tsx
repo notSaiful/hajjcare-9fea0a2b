@@ -33,7 +33,18 @@ type TranslationKey =
   | "unableToLoadMap"
   | "liveMap"
   | "backToChat"
-  | "hajjLocations";
+  | "hajjLocations"
+  | "familyGroup"
+  | "create"
+  | "join"
+  | "yourName"
+  | "groupName"
+  | "inviteCode"
+  | "cancel"
+  | "members"
+  | "you"
+  | "copied"
+  | "inviteLinkCopied";
 
 const translations: Record<Language, Record<TranslationKey, string>> = {
   en: {
@@ -59,6 +70,17 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     liveMap: "Live Map",
     backToChat: "Back to Chat",
     hajjLocations: "Hajj Locations",
+    familyGroup: "Family Group",
+    create: "Create",
+    join: "Join",
+    yourName: "Your name",
+    groupName: "Group name",
+    inviteCode: "Invite code",
+    cancel: "Cancel",
+    members: "Members",
+    you: "you",
+    copied: "Copied!",
+    inviteLinkCopied: "Invite link copied to clipboard",
   },
   ar: {
     hajjGuide: "دليل الحج",
@@ -83,6 +105,17 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     liveMap: "الخريطة المباشرة",
     backToChat: "العودة للمحادثة",
     hajjLocations: "مواقع الحج",
+    familyGroup: "مجموعة العائلة",
+    create: "إنشاء",
+    join: "انضمام",
+    yourName: "اسمك",
+    groupName: "اسم المجموعة",
+    inviteCode: "رمز الدعوة",
+    cancel: "إلغاء",
+    members: "الأعضاء",
+    you: "أنت",
+    copied: "تم النسخ!",
+    inviteLinkCopied: "تم نسخ رابط الدعوة",
   },
   ur: {
     hajjGuide: "حج گائیڈ",
@@ -107,6 +140,17 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     liveMap: "براہ راست نقشہ",
     backToChat: "چیٹ پر واپس",
     hajjLocations: "حج کے مقامات",
+    familyGroup: "خاندانی گروپ",
+    create: "بنائیں",
+    join: "شامل ہوں",
+    yourName: "آپ کا نام",
+    groupName: "گروپ کا نام",
+    inviteCode: "دعوتی کوڈ",
+    cancel: "منسوخ",
+    members: "ممبران",
+    you: "آپ",
+    copied: "کاپی ہوگیا!",
+    inviteLinkCopied: "دعوتی لنک کاپی ہوگیا",
   },
   hi: {
     hajjGuide: "हज गाइड",
@@ -131,6 +175,17 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     liveMap: "लाइव मैप",
     backToChat: "चैट पर वापस",
     hajjLocations: "हज स्थान",
+    familyGroup: "परिवार समूह",
+    create: "बनाएं",
+    join: "जुड़ें",
+    yourName: "आपका नाम",
+    groupName: "समूह का नाम",
+    inviteCode: "आमंत्रण कोड",
+    cancel: "रद्द करें",
+    members: "सदस्य",
+    you: "आप",
+    copied: "कॉपी किया!",
+    inviteLinkCopied: "आमंत्रण लिंक कॉपी किया गया",
   },
   tr: {
     hajjGuide: "Hac Rehberi",
@@ -155,6 +210,17 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     liveMap: "Canlı Harita",
     backToChat: "Sohbete Dön",
     hajjLocations: "Hac Mekanları",
+    familyGroup: "Aile Grubu",
+    create: "Oluştur",
+    join: "Katıl",
+    yourName: "Adınız",
+    groupName: "Grup adı",
+    inviteCode: "Davet kodu",
+    cancel: "İptal",
+    members: "Üyeler",
+    you: "siz",
+    copied: "Kopyalandı!",
+    inviteLinkCopied: "Davet linki kopyalandı",
   },
   ru: {
     hajjGuide: "Гид по Хаджу",
@@ -179,6 +245,17 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     liveMap: "Живая карта",
     backToChat: "Вернуться к чату",
     hajjLocations: "Места Хаджа",
+    familyGroup: "Семейная группа",
+    create: "Создать",
+    join: "Присоединиться",
+    yourName: "Ваше имя",
+    groupName: "Название группы",
+    inviteCode: "Код приглашения",
+    cancel: "Отмена",
+    members: "Участники",
+    you: "вы",
+    copied: "Скопировано!",
+    inviteLinkCopied: "Ссылка скопирована",
   },
 };
 

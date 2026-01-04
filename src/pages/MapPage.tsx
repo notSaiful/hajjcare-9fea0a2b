@@ -3,6 +3,7 @@ import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { useHajjLocation, HAJJ_LOCATIONS, HAJJ_STAGES } from "@/hooks/useHajjLocation";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useFamilyGroup } from "@/hooks/useFamilyGroup";
 import { Link } from "react-router-dom";
 import { 
   MapPin, 
@@ -12,7 +13,8 @@ import {
   AlertCircle, 
   ArrowLeft,
   Compass,
-  Target
+  Target,
+  Users
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -20,11 +22,21 @@ const MapPage = () => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const userMarker = useRef<mapboxgl.Marker | null>(null);
+  const familyMarkers = useRef<Map<string, mapboxgl.Marker>>(new Map());
   const { lat, lng, stage, stageInfo, error, isLoading, refresh } = useHajjLocation();
   const { t, language, isRTL } = useLanguage();
+  const { group, memberLocations, memberId, updateLocation } = useFamilyGroup();
   const [mapToken, setMapToken] = useState<string | null>(null);
   const [mapError, setMapError] = useState<string | null>(null);
   const [showInfo, setShowInfo] = useState(true);
+  const [showFamily, setShowFamily] = useState(true);
+
+  // Update family group with location
+  useEffect(() => {
+    if (group && lat && lng) {
+      updateLocation(lat, lng, stage);
+    }
+  }, [group, lat, lng, stage, updateLocation]);
 
   // Fetch Mapbox token
   useEffect(() => {
@@ -149,6 +161,57 @@ const MapPage = () => {
     });
   }, [lat, lng]);
 
+  // Update family member markers
+  useEffect(() => {
+    if (!map.current || !showFamily) return;
+
+    memberLocations.forEach((loc) => {
+      // Skip self
+      if (loc.member_id === memberId) return;
+
+      const existingMarker = familyMarkers.current.get(loc.member_id);
+      
+      if (existingMarker) {
+        existingMarker.setLngLat([loc.longitude, loc.latitude]);
+      } else {
+        const el = document.createElement("div");
+        el.innerHTML = `
+          <div style="
+            background: #3b82f6;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: bold;
+            white-space: nowrap;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            border: 2px solid white;
+          ">
+            <div style="width: 6px; height: 6px; background: white; border-radius: 50%;"></div>
+            ${loc.member_name || "Member"}
+          </div>
+        `;
+
+        const marker = new mapboxgl.Marker({ element: el })
+          .setLngLat([loc.longitude, loc.latitude])
+          .addTo(map.current!);
+        
+        familyMarkers.current.set(loc.member_id, marker);
+      }
+    });
+
+    // Remove markers for members no longer in the list
+    familyMarkers.current.forEach((marker, id) => {
+      if (!memberLocations.find(l => l.member_id === id)) {
+        marker.remove();
+        familyMarkers.current.delete(id);
+      }
+    });
+  }, [memberLocations, memberId, showFamily]);
+
   const flyToUser = () => {
     if (lat && lng && map.current) {
       map.current.flyTo({
@@ -189,6 +252,8 @@ const MapPage = () => {
     jamarat: { ar: "الجمرات", en: "Jamarat" },
   };
 
+  const otherMembers = memberLocations.filter(l => l.member_id !== memberId);
+
   return (
     <div className="h-screen w-screen relative overflow-hidden" dir={isRTL ? "rtl" : "ltr"}>
       {/* Map Container */}
@@ -223,6 +288,19 @@ const MapPage = () => {
           </Button>
         </div>
       </div>
+
+      {/* Family Toggle Button */}
+      {group && (
+        <Button
+          onClick={() => setShowFamily(!showFamily)}
+          size="sm"
+          variant={showFamily ? "default" : "secondary"}
+          className="absolute top-20 right-4 z-10 shadow-elevated gap-2"
+        >
+          <Users className="w-4 h-4" />
+          {otherMembers.length}
+        </Button>
+      )}
 
       {/* Current Location Button */}
       <Button
@@ -294,6 +372,28 @@ const MapPage = () => {
             </div>
             <MapPin className="w-5 h-5" style={{ color: stageInfo.color }} />
           </div>
+
+          {/* Family Members in Group */}
+          {group && otherMembers.length > 0 && (
+            <div className="mb-3 p-3 bg-blue-500/10 rounded-2xl">
+              <div className="flex items-center gap-2 mb-2">
+                <Users className="w-4 h-4 text-blue-500" />
+                <p className="text-xs font-medium text-blue-500">{t("familyGroup")}: {group.name}</p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {otherMembers.map((loc) => (
+                  <button
+                    key={loc.member_id}
+                    onClick={() => flyToLocation(loc.longitude, loc.latitude)}
+                    className="flex items-center gap-1 bg-blue-500/20 hover:bg-blue-500/30 px-2 py-1 rounded-full text-xs transition-colors"
+                  >
+                    <div className="w-2 h-2 bg-blue-500 rounded-full" />
+                    {loc.member_name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Next Step */}
           <div className="flex items-start gap-3 mb-3">
