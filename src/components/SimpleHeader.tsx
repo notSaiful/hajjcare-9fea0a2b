@@ -68,6 +68,11 @@ export const SimpleHeader = () => {
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild className="h-12 text-base">
+                <Link to="/rules" className="cursor-pointer">
+                  {language === "ar" ? "قواعد السلوك" : language === "ur" ? "قواعد و آداب" : language === "hi" ? "नियम और आचरण" : "Rules & Conduct"}
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild className="h-12 text-base">
                 <Link to="/family" className="cursor-pointer">
                   {t("familyGroup")}
                 </Link>

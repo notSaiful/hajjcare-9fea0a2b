@@ -7,6 +7,8 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import HomePage from "./pages/HomePage";
 import PreparePage from "./pages/PreparePage";
 import RitualDetailPage from "./pages/RitualDetailPage";
+import RulesBriefingPage from "./pages/RulesBriefingPage";
+import RulesSectionPage from "./pages/RulesSectionPage";
 import FamilyViewPage from "./pages/FamilyViewPage";
 import MapPage from "./pages/MapPage";
 import AuthPage from "./pages/AuthPage";
@@ -26,6 +28,8 @@ const App = () => (
             <Route path="/" element={<HomePage />} />
             <Route path="/prepare" element={<PreparePage />} />
             <Route path="/prepare/:ritualId" element={<RitualDetailPage />} />
+            <Route path="/rules" element={<RulesBriefingPage />} />
+            <Route path="/rules/:sectionId" element={<RulesSectionPage />} />
             <Route path="/family-status" element={<FamilyViewPage />} />
             <Route path="/family" element={<FamilyPage />} />
             <Route path="/map" element={<MapPage />} />
