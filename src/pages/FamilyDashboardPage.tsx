@@ -7,11 +7,11 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
 import { useFamilyGroup } from "@/hooks/useFamilyGroup";
 import { usePilgrimStatus } from "@/hooks/usePilgrimStatus";
-import { DASHBOARD_LABELS, PilgrimStatus } from "@/data/familyDashboardContent";
+import { DASHBOARD_LABELS, CALMING_MESSAGE, PilgrimStatus } from "@/data/familyDashboardContent";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Loader2, Users, Eye, Settings, ArrowLeft, ArrowRight } from "lucide-react";
+import { Users, Eye, Settings, ArrowLeft, ArrowRight, Shield } from "lucide-react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -31,11 +31,10 @@ const FamilyDashboardPage = () => {
   const navigate = useNavigate();
   const labels = DASHBOARD_LABELS[language];
   
-  // For family view - get family members' statuses
+  // For family view - get family members' statuses (NO timestamps per silence protocol)
   const [familyStatuses, setFamilyStatuses] = useState<Record<string, { 
     status: PilgrimStatus; 
     name: string;
-    lastUpdated: string;
     sharingEnabled: boolean;
   }>>({});
 
@@ -45,7 +44,7 @@ const FamilyDashboardPage = () => {
     }
   }, [isAuthenticated, authLoading, navigate]);
 
-  // Load family member statuses
+  // Load family member statuses - NO timestamps (silence protocol)
   useEffect(() => {
     if (!group || !members.length) return;
 
@@ -67,10 +66,10 @@ const FamilyDashboardPage = () => {
           sharingEnabled = profileData?.family_sharing_enabled ?? false;
         }
         
+        // FAIL-SAFE: Default to "normal" if no data - per silence protocol
         statuses[member.member_id] = {
           status: (location?.pilgrim_status as PilgrimStatus) || "normal",
           name: member.member_name,
-          lastUpdated: location?.updated_at || new Date().toISOString(),
           sharingEnabled,
         };
       }
@@ -81,7 +80,7 @@ const FamilyDashboardPage = () => {
     loadFamilyStatuses();
   }, [group, members, memberLocations]);
 
-  // Refresh every 60 seconds
+  // Silent background refresh - NO visual indicators
   useEffect(() => {
     const interval = setInterval(() => {
       refreshGroup();
@@ -89,10 +88,27 @@ const FamilyDashboardPage = () => {
     return () => clearInterval(interval);
   }, [refreshGroup]);
 
+  const calmingMessage = CALMING_MESSAGE[language];
+  
+  // SILENCE PROTOCOL: Show calm default state instead of loading spinners
+  // "Silence is a signal" - no activity indicators
   if (authLoading || groupLoading || statusLoading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6">
+        {/* Show calming message during any loading - no spinners */}
+        <div className="w-full max-w-md">
+          <div className="flex items-start gap-3 p-5 bg-primary/5 rounded-xl border border-primary/20">
+            <Shield className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+            <div className="space-y-2">
+              <p className="text-base font-medium text-foreground leading-snug">
+                {calmingMessage.main}
+              </p>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                {calmingMessage.secondary}
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -163,7 +179,7 @@ const FamilyDashboardPage = () => {
                 <Card className="bg-card">
                   <CardContent className="py-8 text-center">
                     <Eye className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                    <p className="text-muted-foreground">
+                    <p className="text-muted-foreground mb-6">
                       {language === "en" 
                         ? "No family members are sharing their status" 
                         : language === "ar"
@@ -171,6 +187,18 @@ const FamilyDashboardPage = () => {
                         : "کوئی فیملی ممبر اپنی حالت شیئر نہیں کر رہا"
                       }
                     </p>
+                    {/* Always show calming message */}
+                    <div className="flex items-start gap-3 p-4 bg-primary/5 rounded-xl border border-primary/20 text-left">
+                      <Shield className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium text-foreground">
+                          {calmingMessage.main}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {calmingMessage.secondary}
+                        </p>
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
               ) : (
@@ -180,7 +208,6 @@ const FamilyDashboardPage = () => {
                       key={memberId}
                       status={data.status}
                       pilgrimName={data.name}
-                      lastUpdated={data.lastUpdated}
                     />
                   ))}
                 </div>
