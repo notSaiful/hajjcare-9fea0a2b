@@ -82,6 +82,11 @@ export const SimpleHeader = () => {
                   {t("familyStatus")}
                 </Link>
               </DropdownMenuItem>
+              <DropdownMenuItem asChild className="h-12 text-base">
+                <Link to="/family-dashboard" className="cursor-pointer">
+                  {language === "ar" ? "لوحة حالة العائلة" : language === "ur" ? "فیملی اسٹیٹس ڈیش بورڈ" : language === "hi" ? "परिवार स्थिति डैशबोर्ड" : "Family Dashboard"}
+                </Link>
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
               {isAuthenticated ? (
                 <>

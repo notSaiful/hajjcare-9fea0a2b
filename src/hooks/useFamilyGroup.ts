@@ -29,6 +29,7 @@ export interface MemberLocation {
   latitude: number;
   longitude: number;
   current_stage: string | null;
+  pilgrim_status: string;
   updated_at: string;
   member_name?: string;
 }

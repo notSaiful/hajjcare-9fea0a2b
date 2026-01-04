@@ -84,6 +84,7 @@ export type Database = {
           latitude: number
           longitude: number
           member_id: string
+          pilgrim_status: string
           updated_at: string
           user_id: string | null
         }
@@ -94,6 +95,7 @@ export type Database = {
           latitude: number
           longitude: number
           member_id: string
+          pilgrim_status?: string
           updated_at?: string
           user_id?: string | null
         }
@@ -104,6 +106,7 @@ export type Database = {
           latitude?: number
           longitude?: number
           member_id?: string
+          pilgrim_status?: string
           updated_at?: string
           user_id?: string | null
         }
@@ -121,6 +124,7 @@ export type Database = {
         Row: {
           created_at: string
           emergency_contact: string | null
+          family_sharing_enabled: boolean
           full_name: string | null
           id: string
           phone: string | null
@@ -130,6 +134,7 @@ export type Database = {
         Insert: {
           created_at?: string
           emergency_contact?: string | null
+          family_sharing_enabled?: boolean
           full_name?: string | null
           id?: string
           phone?: string | null
@@ -139,6 +144,7 @@ export type Database = {
         Update: {
           created_at?: string
           emergency_contact?: string | null
+          family_sharing_enabled?: boolean
           full_name?: string | null
           id?: string
           phone?: string | null
@@ -159,6 +165,16 @@ export type Database = {
               p_group_id: string
               p_latitude: number
               p_longitude: number
+            }
+            Returns: undefined
+          }
+        | {
+            Args: {
+              p_current_stage: string
+              p_group_id: string
+              p_latitude: number
+              p_longitude: number
+              p_pilgrim_status?: string
             }
             Returns: undefined
           }
