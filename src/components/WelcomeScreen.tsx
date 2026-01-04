@@ -1,7 +1,8 @@
-import { Compass } from "lucide-react";
 import QuickActions from "./QuickActions";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { FamilyGroupPanel } from "./FamilyGroupPanel";
+import { VoiceAssistant } from "./VoiceAssistant";
+import logo from "@/assets/logo.jpeg";
 
 interface WelcomeScreenProps {
   onQuickAction: (question: string) => void;
@@ -17,10 +18,8 @@ const WelcomeScreen = ({ onQuickAction }: WelcomeScreenProps) => {
       
       {/* Logo */}
       <div className="relative mb-4 animate-fade-up">
-        <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center shadow-glow">
-          <Compass className="w-8 h-8 text-primary" />
-        </div>
-        <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-islamic-gold flex items-center justify-center">
+        <img src={logo} alt="Hajj Guide" className="w-20 h-20 rounded-full shadow-glow border-2 border-islamic-gold/30" />
+        <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-islamic-gold flex items-center justify-center shadow-sm">
           <span className="text-[10px] font-bold text-foreground">AI</span>
         </div>
       </div>
@@ -34,9 +33,14 @@ const WelcomeScreen = ({ onQuickAction }: WelcomeScreenProps) => {
       </p>
       
       {/* Subtitle */}
-      <p className="text-xs text-muted-foreground max-w-xs mb-6 animate-fade-up" style={{ animationDelay: "200ms" }}>
+      <p className="text-xs text-muted-foreground max-w-xs mb-4 animate-fade-up" style={{ animationDelay: "200ms" }}>
         {t("welcomeSubtitle")}
       </p>
+
+      {/* Voice Assistant */}
+      <div className="mb-6 animate-fade-up" style={{ animationDelay: "225ms" }}>
+        <VoiceAssistant />
+      </div>
 
       {/* Decorative Line */}
       <div className="flex items-center gap-3 mb-4 animate-fade-up" style={{ animationDelay: "250ms" }}>
