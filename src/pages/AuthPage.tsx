@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { AmbientBackground } from "@/components/AmbientBackground";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -110,38 +111,63 @@ const AuthPage = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        <AmbientBackground variant="minimal" />
+        <Loader2 className="w-8 h-8 animate-spin text-primary relative z-10" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4 py-8 sm:p-6" dir={isRTL ? "rtl" : "ltr"}>
-      <div className="absolute inset-0 islamic-pattern opacity-20 pointer-events-none" />
+    <div 
+      className="min-h-screen bg-background flex flex-col items-center justify-center px-4 py-8 sm:p-6" 
+      dir={isRTL ? "rtl" : "ltr"}
+    >
+      {/* Ambient Background */}
+      <AmbientBackground variant="warm" />
       
-      <div className="mb-4 sm:mb-6 animate-fade-up">
-        <img src={logo} alt="Hajj Guide" className="w-20 h-20 sm:w-24 sm:h-24 rounded-full shadow-glow" />
+      {/* Logo */}
+      <div className="mb-6 sm:mb-8 animate-fade-up relative z-10">
+        <div className="relative">
+          <img 
+            src={logo} 
+            alt="Hajj Guide" 
+            className="w-20 h-20 sm:w-24 sm:h-24 rounded-full shadow-elevated"
+          />
+          {/* Sacred glow */}
+          <div className="absolute inset-0 rounded-full bg-primary/15 blur-xl -z-10 animate-ambient-glow" />
+        </div>
       </div>
       
-      <Card className="w-full max-w-sm sm:max-w-md bg-card/90 backdrop-blur shadow-elevated animate-fade-up" style={{ animationDelay: "100ms" }}>
-        <CardHeader className="text-center pb-2 px-4 sm:px-6">
-          <CardTitle className="font-arabic text-xl sm:text-2xl">
+      {/* Auth Card */}
+      <Card 
+        className="
+          relative z-10
+          w-full max-w-sm sm:max-w-md 
+          bg-card/95 backdrop-blur-sm
+          border border-border/50
+          rounded-2xl
+          animate-fade-up
+        " 
+        style={{ animationDelay: "80ms", boxShadow: 'var(--shadow-elevated)' }}
+      >
+        <CardHeader className="text-center pb-2 px-5 sm:px-6 pt-6">
+          <CardTitle className="text-xl sm:text-2xl font-semibold tracking-tight">
             {isSignUp 
               ? (isRTL ? "إنشاء حساب" : "Create Account") 
               : (isRTL ? "تسجيل الدخول" : "Sign In")
             }
           </CardTitle>
-          <p className="text-xs sm:text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground mt-1">
             {isSignUp 
               ? (isRTL ? "انضم إلى دليل الحج الذكي" : "Join the AI Hajj Guide") 
               : (isRTL ? "أهلاً بعودتك" : "Welcome back")
             }
           </p>
         </CardHeader>
-        <CardContent className="px-4 sm:px-6">
-          <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
+        <CardContent className="px-5 sm:px-6 pb-6">
+          <form onSubmit={handleSubmit} className="space-y-4">
             {isSignUp && (
-              <div className="space-y-1.5 sm:space-y-2">
+              <div className="space-y-2">
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -149,17 +175,17 @@ const AuthPage = () => {
                     placeholder={isRTL ? "الاسم الكامل" : "Full Name"}
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    className="pl-10 h-11 sm:h-12 text-base"
+                    className="pl-10 h-12 sm:h-13 text-base rounded-xl border-border/60 bg-background/50 focus:bg-background transition-colors duration-300"
                     dir={isRTL ? "rtl" : "ltr"}
                   />
                 </div>
                 {errors.fullName && (
-                  <p className="text-xs text-destructive">{errors.fullName}</p>
+                  <p className="text-xs text-destructive px-1">{errors.fullName}</p>
                 )}
               </div>
             )}
             
-            <div className="space-y-1.5 sm:space-y-2">
+            <div className="space-y-2">
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -167,16 +193,16 @@ const AuthPage = () => {
                   placeholder={isRTL ? "البريد الإلكتروني" : "Email"}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10 h-11 sm:h-12 text-base"
+                  className="pl-10 h-12 sm:h-13 text-base rounded-xl border-border/60 bg-background/50 focus:bg-background transition-colors duration-300"
                   dir="ltr"
                 />
               </div>
               {errors.email && (
-                <p className="text-xs text-destructive">{errors.email}</p>
+                <p className="text-xs text-destructive px-1">{errors.email}</p>
               )}
             </div>
             
-            <div className="space-y-1.5 sm:space-y-2">
+            <div className="space-y-2">
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -184,18 +210,22 @@ const AuthPage = () => {
                   placeholder={isRTL ? "كلمة المرور" : "Password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10 h-11 sm:h-12 text-base"
+                  className="pl-10 h-12 sm:h-13 text-base rounded-xl border-border/60 bg-background/50 focus:bg-background transition-colors duration-300"
                   dir="ltr"
                 />
               </div>
               {errors.password && (
-                <p className="text-xs text-destructive">{errors.password}</p>
+                <p className="text-xs text-destructive px-1">{errors.password}</p>
               )}
             </div>
             
-            <Button type="submit" className="w-full h-11 sm:h-12 text-base" disabled={isLoading}>
+            <Button 
+              type="submit" 
+              className="w-full h-13 sm:h-14 text-base font-semibold rounded-xl transition-all duration-300" 
+              disabled={isLoading}
+            >
               {isLoading ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
+                <Loader2 className="w-5 h-5 animate-spin" />
               ) : isSignUp ? (
                 isRTL ? "إنشاء حساب" : "Sign Up"
               ) : (
@@ -204,11 +234,11 @@ const AuthPage = () => {
             </Button>
           </form>
           
-          <div className="mt-4 text-center">
+          <div className="mt-5 text-center">
             <button
               type="button"
               onClick={() => setIsSignUp(!isSignUp)}
-              className="text-sm text-primary hover:underline"
+              className="text-sm text-primary hover:text-primary/80 underline underline-offset-4 transition-colors duration-300"
             >
               {isSignUp 
                 ? (isRTL ? "لديك حساب؟ سجل دخولك" : "Have an account? Sign in") 
