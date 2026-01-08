@@ -13,6 +13,15 @@ export interface SafetyTip {
   text: Record<Language, string>;
 }
 
+export interface HadithReference {
+  text: Record<Language, string>;
+  source: string;
+}
+
+export interface ImportantRuling {
+  text: Record<Language, string>;
+}
+
 export interface Ritual {
   id: string;
   order: number;
@@ -23,6 +32,8 @@ export interface Ritual {
   mistakes: MistakeToAvoid[];
   duaGuidance: Record<Language, string>;
   safetyTips: SafetyTip[];
+  hadith?: HadithReference;
+  importantRulings?: ImportantRuling[];
 }
 
 export const MANASIK_RITUALS: Ritual[] = [
@@ -178,6 +189,39 @@ export const MANASIK_RITUALS: Ritual[] = [
           hi: "अपनी पहचान पत्र और आपातकालीन संपर्क जानकारी अपने पास रखें।",
           tr: "Kimliğinizi ve acil durum iletişim bilgilerinizi yanınızda bulundurun.",
           ru: "Держите при себе удостоверение личности и контактную информацию для экстренных случаев.",
+        },
+      },
+    ],
+    hadith: {
+      text: {
+        en: "The Prophet (peace be upon him) said: 'The reward of Hajj Mabrur (accepted Hajj) is nothing but Paradise.'",
+        ar: "قال النبي ﷺ: 'الحج المبرور ليس له جزاء إلا الجنة'",
+        ur: "نبی ﷺ نے فرمایا: 'حج مبرور (قبول شدہ حج) کا اجر صرف جنت ہے۔'",
+        hi: "नबी ﷺ ने फरमाया: 'हज मबरूर (स्वीकृत हज) का इनाम सिर्फ जन्नत है।'",
+        tr: "Peygamber ﷺ buyurdu: 'Makbul haccın mükâfatı cennettir.'",
+        ru: "Пророк ﷺ сказал: «Награда за принятый хадж — только Рай.»",
+      },
+      source: "Sahih al-Bukhari & Muslim",
+    },
+    importantRulings: [
+      {
+        text: {
+          en: "Ihram must be entered at or before the Miqat. Do not pass the Miqat without entering Ihram.",
+          ar: "يجب الإحرام عند الميقات أو قبله. لا تتجاوز الميقات دون الإحرام.",
+          ur: "احرام میقات پر یا اس سے پہلے باندھنا ضروری ہے۔ بغیر احرام کے میقات نہ گزریں۔",
+          hi: "इहराम मीकात पर या उससे पहले बांधना ज़रूरी है। बिना इहराम के मीकात न गुज़रें।",
+          tr: "İhram Mikat'ta veya öncesinde bağlanmalıdır. İhramsız Mikat'ı geçmeyin.",
+          ru: "Ихрам должен быть принят на Микате или до него. Не проходите Микат без Ихрама.",
+        },
+      },
+      {
+        text: {
+          en: "Restrictions during Ihram include: no perfume, no cutting hair/nails, no hunting, no marital relations. Please follow your Hajj group's guidance for details.",
+          ar: "محظورات الإحرام تشمل: لا عطر، لا قص شعر/أظافر، لا صيد، لا علاقات زوجية. يرجى اتباع إرشادات مجموعة الحج للتفاصيل.",
+          ur: "احرام کی پابندیوں میں شامل ہیں: کوئی خوشبو نہیں، بال/ناخن نہ کاٹیں، شکار نہیں، ازدواجی تعلقات نہیں۔ تفصیلات کے لیے اپنے حج گروپ کی رہنمائی پر عمل کریں۔",
+          hi: "इहराम की पाबंदियों में शामिल हैं: कोई खुशबू नहीं, बाल/नाखून न काटें, शिकार नहीं, वैवाहिक संबंध नहीं। विवरण के लिए अपने हज समूह के मार्गदर्शन का पालन करें।",
+          tr: "İhram yasakları şunlardır: parfüm yok, saç/tırnak kesme yok, av yok, evlilik ilişkisi yok. Ayrıntılar için hac grubunuzun rehberliğini takip edin.",
+          ru: "Ограничения во время Ихрама: нельзя использовать парфюм, стричь волосы/ногти, охотиться, иметь супружеские отношения. Следуйте указаниям группы хаджа для деталей.",
         },
       },
     ],
@@ -786,6 +830,39 @@ export const MANASIK_RITUALS: Ritual[] = [
         },
       },
     ],
+    hadith: {
+      text: {
+        en: "The Prophet (peace be upon him) said: 'Hajj is Arafat.' Meaning standing at Arafat is the essence of Hajj.",
+        ar: "قال النبي ﷺ: 'الحج عرفة'. أي أن الوقوف بعرفة هو جوهر الحج.",
+        ur: "نبی ﷺ نے فرمایا: 'حج عرفہ ہے۔' یعنی عرفات میں وقوف حج کا جوہر ہے۔",
+        hi: "नबी ﷺ ने फरमाया: 'हज अरफात है।' यानी अरफात में खड़े होना हज का सार है।",
+        tr: "Peygamber ﷺ buyurdu: 'Hac Arafat'tır.' Yani Arafat'ta vakfe haccın özüdür.",
+        ru: "Пророк ﷺ сказал: «Хадж — это Арафат.» То есть стояние на Арафате — суть хаджа.",
+      },
+      source: "Sunan al-Tirmidhi",
+    },
+    importantRulings: [
+      {
+        text: {
+          en: "Standing at Arafat is the pillar of Hajj. Without it, Hajj is not valid.",
+          ar: "الوقوف بعرفة ركن الحج. بدونه لا يصح الحج.",
+          ur: "عرفات میں وقوف حج کا رکن ہے۔ اس کے بغیر حج صحیح نہیں۔",
+          hi: "अरफात में खड़े होना हज का स्तंभ है। इसके बिना हज वैध नहीं।",
+          tr: "Arafat'ta vakfe haccın rüknüdür. Onsuz hac geçerli değildir.",
+          ru: "Стояние на Арафате — столп хаджа. Без него хадж недействителен.",
+        },
+      },
+      {
+        text: {
+          en: "You must be present at Arafat for at least a moment between noon and sunset on the 9th of Dhul Hijjah.",
+          ar: "يجب أن تكون حاضراً في عرفة ولو لحظة بين الظهر والغروب في التاسع من ذي الحجة.",
+          ur: "آپ کو 9 ذی الحجہ کو ظہر اور غروب کے درمیان کم از کم ایک لمحے کے لیے عرفات میں موجود ہونا ضروری ہے۔",
+          hi: "आपको 9 ज़िल हिज्जा को दोपहर और सूर्यास्त के बीच कम से कम एक पल के लिए अरफात में मौजूद होना ज़रूरी है।",
+          tr: "Zilhicce'nin 9'unda öğle ile güneş batımı arasında en azından bir an Arafat'ta bulunmanız gerekir.",
+          ru: "Вы должны присутствовать на Арафате хотя бы мгновение между полуднем и закатом 9-го Зуль-Хиджа.",
+        },
+      },
+    ],
   },
   {
     id: "muzdalifah",
@@ -1236,8 +1313,197 @@ export const MANASIK_RITUALS: Ritual[] = [
     ],
   },
   {
-    id: "tawaf-wida",
+    id: "qurbani-halq",
     order: 9,
+    title: {
+      en: "Qurbani & Halq/Qasr",
+      ar: "الذبح والحلق/التقصير",
+      ur: "قربانی اور حلق/قصر",
+      hi: "कुर्बानी और हलक़/क़स्र",
+      tr: "Kurban ve Traş",
+      ru: "Жертвоприношение и бритьё/стрижка",
+    },
+    description: {
+      en: "Animal sacrifice and shaving/trimming of hair",
+      ar: "ذبح الأضحية وحلق أو تقصير الشعر",
+      ur: "جانور کی قربانی اور بالوں کا حلق یا قصر",
+      hi: "जानवर की कुर्बानी और बाल मुंडवाना/छोटे करना",
+      tr: "Kurban kesimi ve saç traşı/kısaltma",
+      ru: "Жертвоприношение животного и бритьё/стрижка волос",
+    },
+    whatItIs: {
+      en: "After stoning Jamrat al-Aqaba on the 10th of Dhul Hijjah, pilgrims offer an animal sacrifice (Qurbani/Hady) and then shave (Halq) or trim (Qasr) their hair. This marks the partial exit from Ihram. Qurbani is typically arranged by your Hajj operator.",
+      ar: "بعد رمي جمرة العقبة في العاشر من ذي الحجة، يقدم الحجاج أضحية (الهدي) ثم يحلقون أو يقصرون شعرهم. هذا يمثل التحلل الأول من الإحرام. عادة ما يتم ترتيب الذبح من قبل منظم الحج.",
+      ur: "10 ذی الحجہ کو جمرہ العقبہ پر رمی کے بعد حجاج جانور کی قربانی (ہدی) دیتے ہیں اور پھر بال منڈواتے (حلق) یا چھوٹے کراتے (قصر) ہیں۔ یہ احرام سے جزوی طور پر باہر آنے کی علامت ہے۔ قربانی عام طور پر آپ کے حج آپریٹر کی طرف سے کی جاتی ہے۔",
+      hi: "10 ज़िल हिज्जा को जमरत अल-अक़बा पर पत्थर मारने के बाद, तीर्थयात्री जानवर की कुर्बानी (हदी) देते हैं और फिर बाल मुंडवाते (हलक़) या छोटे कराते (क़स्र) हैं। यह इहराम से आंशिक रूप से बाहर आने का प्रतीक है। कुर्बानी आमतौर पर आपके हज ऑपरेटर द्वारा व्यवस्थित की जाती है।",
+      tr: "Zilhicce'nin 10'unda Cemre-tül Akabe taşlamasından sonra hacılar kurban keser (Hedy) ve ardından saçlarını tıraş eder (Halak) veya kısaltır (Kasr). Bu, ihramdan kısmen çıkışı simgeler. Kurban genellikle hac operatörünüz tarafından ayarlanır.",
+      ru: "После бросания камней в Джамрат аль-Акаба 10-го Зуль-Хиджа паломники приносят в жертву животное (Хадий) и затем бреют (Халк) или стригут (Каср) волосы. Это означает частичный выход из Ихрама. Жертвоприношение обычно организуется вашим хадж-оператором.",
+    },
+    steps: [
+      {
+        step: 1,
+        text: {
+          en: "After stoning Jamrat al-Aqaba, proceed with Qurbani. Your Hajj operator usually handles this on your behalf.",
+          ar: "بعد رمي جمرة العقبة، انتقل إلى الذبح. عادة ما يتولى منظم الحج هذا نيابة عنك.",
+          ur: "جمرہ العقبہ پر رمی کے بعد قربانی کریں۔ آپ کا حج آپریٹر عام طور پر آپ کی طرف سے یہ کرتا ہے۔",
+          hi: "जमरत अल-अक़बा पर पत्थर मारने के बाद कुर्बानी करें। आपका हज ऑपरेटर आमतौर पर आपकी तरफ से यह करता है।",
+          tr: "Cemre-tül Akabe taşlamasından sonra kurban işlemine geçin. Hac operatörünüz genellikle bunu sizin adınıza yapar.",
+          ru: "После бросания камней в Джамрат аль-Акаба приступайте к жертвоприношению. Ваш хадж-оператор обычно делает это от вашего имени.",
+        },
+      },
+      {
+        step: 2,
+        text: {
+          en: "After Qurbani is completed (or confirmed), proceed to shave or trim your hair.",
+          ar: "بعد إتمام الذبح (أو التأكيد عليه)، انتقل إلى حلق أو تقصير شعرك.",
+          ur: "قربانی مکمل ہونے (یا تصدیق کے بعد) بال منڈوائیں یا چھوٹے کرائیں۔",
+          hi: "कुर्बानी पूरी होने (या पुष्टि के बाद) बाल मुंडवाएं या छोटे कराएं।",
+          tr: "Kurban tamamlandıktan (veya onaylandıktan) sonra saç traşına veya kısaltmaya geçin.",
+          ru: "После завершения жертвоприношения (или подтверждения) приступайте к бритью или стрижке волос.",
+        },
+      },
+      {
+        step: 3,
+        text: {
+          en: "Men: Shaving the entire head (Halq) is preferred, but trimming (Qasr) is allowed. Women: Trim a fingertip's length of hair.",
+          ar: "الرجال: حلق الرأس بالكامل (الحلق) مفضل، لكن التقصير مسموح. النساء: قص طول أنملة من الشعر.",
+          ur: "مرد: پورے سر کا حلق افضل ہے، لیکن قصر جائز ہے۔ خواتین: انگلی کے پور کے برابر بال کاٹیں۔",
+          hi: "पुरुष: पूरे सिर का मुंडन (हलक़) बेहतर है, लेकिन छोटे करना (क़स्र) जायज़ है। महिलाएं: उंगली के पोर जितने बाल काटें।",
+          tr: "Erkekler: Tüm başı tıraş etmek (Halak) tercih edilir, ancak kısaltma (Kasr) da caizdir. Kadınlar: Parmak ucu uzunluğunda saç kesin.",
+          ru: "Мужчины: Бритьё всей головы (Халк) предпочтительнее, но стрижка (Каср) допускается. Женщины: Отрежьте прядь волос длиной с кончик пальца.",
+        },
+      },
+      {
+        step: 4,
+        text: {
+          en: "After Halq/Qasr, you exit the first Tahallul. You may now wear regular clothes, but marital relations remain prohibited until Tawaf al-Ifadah.",
+          ar: "بعد الحلق/التقصير، تخرج من التحلل الأول. يمكنك الآن ارتداء الملابس العادية، لكن العلاقات الزوجية تبقى محظورة حتى طواف الإفاضة.",
+          ur: "حلق/قصر کے بعد آپ پہلے تحلل سے باہر آ جاتے ہیں۔ اب آپ عام کپڑے پہن سکتے ہیں، لیکن ازدواجی تعلقات طواف الافاضہ تک منع ہیں۔",
+          hi: "हलक़/क़स्र के बाद आप पहले तहल्लुल से बाहर आ जाते हैं। अब आप सामान्य कपड़े पहन सकते हैं, लेकिन वैवाहिक संबंध तवाफ अल-इफ़ादा तक वर्जित हैं।",
+          tr: "Halak/Kasr'dan sonra ilk tahallülden çıkarsınız. Artık normal giysiler giyebilirsiniz, ancak evlilik ilişkileri Tavaf-ı İfaza'ya kadar yasaktır.",
+          ru: "После Халк/Каср вы выходите из первого Тахаллула. Теперь можете носить обычную одежду, но супружеские отношения запрещены до Тавафа аль-Ифада.",
+        },
+      },
+    ],
+    mistakes: [
+      {
+        text: {
+          en: "Do not shave before Qurbani is completed. Maintain the proper sequence.",
+          ar: "لا تحلق قبل إتمام الذبح. حافظ على الترتيب الصحيح.",
+          ur: "قربانی مکمل ہونے سے پہلے بال نہ منڈوائیں۔ صحیح ترتیب برقرار رکھیں۔",
+          hi: "कुर्बानी पूरी होने से पहले बाल न मुंडवाएं। सही क्रम बनाए रखें।",
+          tr: "Kurban tamamlanmadan saç tıraşı olmayın. Doğru sırayı koruyun.",
+          ru: "Не брейтесь до завершения жертвоприношения. Соблюдайте правильную последовательность.",
+        },
+      },
+      {
+        text: {
+          en: "Women should not shave their heads. Trimming a small amount is sufficient.",
+          ar: "يجب ألا تحلق النساء رؤوسهن. قص كمية قليلة كافٍ.",
+          ur: "خواتین اپنے سر نہ منڈوائیں۔ تھوڑے بال کاٹنا کافی ہے۔",
+          hi: "महिलाएं अपना सिर न मुंडवाएं। थोड़े बाल काटना काफी है।",
+          tr: "Kadınlar başlarını tıraş etmemelidir. Az miktarda kesmek yeterlidir.",
+          ru: "Женщинам не следует брить голову. Достаточно подстричь небольшое количество волос.",
+        },
+      },
+      {
+        text: {
+          en: "Do not assume Qurbani is done without confirmation from your Hajj operator.",
+          ar: "لا تفترض أن الذبح تم دون تأكيد من منظم الحج.",
+          ur: "حج آپریٹر سے تصدیق کے بغیر قربانی ہونے کا اندازہ نہ لگائیں۔",
+          hi: "हज ऑपरेटर से पुष्टि के बिना कुर्बानी होने का अंदाज़ा न लगाएं।",
+          tr: "Hac operatörünüzden onay almadan kurbanın kesildiğini varsaymayın.",
+          ru: "Не предполагайте, что жертвоприношение совершено без подтверждения от хадж-оператора.",
+        },
+      },
+      {
+        text: {
+          en: "Do not resume all normal activities immediately. Marital relations require Tawaf al-Ifadah first.",
+          ar: "لا تستأنف جميع الأنشطة العادية فوراً. العلاقات الزوجية تتطلب طواف الإفاضة أولاً.",
+          ur: "تمام عام سرگرمیاں فوراً شروع نہ کریں۔ ازدواجی تعلقات کے لیے پہلے طواف الافاضہ ضروری ہے۔",
+          hi: "सभी सामान्य गतिविधियां तुरंत न शुरू करें। वैवाहिक संबंधों के लिए पहले तवाफ अल-इफ़ादा ज़रूरी है।",
+          tr: "Tüm normal faaliyetlere hemen başlamayın. Evlilik ilişkileri önce Tavaf-ı İfaza gerektirir.",
+          ru: "Не возобновляйте все обычные действия сразу. Супружеские отношения требуют сначала Тавафа аль-Ифада.",
+        },
+      },
+    ],
+    duaGuidance: {
+      en: "There is no specific dua required. Thank Allah for enabling you to complete this stage. You may say any prayer of gratitude in your own language.",
+      ar: "لا يوجد دعاء محدد مطلوب. اشكر الله على تمكينك من إكمال هذه المرحلة. يمكنك قول أي دعاء شكر بلغتك الخاصة.",
+      ur: "کوئی مخصوص دعا ضروری نہیں۔ اللہ کا شکر ادا کریں کہ آپ نے یہ مرحلہ مکمل کیا۔ آپ اپنی زبان میں شکر کی کوئی بھی دعا کر سکتے ہیں۔",
+      hi: "कोई विशेष दुआ आवश्यक नहीं है। अल्लाह का शुक्रिया अदा करें कि आपने यह चरण पूरा किया। आप अपनी भाषा में शुक्राने की कोई भी दुआ कर सकते हैं।",
+      tr: "Belirli bir dua gerekli değildir. Bu aşamayı tamamlamanızı sağladığı için Allah'a şükredin. Kendi dilinizde herhangi bir şükür duası edebilirsiniz.",
+      ru: "Никакой особой молитвы не требуется. Благодарите Аллаха за возможность завершить этот этап. Вы можете произнести любую молитву благодарности на своём языке.",
+    },
+    safetyTips: [
+      {
+        text: {
+          en: "Use licensed barbers only. Many are available near Mina. Avoid unsterilized blades.",
+          ar: "استخدم الحلاقين المرخصين فقط. يتوفر الكثير بالقرب من منى. تجنب الشفرات غير المعقمة.",
+          ur: "صرف لائسنس یافتہ حجام استعمال کریں۔ منیٰ کے قریب بہت سے دستیاب ہیں۔ غیر جراثیم کش بلیڈ سے بچیں۔",
+          hi: "केवल लाइसेंसशुदा नाई का उपयोग करें। मिना के पास कई उपलब्ध हैं। गैर-स्टरलाइज्ड ब्लेड से बचें।",
+          tr: "Sadece lisanslı berberleri kullanın. Mina yakınında birçok mevcuttur. Sterilize edilmemiş jiletle kaçının.",
+          ru: "Используйте только лицензированных парикмахеров. Многие доступны возле Мины. Избегайте нестерилизованных лезвий.",
+        },
+      },
+      {
+        text: {
+          en: "Stay hydrated. This is a long day with many rituals.",
+          ar: "حافظ على رطوبة جسمك. هذا يوم طويل مليء بالمناسك.",
+          ur: "پانی پیتے رہیں۔ یہ بہت سے مناسک کا طویل دن ہے۔",
+          hi: "पानी पीते रहें। यह कई अनुष्ठानों का लंबा दिन है।",
+          tr: "Su içmeyi ihmal etmeyin. Birçok ibadetle dolu uzun bir gün.",
+          ru: "Пейте достаточно воды. Это длинный день с множеством ритуалов.",
+        },
+      },
+      {
+        text: {
+          en: "Keep your group identification with you. Crowds are significant on the 10th.",
+          ar: "احتفظ بهوية مجموعتك معك. الحشود كبيرة في العاشر.",
+          ur: "اپنے گروپ کی شناخت اپنے پاس رکھیں۔ 10 تاریخ کو بھیڑ بہت زیادہ ہوتی ہے۔",
+          hi: "अपने समूह की पहचान अपने पास रखें। 10वीं को भीड़ बहुत होती है।",
+          tr: "Grup kimliğinizi yanınızda bulundurun. 10. günde kalabalıklar yoğundur.",
+          ru: "Держите при себе идентификацию группы. 10-го числа толпы значительны.",
+        },
+      },
+    ],
+    hadith: {
+      text: {
+        en: "The Prophet (peace be upon him) shaved his head and distributed his hair among his companions as a blessing.",
+        ar: "حلق النبي ﷺ رأسه ووزع شعره بين أصحابه تبركاً.",
+        ur: "نبی ﷺ نے اپنا سر منڈوایا اور اپنے بال برکت کے لیے صحابہ میں تقسیم کیے۔",
+        hi: "नबी ﷺ ने अपना सिर मुंडवाया और अपने बाल बरकत के लिए सहाबा में बांटे।",
+        tr: "Peygamber ﷺ başını tıraş etti ve saçlarını bereket olarak ashabı arasında dağıttı.",
+        ru: "Пророк ﷺ побрил голову и раздал свои волосы среди сподвижников как благословение.",
+      },
+      source: "Sahih Muslim",
+    },
+    importantRulings: [
+      {
+        text: {
+          en: "The sequence (Rami, Qurbani, Halq) is recommended but not strictly required. Please follow your Hajj group's guidance.",
+          ar: "الترتيب (الرمي، الذبح، الحلق) مستحب لكنه ليس واجباً. يرجى اتباع إرشادات مجموعة الحج.",
+          ur: "ترتیب (رمی، قربانی، حلق) مستحب ہے لیکن سختی سے ضروری نہیں۔ براہ کرم اپنے حج گروپ کی رہنمائی پر عمل کریں۔",
+          hi: "क्रम (रमी, कुर्बानी, हलक़) अनुशंसित है लेकिन सख्ती से आवश्यक नहीं। कृपया अपने हज समूह के मार्गदर्शन का पालन करें।",
+          tr: "Sıralama (Rami, Kurban, Traş) tavsiye edilir ancak kesinlikle gerekli değildir. Lütfen hac grubunuzun rehberliğini takip edin.",
+          ru: "Последовательность (Рами, Курбани, Халк) рекомендуется, но не строго обязательна. Следуйте указаниям вашей группы хаджа.",
+        },
+      },
+      {
+        text: {
+          en: "Halq (complete shaving) is more virtuous for men, but Qasr (trimming) is valid.",
+          ar: "الحلق أفضل للرجال، لكن التقصير صحيح.",
+          ur: "مردوں کے لیے حلق افضل ہے، لیکن قصر صحیح ہے۔",
+          hi: "पुरुषों के लिए हलक़ (पूर्ण मुंडन) अधिक पुण्य है, लेकिन क़स्र (छोटे करना) वैध है।",
+          tr: "Erkekler için Halak (tam tıraş) daha faziletlidir, ancak Kasr (kısaltma) geçerlidir.",
+          ru: "Халк (полное бритьё) более добродетелен для мужчин, но Каср (стрижка) допустим.",
+        },
+      },
+    ],
+  },
+  {
+    id: "tawaf-wida",
+    order: 10,
     title: {
       en: "Tawaf al-Wida",
       ar: "طواف الوداع",
