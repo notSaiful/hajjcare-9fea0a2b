@@ -5,8 +5,6 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const ELEVENLABS_AGENT_ID = "KkEOQE2x9pDlDbYz2XYG"; // You can change this to your own agent ID
-
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -14,9 +12,14 @@ serve(async (req) => {
 
   try {
     const ELEVENLABS_API_KEY = Deno.env.get("ELEVENLABS_API_KEY");
+    const ELEVENLABS_AGENT_ID = Deno.env.get("ELEVENLABS_AGENT_ID");
     
     if (!ELEVENLABS_API_KEY) {
       throw new Error("ELEVENLABS_API_KEY is not configured");
+    }
+
+    if (!ELEVENLABS_AGENT_ID) {
+      throw new Error("ELEVENLABS_AGENT_ID is not configured");
     }
 
     console.log("Fetching ElevenLabs conversation token...");
