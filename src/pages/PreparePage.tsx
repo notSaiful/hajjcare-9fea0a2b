@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { SimpleHeader } from "@/components/SimpleHeader";
+import { MainLayout } from "@/components/MainLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -46,10 +46,8 @@ const PreparePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background" dir={isRTL ? "rtl" : "ltr"}>
-      <SimpleHeader />
-
-      <main className="container max-w-2xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
+    <MainLayout>
+      <div className="container max-w-2xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
         {/* Back Button */}
         <Link to="/">
           <Button variant="ghost" size="sm" className="gap-2 -ml-2 h-10 sm:h-9 text-sm">
@@ -129,8 +127,8 @@ const PreparePage = () => {
             );
           })}
         </div>
-      </main>
-    </div>
+      </div>
+    </MainLayout>
   );
 };
 
