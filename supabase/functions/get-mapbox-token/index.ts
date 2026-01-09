@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -11,9 +12,36 @@ serve(async (req) => {
   }
 
   try {
-    const token = Deno.env.get("MAPBOX_PUBLIC_TOKEN");
+    // Validate authentication
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      console.error("Missing or invalid Authorization header");
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
 
-    if (!token) {
+    const supabaseClient = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_ANON_KEY")!,
+      { global: { headers: { Authorization: authHeader } } }
+    );
+
+    const token = authHeader.replace("Bearer ", "");
+    const { data, error: authError } = await supabaseClient.auth.getClaims(token);
+    
+    if (authError || !data?.claims) {
+      console.error("Authentication failed:", authError?.message);
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const mapboxToken = Deno.env.get("MAPBOX_PUBLIC_TOKEN");
+
+    if (!mapboxToken) {
       console.error("MAPBOX_PUBLIC_TOKEN is not configured");
       return new Response(
         JSON.stringify({ error: "Map service not configured" }),
@@ -21,10 +49,10 @@ serve(async (req) => {
       );
     }
 
-    console.log("Returning Mapbox token");
+    console.log("Returning Mapbox token for user:", data.claims.sub);
 
     return new Response(
-      JSON.stringify({ token }),
+      JSON.stringify({ token: mapboxToken }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error) {
