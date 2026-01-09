@@ -14,6 +14,12 @@ import FamilyDashboardPage from "./pages/FamilyDashboardPage";
 import MapPage from "./pages/MapPage";
 import AuthPage from "./pages/AuthPage";
 import FamilyPage from "./pages/FamilyPage";
+import UmrahGuidePage from "./pages/UmrahGuidePage";
+import UmrahDetailPage from "./pages/UmrahDetailPage";
+import MakkahGuidePage from "./pages/MakkahGuidePage";
+import MakkahGuideDetailPage from "./pages/MakkahGuideDetailPage";
+import MadinahGuidePage from "./pages/MadinahGuidePage";
+import MadinahGuideDetailPage from "./pages/MadinahGuideDetailPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,6 +35,12 @@ const App = () => (
             <Route path="/" element={<HomePage />} />
             <Route path="/prepare" element={<PreparePage />} />
             <Route path="/prepare/:ritualId" element={<RitualDetailPage />} />
+            <Route path="/umrah" element={<UmrahGuidePage />} />
+            <Route path="/umrah/:ritualId" element={<UmrahDetailPage />} />
+            <Route path="/makkah-guide" element={<MakkahGuidePage />} />
+            <Route path="/makkah-guide/:topicId" element={<MakkahGuideDetailPage />} />
+            <Route path="/madinah-guide" element={<MadinahGuidePage />} />
+            <Route path="/madinah-guide/:topicId" element={<MadinahGuideDetailPage />} />
             <Route path="/rules" element={<RulesBriefingPage />} />
             <Route path="/rules/:sectionId" element={<RulesSectionPage />} />
             <Route path="/family-status" element={<FamilyViewPage />} />
