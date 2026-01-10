@@ -112,16 +112,16 @@ const MadinahGuidePage = () => {
               >
                 <CardContent className="p-3 sm:p-4 flex items-center gap-3 sm:gap-4">
                   <div
-                    className={`flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-sm sm:text-base ${
+                    className={`flex-shrink-0 w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center text-sm sm:text-base shadow-soft border-2 ${
                       isCompleted
-                        ? "bg-status-safe text-white"
-                        : "bg-primary text-primary-foreground"
+                        ? "bg-status-safe text-white border-status-safe/30"
+                        : "bg-primary/10 text-primary border-primary/20"
                     }`}
                   >
                     {isCompleted ? (
-                      <Check className="w-4 h-4 sm:w-5 sm:h-5" />
+                      <Check className="w-6 h-6 sm:w-7 sm:h-7" />
                     ) : (
-                      <span className="font-semibold">{topic.order}</span>
+                      <span className="font-bold text-lg sm:text-xl">{topic.order}</span>
                     )}
                   </div>
                   <div className="flex-1 min-w-0">

@@ -73,9 +73,9 @@ const MakkahGuideDetailPage = () => {
 
         {/* Title */}
         <div className="space-y-1.5">
-          <div className="flex items-center gap-3">
-            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isCompleted ? "bg-status-safe" : "bg-primary"} text-white`}>
-              {isCompleted ? <Check className="w-5 h-5" /> : <span className="font-bold">{topic.order}</span>}
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center shadow-soft border-2 ${isCompleted ? "bg-status-safe text-white border-status-safe/30" : "bg-primary/10 text-primary border-primary/20"}`}>
+              {isCompleted ? <Check className="w-6 h-6 sm:w-7 sm:h-7" /> : <span className="font-bold text-lg sm:text-xl">{topic.order}</span>}
             </div>
             <h1 className="text-xl sm:text-2xl font-bold">{topic.title[language] || topic.title.en}</h1>
           </div>
@@ -99,13 +99,13 @@ const MakkahGuideDetailPage = () => {
           <CardHeader className="pb-2">
             <CardTitle className="text-base sm:text-lg">{labels.whatToDo[language] || labels.whatToDo.en}</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="space-y-4">
             {topic.steps.map((step, idx) => (
-              <div key={idx} className="flex gap-3">
-                <div className="flex-shrink-0 w-7 h-7 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm font-medium">
+              <div key={idx} className="flex gap-3 sm:gap-4">
+                <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm sm:text-base font-semibold shadow-soft border-2 border-primary/20">
                   {idx + 1}
                 </div>
-                <p className="text-sm sm:text-base pt-0.5">{step.text[language] || step.text.en}</p>
+                <p className="text-sm sm:text-base pt-2 sm:pt-3">{step.text[language] || step.text.en}</p>
               </div>
             ))}
           </CardContent>
