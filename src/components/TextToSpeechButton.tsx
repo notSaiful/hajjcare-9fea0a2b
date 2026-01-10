@@ -23,8 +23,8 @@ export const TextToSpeechButton = ({
   variant = "outline",
   showLabel = true 
 }: TextToSpeechButtonProps) => {
-  const { speak, isSpeaking, isSupported } = useTextToSpeech();
   const { language } = useLanguage();
+  const { speak, isSpeaking, isSupported } = useTextToSpeech();
 
   if (!isSupported) return null;
 
