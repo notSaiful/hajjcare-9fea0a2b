@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { MainLayout } from "@/components/MainLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -6,35 +5,28 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Check, Lock, ChevronRight } from "lucide-react";
 import { UMRAH_RITUALS } from "@/data/umrahContent";
+import { useProgression } from "@/hooks/useProgression";
 
 const UmrahGuidePage = () => {
   const { language, isRTL } = useLanguage();
   const navigate = useNavigate();
 
-  const [completedSteps, setCompletedSteps] = useState<string[]>(() => {
-    const saved = localStorage.getItem("umrah-completed-steps");
-    return saved ? JSON.parse(saved) : [];
+  const {
+    progress,
+    completedCount,
+    totalCount,
+    isCompleted,
+    isUnlocked,
+    toggleComplete,
+  } = useProgression({
+    module: "umrah",
+    items: UMRAH_RITUALS,
   });
 
-  useEffect(() => {
-    localStorage.setItem("umrah-completed-steps", JSON.stringify(completedSteps));
-  }, [completedSteps]);
-
-  const isStepUnlocked = (order: number) => {
-    if (order === 1) return true;
-    const previousRitual = UMRAH_RITUALS.find((r) => r.order === order - 1);
-    return previousRitual ? completedSteps.includes(previousRitual.id) : false;
-  };
-
-  const toggleComplete = (id: string, e: React.MouseEvent) => {
+  const handleToggle = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    setCompletedSteps((prev) =>
-      prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]
-    );
+    toggleComplete(id);
   };
-
-  const completedCount = completedSteps.length;
-  const progress = Math.round((completedCount / UMRAH_RITUALS.length) * 100);
 
   const labels = {
     title: {
@@ -88,7 +80,7 @@ const UmrahGuidePage = () => {
         <div className="space-y-2">
           <div className="flex justify-between text-xs sm:text-sm">
             <span className="text-muted-foreground">
-              {completedCount} / {UMRAH_RITUALS.length}
+              {completedCount} / {totalCount}
             </span>
             <span className="font-medium text-primary">{progress}%</span>
           </div>
@@ -112,34 +104,34 @@ const UmrahGuidePage = () => {
         {/* Ritual List */}
         <div className="space-y-2.5 sm:space-y-3">
           {UMRAH_RITUALS.map((ritual) => {
-            const isCompleted = completedSteps.includes(ritual.id);
-            const isUnlocked = isStepUnlocked(ritual.order);
+            const completed = isCompleted(ritual.id);
+            const unlocked = isUnlocked(ritual.order);
 
             return (
               <Card
                 key={ritual.id}
                 className={`border-2 transition-all cursor-pointer ${
-                  isCompleted
+                  completed
                     ? "border-status-safe/30 bg-status-safe/5"
-                    : isUnlocked
+                    : unlocked
                     ? "border-border hover:border-primary/50"
                     : "border-muted bg-muted/30 opacity-60"
                 }`}
-                onClick={() => isUnlocked && navigate(`/umrah/${ritual.id}`)}
+                onClick={() => unlocked && navigate(`/umrah/${ritual.id}`)}
               >
                 <CardContent className="p-3 sm:p-4 flex items-center gap-3 sm:gap-4">
                   <div
                     className={`flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-sm sm:text-base ${
-                      isCompleted
+                      completed
                         ? "bg-status-safe text-white"
-                        : isUnlocked
+                        : unlocked
                         ? "bg-primary text-primary-foreground"
                         : "bg-muted text-muted-foreground"
                     }`}
                   >
-                    {isCompleted ? (
+                    {completed ? (
                       <Check className="w-4 h-4 sm:w-5 sm:h-5" />
-                    ) : !isUnlocked ? (
+                    ) : !unlocked ? (
                       <Lock className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     ) : (
                       <span className="font-semibold">{ritual.order}</span>
@@ -148,27 +140,27 @@ const UmrahGuidePage = () => {
                   <div className="flex-1 min-w-0">
                     <p
                       className={`font-semibold text-sm sm:text-base ${
-                        isCompleted ? "text-status-safe" : "text-foreground"
+                        completed ? "text-status-safe" : "text-foreground"
                       }`}
                     >
                       {ritual.title[language] || ritual.title.en}
                     </p>
                     <p className="text-xs sm:text-sm text-muted-foreground truncate">
-                      {!isUnlocked
+                      {!unlocked
                         ? labels.locked[language] || labels.locked.en
                         : ritual.description[language] || ritual.description.en}
                     </p>
                   </div>
-                  {isUnlocked && (
+                  {unlocked && (
                     <Button
                       variant="ghost"
                       size="sm"
                       className={`flex-shrink-0 h-9 w-9 sm:h-10 sm:w-10 p-0 ${
-                        isCompleted ? "text-status-safe" : ""
+                        completed ? "text-status-safe" : ""
                       }`}
-                      onClick={(e) => toggleComplete(ritual.id, e)}
+                      onClick={(e) => handleToggle(ritual.id, e)}
                     >
-                      {isCompleted ? (
+                      {completed ? (
                         <Check className="w-4 h-4 sm:w-5 sm:h-5" />
                       ) : (
                         <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
