@@ -6,36 +6,24 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Check, Lock, ArrowRight, ArrowLeft, ChevronRight } from "lucide-react";
 import { MANASIK_RITUALS } from "@/data/manasikContent";
+import { useProgression } from "@/hooks/useProgression";
 
 const PreparePage = () => {
   const { language, isRTL } = useLanguage();
   const navigate = useNavigate();
 
-  // Load completed steps from localStorage
-  const [completedSteps, setCompletedSteps] = useState<string[]>(() => {
-    const saved = localStorage.getItem("hajj-completed-steps");
-    return saved ? JSON.parse(saved) : [];
+  const { 
+    completedSteps, 
+    progress, 
+    completedCount, 
+    totalCount, 
+    isCompleted, 
+    isUnlocked, 
+    toggleComplete 
+  } = useProgression({
+    module: "hajj",
+    items: MANASIK_RITUALS,
   });
-
-  useEffect(() => {
-    localStorage.setItem("hajj-completed-steps", JSON.stringify(completedSteps));
-  }, [completedSteps]);
-
-  const isStepUnlocked = (order: number) => {
-    if (order === 1) return true;
-    const previousRitual = MANASIK_RITUALS.find(r => r.order === order - 1);
-    return previousRitual ? completedSteps.includes(previousRitual.id) : false;
-  };
-
-  const toggleComplete = (id: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    setCompletedSteps(prev => 
-      prev.includes(id) ? prev.filter(s => s !== id) : [...prev, id]
-    );
-  };
-
-  const completedCount = completedSteps.length;
-  const progress = Math.round((completedCount / MANASIK_RITUALS.length) * 100);
 
   const labels = {
     title: { en: "Manasik Preparation", ar: "تحضير المناسك", ur: "مناسک کی تیاری", hi: "मनासिक तैयारी", tr: "Menasik Hazırlığı", ru: "Подготовка Манасик" },
@@ -43,6 +31,11 @@ const PreparePage = () => {
     complete: { en: "You are prepared for Hajj", ar: "أنت مستعد للحج", ur: "آپ حج کے لیے تیار ہیں", hi: "आप हज के लिए तैयार हैं", tr: "Hacca hazırsınız", ru: "Вы готовы к хаджу" },
     back: { en: "Back", ar: "رجوع", ur: "واپس", hi: "वापस", tr: "Geri", ru: "Назад" },
     locked: { en: "Complete previous step first", ar: "أكمل الخطوة السابقة أولاً", ur: "پہلے پچھلا مرحلہ مکمل کریں", hi: "पहले पिछला चरण पूरा करें", tr: "Önce önceki adımı tamamlayın", ru: "Сначала завершите предыдущий шаг" },
+  };
+
+  const handleToggle = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    toggleComplete(id);
   };
 
   return (
@@ -65,7 +58,7 @@ const PreparePage = () => {
         {/* Progress */}
         <div className="space-y-2">
           <div className="flex justify-between text-xs sm:text-sm">
-            <span className="text-muted-foreground">{completedCount} / {MANASIK_RITUALS.length}</span>
+            <span className="text-muted-foreground">{completedCount} / {totalCount}</span>
             <span className="font-medium text-primary">{progress}%</span>
           </div>
           <div className="h-2.5 sm:h-3 bg-muted rounded-full overflow-hidden">
@@ -83,43 +76,43 @@ const PreparePage = () => {
         {/* Ritual List */}
         <div className="space-y-2.5 sm:space-y-3">
           {MANASIK_RITUALS.map((ritual) => {
-            const isCompleted = completedSteps.includes(ritual.id);
-            const isUnlocked = isStepUnlocked(ritual.order);
+            const completed = isCompleted(ritual.id);
+            const unlocked = isUnlocked(ritual.order);
 
             return (
               <Card
                 key={ritual.id}
                 className={`border-2 transition-all cursor-pointer ${
-                  isCompleted ? "border-status-safe/30 bg-status-safe/5" :
-                  isUnlocked ? "border-border hover:border-primary/50" : "border-muted bg-muted/30 opacity-60"
+                  completed ? "border-status-safe/30 bg-status-safe/5" :
+                  unlocked ? "border-border hover:border-primary/50" : "border-muted bg-muted/30 opacity-60"
                 }`}
-                onClick={() => isUnlocked && navigate(`/prepare/${ritual.id}`)}
+                onClick={() => unlocked && navigate(`/prepare/${ritual.id}`)}
               >
                 <CardContent className="p-3 sm:p-4 flex items-center gap-3 sm:gap-4">
                   <div className={`flex-shrink-0 w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center text-sm sm:text-base shadow-soft border-2 ${
-                    isCompleted ? "bg-status-safe text-white border-status-safe/30" :
-                    isUnlocked ? "bg-primary/10 text-primary border-primary/20" : "bg-muted text-muted-foreground border-muted"
+                    completed ? "bg-status-safe text-white border-status-safe/30" :
+                    unlocked ? "bg-primary/10 text-primary border-primary/20" : "bg-muted text-muted-foreground border-muted"
                   }`}>
-                    {isCompleted ? <Check className="w-6 h-6 sm:w-7 sm:h-7" /> :
-                     !isUnlocked ? <Lock className="w-5 h-5 sm:w-6 sm:h-6" /> :
+                    {completed ? <Check className="w-6 h-6 sm:w-7 sm:h-7" /> :
+                     !unlocked ? <Lock className="w-5 h-5 sm:w-6 sm:h-6" /> :
                      <span className="font-bold text-lg sm:text-xl">{ritual.order}</span>}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className={`font-semibold text-sm sm:text-base ${isCompleted ? "text-status-safe" : "text-foreground"}`}>
+                    <p className={`font-semibold text-sm sm:text-base ${completed ? "text-status-safe" : "text-foreground"}`}>
                       {ritual.title[language] || ritual.title.en}
                     </p>
                     <p className="text-xs sm:text-sm text-muted-foreground truncate">
-                      {!isUnlocked ? (labels.locked[language] || labels.locked.en) : (ritual.description[language] || ritual.description.en)}
+                      {!unlocked ? (labels.locked[language] || labels.locked.en) : (ritual.description[language] || ritual.description.en)}
                     </p>
                   </div>
-                  {isUnlocked && (
+                  {unlocked && (
                     <Button
                       variant="ghost"
                       size="sm"
-                      className={`flex-shrink-0 h-9 w-9 sm:h-10 sm:w-10 p-0 ${isCompleted ? "text-status-safe" : ""}`}
-                      onClick={(e) => toggleComplete(ritual.id, e)}
+                      className={`flex-shrink-0 h-9 w-9 sm:h-10 sm:w-10 p-0 ${completed ? "text-status-safe" : ""}`}
+                      onClick={(e) => handleToggle(ritual.id, e)}
                     >
-                      {isCompleted ? <Check className="w-4 h-4 sm:w-5 sm:h-5" /> : <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />}
+                      {completed ? <Check className="w-4 h-4 sm:w-5 sm:h-5" /> : <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />}
                     </Button>
                   )}
                 </CardContent>

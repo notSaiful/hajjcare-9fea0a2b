@@ -1,12 +1,13 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import { MainLayout } from "@/components/MainLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, ArrowRight, Check, AlertTriangle, Heart, Shield, BookOpen } from "lucide-react";
 import { UMRAH_RITUALS } from "@/data/umrahContent";
-import { useState, useEffect } from "react";
 import { IconCircle } from "@/components/IconCircle";
+import { useProgression } from "@/hooks/useProgression";
 
 const UmrahDetailPage = () => {
   const { ritualId } = useParams();
@@ -14,15 +15,20 @@ const UmrahDetailPage = () => {
   const navigate = useNavigate();
 
   const ritual = UMRAH_RITUALS.find((r) => r.id === ritualId);
+  const nextRitual = ritual ? UMRAH_RITUALS.find((r) => r.order === ritual.order + 1) : undefined;
+  const prevRitual = ritual ? UMRAH_RITUALS.find((r) => r.order === ritual.order - 1) : undefined;
 
-  const [completedSteps, setCompletedSteps] = useState<string[]>(() => {
-    const saved = localStorage.getItem("umrah-completed-steps");
-    return saved ? JSON.parse(saved) : [];
+  const { isCompleted, markComplete, totalCount } = useProgression({
+    module: "umrah",
+    items: UMRAH_RITUALS,
   });
 
+  // Auto-mark as viewed when page loads
   useEffect(() => {
-    localStorage.setItem("umrah-completed-steps", JSON.stringify(completedSteps));
-  }, [completedSteps]);
+    if (ritual && ritualId) {
+      markComplete(ritualId);
+    }
+  }, [ritual, ritualId, markComplete]);
 
   if (!ritual) {
     return (
@@ -37,17 +43,19 @@ const UmrahDetailPage = () => {
     );
   }
 
-  const isCompleted = completedSteps.includes(ritual.id);
+  const completed = ritualId ? isCompleted(ritualId) : false;
 
-  const markComplete = () => {
-    if (!isCompleted) {
-      setCompletedSteps((prev) => [...prev, ritual.id]);
-    }
-    const nextRitual = UMRAH_RITUALS.find((r) => r.order === ritual.order + 1);
+  const handleNext = () => {
     if (nextRitual) {
       navigate(`/umrah/${nextRitual.id}`);
     } else {
       navigate("/umrah");
+    }
+  };
+
+  const handlePrev = () => {
+    if (prevRitual) {
+      navigate(`/umrah/${prevRitual.id}`);
     }
   };
 
@@ -59,13 +67,15 @@ const UmrahDetailPage = () => {
     mistakes: { en: "What To Avoid", ar: "ما يجب تجنبه", ur: "کیا نہ کریں", hi: "क्या न करें", tr: "Nelerden Kaçınmalı", ru: "Чего избегать" },
     safety: { en: "Safety Tips", ar: "نصائح السلامة", ur: "حفاظتی نکات", hi: "सुरक्षा टिप्स", tr: "Güvenlik İpuçları", ru: "Советы по безопасности" },
     hadith: { en: "Relevant Hadith", ar: "الحديث", ur: "متعلقہ حدیث", hi: "प्रासंगिक हदीस", tr: "İlgili Hadis", ru: "Соответствующий хадис" },
-    markComplete: { en: "Mark Complete & Continue", ar: "وضع علامة مكتمل", ur: "مکمل کریں", hi: "पूर्ण करें", tr: "Tamamla", ru: "Отметить выполненным" },
+    continue: { en: "Continue", ar: "متابعة", ur: "جاری رکھیں", hi: "जारी रखें", tr: "Devam Et", ru: "Продолжить" },
+    complete: { en: "Complete", ar: "إكمال", ur: "مکمل", hi: "पूर्ण", tr: "Tamamla", ru: "Завершить" },
     rulings: { en: "Important Rulings", ar: "أحكام مهمة", ur: "اہم احکام", hi: "महत्वपूर्ण नियम", tr: "Önemli Hükümler", ru: "Важные решения" },
+    stepOf: { en: `Step ${ritual.order} of ${totalCount}`, ar: `الخطوة ${ritual.order} من ${totalCount}`, ur: `مرحلہ ${ritual.order} از ${totalCount}`, hi: `चरण ${ritual.order} में से ${totalCount}`, tr: `Adım ${ritual.order} / ${totalCount}`, ru: `Шаг ${ritual.order} из ${totalCount}` },
   };
 
   return (
     <MainLayout>
-      <div className="container max-w-2xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
+      <div className="container max-w-2xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6 pb-24">
         {/* Back Button */}
         <Link to="/umrah">
           <Button variant="ghost" size="sm" className="gap-2 -ml-2 h-10 sm:h-9 text-sm">
@@ -76,10 +86,13 @@ const UmrahDetailPage = () => {
 
         {/* Title */}
         <div className="space-y-1.5">
+          <p className="text-sm text-muted-foreground">
+            {labels.stepOf[language] || labels.stepOf.en}
+          </p>
           <div className="flex items-center gap-3 sm:gap-4">
             <IconCircle 
               number={ritual.order} 
-              isCompleted={isCompleted} 
+              isCompleted={completed} 
               size="md"
             />
             <h1 className="text-xl sm:text-2xl font-bold">{ritual.title[language] || ritual.title.en}</h1>
@@ -187,11 +200,32 @@ const UmrahDetailPage = () => {
           </CardContent>
         </Card>
 
-        {/* Mark Complete Button */}
-        <Button onClick={markComplete} className="w-full h-12 sm:h-14 text-base sm:text-lg" size="lg">
-          {isCompleted ? <Check className="w-5 h-5 mr-2" /> : null}
-          {labels.markComplete[language] || labels.markComplete.en}
-        </Button>
+        {/* Navigation */}
+        <div className="fixed bottom-0 left-0 right-0 bg-background border-t p-4 safe-area-bottom">
+          <div className="container max-w-2xl mx-auto flex gap-3">
+            {prevRitual ? (
+              <Button variant="outline" className="flex-1" onClick={handlePrev}>
+                {isRTL ? <ArrowRight className="w-4 h-4 mr-2" /> : <ArrowLeft className="w-4 h-4 mr-2" />}
+                <span className="truncate">{prevRitual.title[language] || prevRitual.title.en}</span>
+              </Button>
+            ) : (
+              <div className="flex-1" />
+            )}
+            {nextRitual ? (
+              <Button className="flex-1" onClick={handleNext}>
+                <span className="truncate">{nextRitual.title[language] || nextRitual.title.en}</span>
+                {isRTL ? <ArrowLeft className="w-4 h-4 ml-2" /> : <ArrowRight className="w-4 h-4 ml-2" />}
+              </Button>
+            ) : (
+              <Link to="/umrah" className="flex-1">
+                <Button className="w-full bg-status-safe hover:bg-status-safe/90">
+                  <Check className="w-5 h-5 mr-2" />
+                  {labels.complete[language] || labels.complete.en}
+                </Button>
+              </Link>
+            )}
+          </div>
+        </div>
       </div>
     </MainLayout>
   );
