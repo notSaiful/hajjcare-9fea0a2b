@@ -27,110 +27,128 @@ interface MenuItem {
   icon: LucideIcon;
   label: Record<string, string>;
   route: string;
+  color: string;
 }
 
 const menuItems: MenuItem[] = [
   {
     id: "hajj",
     icon: Landmark,
-    label: { en: "Hajj", ar: "الحج", ur: "حج", hi: "हज", tr: "Hac", ru: "Хадж" },
+    label: { en: "Hajj", ar: "الحج", ur: "حج", hi: "حج", tr: "Hac", ru: "Хадж" },
     route: "/prepare",
+    color: "teal",
   },
   {
     id: "umrah",
     icon: Moon,
-    label: { en: "Umrah", ar: "العمرة", ur: "عمرہ", hi: "उमरा", tr: "Umre", ru: "Умра" },
+    label: { en: "Umrah", ar: "العمرة", ur: "عمرہ", hi: "عمرہ", tr: "Umre", ru: "Умра" },
     route: "/umrah",
+    color: "violet",
   },
   {
     id: "map",
     icon: Map,
-    label: { en: "Map", ar: "الخريطة", ur: "نقشہ", hi: "नक्शा", tr: "Harita", ru: "Карта" },
+    label: { en: "Map", ar: "الخريطة", ur: "نقشہ", hi: "نقشہ", tr: "Harita", ru: "Карта" },
     route: "/map",
+    color: "sky",
   },
   {
     id: "makkah",
     icon: Building,
-    label: { en: "Makkah", ar: "مكة", ur: "مکہ", hi: "मक्का", tr: "Mekke", ru: "Мекка" },
+    label: { en: "Makkah", ar: "مكة", ur: "مکہ", hi: "مکہ", tr: "Mekke", ru: "Мекка" },
     route: "/makkah-guide",
+    color: "amber",
   },
   {
     id: "madinah",
     icon: MapPin,
-    label: { en: "Madinah", ar: "المدينة", ur: "مدینہ", hi: "मदीना", tr: "Medine", ru: "Медина" },
+    label: { en: "Madinah", ar: "المدينة", ur: "مدینہ", hi: "مدینہ", tr: "Medine", ru: "Медина" },
     route: "/madinah-guide",
+    color: "emerald",
   },
   {
     id: "dua",
     icon: HandHeart,
-    label: { en: "Dua", ar: "الدعاء", ur: "دعا", hi: "दुआ", tr: "Dua", ru: "Дуа" },
+    label: { en: "Dua", ar: "الدعاء", ur: "دعا", hi: "دعا", tr: "Dua", ru: "Дуа" },
     route: "/dua",
+    color: "rose",
   },
   {
     id: "preparation",
     icon: ClipboardList,
-    label: { en: "Preparation", ar: "التحضير", ur: "تیاری", hi: "तैयारी", tr: "Hazırlık", ru: "Подготовка" },
+    label: { en: "Preparation", ar: "التحضير", ur: "تیاری", hi: "تیاری", tr: "Hazırlık", ru: "Подготовка" },
     route: "/preparation",
+    color: "indigo",
   },
   {
     id: "rules",
     icon: ScrollText,
-    label: { en: "Rules", ar: "القواعد", ur: "قواعد", hi: "नियम", tr: "Kurallar", ru: "Правила" },
+    label: { en: "Rules", ar: "القواعد", ur: "قواعد", hi: "قواعد", tr: "Kurallar", ru: "Правила" },
     route: "/rules",
+    color: "orange",
   },
   {
     id: "health",
     icon: HeartPulse,
-    label: { en: "Health", ar: "الصحة", ur: "صحت", hi: "स्वास्थ्य", tr: "Sağlık", ru: "Здоровье" },
+    label: { en: "Health", ar: "الصحة", ur: "صحت", hi: "صحت", tr: "Sağlık", ru: "Здоровье" },
     route: "/health",
+    color: "red",
   },
   {
     id: "money",
     icon: Banknote,
-    label: { en: "Money", ar: "المال", ur: "پیسہ", hi: "धन", tr: "Para", ru: "Деньги" },
+    label: { en: "Money", ar: "المال", ur: "پیسہ", hi: "پیسہ", tr: "Para", ru: "Деньги" },
     route: "/money",
+    color: "lime",
   },
   {
     id: "telecom",
     icon: Wifi,
-    label: { en: "Telecom", ar: "اتصالات", ur: "ٹیلی کام", hi: "टेलीकॉम", tr: "Telekom", ru: "Телеком" },
+    label: { en: "Telecom", ar: "اتصالات", ur: "ٹیلی کام", hi: "ٹیلی کام", tr: "Telekom", ru: "Телеком" },
     route: "/telecom",
+    color: "cyan",
   },
   {
     id: "family",
     icon: Users,
-    label: { en: "Family", ar: "العائلة", ur: "فیملی", hi: "परिवार", tr: "Aile", ru: "Семья" },
+    label: { en: "Family", ar: "العائلة", ur: "فیملی", hi: "فیملی", tr: "Aile", ru: "Семья" },
     route: "/family",
+    color: "pink",
   },
   {
     id: "assistant",
     icon: Bot,
-    label: { en: "AI Assistant", ar: "المساعد", ur: "اے آئی", hi: "AI सहायक", tr: "AI Asistan", ru: "AI Помощник" },
+    label: { en: "AI Assistant", ar: "المساعد", ur: "اے آئی", hi: "اے آئی", tr: "AI Asistan", ru: "AI Помощник" },
     route: "/chat",
+    color: "fuchsia",
   },
   {
     id: "grievances",
     icon: AlertTriangle,
-    label: { en: "Grievances", ar: "الشكاوى", ur: "شکایات", hi: "शिकायतें", tr: "Şikayetler", ru: "Жалобы" },
+    label: { en: "Grievances", ar: "الشكاوى", ur: "شکایات", hi: "شکایات", tr: "Şikayetler", ru: "Жалобы" },
     route: "/grievances",
+    color: "yellow",
   },
   {
     id: "contacts",
     icon: Phone,
-    label: { en: "Contacts", ar: "الاتصال", ur: "رابطہ", hi: "संपर्क", tr: "İletişim", ru: "Контакты" },
+    label: { en: "Contacts", ar: "الاتصال", ur: "رابطہ", hi: "رابطہ", tr: "İletişim", ru: "Контакты" },
     route: "/contacts",
+    color: "teal",
   },
   {
     id: "meeting",
     icon: CalendarClock,
     label: { en: "Meeting", ar: "الاجتماع", ur: "میٹنگ", hi: "میٹنگ", tr: "Toplantı", ru: "Встреча" },
     route: "/meeting",
+    color: "violet",
   },
   {
     id: "help",
     icon: LifeBuoy,
     label: { en: "Help", ar: "مساعدة", ur: "مدد", hi: "مدد", tr: "Yardım", ru: "Помощь" },
     route: "/help",
+    color: "emerald",
   },
 ];
 
@@ -144,13 +162,14 @@ export function DashboardMenu() {
         <button
           key={item.id}
           onClick={() => navigate(item.route)}
-          className="flex flex-col items-center gap-2 p-2 sm:p-3 rounded-xl bg-card/50 hover:bg-card border border-border/50 hover:border-primary/30 transition-all duration-300 hover:shadow-md group animate-fade-up"
-          style={{ animationDelay: `${index * 30}ms` }}
+          className="flex flex-col items-center gap-2 p-2 sm:p-3 rounded-xl bg-card/50 hover:bg-card border border-border/50 hover:border-primary/30 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 group animate-fade-up"
+          style={{ animationDelay: `${index * 50}ms` }}
         >
           <IconCircle 
             icon={item.icon} 
             size="md"
-            className="group-hover:scale-110 transition-transform duration-300"
+            variant={item.color as any}
+            className="group-hover:scale-110 group-hover:rotate-6 transition-all duration-300"
           />
           <span className="text-xs sm:text-sm font-medium text-foreground text-center leading-tight line-clamp-2">
             {item.label[language] || item.label.en}
