@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, ArrowRight, Check, AlertTriangle, Heart, BookOpen, Shield } from "lucide-react";
 import { MADINAH_GUIDE_TOPICS } from "@/data/madinahGuideContent";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { TextToSpeechButton } from "@/components/TextToSpeechButton";
 
 const MadinahGuideDetailPage = () => {
   const { topicId } = useParams();
@@ -61,6 +62,16 @@ const MadinahGuideDetailPage = () => {
     markComplete: { en: "Mark Complete & Continue", ar: "وضع علامة مكتمل", ur: "مکمل کریں", hi: "पूर्ण करें", tr: "Tamamla", ru: "Отметить выполненным" },
   };
 
+  // Build full text for TTS
+  const fullTextForSpeech = useMemo(() => {
+    const title = topic.title[language] || topic.title.en;
+    const whatItIs = topic.whatItIs[language] || topic.whatItIs.en;
+    const stepsText = topic.steps.map((s, i) => `${i + 1}. ${s.instruction[language] || s.instruction.en}`).join(". ");
+    const duaText = topic.duaGuidance[language] || topic.duaGuidance.en;
+    const mistakesText = topic.mistakes.map(m => m.text[language] || m.text.en).join(". ");
+    return `${title}. ${whatItIs}. ${stepsText}. ${duaText}. ${mistakesText}`;
+  }, [topic, language]);
+
   return (
     <MainLayout>
       <div className="container max-w-2xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
@@ -74,12 +85,13 @@ const MadinahGuideDetailPage = () => {
 
         {/* Title */}
         <div className="space-y-1.5">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center justify-between mb-2">
             <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isCompleted ? "bg-status-safe" : "bg-primary"} text-white`}>
               {isCompleted ? <Check className="w-5 h-5" /> : <span className="font-bold">{topic.order}</span>}
             </div>
-            <h1 className="text-xl sm:text-2xl font-bold">{topic.title[language] || topic.title.en}</h1>
+            <TextToSpeechButton text={fullTextForSpeech} size="sm" />
           </div>
+          <h1 className="text-xl sm:text-2xl font-bold">{topic.title[language] || topic.title.en}</h1>
         </div>
 
         {/* What This Is */}
