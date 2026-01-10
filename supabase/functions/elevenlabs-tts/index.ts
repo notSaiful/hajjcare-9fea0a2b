@@ -12,8 +12,13 @@ const VOICE_MAP: Record<string, string> = {
   hi: "pFZP5JQG7iQjIQuC4Bku", // Lily
   ar: "onwK4e9ZLuTAKqWW03F9", // Daniel - clear articulation
   en: "JBFqnCBsd6RMkjVDRZzb", // George
-  tr: "EXAVITQu4vr4xnSDxMaL", // Sarah
-  ru: "N2lVS1w4EtoT3dr4eOWO", // Callum
+  ta: "pFZP5JQG7iQjIQuC4Bku", // Lily - good for Indian languages
+  te: "pFZP5JQG7iQjIQuC4Bku", // Lily
+  mr: "pFZP5JQG7iQjIQuC4Bku", // Lily
+  bn: "pFZP5JQG7iQjIQuC4Bku", // Lily
+  or: "pFZP5JQG7iQjIQuC4Bku", // Lily
+  ml: "pFZP5JQG7iQjIQuC4Bku", // Lily
+  pa: "pFZP5JQG7iQjIQuC4Bku", // Lily
 };
 
 serve(async (req) => {
