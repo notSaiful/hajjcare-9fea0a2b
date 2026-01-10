@@ -4,7 +4,7 @@ import { SimpleHeader } from "@/components/SimpleHeader";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Check, ArrowRight, ArrowLeft, ChevronRight, Users, Shield, Ban, Camera, Heart, BookOpen } from "lucide-react";
+import { Check, ArrowRight, ArrowLeft, ChevronRight, Users, Shield, Ban, Camera, Heart, BookOpen, Shirt, Tent, Mountain, Moon, Target, Landmark, Building2, MapPin } from "lucide-react";
 import { RULES_SECTIONS } from "@/data/saudiRulesContent";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -14,6 +14,14 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Camera,
   Heart,
   BookOpen,
+  Shirt,
+  Tent,
+  Mountain,
+  Moon,
+  Target,
+  Landmark,
+  Building2,
+  MapPin,
 };
 
 const RulesBriefingPage = () => {
