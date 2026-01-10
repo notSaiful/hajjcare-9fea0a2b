@@ -1,7 +1,11 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { supabase } from "@/integrations/supabase/client";
 
-// Map app language codes to speech synthesis language codes
+// Languages that should use ElevenLabs TTS for better quality
+const ELEVENLABS_LANGUAGES = ["ur", "ar", "hi"];
+
+// Map app language codes to speech synthesis language codes (fallback)
 const LANG_MAP: Record<string, string[]> = {
   en: ["en-US", "en-GB", "en"],
   ar: ["ar-SA", "ar-EG", "ar"],
@@ -32,54 +36,98 @@ const findVoiceForLanguage = (langCode: string): SpeechSynthesisVoice | null => 
 export const useTextToSpeech = () => {
   const { language } = useLanguage();
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [isSupported, setIsSupported] = useState(false);
+  const [isSupported, setIsSupported] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const voicesLoadedRef = useRef(false);
 
   useEffect(() => {
-    if (!('speechSynthesis' in window)) {
-      setIsSupported(false);
-      return;
+    // Load voices for Web Speech API fallback
+    if ('speechSynthesis' in window) {
+      const loadVoices = () => {
+        const voices = window.speechSynthesis.getVoices();
+        if (voices.length > 0) {
+          voicesLoadedRef.current = true;
+        }
+      };
+      
+      loadVoices();
+      window.speechSynthesis.onvoiceschanged = loadVoices;
+      
+      return () => {
+        window.speechSynthesis.onvoiceschanged = null;
+      };
     }
-    
-    setIsSupported(true);
-    
-    // Load voices (they may load async)
-    const loadVoices = () => {
-      const voices = window.speechSynthesis.getVoices();
-      if (voices.length > 0) {
-        voicesLoadedRef.current = true;
-      }
-    };
-    
-    loadVoices();
-    window.speechSynthesis.onvoiceschanged = loadVoices;
-    
-    return () => {
-      window.speechSynthesis.onvoiceschanged = null;
-    };
   }, []);
 
-  const speak = useCallback((text: string) => {
-    if (!('speechSynthesis' in window)) return;
+  const speakWithElevenLabs = useCallback(async (text: string, lang: string) => {
+    try {
+      setIsLoading(true);
+      setIsSpeaking(true);
 
-    // Cancel any ongoing speech
-    window.speechSynthesis.cancel();
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/elevenlabs-tts`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+            "Authorization": `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: JSON.stringify({ text, language: lang }),
+        }
+      );
 
-    if (isSpeaking) {
+      if (!response.ok) {
+        throw new Error(`TTS request failed: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      if (data.audioContent) {
+        // Stop any existing audio
+        if (audioRef.current) {
+          audioRef.current.pause();
+          audioRef.current = null;
+        }
+
+        const audioUrl = `data:audio/mpeg;base64,${data.audioContent}`;
+        const audio = new Audio(audioUrl);
+        audioRef.current = audio;
+
+        audio.onended = () => {
+          setIsSpeaking(false);
+          audioRef.current = null;
+        };
+
+        audio.onerror = () => {
+          setIsSpeaking(false);
+          audioRef.current = null;
+        };
+
+        setIsLoading(false);
+        await audio.play();
+      }
+    } catch (error) {
+      console.error("ElevenLabs TTS error:", error);
       setIsSpeaking(false);
-      return;
+      setIsLoading(false);
+      // Fallback to Web Speech API
+      speakWithWebSpeech(text, lang);
     }
+  }, []);
+
+  const speakWithWebSpeech = useCallback((text: string, lang: string) => {
+    if (!('speechSynthesis' in window)) return;
 
     const utterance = new SpeechSynthesisUtterance(text);
     
-    // Find the best voice for the current language
-    const voice = findVoiceForLanguage(language);
+    const voice = findVoiceForLanguage(lang);
     if (voice) {
       utterance.voice = voice;
       utterance.lang = voice.lang;
     } else {
-      // Fallback to language code
-      utterance.lang = LANG_MAP[language]?.[0] || "en-US";
+      utterance.lang = LANG_MAP[lang]?.[0] || "en-US";
     }
     
     utterance.rate = 0.9;
@@ -90,23 +138,54 @@ export const useTextToSpeech = () => {
     utterance.onerror = () => setIsSpeaking(false);
 
     window.speechSynthesis.speak(utterance);
-  }, [language, isSpeaking]);
+  }, []);
 
-  const stop = useCallback(() => {
+  const speak = useCallback((text: string) => {
+    // Stop any ongoing speech first
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
-      setIsSpeaking(false);
     }
+
+    if (isSpeaking) {
+      setIsSpeaking(false);
+      return;
+    }
+
+    // Use ElevenLabs for languages with poor Web Speech API support
+    if (ELEVENLABS_LANGUAGES.includes(language)) {
+      speakWithElevenLabs(text, language);
+    } else {
+      speakWithWebSpeech(text, language);
+    }
+  }, [language, isSpeaking, speakWithElevenLabs, speakWithWebSpeech]);
+
+  const stop = useCallback(() => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
+    setIsSpeaking(false);
+    setIsLoading(false);
   }, []);
 
   // Cleanup on unmount
   useEffect(() => {
     return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
       }
     };
   }, []);
 
-  return { speak, stop, isSpeaking, isSupported, currentLanguage: language };
+  return { speak, stop, isSpeaking, isSupported, isLoading, currentLanguage: language };
 };
