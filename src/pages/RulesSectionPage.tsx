@@ -1,11 +1,12 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { SimpleHeader } from "@/components/SimpleHeader";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, Check, Users, Shield, Ban, Camera, Heart, BookOpen, Shirt, Tent, Mountain, Moon, Target, Landmark, Building2, MapPin } from "lucide-react";
 import { getRulesSectionById, getNextRulesSection, getPreviousRulesSection, RULES_SECTIONS } from "@/data/saudiRulesContent";
+import { TextToSpeechButton } from "@/components/TextToSpeechButton";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Users,
@@ -67,6 +68,17 @@ const RulesSectionPage = () => {
     complete: { en: "Complete", ar: "إكمال", ur: "مکمل", hi: "पूर्ण", tr: "Tamamla", ru: "Завершить" },
   };
 
+  // Build full text for TTS
+  const fullTextForSpeech = useMemo(() => {
+    const title = section.title[language] || section.title.en;
+    const description = section.description[language] || section.description.en;
+    const rulesText = section.rules.map((rule, idx) => {
+      const text = rule.text[language] || rule.text.en;
+      return `${idx + 1}. ${text}`;
+    }).join(". ");
+    return `${title}. ${description}. ${rulesText}`;
+  }, [section, language]);
+
   return (
     <div className="min-h-screen bg-background" dir={isRTL ? "rtl" : "ltr"}>
       <SimpleHeader />
@@ -82,9 +94,13 @@ const RulesSectionPage = () => {
 
         {/* Header */}
         <div className="space-y-4">
-          <p className="text-sm text-muted-foreground">
-            {labels.stepOf[language] || labels.stepOf.en}
-          </p>
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-muted-foreground">
+              {labels.stepOf[language] || labels.stepOf.en}
+            </p>
+            {/* TTS Button */}
+            <TextToSpeechButton text={fullTextForSpeech} size="sm" />
+          </div>
           
           {/* Section Image */}
           {section.image && (
