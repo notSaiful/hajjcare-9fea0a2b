@@ -95,10 +95,10 @@ const RulesBriefingPage = () => {
                 onClick={() => navigate(`/rules/${section.id}`)}
               >
                 <CardContent className="p-4 flex items-center gap-4">
-                  <div className={`flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center ${
-                    isRead ? "bg-status-safe text-white" : "bg-primary/10 text-primary"
+                  <div className={`flex-shrink-0 w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center shadow-soft border-2 ${
+                    isRead ? "bg-status-safe text-white border-status-safe/30" : "bg-primary/10 text-primary border-primary/20"
                   }`}>
-                    {isRead ? <Check className="w-6 h-6" /> : <IconComponent className="w-6 h-6" />}
+                    {isRead ? <Check className="w-7 h-7 sm:w-8 sm:h-8" /> : <IconComponent className="w-7 h-7 sm:w-8 sm:h-8" />}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className={`font-semibold ${isRead ? "text-status-safe" : "text-foreground"}`}>

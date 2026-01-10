@@ -96,13 +96,13 @@ const PreparePage = () => {
                 onClick={() => isUnlocked && navigate(`/prepare/${ritual.id}`)}
               >
                 <CardContent className="p-3 sm:p-4 flex items-center gap-3 sm:gap-4">
-                  <div className={`flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-sm sm:text-base ${
-                    isCompleted ? "bg-status-safe text-white" :
-                    isUnlocked ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+                  <div className={`flex-shrink-0 w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center text-sm sm:text-base shadow-soft border-2 ${
+                    isCompleted ? "bg-status-safe text-white border-status-safe/30" :
+                    isUnlocked ? "bg-primary/10 text-primary border-primary/20" : "bg-muted text-muted-foreground border-muted"
                   }`}>
-                    {isCompleted ? <Check className="w-4 h-4 sm:w-5 sm:h-5" /> :
-                     !isUnlocked ? <Lock className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> :
-                     <span className="font-semibold">{ritual.order}</span>}
+                    {isCompleted ? <Check className="w-6 h-6 sm:w-7 sm:h-7" /> :
+                     !isUnlocked ? <Lock className="w-5 h-5 sm:w-6 sm:h-6" /> :
+                     <span className="font-bold text-lg sm:text-xl">{ritual.order}</span>}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className={`font-semibold text-sm sm:text-base ${isCompleted ? "text-status-safe" : "text-foreground"}`}>
