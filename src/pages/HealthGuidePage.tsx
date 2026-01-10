@@ -108,9 +108,9 @@ const HealthGuidePage = () => {
         </Link>
 
         <div className="space-y-1.5 sm:space-y-2">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center">
-              <Heart className="w-6 h-6 text-red-500" />
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-red-500/10 flex items-center justify-center shadow-soft border-2 border-red-500/20">
+              <Heart className="w-8 h-8 sm:w-10 sm:h-10 text-red-500" />
             </div>
             <div>
               <h1 className="text-xl sm:text-2xl font-bold">{labels.title[language] || labels.title.en}</h1>
@@ -123,9 +123,9 @@ const HealthGuidePage = () => {
           {healthTopics.map((topic, idx) => (
             <Card key={idx} className="border-2">
               <CardContent className="p-4 sm:p-5">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className={`w-10 h-10 rounded-full ${topic.bgColor} flex items-center justify-center`}>
-                    <topic.icon className={`w-5 h-5 ${topic.color}`} />
+                <div className="flex items-center gap-4 mb-4">
+                  <div className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full ${topic.bgColor} flex items-center justify-center shadow-soft border-2 ${topic.color.replace('text-', 'border-')}/20`}>
+                    <topic.icon className={`w-7 h-7 sm:w-8 sm:h-8 ${topic.color}`} />
                   </div>
                   <h2 className="text-lg font-semibold">{topic.title[language] || topic.title.en}</h2>
                 </div>

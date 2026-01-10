@@ -44,8 +44,8 @@ const QuickActions = ({ onSelect }: QuickActionsProps) => {
           className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-card border border-border hover:border-primary/30 hover:bg-primary/5 transition-all duration-200 shadow-soft hover:shadow-elevated group"
           style={{ animationDelay: `${index * 100}ms` }}
         >
-          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-            <action.icon className="w-5 h-5 text-primary" />
+          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors shadow-soft border-2 border-primary/20">
+            <action.icon className="w-7 h-7 sm:w-8 sm:h-8 text-primary" />
           </div>
           <p className="text-sm font-semibold text-foreground text-center">
             {t(action.labelKey)}

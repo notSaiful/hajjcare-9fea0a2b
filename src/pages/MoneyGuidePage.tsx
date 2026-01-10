@@ -109,9 +109,9 @@ const MoneyGuidePage = () => {
         </Link>
 
         <div className="space-y-1.5 sm:space-y-2">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center">
-              <Wallet className="w-6 h-6 text-green-600" />
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-green-500/10 flex items-center justify-center shadow-soft border-2 border-green-500/20">
+              <Wallet className="w-8 h-8 sm:w-10 sm:h-10 text-green-600" />
             </div>
             <div>
               <h1 className="text-xl sm:text-2xl font-bold">{labels.title[language] || labels.title.en}</h1>
@@ -124,9 +124,9 @@ const MoneyGuidePage = () => {
           {sections.map((section, idx) => (
             <Card key={idx} className="border-2">
               <CardContent className="p-4 sm:p-5">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className={`w-10 h-10 rounded-full ${section.bgColor} flex items-center justify-center`}>
-                    <section.icon className={`w-5 h-5 ${section.color}`} />
+                <div className="flex items-center gap-4 mb-4">
+                  <div className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full ${section.bgColor} flex items-center justify-center shadow-soft border-2 ${section.color.replace('text-', 'border-')}/20`}>
+                    <section.icon className={`w-7 h-7 sm:w-8 sm:h-8 ${section.color}`} />
                   </div>
                   <h2 className="text-lg font-semibold">{section.title[language] || section.title.en}</h2>
                 </div>
