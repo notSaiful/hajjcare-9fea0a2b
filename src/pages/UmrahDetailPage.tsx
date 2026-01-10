@@ -1,5 +1,5 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { MainLayout } from "@/components/MainLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import { ArrowLeft, ArrowRight, Check, AlertTriangle, Heart, Shield, BookOpen } 
 import { UMRAH_RITUALS } from "@/data/umrahContent";
 import { IconCircle } from "@/components/IconCircle";
 import { useProgression } from "@/hooks/useProgression";
+import { TextToSpeechButton } from "@/components/TextToSpeechButton";
 
 const UmrahDetailPage = () => {
   const { ritualId } = useParams();
@@ -73,6 +74,17 @@ const UmrahDetailPage = () => {
     stepOf: { en: `Step ${ritual.order} of ${totalCount}`, ar: `الخطوة ${ritual.order} من ${totalCount}`, ur: `مرحلہ ${ritual.order} از ${totalCount}`, hi: `चरण ${ritual.order} में से ${totalCount}`, tr: `Adım ${ritual.order} / ${totalCount}`, ru: `Шаг ${ritual.order} из ${totalCount}` },
   };
 
+  // Build full text for TTS
+  const fullTextForSpeech = useMemo(() => {
+    const title = ritual.title[language] || ritual.title.en;
+    const desc = ritual.description[language] || ritual.description.en;
+    const whatItIs = ritual.whatItIs[language] || ritual.whatItIs.en;
+    const stepsText = ritual.steps.map((s, i) => `${i + 1}. ${s.text[language] || s.text.en}`).join(". ");
+    const duaText = ritual.duaGuidance[language] || ritual.duaGuidance.en;
+    const mistakesText = ritual.mistakes.map(m => m.text[language] || m.text.en).join(". ");
+    return `${title}. ${desc}. ${whatItIs}. ${stepsText}. ${duaText}. ${mistakesText}`;
+  }, [ritual, language]);
+
   return (
     <MainLayout>
       <div className="container max-w-2xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6 pb-24">
@@ -86,9 +98,12 @@ const UmrahDetailPage = () => {
 
         {/* Title */}
         <div className="space-y-1.5">
-          <p className="text-sm text-muted-foreground">
-            {labels.stepOf[language] || labels.stepOf.en}
-          </p>
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-muted-foreground">
+              {labels.stepOf[language] || labels.stepOf.en}
+            </p>
+            <TextToSpeechButton text={fullTextForSpeech} size="sm" />
+          </div>
           <div className="flex items-center gap-3 sm:gap-4">
             <IconCircle 
               number={ritual.order} 
