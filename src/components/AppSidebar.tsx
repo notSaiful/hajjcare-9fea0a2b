@@ -11,8 +11,14 @@ import {
   ChevronRight,
   Users,
   Map,
-  FileText,
   Home,
+  BookMarked,
+  FileText,
+  Heart,
+  Wallet,
+  Smartphone,
+  MessageSquareWarning,
+  Phone,
 } from "lucide-react";
 import {
   Sidebar,
@@ -36,44 +42,100 @@ import logo from "@/assets/logo.jpeg";
 
 const labels = {
   guides: {
-    en: "Islamic Guides",
-    ar: "الأدلة الإسلامية",
-    ur: "اسلامی رہنمائی",
-    hi: "इस्लामी गाइड",
-    tr: "İslami Rehberler",
-    ru: "Исламские руководства",
+    en: "Guides",
+    ar: "الأدلة",
+    ur: "گائیڈز",
+    hi: "गाइड",
+    tr: "Rehberler",
+    ru: "Руководства",
   },
   hajjGuide: {
-    en: "Hajj Guide",
-    ar: "دليل الحج",
-    ur: "حج گائیڈ",
-    hi: "हज गाइड",
-    tr: "Hac Rehberi",
-    ru: "Руководство по хаджу",
+    en: "Hajj",
+    ar: "الحج",
+    ur: "حج",
+    hi: "हज",
+    tr: "Hac",
+    ru: "Хадж",
   },
   umrahGuide: {
-    en: "Umrah Guide",
-    ar: "دليل العمرة",
-    ur: "عمرہ گائیڈ",
-    hi: "उमरा गाइड",
-    tr: "Umre Rehberi",
-    ru: "Руководство по умре",
+    en: "Umrah",
+    ar: "العمرة",
+    ur: "عمرہ",
+    hi: "उमरा",
+    tr: "Umre",
+    ru: "Умра",
   },
-  makkahGuide: {
-    en: "Makkah Etiquette",
-    ar: "آداب مكة",
-    ur: "مکہ آداب",
-    hi: "मक्का शिष्टाचार",
-    tr: "Mekke Adabı",
-    ru: "Этикет Мекки",
+  preparationGuide: {
+    en: "Preparation Guide",
+    ar: "دليل التحضير",
+    ur: "تیاری گائیڈ",
+    hi: "तैयारी गाइड",
+    tr: "Hazırlık Rehberi",
+    ru: "Руководство по подготовке",
   },
-  madinahGuide: {
-    en: "Madinah Etiquette",
-    ar: "آداب المدينة",
-    ur: "مدینہ آداب",
-    hi: "मदीना शिष्टाचार",
-    tr: "Medine Adabı",
-    ru: "Этикет Медины",
+  duaGuide: {
+    en: "Dua",
+    ar: "الدعاء",
+    ur: "دعا",
+    hi: "दुआ",
+    tr: "Dua",
+    ru: "Дуа",
+  },
+  rulesRegulations: {
+    en: "Rules & Awareness",
+    ar: "القواعد والتوعية",
+    ur: "قواعد و آگاہی",
+    hi: "नियम और जागरूकता",
+    tr: "Kurallar ve Farkındalık",
+    ru: "Правила и осведомленность",
+  },
+  healthGuide: {
+    en: "Health",
+    ar: "الصحة",
+    ur: "صحت",
+    hi: "स्वास्थ्य",
+    tr: "Sağlık",
+    ru: "Здоровье",
+  },
+  moneyManagement: {
+    en: "Money Management",
+    ar: "إدارة المال",
+    ur: "مالی انتظام",
+    hi: "धन प्रबंधन",
+    tr: "Para Yönetimi",
+    ru: "Управление деньгами",
+  },
+  telecomGuide: {
+    en: "Telecom Guide",
+    ar: "دليل الاتصالات",
+    ur: "ٹیلی کام گائیڈ",
+    hi: "टेलीकॉम गाइड",
+    tr: "Telekom Rehberi",
+    ru: "Телеком руководство",
+  },
+  familyGuide: {
+    en: "Family",
+    ar: "العائلة",
+    ur: "فیملی",
+    hi: "परिवार",
+    tr: "Aile",
+    ru: "Семья",
+  },
+  grievances: {
+    en: "Grievances",
+    ar: "الشكاوى",
+    ur: "شکایات",
+    hi: "शिकायतें",
+    tr: "Şikayetler",
+    ru: "Жалобы",
+  },
+  contactNumbers: {
+    en: "Contact Numbers",
+    ar: "أرقام الاتصال",
+    ur: "رابطہ نمبر",
+    hi: "संपर्क नंबर",
+    tr: "İletişim Numaraları",
+    ru: "Контактные номера",
   },
   navigation: {
     en: "Navigation",
@@ -91,14 +153,6 @@ const labels = {
     tr: "Ana Sayfa",
     ru: "Главная",
   },
-  family: {
-    en: "Family",
-    ar: "العائلة",
-    ur: "فیملی",
-    hi: "परिवार",
-    tr: "Aile",
-    ru: "Семья",
-  },
   map: {
     en: "Map",
     ar: "الخريطة",
@@ -107,13 +161,21 @@ const labels = {
     tr: "Harita",
     ru: "Карта",
   },
-  rules: {
-    en: "Rules & Conduct",
-    ar: "القواعد والسلوك",
-    ur: "قواعد و آداب",
-    hi: "नियम और आचरण",
-    tr: "Kurallar ve Davranış",
-    ru: "Правила и поведение",
+  makkahGuide: {
+    en: "Makkah Etiquette",
+    ar: "آداب مكة",
+    ur: "مکہ آداب",
+    hi: "मक्का शिष्टाचार",
+    tr: "Mekke Adabı",
+    ru: "Этикет Мекки",
+  },
+  madinahGuide: {
+    en: "Madinah Etiquette",
+    ar: "آداب المدينة",
+    ur: "مدینہ آداب",
+    hi: "मदीना शिष्टाचार",
+    tr: "Medine Adabı",
+    ru: "Этикет Медины",
   },
 };
 
@@ -123,11 +185,25 @@ export function AppSidebar() {
   const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
 
-  const isGuidesActive =
-    location.pathname.startsWith("/prepare") ||
-    location.pathname.startsWith("/umrah") ||
-    location.pathname.startsWith("/makkah-guide") ||
-    location.pathname.startsWith("/madinah-guide");
+  const guideRoutes = [
+    "/prepare",
+    "/umrah",
+    "/preparation",
+    "/dua",
+    "/rules",
+    "/health",
+    "/money",
+    "/telecom",
+    "/family",
+    "/grievances",
+    "/contacts",
+    "/makkah-guide",
+    "/madinah-guide",
+  ];
+
+  const isGuidesActive = guideRoutes.some((route) =>
+    location.pathname.startsWith(route)
+  );
 
   const [guidesOpen, setGuidesOpen] = useState(isGuidesActive);
 
@@ -141,6 +217,51 @@ export function AppSidebar() {
       title: labels.umrahGuide[language] || labels.umrahGuide.en,
       url: "/umrah",
       icon: Compass,
+    },
+    {
+      title: labels.preparationGuide[language] || labels.preparationGuide.en,
+      url: "/preparation",
+      icon: BookMarked,
+    },
+    {
+      title: labels.duaGuide[language] || labels.duaGuide.en,
+      url: "/dua",
+      icon: BookOpen,
+    },
+    {
+      title: labels.rulesRegulations[language] || labels.rulesRegulations.en,
+      url: "/rules",
+      icon: FileText,
+    },
+    {
+      title: labels.healthGuide[language] || labels.healthGuide.en,
+      url: "/health",
+      icon: Heart,
+    },
+    {
+      title: labels.moneyManagement[language] || labels.moneyManagement.en,
+      url: "/money",
+      icon: Wallet,
+    },
+    {
+      title: labels.telecomGuide[language] || labels.telecomGuide.en,
+      url: "/telecom",
+      icon: Smartphone,
+    },
+    {
+      title: labels.familyGuide[language] || labels.familyGuide.en,
+      url: "/family",
+      icon: Users,
+    },
+    {
+      title: labels.grievances[language] || labels.grievances.en,
+      url: "/grievances",
+      icon: MessageSquareWarning,
+    },
+    {
+      title: labels.contactNumbers[language] || labels.contactNumbers.en,
+      url: "/contacts",
+      icon: Phone,
     },
     {
       title: labels.makkahGuide[language] || labels.makkahGuide.en,
@@ -161,19 +282,9 @@ export function AppSidebar() {
       icon: Home,
     },
     {
-      title: labels.family[language] || labels.family.en,
-      url: "/family",
-      icon: Users,
-    },
-    {
       title: labels.map[language] || labels.map.en,
       url: "/map",
       icon: Map,
-    },
-    {
-      title: labels.rules[language] || labels.rules.en,
-      url: "/rules",
-      icon: FileText,
     },
   ];
 
