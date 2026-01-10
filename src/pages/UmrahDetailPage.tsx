@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, ArrowRight, Check, AlertTriangle, Heart, Shield, BookOpen } from "lucide-react";
 import { UMRAH_RITUALS } from "@/data/umrahContent";
 import { useState, useEffect } from "react";
+import { IconCircle } from "@/components/IconCircle";
 
 const UmrahDetailPage = () => {
   const { ritualId } = useParams();
@@ -76,9 +77,11 @@ const UmrahDetailPage = () => {
         {/* Title */}
         <div className="space-y-1.5">
           <div className="flex items-center gap-3 sm:gap-4">
-            <div className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center shadow-soft border-2 ${isCompleted ? "bg-status-safe text-white border-status-safe/30" : "bg-primary/10 text-primary border-primary/20"}`}>
-              {isCompleted ? <Check className="w-6 h-6 sm:w-7 sm:h-7" /> : <span className="font-bold text-lg sm:text-xl">{ritual.order}</span>}
-            </div>
+            <IconCircle 
+              number={ritual.order} 
+              isCompleted={isCompleted} 
+              size="md"
+            />
             <h1 className="text-xl sm:text-2xl font-bold">{ritual.title[language] || ritual.title.en}</h1>
           </div>
           <p className="text-sm sm:text-base text-muted-foreground">{ritual.description[language] || ritual.description.en}</p>
@@ -105,9 +108,7 @@ const UmrahDetailPage = () => {
           <CardContent className="space-y-3">
             {ritual.steps.map((step) => (
               <div key={step.step} className="flex gap-3 sm:gap-4">
-                <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm sm:text-base font-semibold shadow-soft border-2 border-primary/20">
-                  {step.step}
-                </div>
+                <IconCircle number={step.step} size="sm" />
                 <p className="text-sm sm:text-base pt-2 sm:pt-3">{step.text[language] || step.text.en}</p>
               </div>
             ))}

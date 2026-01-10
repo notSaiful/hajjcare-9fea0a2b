@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Check, ChevronRight } from "lucide-react";
 import { MADINAH_GUIDE_TOPICS } from "@/data/madinahGuideContent";
+import { IconCircle } from "@/components/IconCircle";
 
 const MadinahGuidePage = () => {
   const { language } = useLanguage();
@@ -111,19 +112,11 @@ const MadinahGuidePage = () => {
                 onClick={() => navigate(`/madinah-guide/${topic.id}`)}
               >
                 <CardContent className="p-3 sm:p-4 flex items-center gap-3 sm:gap-4">
-                  <div
-                    className={`flex-shrink-0 w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center text-sm sm:text-base shadow-soft border-2 ${
-                      isCompleted
-                        ? "bg-status-safe text-white border-status-safe/30"
-                        : "bg-primary/10 text-primary border-primary/20"
-                    }`}
-                  >
-                    {isCompleted ? (
-                      <Check className="w-6 h-6 sm:w-7 sm:h-7" />
-                    ) : (
-                      <span className="font-bold text-lg sm:text-xl">{topic.order}</span>
-                    )}
-                  </div>
+                  <IconCircle 
+                    number={topic.order} 
+                    isCompleted={isCompleted} 
+                    size="md"
+                  />
                   <div className="flex-1 min-w-0">
                     <p
                       className={`font-semibold text-sm sm:text-base ${
