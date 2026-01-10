@@ -18,7 +18,7 @@ import {
   Bot,
   ScrollText,
   LifeBuoy,
-  CalendarClock,
+  
   LucideIcon,
 } from "lucide-react";
 
@@ -135,13 +135,6 @@ const menuItems: MenuItem[] = [
     label: { en: "Contacts", ar: "الاتصال", ur: "رابطہ", hi: "संपर्क", tr: "İletişim", ru: "Контакты" },
     route: "/contacts",
     color: "teal",
-  },
-  {
-    id: "meeting",
-    icon: CalendarClock,
-    label: { en: "Meeting", ar: "الاجتماع", ur: "میٹنگ", hi: "मीटिंग", tr: "Toplantı", ru: "Встреча" },
-    route: "/meeting",
-    color: "violet",
   },
   {
     id: "help",
