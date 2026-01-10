@@ -95,8 +95,8 @@ const FamilyPage = () => {
                     className="flex items-center justify-between p-2.5 sm:p-3 bg-muted/50 rounded-xl"
                   >
                     <div className="flex items-center gap-2.5 sm:gap-3">
-                      <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
-                        <Users className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500" />
+                      <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-primary/10 flex items-center justify-center shadow-soft border-2 border-primary/20">
+                        <Users className="w-6 h-6 sm:w-7 sm:h-7 text-primary" />
                       </div>
                       <div>
                         <p className="font-medium text-sm sm:text-base">{loc.member_name}</p>
@@ -128,7 +128,9 @@ const FamilyPage = () => {
         {group && otherMembers.length === 0 && (
           <Card className="bg-card/50 backdrop-blur">
             <CardContent className="py-6 sm:py-8 text-center">
-              <Users className="w-10 h-10 sm:w-12 sm:h-12 text-muted-foreground mx-auto mb-2.5 sm:mb-3" />
+              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3 sm:mb-4 shadow-soft border-2 border-primary/20">
+                <Users className="w-8 h-8 sm:w-10 sm:h-10 text-primary" />
+              </div>
               <p className="text-sm sm:text-base text-muted-foreground">
                 {isRTL 
                   ? "شارك رمز الدعوة مع عائلتك للانضمام" 
