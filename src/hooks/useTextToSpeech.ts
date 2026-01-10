@@ -3,7 +3,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 
 // Languages that should use ElevenLabs TTS for better quality
-const ELEVENLABS_LANGUAGES = ["ur", "ar", "hi"];
+const ELEVENLABS_LANGUAGES = ["ur", "ar", "hi", "ta", "te", "mr", "bn", "or", "ml", "pa"];
 
 // Map app language codes to speech synthesis language codes (fallback)
 const LANG_MAP: Record<string, string[]> = {
@@ -11,8 +11,13 @@ const LANG_MAP: Record<string, string[]> = {
   ar: ["ar-SA", "ar-EG", "ar"],
   ur: ["ur-PK", "ur-IN", "ur"],
   hi: ["hi-IN", "hi"],
-  tr: ["tr-TR", "tr"],
-  ru: ["ru-RU", "ru"],
+  ta: ["ta-IN", "ta"],
+  te: ["te-IN", "te"],
+  mr: ["mr-IN", "mr"],
+  bn: ["bn-IN", "bn-BD", "bn"],
+  or: ["or-IN", "or"],
+  ml: ["ml-IN", "ml"],
+  pa: ["pa-IN", "pa-PK", "pa"],
 };
 
 // Find the best matching voice for a language

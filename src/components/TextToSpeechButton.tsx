@@ -12,8 +12,8 @@ interface TextToSpeechButtonProps {
 }
 
 const LABELS = {
-  listen: { en: "Listen", ar: "استمع", ur: "سنیں", hi: "सुनें", tr: "Dinle", ru: "Слушать" },
-  stop: { en: "Stop", ar: "إيقاف", ur: "رکیں", hi: "रोकें", tr: "Dur", ru: "Стоп" },
+  listen: { en: "Listen", ar: "استمع", ur: "سنیں", hi: "सुनें", ta: "கேள்", te: "వినండి", mr: "ऐका", bn: "শুনুন", or: "ଶୁଣନ୍ତୁ", ml: "കേൾക്കുക", pa: "ਸੁਣੋ" },
+  stop: { en: "Stop", ar: "إيقاف", ur: "رکیں", hi: "रोकें", ta: "நிறுத்து", te: "ఆపు", mr: "थांबा", bn: "থামান", or: "ବନ୍ଦ କରନ୍ତୁ", ml: "നിർത്തുക", pa: "ਰੋਕੋ" },
 };
 
 export const TextToSpeechButton = ({ 
