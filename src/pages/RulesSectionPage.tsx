@@ -4,7 +4,7 @@ import { SimpleHeader } from "@/components/SimpleHeader";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ArrowRight, Check, Users, Shield, Ban, Camera, Heart, BookOpen } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Users, Shield, Ban, Camera, Heart, BookOpen, Shirt, Tent, Mountain, Moon, Target, Landmark, Building2, MapPin } from "lucide-react";
 import { getRulesSectionById, getNextRulesSection, getPreviousRulesSection, RULES_SECTIONS } from "@/data/saudiRulesContent";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -14,6 +14,14 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Camera,
   Heart,
   BookOpen,
+  Shirt,
+  Tent,
+  Mountain,
+  Moon,
+  Target,
+  Landmark,
+  Building2,
+  MapPin,
 };
 
 const RulesSectionPage = () => {
@@ -77,6 +85,17 @@ const RulesSectionPage = () => {
           <p className="text-sm text-muted-foreground">
             {labels.stepOf[language] || labels.stepOf.en}
           </p>
+          
+          {/* Section Image */}
+          {section.image && (
+            <div className="rounded-xl overflow-hidden border-2 border-border">
+              <img 
+                src={section.image} 
+                alt={section.title[language] || section.title.en}
+                className="w-full h-48 object-cover"
+              />
+            </div>
+          )}
           
           <div className="flex items-start gap-4">
             <div className="flex-shrink-0 w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center">

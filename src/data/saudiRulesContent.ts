@@ -2,6 +2,7 @@ import { Language } from "@/contexts/LanguageContext";
 
 export interface RuleItem {
   text: Record<Language, string>;
+  image?: string;
 }
 
 export interface RulesSection {
@@ -10,6 +11,7 @@ export interface RulesSection {
   title: Record<Language, string>;
   description: Record<Language, string>;
   icon: string;
+  image?: string;
   rules: RuleItem[];
 }
 
@@ -1089,6 +1091,352 @@ export const RULES_SECTIONS: RulesSection[] = [
           hi: "कब्रों या मज़ारों से बरकत न माँगें। केवल अल्लाह से दुआ करें।",
           tr: "Kabirlerden veya türbelerden bereket dilemeyin. Sadece Allah'a dua edin.",
           ru: "Не ищите благословений от могил или гробниц. Молитесь только Аллаху.",
+        },
+      },
+    ],
+  },
+  {
+    id: "cybersecurity-awareness",
+    order: 14,
+    title: {
+      en: "Cybersecurity Awareness",
+      ar: "التوعية بالأمن السيبراني",
+      ur: "سائبر سیکیورٹی آگاہی",
+      hi: "साइबर सुरक्षा जागरूकता",
+      tr: "Siber Güvenlik Farkındalığı",
+      ru: "Осведомлённость о кибербезопасности",
+    },
+    description: {
+      en: "Protect yourself from cyber threats during Hajj and Umrah",
+      ar: "احمِ نفسك من التهديدات السيبرانية خلال الحج والعمرة",
+      ur: "حج اور عمرہ کے دوران سائبر خطرات سے خود کو بچائیں",
+      hi: "हज और उमराह के दौरान साइबर खतरों से खुद को बचाएं",
+      tr: "Hac ve Umre sırasında siber tehditlerden korunun",
+      ru: "Защитите себя от киберугроз во время хаджа и умры",
+    },
+    icon: "Shield",
+    image: "/assets/rules/cybersecurity-cover.jpg",
+    rules: [
+      {
+        text: {
+          en: "Beware of social engineering attacks. Attackers may impersonate trusted entities or officials.",
+          ar: "احذر من هجمات الهندسة الاجتماعية. قد ينتحل المهاجمون صفة جهات موثوقة أو مسؤولين.",
+          ur: "سوشل انجینئرنگ حملوں سے ہوشیار رہیں۔ حملہ آور قابل اعتماد اداروں یا اہلکاروں کا روپ دھار سکتے ہیں۔",
+          hi: "सोशल इंजीनियरिंग हमलों से सावधान रहें। हमलावर विश्वसनीय संस्थाओं या अधिकारियों का रूप धारण कर सकते हैं।",
+          tr: "Sosyal mühendislik saldırılarına dikkat edin. Saldırganlar güvenilir kurumlar veya yetkililer gibi davranabilir.",
+          ru: "Остерегайтесь атак социальной инженерии. Злоумышленники могут выдавать себя за доверенные организации или должностных лиц.",
+        },
+      },
+      {
+        text: {
+          en: "Avoid clicking links in suspicious emails or SMS claiming to be from Hajj authorities.",
+          ar: "تجنب النقر على الروابط في رسائل البريد الإلكتروني أو الرسائل النصية المشبوهة التي تدّعي أنها من سلطات الحج.",
+          ur: "حج حکام سے ہونے کا دعویٰ کرنے والی مشکوک ای میلز یا SMS میں لنکس پر کلک نہ کریں۔",
+          hi: "हज अधिकारियों से होने का दावा करने वाले संदिग्ध ईमेल या SMS में लिंक पर क्लिक न करें।",
+          tr: "Hac yetkililerinden geldiğini iddia eden şüpheli e-posta veya SMS'lerdeki bağlantılara tıklamayın.",
+          ru: "Не переходите по ссылкам в подозрительных электронных письмах или SMS, якобы от властей хаджа.",
+        },
+      },
+      {
+        text: {
+          en: "Set a strong passcode and enable biometric authentication (Face ID/fingerprint) on your phone.",
+          ar: "استخدم رمز مرور قوي وفعّل المصادقة البيومترية (Face ID/بصمة الإصبع) على هاتفك.",
+          ur: "اپنے فون پر مضبوط پاس کوڈ سیٹ کریں اور بایومیٹرک تصدیق (Face ID/فنگر پرنٹ) فعال کریں۔",
+          hi: "अपने फोन पर मजबूत पासकोड सेट करें और बायोमेट्रिक प्रमाणीकरण (Face ID/फिंगरप्रिंट) सक्षम करें।",
+          tr: "Telefonunuzda güçlü bir şifre belirleyin ve biyometrik kimlik doğrulamayı (Face ID/parmak izi) etkinleştirin.",
+          ru: "Установите надёжный пароль и включите биометрическую аутентификацию (Face ID/отпечаток пальца) на телефоне.",
+        },
+      },
+      {
+        text: {
+          en: "Only use secure websites (https://) for bookings. Verify URLs before entering personal information.",
+          ar: "استخدم فقط المواقع الآمنة (https://) للحجوزات. تحقق من عناوين URL قبل إدخال المعلومات الشخصية.",
+          ur: "بکنگ کے لیے صرف محفوظ ویب سائٹس (https://) استعمال کریں۔ ذاتی معلومات درج کرنے سے پہلے URLs کی تصدیق کریں۔",
+          hi: "बुकिंग के लिए केवल सुरक्षित वेबसाइटें (https://) उपयोग करें। व्यक्तिगत जानकारी दर्ज करने से पहले URLs सत्यापित करें।",
+          tr: "Rezervasyonlar için yalnızca güvenli web sitelerini (https://) kullanın. Kişisel bilgi girmeden önce URL'leri doğrulayın.",
+          ru: "Используйте только защищённые сайты (https://) для бронирования. Проверяйте URL перед вводом личных данных.",
+        },
+      },
+      {
+        text: {
+          en: "Install all security updates on your devices before traveling. Keep apps updated.",
+          ar: "ثبّت جميع التحديثات الأمنية على أجهزتك قبل السفر. حافظ على تحديث التطبيقات.",
+          ur: "سفر سے پہلے اپنے آلات پر تمام سیکیورٹی اپڈیٹس انسٹال کریں۔ ایپس اپڈیٹ رکھیں۔",
+          hi: "यात्रा से पहले अपने उपकरणों पर सभी सुरक्षा अपडेट इंस्टॉल करें। ऐप्स अपडेट रखें।",
+          tr: "Seyahattan önce cihazlarınıza tüm güvenlik güncellemelerini yükleyin. Uygulamaları güncel tutun.",
+          ru: "Установите все обновления безопасности на устройствах перед поездкой. Держите приложения обновлёнными.",
+        },
+      },
+      {
+        text: {
+          en: "Back up your phone data before traveling. In case of loss, you can recover important information.",
+          ar: "انسخ بيانات هاتفك احتياطياً قبل السفر. في حالة الفقدان، يمكنك استعادة المعلومات المهمة.",
+          ur: "سفر سے پہلے اپنے فون کا ڈیٹا بیک اپ کریں۔ گم ہونے کی صورت میں اہم معلومات بحال کر سکتے ہیں۔",
+          hi: "यात्रा से पहले अपने फोन का डेटा बैकअप करें। खो जाने पर महत्वपूर्ण जानकारी रिकवर कर सकते हैं।",
+          tr: "Seyahattan önce telefon verilerinizi yedekleyin. Kayıp durumunda önemli bilgileri kurtarabilirsiniz.",
+          ru: "Сделайте резервную копию данных телефона перед поездкой. В случае потери сможете восстановить важную информацию.",
+        },
+      },
+      {
+        text: {
+          en: "Use only official Hajj and Umrah apps. Download from App Store or Google Play only.",
+          ar: "استخدم فقط تطبيقات الحج والعمرة الرسمية. قم بتنزيلها من متجر التطبيقات أو جوجل بلاي فقط.",
+          ur: "صرف سرکاری حج اور عمرہ ایپس استعمال کریں۔ صرف App Store یا Google Play سے ڈاؤن لوڈ کریں۔",
+          hi: "केवल आधिकारिक हज और उमराह ऐप्स उपयोग करें। केवल App Store या Google Play से डाउनलोड करें।",
+          tr: "Yalnızca resmi Hac ve Umre uygulamalarını kullanın. Sadece App Store veya Google Play'den indirin.",
+          ru: "Используйте только официальные приложения хаджа и умры. Скачивайте только из App Store или Google Play.",
+        },
+      },
+    ],
+  },
+  {
+    id: "grand-mosque-guide",
+    order: 15,
+    title: {
+      en: "Grand Mosque Guide",
+      ar: "دليل المسجد الحرام",
+      ur: "مسجد حرام کا رہنما",
+      hi: "मस्जिद-ए-हराम गाइड",
+      tr: "Harem-i Şerif Rehberi",
+      ru: "Путеводитель по Заповедной мечети",
+    },
+    description: {
+      en: "Know the sacred landmarks and services at the Grand Mosque",
+      ar: "تعرف على المعالم المقدسة والخدمات في المسجد الحرام",
+      ur: "مسجد حرام کے مقدس مقامات اور خدمات جانیں",
+      hi: "मस्जिद-ए-हराम के पवित्र स्थलों और सेवाओं को जानें",
+      tr: "Harem-i Şerif'teki kutsal mekanları ve hizmetleri tanıyın",
+      ru: "Узнайте о священных достопримечательностях и услугах Заповедной мечети",
+    },
+    icon: "Landmark",
+    image: "/assets/rules/grand-mosque-cover.jpg",
+    rules: [
+      {
+        text: {
+          en: "The Ka'ba is the Qiblah (prayer direction) for Muslims worldwide. Tawaf is performed around it.",
+          ar: "الكعبة هي القبلة (اتجاه الصلاة) للمسلمين في جميع أنحاء العالم. يُؤدى الطواف حولها.",
+          ur: "کعبہ دنیا بھر کے مسلمانوں کا قبلہ (نماز کی سمت) ہے۔ اس کے گرد طواف کیا جاتا ہے۔",
+          hi: "काबा दुनिया भर के मुसलमानों के लिए किबला (नमाज़ की दिशा) है। इसके चारों ओर तवाफ़ किया जाता है।",
+          tr: "Kâbe, dünya genelinde Müslümanlar için Kıble'dir (namaz yönü). Tavaf onun etrafında yapılır.",
+          ru: "Кааба — это Кибла (направление молитвы) для мусульман всего мира. Таваф совершается вокруг неё.",
+        },
+      },
+      {
+        text: {
+          en: "The Black Stone (Al-Hajar Al-Aswad) is at the starting point of Tawaf. Point or wave if crowded.",
+          ar: "الحجر الأسود هو نقطة بداية الطواف. أشر أو لوّح إذا كان هناك ازدحام.",
+          ur: "حجر اسود طواف کا نقطہ آغاز ہے۔ بھیڑ ہو تو اشارہ یا ہاتھ ہلائیں۔",
+          hi: "हजर-ए-असवद तवाफ़ का प्रारंभ बिंदु है। भीड़ हो तो इशारा करें या हाथ हिलाएं।",
+          tr: "Hacer-ül Esved, Tavaf'ın başlangıç noktasıdır. Kalabalıksa işaret edin veya el sallayın.",
+          ru: "Чёрный камень (Аль-Хаджар Аль-Асвад) — начальная точка Тавафа. Укажите или помашите, если многолюдно.",
+        },
+      },
+      {
+        text: {
+          en: "Maqaam Ibrahim is where Ibrahim stood while building the Ka'ba. Pray two rak'aas behind it after Tawaf.",
+          ar: "مقام إبراهيم حيث وقف إبراهيم أثناء بناء الكعبة. صلِّ ركعتين خلفه بعد الطواف.",
+          ur: "مقام ابراہیم وہ جگہ ہے جہاں ابراہیم علیہ السلام کعبہ بناتے وقت کھڑے تھے۔ طواف کے بعد اس کے پیچھے دو رکعت پڑھیں۔",
+          hi: "मक़ाम इब्राहीम वह स्थान है जहाँ इब्राहीम काबा बनाते समय खड़े थे। तवाफ़ के बाद इसके पीछे दो रकात पढ़ें।",
+          tr: "Makam-ı İbrahim, İbrahim'in Kâbe'yi inşa ederken durduğu yerdir. Tavaf'tan sonra arkasında iki rekât namaz kılın.",
+          ru: "Макам Ибрахим — место, где стоял Ибрахим, строя Каабу. После Тавафа совершите два ракаата позади него.",
+        },
+      },
+      {
+        text: {
+          en: "Zamzam water is blessed. Drink it with intention and supplication. Say 'Bismillah' before drinking.",
+          ar: "ماء زمزم مبارك. اشربه بنية ودعاء. قل 'بسم الله' قبل الشرب.",
+          ur: "زمزم کا پانی مبارک ہے۔ نیت اور دعا کے ساتھ پئیں۔ پینے سے پہلے 'بسم اللہ' کہیں۔",
+          hi: "ज़मज़म का पानी मुबारक है। नीयत और दुआ के साथ पिएं। पीने से पहले 'बिस्मिल्लाह' कहें।",
+          tr: "Zemzem suyu mübarektir. Niyet ve dua ile için. İçmeden önce 'Bismillah' deyin.",
+          ru: "Вода Замзам благословенна. Пейте её с намерением и мольбой. Скажите 'Бисмиллях' перед питьём.",
+        },
+      },
+      {
+        text: {
+          en: "Safa and Marwa are the hills between which Sa'i is performed (7 circuits).",
+          ar: "الصفا والمروة هما التلان اللذان يُؤدى بينهما السعي (7 أشواط).",
+          ur: "صفا اور مروہ وہ پہاڑیاں ہیں جن کے درمیان سعی کی جاتی ہے (7 چکر)۔",
+          hi: "सफ़ा और मरवा वे पहाड़ियाँ हैं जिनके बीच सई की जाती है (7 चक्कर)।",
+          tr: "Safa ve Merve, Sa'y'ın yapıldığı tepelerdir (7 şavt).",
+          ru: "Сафа и Марва — холмы, между которыми совершается Са'й (7 кругов).",
+        },
+      },
+      {
+        text: {
+          en: "Wheelchair services are available free of charge. Inaya Care Centers provide assistance for disabled pilgrims.",
+          ar: "خدمات الكراسي المتحركة متوفرة مجاناً. توفر مراكز العناية المساعدة للحجاج ذوي الإعاقة.",
+          ur: "وہیل چیئر سروسز مفت دستیاب ہیں۔ عنایہ کیئر سینٹرز معذور حجاج کو مدد فراہم کرتے ہیں۔",
+          hi: "व्हीलचेयर सेवाएं मुफ्त उपलब्ध हैं। इनाया केयर सेंटर विकलांग तीर्थयात्रियों को सहायता प्रदान करते हैं।",
+          tr: "Tekerlekli sandalye hizmetleri ücretsizdir. İnaye Bakım Merkezleri engelli hacılara yardım sağlar.",
+          ru: "Услуги инвалидных колясок предоставляются бесплатно. Центры ухода Инайя помогают паломникам с ограниченными возможностями.",
+        },
+      },
+    ],
+  },
+  {
+    id: "umrah-step-by-step",
+    order: 16,
+    title: {
+      en: "Umrah Step-by-Step",
+      ar: "العمرة خطوة بخطوة",
+      ur: "عمرہ مرحلہ وار",
+      hi: "उमराह चरण दर चरण",
+      tr: "Umre Adım Adım",
+      ru: "Умра шаг за шагом",
+    },
+    description: {
+      en: "Complete guide to performing Umrah correctly",
+      ar: "دليل كامل لأداء العمرة بشكل صحيح",
+      ur: "عمرہ صحیح طریقے سے ادا کرنے کا مکمل رہنما",
+      hi: "उमराह सही ढंग से करने की पूरी गाइड",
+      tr: "Umre'yi doğru şekilde yapmak için eksiksiz rehber",
+      ru: "Полное руководство по правильному совершению умры",
+    },
+    icon: "BookOpen",
+    image: "/assets/rules/umrah-cover.jpg",
+    rules: [
+      {
+        text: {
+          en: "Enter Ihraam at the Miqat. Recite Talbiyah: 'Labbayk Allahumma Labbayk...'",
+          ar: "ادخل في الإحرام عند الميقات. ردد التلبية: 'لبيك اللهم لبيك...'",
+          ur: "میقات پر احرام باندھیں۔ تلبیہ پڑھیں: 'لبیک اللہم لبیک...'",
+          hi: "मीकात पर इहराम में प्रवेश करें। तलबियह पढ़ें: 'लब्बैक अल्लाहुम्मा लब्बैक...'",
+          tr: "Mikat'ta ihrama girin. Telbiye okuyun: 'Lebbeyk Allahümme Lebbeyk...'",
+          ru: "Войдите в ихрам в Микате. Произнесите Тальбию: 'Лаббайка Аллахумма Лаббайк...'",
+        },
+      },
+      {
+        text: {
+          en: "Perform Tawaf: Circle the Ka'ba 7 times counter-clockwise, starting from the Black Stone.",
+          ar: "أدِّ الطواف: طف حول الكعبة 7 أشواط عكس عقارب الساعة، بدءاً من الحجر الأسود.",
+          ur: "طواف کریں: کعبہ کے گرد 7 چکر لگائیں ٹھیک گھڑی کی سمت کے برعکس، حجر اسود سے شروع کریں۔",
+          hi: "तवाफ़ करें: काबा के चारों ओर 7 चक्कर लगाएं वामावर्त, हजर-ए-असवद से शुरू करें।",
+          tr: "Tavaf yapın: Kâbe'nin etrafında saat yönünün tersine 7 şavt dönün, Hacer-ül Esved'den başlayarak.",
+          ru: "Совершите Таваф: обойдите Каабу 7 раз против часовой стрелки, начиная от Чёрного камня.",
+        },
+      },
+      {
+        text: {
+          en: "Pray 2 rak'aas behind Maqaam Ibrahim after completing Tawaf.",
+          ar: "صلِّ ركعتين خلف مقام إبراهيم بعد إتمام الطواف.",
+          ur: "طواف مکمل کرنے کے بعد مقام ابراہیم کے پیچھے 2 رکعت نماز پڑھیں۔",
+          hi: "तवाफ़ पूरा करने के बाद मक़ाम इब्राहीम के पीछे 2 रकात पढ़ें।",
+          tr: "Tavaf'ı tamamladıktan sonra Makam-ı İbrahim'in arkasında 2 rekât namaz kılın.",
+          ru: "Совершите 2 ракаата позади Макам Ибрахим после завершения Тавафа.",
+        },
+      },
+      {
+        text: {
+          en: "Drink Zamzam water with intention and supplication before Sa'i.",
+          ar: "اشرب ماء زمزم بنية ودعاء قبل السعي.",
+          ur: "سعی سے پہلے نیت اور دعا کے ساتھ زمزم کا پانی پئیں۔",
+          hi: "सई से पहले नीयत और दुआ के साथ ज़मज़म का पानी पिएं।",
+          tr: "Sa'y'dan önce niyet ve dua ile Zemzem suyu için.",
+          ru: "Выпейте воду Замзам с намерением и мольбой перед Са'й.",
+        },
+      },
+      {
+        text: {
+          en: "Perform Sa'i: Walk 7 times between Safa and Marwa. Start at Safa, end at Marwa.",
+          ar: "أدِّ السعي: امشِ 7 أشواط بين الصفا والمروة. ابدأ من الصفا وانتهِ عند المروة.",
+          ur: "سعی کریں: صفا اور مروہ کے درمیان 7 چکر لگائیں۔ صفا سے شروع کریں، مروہ پر ختم کریں۔",
+          hi: "सई करें: सफ़ा और मरवा के बीच 7 बार चलें। सफ़ा से शुरू करें, मरवा पर समाप्त करें।",
+          tr: "Sa'y yapın: Safa ile Merve arasında 7 kez yürüyün. Safa'da başlayın, Merve'de bitirin.",
+          ru: "Совершите Са'й: пройдите 7 раз между Сафа и Марва. Начните с Сафа, закончите на Марва.",
+        },
+      },
+      {
+        text: {
+          en: "Complete Umrah by shaving (men) or trimming (women cut 1-2 cm) your hair. Exit Ihraam.",
+          ar: "أكمل العمرة بحلق الرأس (للرجال) أو تقصيره (للنساء 1-2 سم). اخرج من الإحرام.",
+          ur: "سر منڈوا کر (مرد) یا بال کاٹ کر (خواتین 1-2 سینٹی میٹر) عمرہ مکمل کریں۔ احرام سے نکلیں۔",
+          hi: "सिर मुंडवा कर (पुरुष) या बाल काट कर (महिलाएं 1-2 सेमी) उमराह पूरा करें। इहराम से बाहर निकलें।",
+          tr: "Saçı tıraş ederek (erkekler) veya kırparak (kadınlar 1-2 cm) Umre'yi tamamlayın. İhramdan çıkın.",
+          ru: "Завершите умру бритьём (мужчины) или подстриганием (женщины 1-2 см) волос. Выйдите из ихрама.",
+        },
+      },
+    ],
+  },
+  {
+    id: "madinah-landmarks",
+    order: 17,
+    title: {
+      en: "Madinah Landmarks Guide",
+      ar: "دليل معالم المدينة المنورة",
+      ur: "مدینہ منورہ کے مقامات کا رہنما",
+      hi: "मदीना के स्थलों की गाइड",
+      tr: "Medine Simgeleri Rehberi",
+      ru: "Путеводитель по достопримечательностям Медины",
+    },
+    description: {
+      en: "Important sites to visit in the Prophet's City",
+      ar: "المواقع المهمة للزيارة في مدينة النبي",
+      ur: "نبی کے شہر میں زیارت کے اہم مقامات",
+      hi: "नबी के शहर में देखने योग्य महत्वपूर्ण स्थान",
+      tr: "Peygamber'in Şehri'nde ziyaret edilecek önemli yerler",
+      ru: "Важные места для посещения в Городе Пророка",
+    },
+    icon: "MapPin",
+    image: "/assets/rules/madinah-cover.jpg",
+    rules: [
+      {
+        text: {
+          en: "Madinah is the second holiest site in Islam. It was honored by the Prophet's migration (Hijrah).",
+          ar: "المدينة هي ثاني أقدس مكان في الإسلام. شُرّفت بهجرة النبي إليها.",
+          ur: "مدینہ اسلام کا دوسرا مقدس ترین مقام ہے۔ نبی ﷺ کی ہجرت سے یہ شرف پایا۔",
+          hi: "मदीना इस्लाम का दूसरा सबसे पवित्र स्थान है। नबी की हिजरत से इसे सम्मान मिला।",
+          tr: "Medine, İslam'ın ikinci en kutsal yeridir. Peygamber'in hicreti ile şereflendi.",
+          ru: "Медина — второе по святости место в исламе. Она была почтена переселением Пророка (Хиджра).",
+        },
+      },
+      {
+        text: {
+          en: "Quba Mosque is the first mosque in Islam. Prayer there equals one Umrah in reward.",
+          ar: "مسجد قباء هو أول مسجد في الإسلام. الصلاة فيه تعادل عمرة في الأجر.",
+          ur: "مسجد قباء اسلام کی پہلی مسجد ہے۔ وہاں نماز کا ثواب ایک عمرے کے برابر ہے۔",
+          hi: "मस्जिद क़ुबा इस्लाम की पहली मस्जिद है। वहाँ नमाज़ का सवाब एक उमराह के बराबर है।",
+          tr: "Kuba Mescidi İslam'ın ilk mescididir. Orada namaz, bir Umre sevabına eşittir.",
+          ru: "Мечеть Куба — первая мечеть в исламе. Молитва там равна умре по награде.",
+        },
+      },
+      {
+        text: {
+          en: "Al-Baqi' Cemetery contains graves of the Prophet's family and many Companions.",
+          ar: "تضم مقبرة البقيع قبور آل النبي وكثير من الصحابة.",
+          ur: "البقیع قبرستان میں نبی ﷺ کے خاندان اور بہت سے صحابہ کی قبریں ہیں۔",
+          hi: "अल-बक़ी कब्रिस्तान में नबी के परिवार और कई सहाबा की कब्रें हैं।",
+          tr: "Baki Mezarlığı, Peygamber'in ailesi ve birçok Sahabenin kabirlerini barındırır.",
+          ru: "Кладбище Аль-Баки содержит могилы семьи Пророка и многих сподвижников.",
+        },
+      },
+      {
+        text: {
+          en: "Mount Uhud is where the famous Battle of Uhud took place. Many martyrs are buried nearby.",
+          ar: "جبل أحد هو موقع معركة أحد الشهيرة. كثير من الشهداء مدفونون بالقرب منه.",
+          ur: "جبل احد وہ جگہ ہے جہاں مشہور غزوہ احد ہوا۔ کئی شہداء قریب دفن ہیں۔",
+          hi: "जबल उहुद वह स्थान है जहाँ प्रसिद्ध उहुद की लड़ाई हुई थी। कई शहीद पास में दफन हैं।",
+          tr: "Uhud Dağı, ünlü Uhud Savaşı'nın gerçekleştiği yerdir. Birçok şehit yakınlarda defnedilmiştir.",
+          ru: "Гора Ухуд — место знаменитой битвы при Ухуде. Многие мученики похоронены поблизости.",
+        },
+      },
+      {
+        text: {
+          en: "Al-Qiblatayn Mosque is where the Qiblah was changed from Jerusalem to Makkah during prayer.",
+          ar: "مسجد القبلتين هو حيث تحولت القبلة من القدس إلى مكة أثناء الصلاة.",
+          ur: "مسجد قبلتین وہ جگہ ہے جہاں نماز کے دوران قبلہ یروشلم سے مکہ کی طرف بدلا گیا۔",
+          hi: "मस्जिद अल-क़िबलतैन वह स्थान है जहाँ नमाज़ के दौरान क़िबला यरूशलम से मक्का की ओर बदला गया।",
+          tr: "Kıbleteyn Mescidi, namazda Kıble'nin Kudüs'ten Mekke'ye döndürüldüğü yerdir.",
+          ru: "Мечеть Аль-Киблатайн — место, где Кибла была изменена с Иерусалима на Мекку во время молитвы.",
+        },
+      },
+      {
+        text: {
+          en: "Visit the King Fahd Quran Printing Complex to see how the Quran is printed and distributed globally.",
+          ar: "زر مجمع الملك فهد لطباعة المصحف الشريف لترى كيف يُطبع القرآن ويُوزع عالمياً.",
+          ur: "کنگ فہد قرآن پرنٹنگ کمپلیکس دیکھیں جہاں قرآن چھاپا اور دنیا بھر میں تقسیم کیا جاتا ہے۔",
+          hi: "किंग फहद कुरान प्रिंटिंग कॉम्प्लेक्स देखें जहाँ कुरान छापा और विश्व भर में वितरित किया जाता है।",
+          tr: "Kuran'ın nasıl basıldığını ve dünyaya dağıtıldığını görmek için Kral Fahd Kuran Basım Tesisi'ni ziyaret edin.",
+          ru: "Посетите Комплекс печати Корана имени короля Фахда, чтобы увидеть, как Коран печатается и распространяется по всему миру.",
         },
       },
     ],
