@@ -122,9 +122,9 @@ const ContactNumbersPage = () => {
         </Link>
 
         <div className="space-y-1.5 sm:space-y-2">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-              <Phone className="w-6 h-6 text-primary" />
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-primary/10 flex items-center justify-center shadow-soft border-2 border-primary/20">
+              <Phone className="w-8 h-8 sm:w-10 sm:h-10 text-primary" />
             </div>
             <div>
               <h1 className="text-xl sm:text-2xl font-bold">{labels.title[language] || labels.title.en}</h1>
@@ -143,8 +143,8 @@ const ContactNumbersPage = () => {
               <a key={idx} href={`tel:${item.number}`} className="block">
                 <Card className="border-2 hover:border-primary/50 transition-colors h-full">
                   <CardContent className="p-4 text-center">
-                    <div className={`w-12 h-12 rounded-full ${item.bgColor} flex items-center justify-center mx-auto mb-2`}>
-                      <item.icon className={`w-6 h-6 ${item.color}`} />
+                    <div className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full ${item.bgColor} flex items-center justify-center mx-auto mb-3 shadow-soft border-2 ${item.color.replace('text-', 'border-')}/20`}>
+                      <item.icon className={`w-7 h-7 sm:w-8 sm:h-8 ${item.color}`} />
                     </div>
                     <p className="text-2xl font-bold text-primary mb-1">{item.number}</p>
                     <p className="text-sm font-medium">{item.title[language] || item.title.en}</p>
@@ -166,8 +166,8 @@ const ContactNumbersPage = () => {
               <a key={idx} href={`tel:${item.number}`} className="block">
                 <Card className="border hover:border-primary/50 transition-colors">
                   <CardContent className="p-4 flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                      <item.icon className="w-5 h-5 text-primary" />
+                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 shadow-soft border-2 border-primary/20">
+                      <item.icon className="w-6 h-6 sm:w-7 sm:h-7 text-primary" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-medium">{item.title[language] || item.title.en}</p>

@@ -101,9 +101,9 @@ const DuaGuidePage = () => {
                   className="w-full p-4 flex items-center justify-between text-left hover:bg-muted/30 transition-colors"
                   onClick={() => setExpandedDua(expandedDua === idx ? null : idx)}
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                      <BookOpen className="w-5 h-5 text-primary" />
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-primary/10 flex items-center justify-center shadow-soft border-2 border-primary/20">
+                      <BookOpen className="w-6 h-6 sm:w-7 sm:h-7 text-primary" />
                     </div>
                     <span className="font-semibold">{dua.title[language] || dua.title.en}</span>
                   </div>
