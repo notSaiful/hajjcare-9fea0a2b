@@ -1,22 +1,62 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
-const LANG_MAP: Record<string, string> = {
-  en: "en-US",
-  ar: "ar-SA",
-  ur: "ur-PK",
-  hi: "hi-IN",
-  tr: "tr-TR",
-  ru: "ru-RU",
+// Map app language codes to speech synthesis language codes
+const LANG_MAP: Record<string, string[]> = {
+  en: ["en-US", "en-GB", "en"],
+  ar: ["ar-SA", "ar-EG", "ar"],
+  ur: ["ur-PK", "ur-IN", "ur"],
+  hi: ["hi-IN", "hi"],
+  tr: ["tr-TR", "tr"],
+  ru: ["ru-RU", "ru"],
+};
+
+// Find the best matching voice for a language
+const findVoiceForLanguage = (langCode: string): SpeechSynthesisVoice | null => {
+  const voices = window.speechSynthesis.getVoices();
+  const langCodes = LANG_MAP[langCode] || [langCode];
+  
+  for (const code of langCodes) {
+    // Try exact match first
+    const exactMatch = voices.find(v => v.lang === code);
+    if (exactMatch) return exactMatch;
+    
+    // Try prefix match (e.g., "ar" matches "ar-SA")
+    const prefixMatch = voices.find(v => v.lang.startsWith(code.split('-')[0]));
+    if (prefixMatch) return prefixMatch;
+  }
+  
+  return null;
 };
 
 export const useTextToSpeech = () => {
   const { language } = useLanguage();
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isSupported, setIsSupported] = useState(false);
+  const voicesLoadedRef = useRef(false);
 
   useEffect(() => {
-    setIsSupported('speechSynthesis' in window);
+    if (!('speechSynthesis' in window)) {
+      setIsSupported(false);
+      return;
+    }
+    
+    setIsSupported(true);
+    
+    // Load voices (they may load async)
+    const loadVoices = () => {
+      const voices = window.speechSynthesis.getVoices();
+      if (voices.length > 0) {
+        voicesLoadedRef.current = true;
+      }
+    };
+    
+    loadVoices();
+    window.speechSynthesis.onvoiceschanged = loadVoices;
+    
+    return () => {
+      window.speechSynthesis.onvoiceschanged = null;
+    };
   }, []);
 
   const speak = useCallback((text: string) => {
@@ -31,7 +71,17 @@ export const useTextToSpeech = () => {
     }
 
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = LANG_MAP[language] || "en-US";
+    
+    // Find the best voice for the current language
+    const voice = findVoiceForLanguage(language);
+    if (voice) {
+      utterance.voice = voice;
+      utterance.lang = voice.lang;
+    } else {
+      // Fallback to language code
+      utterance.lang = LANG_MAP[language]?.[0] || "en-US";
+    }
+    
     utterance.rate = 0.9;
     utterance.pitch = 1;
 
@@ -58,5 +108,5 @@ export const useTextToSpeech = () => {
     };
   }, []);
 
-  return { speak, stop, isSpeaking, isSupported };
+  return { speak, stop, isSpeaking, isSupported, currentLanguage: language };
 };
