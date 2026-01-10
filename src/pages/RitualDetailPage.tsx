@@ -79,13 +79,13 @@ const RitualDetailPage = () => {
               <CheckCircle2 className="w-5 h-5 text-status-safe" />
               {sectionTitles.whatToDo[language] || sectionTitles.whatToDo.en}
             </h2>
-            <ol className="space-y-3">
+            <ol className="space-y-4">
               {ritual.steps.map((step) => (
-                <li key={step.step} className="flex gap-3">
-                  <span className="flex-shrink-0 w-7 h-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-semibold">
+                <li key={step.step} className="flex gap-3 sm:gap-4">
+                  <span className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm sm:text-base font-semibold shadow-soft border-2 border-primary/20">
                     {step.step}
                   </span>
-                  <p className="text-foreground pt-0.5">{step.text[language] || step.text.en}</p>
+                  <p className="text-foreground pt-2 sm:pt-3">{step.text[language] || step.text.en}</p>
                 </li>
               ))}
             </ol>
