@@ -33,6 +33,7 @@ const TelecomGuidePage = lazy(() => import("./pages/TelecomGuidePage"));
 const GrievancesPage = lazy(() => import("./pages/GrievancesPage"));
 const ContactNumbersPage = lazy(() => import("./pages/ContactNumbersPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const ChatPage = lazy(() => import("./pages/ChatPage"));
 
 const queryClient = new QueryClient();
 
@@ -78,6 +79,7 @@ const App = () => (
               <Route path="/family" element={<FamilyPage />} />
               <Route path="/map" element={<MapPage />} />
               <Route path="/auth" element={<AuthPage />} />
+              <Route path="/chat" element={<ChatPage />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

@@ -1,4 +1,4 @@
-import { Language } from "@/contexts/LanguageContext";
+import { Language, LocalizedString } from "@/contexts/LanguageContext";
 import { Ritual, RitualStep, MistakeToAvoid, SafetyTip, HadithReference, ImportantRuling } from "./manasikContent";
 
 export const UMRAH_RITUALS: Ritual[] = [

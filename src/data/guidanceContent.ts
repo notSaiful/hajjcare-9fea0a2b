@@ -1,11 +1,11 @@
-import { Language } from "@/contexts/LanguageContext";
+import { Language, LocalizedString } from "@/contexts/LanguageContext";
 
 export type GuidanceStatus = "WAIT" | "MOVE" | "PREPARE" | "ASSISTANCE";
 
 export interface GuidanceMessage {
   status: GuidanceStatus;
-  instruction: Record<Language, string>;
-  safety?: Record<Language, string>;
+  instruction: LocalizedString;
+  safety?: LocalizedString;
 }
 
 export type HajjPhase = 
@@ -41,7 +41,7 @@ export interface GuidanceContext {
 }
 
 // Status labels in all languages
-export const STATUS_LABELS: Record<GuidanceStatus, Record<Language, string>> = {
+export const STATUS_LABELS: Record<GuidanceStatus, LocalizedString> = {
   WAIT: {
     en: "WAIT",
     ar: "انتظر",
@@ -571,13 +571,11 @@ export const PHASE_GUIDANCE: Record<HajjPhase, Record<LocationZone, GuidanceMess
 
 // Elderly-specific modifications
 export const getElderlyModification = (language: Language): string => {
-  const modifications: Record<Language, string> = {
+  const modifications: LocalizedString = {
     en: "Take your time. Rest when needed.",
     ar: "خذ وقتك. استرح عند الحاجة.",
     ur: "اپنا وقت لیں۔ ضرورت پر آرام کریں۔",
     hi: "अपना समय लें। ज़रूरत पर आराम करें।",
-    tr: "Acelenizi almayın. Gerektiğinde dinlenin.",
-    ru: "Не торопитесь. Отдыхайте при необходимости.",
   };
   return modifications[language] || modifications.en;
 };

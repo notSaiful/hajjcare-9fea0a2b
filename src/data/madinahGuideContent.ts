@@ -1,31 +1,31 @@
-import { Language } from "@/contexts/LanguageContext";
+import { Language, LocalizedString } from "@/contexts/LanguageContext";
 
 export interface GuideStep {
   order: number;
-  instruction: Record<Language, string>;
+  instruction: LocalizedString;
 }
 
 export interface HadithReference {
-  text: Record<Language, string>;
+  text: LocalizedString;
   source: string;
 }
 
 export interface ImportantBoundary {
-  text: Record<Language, string>;
+  text: LocalizedString;
 }
 
 export interface MistakeToAvoid {
   id: string;
-  text: Record<Language, string>;
+  text: LocalizedString;
 }
 
 export interface MadinahGuideTopic {
   id: string;
   order: number;
-  title: Record<Language, string>;
-  whatItIs: Record<Language, string>;
+  title: LocalizedString;
+  whatItIs: LocalizedString;
   steps: GuideStep[];
-  duaGuidance: Record<Language, string>;
+  duaGuidance: LocalizedString;
   hadith?: HadithReference;
   importantBoundaries: ImportantBoundary[];
   mistakes: MistakeToAvoid[];
