@@ -63,11 +63,13 @@ const HomePage = () => {
           
           {/* Kaaba & Green Dome Image + Welcome Title */}
           <section className="text-center animate-fade-up" style={{ animationDelay: "0ms" }}>
-            <img 
-              src={kaabaGreenDome} 
-              alt="Kaaba & Green Dome" 
-              className="h-20 sm:h-28 w-auto object-contain mx-auto mb-3"
-            />
+            <div className="h-20 sm:h-28 overflow-hidden mx-auto mb-3 flex items-start justify-center">
+              <img 
+                src={kaabaGreenDome} 
+                alt="Kaaba & Green Dome" 
+                className="h-24 sm:h-32 w-auto object-cover object-top"
+              />
+            </div>
             <h1 className="text-xl sm:text-2xl font-bold text-foreground">
               {welcomeLabels[language as keyof typeof welcomeLabels] || welcomeLabels.en}
             </h1>
