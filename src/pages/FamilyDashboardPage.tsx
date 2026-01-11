@@ -133,11 +133,13 @@ const FamilyDashboardPage = () => {
 
         {/* Kaaba & Green Dome Image */}
         <div className="flex justify-center mb-4 sm:mb-6">
-          <img 
-            src={kaabaGreenDome} 
-            alt="Kaaba & Green Dome" 
-            className="h-24 sm:h-32 w-auto object-contain"
-          />
+          <div className="h-24 sm:h-32 overflow-hidden flex items-start justify-center">
+            <img 
+              src={kaabaGreenDome} 
+              alt="Kaaba & Green Dome" 
+              className="h-28 sm:h-36 w-auto object-cover object-top"
+            />
+          </div>
         </div>
 
         <h1 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-6 text-center">{labels.title}</h1>
