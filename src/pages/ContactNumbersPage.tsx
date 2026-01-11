@@ -4,6 +4,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, Phone, Ambulance, Shield, Building, Plane, HeartPulse, Car } from "lucide-react";
+import { TextToSpeechButton } from "@/components/TextToSpeechButton";
 
 const ContactNumbersPage = () => {
   const { language, isRTL } = useLanguage();
@@ -135,9 +136,17 @@ const ContactNumbersPage = () => {
 
         {/* Emergency Numbers */}
         <div className="space-y-3">
-          <h2 className="text-lg font-semibold text-red-600">
-            {language === "ar" ? "أرقام الطوارئ" : language === "ur" ? "ایمرجنسی نمبرز" : language === "hi" ? "आपातकालीन नंबर" : language === "tr" ? "Acil Numaralar" : language === "ru" ? "Экстренные номера" : "Emergency Numbers"}
-          </h2>
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-red-600">
+              {language === "ar" ? "أرقام الطوارئ" : language === "ur" ? "ایمرجنسی نمبرز" : language === "hi" ? "आपातकालीन नंबर" : language === "tr" ? "Acil Numaralar" : language === "ru" ? "Экстренные номера" : "Emergency Numbers"}
+            </h2>
+            <TextToSpeechButton
+              text={emergencyNumbers.map(item => `${item.title[language] || item.title.en}: ${item.number}. ${item.description[language] || item.description.en}`).join('. ')}
+              size="icon"
+              variant="ghost"
+              showLabel={false}
+            />
+          </div>
           <div className="grid grid-cols-2 gap-3">
             {emergencyNumbers.map((item, idx) => (
               <a key={idx} href={`tel:${item.number}`} className="block">
@@ -158,9 +167,17 @@ const ContactNumbersPage = () => {
 
         {/* Hajj Services */}
         <div className="space-y-3">
-          <h2 className="text-lg font-semibold text-primary">
-            {language === "ar" ? "خدمات الحج" : language === "ur" ? "حج خدمات" : language === "hi" ? "हज सेवाएं" : language === "tr" ? "Hac Hizmetleri" : language === "ru" ? "Услуги хаджа" : "Hajj Services"}
-          </h2>
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-primary">
+              {language === "ar" ? "خدمات الحج" : language === "ur" ? "حج خدمات" : language === "hi" ? "हज सेवाएं" : language === "tr" ? "Hac Hizmetleri" : language === "ru" ? "Услуги хаджа" : "Hajj Services"}
+            </h2>
+            <TextToSpeechButton
+              text={hajjServices.map(item => `${item.title[language] || item.title.en}: ${item.number}. ${item.description[language] || item.description.en}`).join('. ')}
+              size="icon"
+              variant="ghost"
+              showLabel={false}
+            />
+          </div>
           <div className="space-y-2">
             {hajjServices.map((item, idx) => (
               <a key={idx} href={`tel:${item.number}`} className="block">
@@ -186,9 +203,17 @@ const ContactNumbersPage = () => {
 
         {/* Embassies */}
         <div className="space-y-3">
-          <h2 className="text-lg font-semibold">
-            {language === "ar" ? "السفارات في الرياض" : language === "ur" ? "ریاض میں سفارت خانے" : language === "hi" ? "रियाद में दूतावास" : language === "tr" ? "Riyad'daki Elçilikler" : language === "ru" ? "Посольства в Эр-Рияде" : "Embassies in Riyadh"}
-          </h2>
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold">
+              {language === "ar" ? "السفارات في الرياض" : language === "ur" ? "ریاض میں سفارت خانے" : language === "hi" ? "रियाद में दूतावास" : language === "tr" ? "Riyad'daki Elçilikler" : language === "ru" ? "Посольства в Эр-Рияде" : "Embassies in Riyadh"}
+            </h2>
+            <TextToSpeechButton
+              text={embassies.map(embassy => `${embassy.country[language] || embassy.country.en}: ${embassy.number}`).join('. ')}
+              size="icon"
+              variant="ghost"
+              showLabel={false}
+            />
+          </div>
           <Card className="border-2">
             <CardContent className="p-4">
               <div className="space-y-3">
