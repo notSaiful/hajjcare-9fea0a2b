@@ -14,9 +14,18 @@ import {
   ArrowLeft,
   Compass,
   Target,
-  Users
+  Users,
+  FileText,
+  Download
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 const MapPage = () => {
   const mapContainer = useRef<HTMLDivElement>(null);
@@ -30,6 +39,26 @@ const MapPage = () => {
   const [mapError, setMapError] = useState<string | null>(null);
   const [showInfo, setShowInfo] = useState(true);
   const [showFamily, setShowFamily] = useState(true);
+  const [showMaps, setShowMaps] = useState(false);
+
+  const downloadableMaps = [
+    {
+      id: "makkah-building",
+      nameEn: "Makkah Building Map",
+      nameAr: "خريطة مباني مكة",
+      descEn: "Indian Hajj Pilgrims Building Location Map",
+      descAr: "خريطة مواقع مباني الحجاج الهنود",
+      file: "/maps/makkah-building-map.pdf"
+    },
+    {
+      id: "azizia",
+      nameEn: "Azizia Map",
+      nameAr: "خريطة العزيزية",
+      descEn: "Azizia Area Accommodation Map",
+      descAr: "خريطة سكن منطقة العزيزية",
+      file: "/maps/azizia-map.pdf"
+    }
+  ];
 
   // Update family group with location
   useEffect(() => {
@@ -289,18 +318,67 @@ const MapPage = () => {
         </div>
       </div>
 
-      {/* Family Toggle Button */}
-      {group && (
-        <Button
-          onClick={() => setShowFamily(!showFamily)}
-          size="sm"
-          variant={showFamily ? "default" : "secondary"}
-          className="absolute top-20 right-4 z-10 shadow-elevated gap-2"
-        >
-          <Users className="w-4 h-4" />
-          {otherMembers.length}
-        </Button>
-      )}
+      {/* Top Action Buttons */}
+      <div className="absolute top-20 right-4 z-10 flex flex-col gap-2">
+        {/* Downloadable Maps Button */}
+        <Dialog open={showMaps} onOpenChange={setShowMaps}>
+          <DialogTrigger asChild>
+            <Button
+              size="sm"
+              variant="secondary"
+              className="shadow-elevated gap-2"
+            >
+              <FileText className="w-4 h-4" />
+              {language === "ar" ? "الخرائط" : "Maps"}
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <FileText className="w-5 h-5 text-primary" />
+                {language === "ar" ? "تحميل الخرائط" : "Downloadable Maps"}
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-3 mt-4">
+              {downloadableMaps.map((map) => (
+                <a
+                  key={map.id}
+                  href={map.file}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 p-4 bg-muted/50 hover:bg-muted rounded-xl transition-colors"
+                >
+                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <FileText className="w-6 h-6 text-primary" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-sm">
+                      {language === "ar" ? map.nameAr : map.nameEn}
+                    </p>
+                    <p className="text-xs text-muted-foreground truncate">
+                      {language === "ar" ? map.descAr : map.descEn}
+                    </p>
+                  </div>
+                  <Download className="w-5 h-5 text-muted-foreground flex-shrink-0" />
+                </a>
+              ))}
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Family Toggle Button */}
+        {group && (
+          <Button
+            onClick={() => setShowFamily(!showFamily)}
+            size="sm"
+            variant={showFamily ? "default" : "secondary"}
+            className="shadow-elevated gap-2"
+          >
+            <Users className="w-4 h-4" />
+            {otherMembers.length}
+          </Button>
+        )}
+      </div>
 
       {/* Current Location Button */}
       <Button
