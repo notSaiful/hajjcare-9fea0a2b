@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Users, Eye, Settings, ArrowLeft, ArrowRight, Shield } from "lucide-react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import kaabaGreenDome from "@/assets/kaaba-green-dome.jpeg";
 
 const FamilyDashboardPage = () => {
   const { language, isRTL } = useLanguage();
@@ -130,7 +131,16 @@ const FamilyDashboardPage = () => {
           </Button>
         </Link>
 
-        <h1 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-6">{labels.title}</h1>
+        {/* Kaaba & Green Dome Image */}
+        <div className="flex justify-center mb-4 sm:mb-6">
+          <img 
+            src={kaabaGreenDome} 
+            alt="Kaaba & Green Dome" 
+            className="h-24 sm:h-32 w-auto object-contain"
+          />
+        </div>
+
+        <h1 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-6 text-center">{labels.title}</h1>
 
         {!group ? (
           <Card className="bg-card">
