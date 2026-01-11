@@ -32,6 +32,7 @@ const MoneyGuidePage = lazy(() => import("./pages/MoneyGuidePage"));
 const TelecomGuidePage = lazy(() => import("./pages/TelecomGuidePage"));
 const GrievancesPage = lazy(() => import("./pages/GrievancesPage"));
 const ContactNumbersPage = lazy(() => import("./pages/ContactNumbersPage"));
+const HajMissionDirectoryPage = lazy(() => import("./pages/HajMissionDirectoryPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const ChatPage = lazy(() => import("./pages/ChatPage"));
 
@@ -72,6 +73,7 @@ const App = () => (
               <Route path="/telecom" element={<TelecomGuidePage />} />
               <Route path="/grievances" element={<GrievancesPage />} />
               <Route path="/contacts" element={<ContactNumbersPage />} />
+              <Route path="/haj-directory" element={<HajMissionDirectoryPage />} />
               <Route path="/rules" element={<RulesBriefingPage />} />
               <Route path="/rules/:sectionId" element={<RulesSectionPage />} />
               <Route path="/family-status" element={<FamilyViewPage />} />
