@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, ReactNode } from "react";
 
-export type Language = "en" | "ar" | "ur" | "hi" | "ta" | "te" | "mr" | "bn" | "or" | "ml" | "pa";
+export type Language = "en" | "ar" | "ur" | "hi" | "ta" | "te" | "mr" | "bn" | "or" | "ml" | "pa" | "tr" | "ru";
 
 export const LANGUAGES: { code: Language; name: string; nativeName: string; dir: "ltr" | "rtl" }[] = [
   { code: "en", name: "English", nativeName: "English", dir: "ltr" },
