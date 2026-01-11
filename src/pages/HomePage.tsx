@@ -80,8 +80,14 @@ const HomePage = () => {
             <StatusBadge status={status} className="w-full" />
           </section>
 
-          {/* 2. Dashboard Menu - 16 Icons */}
+          {/* 2. Dashboard Menu - 16 Icons with Bismillah header */}
           <section className="animate-fade-up" style={{ animationDelay: "80ms" }}>
+            {/* Bismillah header */}
+            <div className="text-center mb-4 sm:mb-5">
+              <p className="text-lg sm:text-xl font-semibold text-emerald-700 dark:text-emerald-400" dir="rtl">
+                بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ
+              </p>
+            </div>
             <DashboardMenu />
           </section>
 
