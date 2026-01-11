@@ -63,9 +63,9 @@ const RulesSectionPage = () => {
   const IconComponent = iconMap[section.icon] || BookOpen;
 
   const labels = {
-    back: { en: "Back to Rules", ar: "العودة للقواعد", ur: "قواعد پر واپس", hi: "नियमों पर वापस", tr: "Kurallara Dön", ru: "Назад к правилам" },
-    stepOf: { en: `Section ${section.order} of ${RULES_SECTIONS.length}`, ar: `القسم ${section.order} من ${RULES_SECTIONS.length}`, ur: `سیکشن ${section.order} از ${RULES_SECTIONS.length}`, hi: `अनुभाग ${section.order} में से ${RULES_SECTIONS.length}`, tr: `Bölüm ${section.order} / ${RULES_SECTIONS.length}`, ru: `Раздел ${section.order} из ${RULES_SECTIONS.length}` },
-    complete: { en: "Complete", ar: "إكمال", ur: "مکمل", hi: "पूर्ण", tr: "Tamamla", ru: "Завершить" },
+    back: { en: "Back to Rules", ar: "العودة للقواعد", ur: "قواعد پر واپس", hi: "नियमों पर वापस", ta: "விதிகளுக்கு திரும்பு", te: "నియమాలకు తిరిగి", mr: "नियमांकडे परत", bn: "নিয়মে ফিরে যান", or: "ନିୟମକୁ ଫେରନ୍ତୁ", ml: "നിയമങ്ങളിലേക്ക് മടങ്ങുക", pa: "ਨਿਯਮਾਂ ਤੇ ਵਾਪਸ" },
+    stepOf: { en: `Section ${section.order} of ${RULES_SECTIONS.length}`, ar: `القسم ${section.order} من ${RULES_SECTIONS.length}`, ur: `سیکشن ${section.order} از ${RULES_SECTIONS.length}`, hi: `अनुभाग ${section.order} में से ${RULES_SECTIONS.length}`, ta: `பகுதி ${section.order} / ${RULES_SECTIONS.length}`, te: `విభాగం ${section.order} / ${RULES_SECTIONS.length}`, mr: `विभाग ${section.order} / ${RULES_SECTIONS.length}`, bn: `বিভাগ ${section.order} / ${RULES_SECTIONS.length}`, or: `ବିଭାଗ ${section.order} / ${RULES_SECTIONS.length}`, ml: `വിഭാഗം ${section.order} / ${RULES_SECTIONS.length}`, pa: `ਭਾਗ ${section.order} / ${RULES_SECTIONS.length}` },
+    complete: { en: "Complete", ar: "إكمال", ur: "مکمل", hi: "पूर्ण", ta: "முடிந்தது", te: "పూర్తయింది", mr: "पूर्ण", bn: "সম্পূর্ণ", or: "ସମ୍ପୂର୍ଣ୍ଣ", ml: "പൂർത്തിയായി", pa: "ਮੁਕੰਮਲ" },
   };
 
   // Build full text for TTS

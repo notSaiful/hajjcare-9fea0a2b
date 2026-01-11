@@ -61,19 +61,19 @@ const RitualDetailPage = () => {
   const totalSteps = MANASIK_RITUALS.length;
 
   const sectionTitles = {
-    whatItIs: { en: "What This Ritual Is", ar: "ما هذا المنسك", ur: "یہ منسک کیا ہے", hi: "यह अनुष्ठान क्या है", tr: "Bu İbadet Nedir", ru: "Что это за ритуал" },
-    whatToDo: { en: "What To Do", ar: "ما يجب فعله", ur: "کیا کرنا ہے", hi: "क्या करें", tr: "Ne Yapmalı", ru: "Что делать" },
-    whatToAvoid: { en: "What To Avoid", ar: "ما يجب تجنبه", ur: "کس چیز سے بچیں", hi: "क्या न करें", tr: "Nelerden Kaçınmalı", ru: "Чего избегать" },
-    duaGuidance: { en: "Du'a Guidance", ar: "إرشادات الدعاء", ur: "دعا کی رہنمائی", hi: "दुआ मार्गदर्शन", tr: "Dua Rehberi", ru: "Руководство по дуа" },
-    safety: { en: "Safety & Health", ar: "السلامة والصحة", ur: "حفاظت اور صحت", hi: "सुरक्षा और स्वास्थ्य", tr: "Güvenlik ve Sağlık", ru: "Безопасность и здоровье" },
-    rulings: { en: "Important Rulings", ar: "أحكام مهمة", ur: "اہم احکام", hi: "महत्वपूर्ण नियम", tr: "Önemli Hükümler", ru: "Важные решения" },
-    hadith: { en: "Relevant Hadith", ar: "الحديث", ur: "متعلقہ حدیث", hi: "प्रासंगिक हदीस", tr: "İlgili Hadis", ru: "Соответствующий хадис" },
+    whatItIs: { en: "What This Ritual Is", ar: "ما هذا المنسك", ur: "یہ منسک کیا ہے", hi: "यह अनुष्ठान क्या है", ta: "இந்த சடங்கு என்ன", te: "ఈ ఆచారం ఏమిటి", mr: "हा विधी काय आहे", bn: "এই আচার কী", or: "ଏହି ଅନୁଷ୍ଠାନ କ'ଣ", ml: "ഈ കർമ്മം എന്താണ്", pa: "ਇਹ ਰੀਤੀ ਕੀ ਹੈ" },
+    whatToDo: { en: "What To Do", ar: "ما يجب فعله", ur: "کیا کرنا ہے", hi: "क्या करें", ta: "என்ன செய்ய வேண்டும்", te: "ఏమి చేయాలి", mr: "काय करावे", bn: "কী করতে হবে", or: "କ'ଣ କରିବେ", ml: "എന്ത് ചെയ്യണം", pa: "ਕੀ ਕਰਨਾ ਹੈ" },
+    whatToAvoid: { en: "What To Avoid", ar: "ما يجب تجنبه", ur: "کس چیز سے بچیں", hi: "क्या न करें", ta: "தவிர்க்க வேண்டியவை", te: "ఏమి నివారించాలి", mr: "काय टाळावे", bn: "কী এড়ানো উচিত", or: "କ'ଣ ଏଡ଼ାଇବେ", ml: "ഒഴിവാക്കേണ്ടവ", pa: "ਕੀ ਬਚਣਾ ਹੈ" },
+    duaGuidance: { en: "Du'a Guidance", ar: "إرشادات الدعاء", ur: "دعا کی رہنمائی", hi: "दुआ मार्गदर्शन", ta: "துஆ வழிகாட்டுதல்", te: "దుఆ మార్గదర్శకత్వం", mr: "दुआ मार्गदर्शन", bn: "দোয়া নির্দেশিকা", or: "ଦୁଆ ମାର୍ଗଦର୍ଶନ", ml: "ദുആ മാർഗ്ഗനിർദ്ദേശം", pa: "ਦੁਆ ਮਾਰਗਦਰਸ਼ਨ" },
+    safety: { en: "Safety & Health", ar: "السلامة والصحة", ur: "حفاظت اور صحت", hi: "सुरक्षा और स्वास्थ्य", ta: "பாதுகாப்பு & ஆரோக்கியம்", te: "భద్రత & ఆరోగ్యం", mr: "सुरक्षा आणि आरोग्य", bn: "নিরাপত্তা ও স্বাস্থ্য", or: "ସୁରକ୍ଷା ଏବଂ ସ୍ୱାସ୍ଥ୍ୟ", ml: "സുരക്ഷയും ആരോഗ്യവും", pa: "ਸੁਰੱਖਿਆ ਅਤੇ ਸਿਹਤ" },
+    rulings: { en: "Important Rulings", ar: "أحكام مهمة", ur: "اہم احکام", hi: "महत्वपूर्ण नियम", ta: "முக்கிய தீர்ப்புகள்", te: "ముఖ్యమైన తీర్పులు", mr: "महत्त्वाचे नियम", bn: "গুরুত্বপূর্ণ রায়", or: "ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ ନିୟମ", ml: "പ്രധാന വിധികൾ", pa: "ਮਹੱਤਵਪੂਰਨ ਫੈਸਲੇ" },
+    hadith: { en: "Relevant Hadith", ar: "الحديث", ur: "متعلقہ حدیث", hi: "प्रासंगिक हदीस", ta: "தொடர்புடைய ஹதீஸ்", te: "సంబంధిత హదీథ్", mr: "संबंधित हदीस", bn: "প্রাসঙ্গিক হাদিস", or: "ସମ୍ପର୍କିତ ହାଦିସ", ml: "ബന്ധപ്പെട്ട ഹദീസ്", pa: "ਸੰਬੰਧਿਤ ਹਦੀਸ" },
   };
 
   const labels = {
-    back: { en: "Back to Preparation", ar: "العودة للتحضير", ur: "تیاری پر واپس", hi: "तैयारी पर वापस", tr: "Hazırlığa Dön", ru: "Назад к подготовке" },
-    stepOf: { en: `Step ${ritual.order} of ${totalSteps}`, ar: `الخطوة ${ritual.order} من ${totalSteps}`, ur: `مرحلہ ${ritual.order} از ${totalSteps}`, hi: `चरण ${ritual.order} में से ${totalSteps}`, tr: `Adım ${ritual.order} / ${totalSteps}`, ru: `Шаг ${ritual.order} из ${totalSteps}` },
-    complete: { en: "Complete", ar: "مكتمل", ur: "مکمل", hi: "पूर्ण", tr: "Tamamla", ru: "Завершить" },
+    back: { en: "Back to Preparation", ar: "العودة للتحضير", ur: "تیاری پر واپس", hi: "तैयारी पर वापस", ta: "தயாரிப்புக்கு திரும்பு", te: "తయారీకి తిరిగి", mr: "तयारीकडे परत", bn: "প্রস্তুতিতে ফিরে যান", or: "ପ୍ରସ୍ତୁତିକୁ ଫେରନ୍ତୁ", ml: "തയ്യാറെടുപ്പിലേക്ക് മടങ്ങുക", pa: "ਤਿਆਰੀ ਤੇ ਵਾਪਸ" },
+    stepOf: { en: `Step ${ritual.order} of ${totalSteps}`, ar: `الخطوة ${ritual.order} من ${totalSteps}`, ur: `مرحلہ ${ritual.order} از ${totalSteps}`, hi: `चरण ${ritual.order} में से ${totalSteps}`, ta: `படி ${ritual.order} / ${totalSteps}`, te: `దశ ${ritual.order} / ${totalSteps}`, mr: `चरण ${ritual.order} / ${totalSteps}`, bn: `ধাপ ${ritual.order} / ${totalSteps}`, or: `ପଦକ୍ଷେପ ${ritual.order} / ${totalSteps}`, ml: `ഘട്ടം ${ritual.order} / ${totalSteps}`, pa: `ਕਦਮ ${ritual.order} / ${totalSteps}` },
+    complete: { en: "Complete", ar: "مكتمل", ur: "مکمل", hi: "पूर्ण", ta: "முடிந்தது", te: "పూర్తయింది", mr: "पूर्ण", bn: "সম্পূর্ণ", or: "ସମ୍ପୂର୍ଣ୍ଣ", ml: "പൂർത്തിയായി", pa: "ਮੁਕੰਮਲ" },
   };
 
   return (
