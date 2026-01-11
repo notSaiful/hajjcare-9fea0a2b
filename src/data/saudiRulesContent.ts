@@ -1,15 +1,15 @@
-import { Language } from "@/contexts/LanguageContext";
+import { Language, LocalizedString } from "@/contexts/LanguageContext";
 
 export interface RuleItem {
-  text: Record<Language, string>;
+  text: LocalizedString;
   image?: string;
 }
 
 export interface RulesSection {
   id: string;
   order: number;
-  title: Record<Language, string>;
-  description: Record<Language, string>;
+  title: LocalizedString;
+  description: LocalizedString;
   icon: string;
   image?: string;
   rules: RuleItem[];

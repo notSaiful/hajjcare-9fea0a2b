@@ -1,36 +1,36 @@
-import { Language } from "@/contexts/LanguageContext";
+import { Language, LocalizedString } from "@/contexts/LanguageContext";
 
 export interface RitualStep {
   step: number;
-  text: Record<Language, string>;
+  text: LocalizedString;
 }
 
 export interface MistakeToAvoid {
-  text: Record<Language, string>;
+  text: LocalizedString;
 }
 
 export interface SafetyTip {
-  text: Record<Language, string>;
+  text: LocalizedString;
 }
 
 export interface HadithReference {
-  text: Record<Language, string>;
+  text: LocalizedString;
   source: string;
 }
 
 export interface ImportantRuling {
-  text: Record<Language, string>;
+  text: LocalizedString;
 }
 
 export interface Ritual {
   id: string;
   order: number;
-  title: Record<Language, string>;
-  description: Record<Language, string>;
-  whatItIs: Record<Language, string>;
+  title: LocalizedString;
+  description: LocalizedString;
+  whatItIs: LocalizedString;
   steps: RitualStep[];
   mistakes: MistakeToAvoid[];
-  duaGuidance: Record<Language, string>;
+  duaGuidance: LocalizedString;
   safetyTips: SafetyTip[];
   hadith?: HadithReference;
   importantRulings?: ImportantRuling[];

@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, ReactNode } from "react";
 
+// Core languages supported in UI, plus tr/ru for backwards compatibility with data files
 export type Language = "en" | "ar" | "ur" | "hi" | "ta" | "te" | "mr" | "bn" | "or" | "ml" | "pa" | "tr" | "ru";
 
 export const LANGUAGES: { code: Language; name: string; nativeName: string; dir: "ltr" | "rtl" }[] = [
@@ -76,7 +77,15 @@ type TranslationKey =
   | "stepComplete"
   | "stepPending";
 
-const translations: Record<Language, Record<TranslationKey, string>> = {
+// Helper type for partial translations in data files - allows missing languages with fallback to English
+export type LocalizedString = { en: string } & Partial<Record<Exclude<Language, 'en'>, string>>;
+
+// Helper function to get localized string with English fallback
+export function getLocalizedText(translations: LocalizedString, language: Language): string {
+  return translations[language] || translations.en;
+}
+
+const translations: Partial<Record<Language, Record<TranslationKey, string>>> = {
   en: {
     hajjGuide: "Hajj Guide",
     yourAIGuide: "Your AI Guide",

@@ -1,4 +1,4 @@
-import { Language } from "@/contexts/LanguageContext";
+import { Language, LocalizedString } from "@/contexts/LanguageContext";
 
 export type PilgrimStatus = "normal" | "assisted" | "emergency_managed";
 
@@ -8,7 +8,7 @@ export interface StatusDisplay {
   color: "green" | "yellow" | "red";
 }
 
-export const STATUS_CONTENT: Record<Language, Record<PilgrimStatus, StatusDisplay>> = {
+export const STATUS_CONTENT: Partial<Record<Language, Record<PilgrimStatus, StatusDisplay>>> & { en: Record<PilgrimStatus, StatusDisplay> } = {
   en: {
     normal: {
       label: "Normal",
@@ -107,16 +107,6 @@ export const STATUS_CONTENT: Record<Language, Record<PilgrimStatus, StatusDispla
     assisted: { label: "Assisted", description: "Help received.", color: "yellow" },
     emergency_managed: { label: "Emergency", description: "Emergency managed.", color: "red" },
   },
-  tr: {
-    normal: { label: "Normal", description: "Pilgrim is safe.", color: "green" },
-    assisted: { label: "Assisted", description: "Help received.", color: "yellow" },
-    emergency_managed: { label: "Emergency", description: "Emergency managed.", color: "red" },
-  },
-  ru: {
-    normal: { label: "Normal", description: "Pilgrim is safe.", color: "green" },
-    assisted: { label: "Assisted", description: "Help received.", color: "yellow" },
-    emergency_managed: { label: "Emergency", description: "Emergency managed.", color: "red" },
-  },
   pa: {
     normal: { label: "Normal", description: "Pilgrim is safe.", color: "green" },
     assisted: { label: "Assisted", description: "Help received.", color: "yellow" },
@@ -124,7 +114,7 @@ export const STATUS_CONTENT: Record<Language, Record<PilgrimStatus, StatusDispla
   },
 };
 
-export const CALMING_MESSAGE: Record<Language, { main: string; secondary: string }> = {
+export const CALMING_MESSAGE: Partial<Record<Language, { main: string; secondary: string }>> & { en: { main: string; secondary: string } } = {
   en: {
     main: "No update means everything is normal.",
     secondary: "Please do not panic or contact authorities unless contacted.",
@@ -148,11 +138,9 @@ export const CALMING_MESSAGE: Record<Language, { main: string; secondary: string
   or: { main: "No update means everything is normal.", secondary: "Please do not panic." },
   ml: { main: "No update means everything is normal.", secondary: "Please do not panic." },
   pa: { main: "No update means everything is normal.", secondary: "Please do not panic." },
-  tr: { main: "No update means everything is normal.", secondary: "Please do not panic." },
-  ru: { main: "No update means everything is normal.", secondary: "Please do not panic." },
 };
 
-export const DASHBOARD_LABELS: Record<Language, {
+type DashboardLabelsType = {
   title: string;
   pilgrimName: string;
   shareConsent: string;
@@ -167,7 +155,9 @@ export const DASHBOARD_LABELS: Record<Language, {
   statusEmergency: string;
   familyView: string;
   pilgrimView: string;
-}> = {
+};
+
+export const DASHBOARD_LABELS: Partial<Record<Language, DashboardLabelsType>> & { en: DashboardLabelsType } = {
   en: {
     title: "Family Status",
     pilgrimName: "Pilgrim",
@@ -281,22 +271,6 @@ export const DASHBOARD_LABELS: Record<Language, {
     statusEmergency: "Emergency Managed", familyView: "Family View", pilgrimView: "Pilgrim Settings",
   },
   pa: {
-    title: "Family Status", pilgrimName: "Pilgrim", shareConsent: "Family Sharing",
-    shareEnabled: "Family can see your status", shareDisabled: "Status is private",
-    enableSharing: "Enable Sharing", disableSharing: "Disable Sharing",
-    consentNote: "You can revoke access at any time", updateStatus: "Update Status",
-    statusNormal: "I am Safe", statusAssisted: "I Need/Received Help",
-    statusEmergency: "Emergency Managed", familyView: "Family View", pilgrimView: "Pilgrim Settings",
-  },
-  tr: {
-    title: "Family Status", pilgrimName: "Pilgrim", shareConsent: "Family Sharing",
-    shareEnabled: "Family can see your status", shareDisabled: "Status is private",
-    enableSharing: "Enable Sharing", disableSharing: "Disable Sharing",
-    consentNote: "You can revoke access at any time", updateStatus: "Update Status",
-    statusNormal: "I am Safe", statusAssisted: "I Need/Received Help",
-    statusEmergency: "Emergency Managed", familyView: "Family View", pilgrimView: "Pilgrim Settings",
-  },
-  ru: {
     title: "Family Status", pilgrimName: "Pilgrim", shareConsent: "Family Sharing",
     shareEnabled: "Family can see your status", shareDisabled: "Status is private",
     enableSharing: "Enable Sharing", disableSharing: "Disable Sharing",
