@@ -6,7 +6,7 @@ import {
   Moon,
   Building,
   MapPin,
-  Users,
+  Sword,
   Map,
   HandHeart,
   ClipboardList,
@@ -18,7 +18,6 @@ import {
   Bot,
   ScrollText,
   LifeBuoy,
-  
   LucideIcon,
 } from "lucide-react";
 
@@ -109,9 +108,9 @@ const menuItems: MenuItem[] = [
     color: "cyan",
   },
   {
-    id: "family",
-    icon: Users,
-    label: { en: "Family", ar: "العائلة", ur: "فیملی", hi: "परिवार", ta: "குடும்பம்", te: "కుటుంబం", mr: "कुटुंब", bn: "পরিবার", or: "ପରିବାର", ml: "കുടുംബം", pa: "ਪਰਿਵਾਰ" },
+    id: "qurbani",
+    icon: Sword,
+    label: { en: "Qurbani", ar: "قربانی", ur: "قربانی", hi: "कुर्बानी", ta: "குர்பானி", te: "ఖుర్బానీ", mr: "कुर्बानी", bn: "কোরবানি", or: "କୁର୍ବାନୀ", ml: "ഖുർബാനി", pa: "ਕੁਰਬਾਨੀ" },
     route: "/family",
     color: "pink",
   },
