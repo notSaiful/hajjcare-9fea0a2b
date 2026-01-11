@@ -26,7 +26,7 @@ const PreparePage = () => {
   });
 
   const labels = {
-    title: { en: "Manasik Preparation", ar: "تحضير المناسك", ur: "مناسک کی تیاری", hi: "मनासिक तैयारी", tr: "Menasik Hazırlığı", ru: "Подготовка Манасик" },
+    title: { en: "Mental", ar: "عقلي", ur: "ذہنی", hi: "मानसिक", tr: "Zihinsel", ru: "Ментальный" },
     subtitle: { en: "Step-by-step Hajj ritual guidance", ar: "إرشادات مناسك الحج خطوة بخطوة", ur: "قدم بہ قدم حج کے مناسک کی رہنمائی", hi: "कदम-दर-कदम हज अनुष्ठान मार्गदर्शन", tr: "Adım adım hac menasik rehberi", ru: "Пошаговое руководство по ритуалам хаджа" },
     complete: { en: "You are prepared for Hajj", ar: "أنت مستعد للحج", ur: "آپ حج کے لیے تیار ہیں", hi: "आप हज के लिए तैयार हैं", tr: "Hacca hazırsınız", ru: "Вы готовы к хаджу" },
     back: { en: "Back", ar: "رجوع", ur: "واپس", hi: "वापस", tr: "Geri", ru: "Назад" },
