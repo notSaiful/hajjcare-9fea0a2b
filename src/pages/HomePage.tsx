@@ -11,6 +11,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useCurrentGuidance } from "@/hooks/useCurrentGuidance";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
+import kaabaGreenDome from "@/assets/kaaba-green-dome.jpeg";
 
 type PilgrimStatus = "safe" | "assistance" | "emergency";
 
@@ -60,8 +61,13 @@ const HomePage = () => {
       <main className="relative z-10 container max-w-2xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
         <div className="space-y-5 sm:space-y-6">
           
-          {/* Welcome Title */}
+          {/* Kaaba & Green Dome Image + Welcome Title */}
           <section className="text-center animate-fade-up" style={{ animationDelay: "0ms" }}>
+            <img 
+              src={kaabaGreenDome} 
+              alt="Kaaba & Green Dome" 
+              className="h-20 sm:h-28 w-auto object-contain mx-auto mb-3"
+            />
             <h1 className="text-xl sm:text-2xl font-bold text-foreground">
               {welcomeLabels[language as keyof typeof welcomeLabels] || welcomeLabels.en}
             </h1>
