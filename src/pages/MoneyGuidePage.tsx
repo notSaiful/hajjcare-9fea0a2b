@@ -4,6 +4,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, Wallet, CreditCard, Banknote, AlertCircle, ShoppingBag } from "lucide-react";
+import { TextToSpeechButton } from "@/components/TextToSpeechButton";
 
 const MoneyGuidePage = () => {
   const { language, isRTL } = useLanguage();
@@ -103,11 +104,19 @@ const MoneyGuidePage = () => {
           {sections.map((section, idx) => (
             <Card key={idx} className="border-2">
               <CardContent className="p-4 sm:p-5">
-                <div className="flex items-center gap-4 mb-4">
-                  <div className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full ${section.bgColor} flex items-center justify-center shadow-soft border-2 ${section.color.replace('text-', 'border-')}/20`}>
-                    <section.icon className={`w-7 h-7 sm:w-8 sm:h-8 ${section.color}`} />
+                <div className="flex items-center justify-between gap-4 mb-4">
+                  <div className="flex items-center gap-4">
+                    <div className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full ${section.bgColor} flex items-center justify-center shadow-soft border-2 ${section.color.replace('text-', 'border-')}/20`}>
+                      <section.icon className={`w-7 h-7 sm:w-8 sm:h-8 ${section.color}`} />
+                    </div>
+                    <h2 className="text-lg font-semibold">{section.title[language] || section.title.en}</h2>
                   </div>
-                  <h2 className="text-lg font-semibold">{section.title[language] || section.title.en}</h2>
+                  <TextToSpeechButton
+                    text={`${section.title[language] || section.title.en}. ${section.items.map(item => item[language] || item.en).join('. ')}`}
+                    size="icon"
+                    variant="ghost"
+                    showLabel={false}
+                  />
                 </div>
                 <ul className="space-y-2.5">
                   {section.items.map((item, itemIdx) => (

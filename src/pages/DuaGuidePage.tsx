@@ -5,6 +5,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, BookOpen, ChevronDown, ChevronUp } from "lucide-react";
+import { TextToSpeechButton } from "@/components/TextToSpeechButton";
 
 const DuaGuidePage = () => {
   const { language, isRTL } = useLanguage();
@@ -135,10 +136,16 @@ const DuaGuidePage = () => {
                 </button>
                 {expandedDua === idx && (
                   <div className="px-4 pb-4 space-y-4 border-t">
-                    <div className="pt-4">
-                      <p className="text-xl text-right leading-loose font-arabic" dir="rtl">
+                    <div className="pt-4 flex items-start justify-between gap-2">
+                      <p className="text-xl text-right leading-loose font-arabic flex-1" dir="rtl">
                         {dua.arabic}
                       </p>
+                      <TextToSpeechButton
+                        text={`${dua.title[language] || dua.title.en}. ${dua.arabic}. ${dua.translation[language] || dua.translation.en}`}
+                        size="icon"
+                        variant="ghost"
+                        showLabel={false}
+                      />
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground italic">

@@ -4,6 +4,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, Heart, Thermometer, Droplets, AlertTriangle, Pill, Sun } from "lucide-react";
+import { TextToSpeechButton } from "@/components/TextToSpeechButton";
 
 const HealthGuidePage = () => {
   const { language, isRTL } = useLanguage();
@@ -102,11 +103,19 @@ const HealthGuidePage = () => {
           {healthTopics.map((topic, idx) => (
             <Card key={idx} className="border-2">
               <CardContent className="p-4 sm:p-5">
-                <div className="flex items-center gap-4 mb-4">
-                  <div className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full ${topic.bgColor} flex items-center justify-center shadow-soft border-2 ${topic.color.replace('text-', 'border-')}/20`}>
-                    <topic.icon className={`w-7 h-7 sm:w-8 sm:h-8 ${topic.color}`} />
+                <div className="flex items-center justify-between gap-4 mb-4">
+                  <div className="flex items-center gap-4">
+                    <div className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full ${topic.bgColor} flex items-center justify-center shadow-soft border-2 ${topic.color.replace('text-', 'border-')}/20`}>
+                      <topic.icon className={`w-7 h-7 sm:w-8 sm:h-8 ${topic.color}`} />
+                    </div>
+                    <h2 className="text-lg font-semibold">{topic.title[language] || topic.title.en}</h2>
                   </div>
-                  <h2 className="text-lg font-semibold">{topic.title[language] || topic.title.en}</h2>
+                  <TextToSpeechButton
+                    text={`${topic.title[language] || topic.title.en}. ${topic.tips.map(tip => tip[language] || tip.en).join('. ')}`}
+                    size="icon"
+                    variant="ghost"
+                    showLabel={false}
+                  />
                 </div>
                 <ul className="space-y-2.5">
                   {topic.tips.map((tip, tipIdx) => (
