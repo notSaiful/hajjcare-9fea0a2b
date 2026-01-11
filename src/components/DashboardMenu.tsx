@@ -132,8 +132,8 @@ const menuItems: MenuItem[] = [
   {
     id: "contacts",
     icon: Phone,
-    label: { en: "Contacts", ar: "الاتصال", ur: "رابطہ", hi: "संपर्क", ta: "தொடர்புகள்", te: "సంప్రదింపులు", mr: "संपर्क", bn: "যোগাযোগ", or: "ଯୋଗାଯୋଗ", ml: "ബന്ധപ്പെടുക", pa: "ਸੰਪਰਕ" },
-    route: "/contacts",
+    label: { en: "Directory", ar: "الدليل", ur: "ڈائریکٹری", hi: "डायरेक्टरी", ta: "அடைவு", te: "డైరెక్టరీ", mr: "डायरेक्टरी", bn: "ডিরেক্টরি", or: "ଡିରେକ୍ଟୋରୀ", ml: "ഡയറക്ടറി", pa: "ਡਾਇਰੈਕਟਰੀ" },
+    route: "/haj-directory",
     color: "teal",
   },
   {
