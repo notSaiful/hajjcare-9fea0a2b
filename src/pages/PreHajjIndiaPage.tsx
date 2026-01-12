@@ -1,12 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
-import MainLayout from "@/components/MainLayout";
+import { MainLayout } from "@/components/MainLayout";
 import { Card } from "@/components/ui/card";
-import IconCircle from "@/components/IconCircle";
+import { IconCircle } from "@/components/IconCircle";
 import { PRE_HAJJ_SECTIONS } from "@/data/preHajjIndiaContent";
-import { ChevronLeft, ChevronRight, Building2, Landmark, GraduationCap, UserCheck, Plane, ClipboardList } from "lucide-react";
+import { ChevronLeft, ChevronRight, Building2, Landmark, GraduationCap, UserCheck, Plane, ClipboardList, LucideIcon } from "lucide-react";
 
-const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+const iconMap: Record<string, LucideIcon> = {
   Building2,
   Landmark,
   GraduationCap,
@@ -61,9 +61,7 @@ const PreHajjIndiaPage = () => {
                 onClick={() => navigate(`/pre-hajj-india/${section.id}`)}
               >
                 <div className="flex items-center gap-4">
-                  <IconCircle>
-                    <IconComponent className="w-6 h-6 text-primary-foreground" />
-                  </IconCircle>
+                  <IconCircle icon={IconComponent} size="md" variant="primary" />
                   <div className="flex-1 min-w-0">
                     <h3 className="font-semibold text-foreground">
                       {section.title[language as keyof typeof section.title] || section.title.en}
