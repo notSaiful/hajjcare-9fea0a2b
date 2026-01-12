@@ -211,25 +211,34 @@ const MapPage = () => {
         existingMarker.setLngLat([loc.longitude, loc.latitude]);
       } else {
         const el = document.createElement("div");
-        el.innerHTML = `
-          <div style="
-            background: #3b82f6;
-            color: white;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 10px;
-            font-weight: bold;
-            white-space: nowrap;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            border: 2px solid white;
-          ">
-            <div style="width: 6px; height: 6px; background: white; border-radius: 50%;"></div>
-            ${loc.member_name || "Member"}
-          </div>
+        
+        // Create marker using DOM manipulation to prevent XSS
+        const container = document.createElement("div");
+        container.style.cssText = `
+          background: #3b82f6;
+          color: white;
+          padding: 4px 8px;
+          border-radius: 12px;
+          font-size: 10px;
+          font-weight: bold;
+          white-space: nowrap;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          border: 2px solid white;
         `;
+        
+        const dot = document.createElement("div");
+        dot.style.cssText = "width: 6px; height: 6px; background: white; border-radius: 50%;";
+        
+        const nameSpan = document.createElement("span");
+        // Use textContent to safely render member name (prevents XSS)
+        nameSpan.textContent = loc.member_name || "Member";
+        
+        container.appendChild(dot);
+        container.appendChild(nameSpan);
+        el.appendChild(container);
 
         const marker = new mapboxgl.Marker({ element: el })
           .setLngLat([loc.longitude, loc.latitude])

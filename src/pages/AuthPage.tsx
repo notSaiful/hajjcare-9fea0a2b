@@ -11,9 +11,17 @@ import { Loader2, Mail, Lock, User } from "lucide-react";
 import { z } from "zod";
 import logo from "@/assets/logo.jpeg";
 
-const emailSchema = z.string().email("Invalid email address");
-const passwordSchema = z.string().min(6, "Password must be at least 6 characters");
-const nameSchema = z.string().min(2, "Name must be at least 2 characters");
+const emailSchema = z.string().email("Invalid email address").max(255, "Email must be less than 255 characters");
+const passwordSchema = z.string().min(6, "Password must be at least 6 characters").max(128, "Password must be less than 128 characters");
+// Unicode-safe regex for international names - rejects HTML/script content
+const nameSchema = z
+  .string()
+  .min(2, "Name must be at least 2 characters")
+  .max(100, "Name must be less than 100 characters")
+  .regex(
+    /^[\p{L}\p{M}\s'-]+$/u,
+    "Name can only contain letters, spaces, hyphens and apostrophes"
+  );
 
 const AuthPage = () => {
   const [isSignUp, setIsSignUp] = useState(false);
