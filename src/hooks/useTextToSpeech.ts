@@ -70,6 +70,18 @@ export const useTextToSpeech = () => {
       setIsLoading(true);
       setIsSpeaking(true);
 
+      // Get the user's session token for authenticated requests
+      const { data: sessionData } = await supabase.auth.getSession();
+      const accessToken = sessionData?.session?.access_token;
+
+      if (!accessToken) {
+        console.log("No auth session, falling back to Web Speech API");
+        setIsLoading(false);
+        setIsSpeaking(false);
+        speakWithWebSpeech(text, lang);
+        return;
+      }
+
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/elevenlabs-tts`,
         {
@@ -77,7 +89,7 @@ export const useTextToSpeech = () => {
           headers: {
             "Content-Type": "application/json",
             "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-            "Authorization": `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+            "Authorization": `Bearer ${accessToken}`,
           },
           body: JSON.stringify({ text, language: lang }),
         }
