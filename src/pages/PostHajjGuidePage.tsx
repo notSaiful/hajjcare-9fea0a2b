@@ -5,6 +5,7 @@ import { IconCircle } from "@/components/IconCircle";
 import { TextToSpeechButton } from "@/components/TextToSpeechButton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { LucideIcon } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Calendar, Heart, TrendingUp, ChevronLeft, ChevronRight, Volume2 } from "lucide-react";
 import { dailyPrompts, postHajjSections, pageLabels, DailyPrompt } from "@/data/postHajjContent";
@@ -103,8 +104,8 @@ export default function PostHajjGuidePage() {
                   <div className="flex items-center gap-3">
                     <IconCircle
                       icon={Calendar}
-                      color="bg-primary/10 border-primary/30"
                       size="lg"
+                      variant="primary"
                     />
                     <div>
                       <CardTitle className="text-lg text-foreground">
@@ -171,19 +172,16 @@ export default function PostHajjGuidePage() {
 
           {/* Section Overview */}
           <div className="space-y-3">
-            <h2 className="text-lg font-semibold text-foreground px-1">
-              {postHajjSections[0]?.title[language] ? "" : ""}
-            </h2>
             <div className="grid gap-3">
               {postHajjSections.map((section) => {
-                const Icon = iconMap[section.icon] || Calendar;
+                const Icon = iconMap[section.icon] as LucideIcon;
                 return (
                   <Card key={section.id} className="border-border/50 hover:border-primary/30 transition-colors">
                     <CardContent className="p-4 flex items-center gap-4">
                       <IconCircle
-                        icon={Icon}
-                        color="bg-secondary/50 border-secondary"
+                        icon={Icon || Calendar}
                         size="md"
+                        variant="teal"
                       />
                       <div className="flex-1">
                         <h3 className="font-medium text-foreground">
