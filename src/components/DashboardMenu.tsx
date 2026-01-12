@@ -19,6 +19,8 @@ import {
   ScrollText,
   LifeBuoy,
   LucideIcon,
+  Plane,
+  Star,
 } from "lucide-react";
 
 interface MenuItem {
@@ -134,6 +136,20 @@ const menuItems: MenuItem[] = [
     label: { en: "Directory", ar: "الدليل", ur: "ڈائریکٹری", hi: "डायरेक्टरी", ta: "அடைவு", te: "డైరెక్టరీ", mr: "डायरेक्टरी", bn: "ডিরেক্টরি", or: "ଡିରେକ୍ଟୋରୀ", ml: "ഡയറക്ടറി", pa: "ਡਾਇਰੈਕਟਰੀ" },
     route: "/haj-directory",
     color: "teal",
+  },
+  {
+    id: "pre-hajj",
+    icon: Plane,
+    label: { en: "Pre-Hajj India", ar: "قبل الحج", ur: "حج سے پہلے", hi: "हज से पहले", ta: "ஹஜ்ஜுக்கு முன்", te: "హజ్ కు ముందు", mr: "हज आधी", bn: "হজের আগে", or: "ହଜ ପୂର୍ବରୁ", ml: "ഹജ്ജിന് മുമ്പ്", pa: "ਹੱਜ ਤੋਂ ਪਹਿਲਾਂ" },
+    route: "/pre-hajj-india",
+    color: "indigo",
+  },
+  {
+    id: "post-hajj",
+    icon: Star,
+    label: { en: "Haj Mabroor", ar: "حج مبرور", ur: "حج مبرور", hi: "हज मबरूर", ta: "ஹஜ் மப்ரூர்", te: "హజ్ మబ్రూర్", mr: "हज मबरूर", bn: "হজ মাবরুর", or: "ହଜ ମବ୍ରୁର", ml: "ഹജ്ജ് മബ്റൂർ", pa: "ਹੱਜ ਮਬਰੂਰ" },
+    route: "/post-hajj",
+    color: "amber",
   },
   {
     id: "help",
