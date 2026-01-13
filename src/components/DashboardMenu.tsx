@@ -94,6 +94,13 @@ const menuSections: MenuSection[] = [
         route: "/map",
         color: "indigo",
       },
+      {
+        id: "live-location",
+        icon: MapPin,
+        label: { en: "Live Location", ar: "الموقع المباشر", ur: "لائیو لوکیشن", hi: "लाइव लोकेशन", ta: "நேரடி இருப்பிடம்", te: "లైవ్ లొకేషన్", mr: "लाइव्ह लोकेशन", bn: "লাইভ লোকেশন", or: "ଲାଇଭ ଲୋକେସନ୍", ml: "ലൈവ് ലൊക്കേഷൻ", pa: "ਲਾਈਵ ਲੋਕੇਸ਼ਨ" },
+        route: "/family",
+        color: "blue",
+      },
     ],
   },
   // SECTION B – CORE JOURNEY
