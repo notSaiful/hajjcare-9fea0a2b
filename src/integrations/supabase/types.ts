@@ -123,6 +123,7 @@ export type Database = {
       profiles: {
         Row: {
           created_at: string
+          embarkation_point: string | null
           emergency_contact: string | null
           family_sharing_enabled: boolean
           full_name: string | null
@@ -133,6 +134,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          embarkation_point?: string | null
           emergency_contact?: string | null
           family_sharing_enabled?: boolean
           full_name?: string | null
@@ -143,6 +145,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          embarkation_point?: string | null
           emergency_contact?: string | null
           family_sharing_enabled?: boolean
           full_name?: string | null
