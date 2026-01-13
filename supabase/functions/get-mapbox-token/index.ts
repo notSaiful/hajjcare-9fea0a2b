@@ -17,7 +17,7 @@ serve(async (req) => {
     if (!authHeader?.startsWith("Bearer ")) {
       console.error("Missing or invalid Authorization header");
       return new Response(
-        JSON.stringify({ error: "Unauthorized" }),
+        JSON.stringify({ error: "Unauthorized - Please log in to view the map" }),
         { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -28,13 +28,13 @@ serve(async (req) => {
       { global: { headers: { Authorization: authHeader } } }
     );
 
-    const token = authHeader.replace("Bearer ", "");
-    const { data, error: authError } = await supabaseClient.auth.getClaims(token);
+    // Use getUser() for more reliable auth verification
+    const { data: userData, error: authError } = await supabaseClient.auth.getUser();
     
-    if (authError || !data?.claims) {
+    if (authError || !userData?.user) {
       console.error("Authentication failed:", authError?.message);
       return new Response(
-        JSON.stringify({ error: "Unauthorized" }),
+        JSON.stringify({ error: "Unauthorized - Please log in to view the map" }),
         { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -49,7 +49,7 @@ serve(async (req) => {
       );
     }
 
-    console.log("Returning Mapbox token for user:", data.claims.sub);
+    console.log("Returning Mapbox token for user:", userData.user.id);
 
     return new Response(
       JSON.stringify({ token: mapboxToken }),
