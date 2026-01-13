@@ -27,7 +27,7 @@ export const useAuth = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signUp = useCallback(async (email: string, password: string, fullName: string) => {
+  const signUp = useCallback(async (email: string, password: string, fullName: string, embarkationPoint?: string) => {
     const redirectUrl = `${window.location.origin}/`;
     
     const { data, error } = await supabase.auth.signUp({
@@ -37,9 +37,19 @@ export const useAuth = () => {
         emailRedirectTo: redirectUrl,
         data: {
           full_name: fullName,
+          embarkation_point: embarkationPoint,
         },
       },
     });
+
+    // Update profile with embarkation point after successful signup
+    if (!error && data.user && embarkationPoint) {
+      await supabase
+        .from("profiles")
+        .update({ embarkation_point: embarkationPoint })
+        .eq("user_id", data.user.id);
+    }
+
     return { data, error };
   }, []);
 

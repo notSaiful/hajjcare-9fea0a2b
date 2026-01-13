@@ -6,10 +6,33 @@ import { AmbientBackground } from "@/components/AmbientBackground";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Mail, Lock, User } from "lucide-react";
+import { Loader2, Mail, Lock, User, MapPin } from "lucide-react";
 import { z } from "zod";
 import logo from "@/assets/logo.jpeg";
+
+// Hajj 2026 Embarkation Points (India)
+const EMBARKATION_POINTS = [
+  "Srinagar",
+  "Gaya",
+  "Guwahati",
+  "Indore",
+  "Jaipur",
+  "Nagpur",
+  "Delhi",
+  "Mumbai",
+  "Kolkata",
+  "Bengaluru",
+  "Hyderabad",
+  "Cochin (Kochi)",
+  "Chennai",
+  "Ahmedabad",
+  "Lucknow",
+  "Kannur",
+  "Calicut (Kozhikode)",
+  "Vijayawada",
+] as const;
 
 const emailSchema = z.string().email("Invalid email address").max(255, "Email must be less than 255 characters");
 const passwordSchema = z.string().min(6, "Password must be at least 6 characters").max(128, "Password must be less than 128 characters");
@@ -28,6 +51,7 @@ const AuthPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
+  const [embarkationPoint, setEmbarkationPoint] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   
@@ -60,6 +84,9 @@ const AuthPage = () => {
       if (!nameResult.success) {
         newErrors.fullName = nameResult.error.errors[0].message;
       }
+      if (!embarkationPoint) {
+        newErrors.embarkationPoint = "Please select your embarkation point";
+      }
     }
     
     setErrors(newErrors);
@@ -75,7 +102,7 @@ const AuthPage = () => {
     
     try {
       if (isSignUp) {
-        const { error } = await signUp(email, password, fullName);
+        const { error } = await signUp(email, password, fullName, embarkationPoint);
         if (error) {
           if (error.message.includes("already registered")) {
             toast({
@@ -175,22 +202,45 @@ const AuthPage = () => {
         <CardContent className="px-5 sm:px-6 pb-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             {isSignUp && (
-              <div className="space-y-2">
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    type="text"
-                    placeholder={isRTL ? "الاسم الكامل" : "Full Name"}
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    className="pl-10 h-12 sm:h-13 text-base rounded-xl border-border/60 bg-background/50 focus:bg-background transition-colors duration-300"
-                    dir={isRTL ? "rtl" : "ltr"}
-                  />
+              <>
+                <div className="space-y-2">
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      type="text"
+                      placeholder={isRTL ? "الاسم الكامل" : "Full Name"}
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      className="pl-10 h-12 sm:h-13 text-base rounded-xl border-border/60 bg-background/50 focus:bg-background transition-colors duration-300"
+                      dir={isRTL ? "rtl" : "ltr"}
+                    />
+                  </div>
+                  {errors.fullName && (
+                    <p className="text-xs text-destructive px-1">{errors.fullName}</p>
+                  )}
                 </div>
-                {errors.fullName && (
-                  <p className="text-xs text-destructive px-1">{errors.fullName}</p>
-                )}
-              </div>
+                
+                <div className="space-y-2">
+                  <div className="relative">
+                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground z-10" />
+                    <Select value={embarkationPoint} onValueChange={setEmbarkationPoint}>
+                      <SelectTrigger className="pl-10 h-12 sm:h-13 text-base rounded-xl border-border/60 bg-background/50 focus:bg-background transition-colors duration-300">
+                        <SelectValue placeholder={isRTL ? "نقطة المغادرة" : "Select Embarkation Point"} />
+                      </SelectTrigger>
+                      <SelectContent className="max-h-60">
+                        {EMBARKATION_POINTS.map((point) => (
+                          <SelectItem key={point} value={point}>
+                            {point}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  {errors.embarkationPoint && (
+                    <p className="text-xs text-destructive px-1">{errors.embarkationPoint}</p>
+                  )}
+                </div>
+              </>
             )}
             
             <div className="space-y-2">
