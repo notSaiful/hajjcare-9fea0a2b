@@ -2,13 +2,13 @@ import { useNavigate } from "react-router-dom";
 import { SimpleHeader } from "@/components/SimpleHeader";
 import { AmbientBackground } from "@/components/AmbientBackground";
 import { StatusBadge } from "@/components/StatusBadge";
-import { WhatToDoCard } from "@/components/WhatToDoCard";
+
 import { HelpButton } from "@/components/HelpButton";
 import { EmergencyButton } from "@/components/EmergencyButton";
 import { DashboardMenu } from "@/components/DashboardMenu";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
-import { useCurrentGuidance } from "@/hooks/useCurrentGuidance";
+
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import kaabaGreenDome from "@/assets/kaaba-green-dome.jpeg";
@@ -18,7 +18,7 @@ type PilgrimStatus = "safe" | "assistance" | "emergency";
 const HomePage = () => {
   const { t, isRTL, language } = useLanguage();
   const { isAuthenticated, loading: authLoading } = useAuth();
-  const { guidance, refreshGuidance } = useCurrentGuidance();
+  
   const navigate = useNavigate();
   
   const [status, setStatus] = useState<PilgrimStatus>("safe");
@@ -96,18 +96,6 @@ const HomePage = () => {
             <DashboardMenu />
           </section>
 
-          {/* 3. What To Do Now - Context-aware directive */}
-          <section className="animate-fade-up" style={{ animationDelay: "120ms" }}>
-            <WhatToDoCard 
-              status={guidance.status}
-              statusLabel={guidance.statusLabel}
-              instruction={guidance.instruction}
-              safety={guidance.safety}
-              isFailsafe={guidance.isFailsafe}
-              lastUpdated={guidance.lastUpdated}
-              onRefresh={refreshGuidance}
-            />
-          </section>
 
           {/* 4. One-Tap Help - Voice first, accessible */}
           <section className="animate-fade-up" style={{ animationDelay: "160ms" }}>
