@@ -11,7 +11,7 @@ import { useAuth } from "@/hooks/useAuth";
 
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
-import kaabaGreenDome from "@/assets/kaaba-green-dome.jpeg";
+import kaabaGreenDome from "@/assets/kaaba-green-dome-new.jpeg";
 
 type PilgrimStatus = "safe" | "assistance" | "emergency";
 
