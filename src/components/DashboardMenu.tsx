@@ -95,9 +95,9 @@ const menuSections: MenuSection[] = [
         color: "indigo",
       },
       {
-        id: "live-location",
+        id: "family",
         icon: MapPin,
-        label: { en: "Live Location", ar: "الموقع المباشر", ur: "لائیو لوکیشن", hi: "लाइव लोकेशन", ta: "நேரடி இருப்பிடம்", te: "లైవ్ లొకేషన్", mr: "लाइव्ह लोकेशन", bn: "লাইভ লোকেশন", or: "ଲାଇଭ ଲୋକେସନ୍", ml: "ലൈവ് ലൊക്കേഷൻ", pa: "ਲਾਈਵ ਲੋਕੇਸ਼ਨ" },
+        label: { en: "Family", ar: "العائلة", ur: "خاندان", hi: "परिवार", ta: "குடும்பம்", te: "కుటుంబం", mr: "कुटुंब", bn: "পরিবার", or: "ପରିବାର", ml: "കുടുംബം", pa: "ਪਰਿਵਾਰ" },
         route: "/family",
         color: "blue",
       },
