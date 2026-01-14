@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { SimpleHeader } from "@/components/SimpleHeader";
 import { AmbientBackground } from "@/components/AmbientBackground";
-import { StatusBadge } from "@/components/StatusBadge";
+
 
 import { HelpButton } from "@/components/HelpButton";
 import { EmergencyButton } from "@/components/EmergencyButton";
@@ -80,10 +80,6 @@ const HomePage = () => {
             </h1>
           </section>
 
-          {/* 1. Current Status - Most prominent, calming */}
-          <section className="animate-fade-up" style={{ animationDelay: "40ms" }}>
-            <StatusBadge status={status} className="w-full" />
-          </section>
 
           {/* 2. Dashboard Menu - 16 Icons with Bismillah header */}
           <section className="animate-fade-up" style={{ animationDelay: "80ms" }}>
