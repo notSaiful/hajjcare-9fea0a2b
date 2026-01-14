@@ -24,6 +24,7 @@ import {
   UtensilsCrossed,
   Heart,
   Flower2,
+  Share2,
 } from "lucide-react";
 
 interface MenuItem {
@@ -175,9 +176,16 @@ const menuSections: MenuSection[] = [
       {
         id: "donors",
         icon: Heart,
-        label: { en: "Donors", ar: "المتبرعون", ur: "عطیہ دہندگان", hi: "दानदाता", ta: "நன்கொடையாளர்கள்", te: "దాతలు", mr: "दाते", bn: "দাতা", or: "ଦାତା", ml: "ദാതാക്കൾ", pa: "ਦਾਨੀ" },
+        label: { en: "Donors", ar: "المتبرعون", ur: "عطیہ دہندگان", hi: "दानदाता", ta: "நன்கொடையாளர்கள்", te: "దాతలు", mr: "दाते", bn: "দাতা", or: "ଦାତা", ml: "ദാതാക്കൾ", pa: "ਦਾਨੀ" },
         route: "/donors",
         color: "red",
+      },
+      {
+        id: "socials",
+        icon: Share2,
+        label: { en: "Socials", ar: "التواصل", ur: "سوشل میڈیا", hi: "सोशल", ta: "சமூகம்", te: "సోషల్స్", mr: "सोशल", bn: "সোশ্যাল", or: "ସୋସିଆଲ", ml: "സോഷ്യൽ", pa: "ਸੋਸ਼ਲ" },
+        route: "/socials",
+        color: "blue",
       },
     ],
   },
