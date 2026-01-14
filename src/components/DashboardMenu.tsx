@@ -23,6 +23,7 @@ import {
   Star,
   UtensilsCrossed,
   Heart,
+  Flower2,
 } from "lucide-react";
 
 interface MenuItem {
@@ -149,6 +150,13 @@ const menuSections: MenuSection[] = [
         label: { en: "Qurbani", ar: "قربانی", ur: "قربانی", hi: "कुर्बानी", ta: "குர்பானி", te: "ఖుర్బానీ", mr: "कुर्बानी", bn: "কোরবানি", or: "କୁର୍ବାନୀ", ml: "ഖുർബാനി", pa: "ਕੁਰਬਾਨੀ" },
         route: "/family",
         color: "orange",
+      },
+      {
+        id: "women",
+        icon: Flower2,
+        label: { en: "Women", ar: "النساء", ur: "خواتین", hi: "महिलाएं", ta: "பெண்கள்", te: "మహిళలు", mr: "महिला", bn: "মহিলা", or: "ମହିଳା", ml: "സ്ത്രീകൾ", pa: "ਔਰਤਾਂ" },
+        route: "/women",
+        color: "pink",
       },
     ],
   },
