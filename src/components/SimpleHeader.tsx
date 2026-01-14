@@ -10,7 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import logo from "@/assets/logo.jpeg";
+import logo from "@/assets/header-logo.jpeg";
 
 export const SimpleHeader = () => {
   const { t, isRTL, language, setLanguage } = useLanguage();
