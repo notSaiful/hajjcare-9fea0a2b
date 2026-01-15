@@ -3,6 +3,7 @@ import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { useHajjLocation, HAJJ_LOCATIONS, HAJJ_STAGES } from "@/hooks/useHajjLocation";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
 import { MapPin, Navigation, RefreshCw, Loader2, AlertCircle, Maximize2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -20,18 +21,26 @@ const HajjMap = ({ isExpanded = false, onToggleExpand }: HajjMapProps) => {
   const { t, language } = useLanguage();
   const [mapToken, setMapToken] = useState<string | null>(null);
   const [mapError, setMapError] = useState<string | null>(null);
+  const [mapLoading, setMapLoading] = useState(true);
 
   const isArabic = language === "ar" || language === "ur";
 
-  // Fetch Mapbox token from edge function
+  // Fetch Mapbox token from edge function with proper authentication
   useEffect(() => {
     const fetchToken = async () => {
       try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session?.access_token) {
+          setMapError("Please log in to view the map");
+          setMapLoading(false);
+          return;
+        }
+
         const response = await fetch(
           `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-mapbox-token`,
           {
             headers: {
-              Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+              Authorization: `Bearer ${session.access_token}`,
             },
           }
         );
@@ -41,6 +50,7 @@ const HajjMap = ({ isExpanded = false, onToggleExpand }: HajjMapProps) => {
       } catch (err) {
         console.error("Error fetching Mapbox token:", err);
         setMapError("Unable to load map");
+        setMapLoading(false);
       }
     };
     fetchToken();
@@ -58,6 +68,19 @@ const HajjMap = ({ isExpanded = false, onToggleExpand }: HajjMapProps) => {
       center: [HAJJ_LOCATIONS.kaaba.lng, HAJJ_LOCATIONS.kaaba.lat],
       zoom: 12,
       pitch: 30,
+    });
+
+    // Handle map load event
+    map.current.on('load', () => {
+      setMapLoading(false);
+      map.current?.resize();
+    });
+
+    // Handle map errors
+    map.current.on('error', (e) => {
+      console.error('Mapbox error:', e);
+      setMapError('Unable to load map');
+      setMapLoading(false);
     });
 
     map.current.addControl(new mapboxgl.NavigationControl({ visualizePitch: true }), "top-right");
@@ -190,11 +213,15 @@ const HajjMap = ({ isExpanded = false, onToggleExpand }: HajjMapProps) => {
         </div>
       </div>
 
-      {/* Map Container */}
-      <div 
-        ref={mapContainer} 
-        className={`w-full transition-all duration-300 ${isExpanded ? "h-64" : "h-40"}`}
-      />
+      {/* Map Container with Loading Overlay */}
+      <div className={`w-full transition-all duration-300 relative ${isExpanded ? "h-64" : "h-40"}`}>
+        <div ref={mapContainer} className="absolute inset-0 w-full h-full" />
+        {mapLoading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-muted/50">
+            <Loader2 className="w-6 h-6 animate-spin text-primary" />
+          </div>
+        )}
+      </div>
 
       {/* Next Step & Tips */}
       {stage !== "unknown" && (
