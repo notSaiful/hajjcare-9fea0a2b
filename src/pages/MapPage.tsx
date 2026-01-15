@@ -38,6 +38,7 @@ const MapPage = () => {
   const { group, memberLocations, memberId, updateLocation } = useFamilyGroup();
   const [mapToken, setMapToken] = useState<string | null>(null);
   const [mapError, setMapError] = useState<string | null>(null);
+  const [mapLoading, setMapLoading] = useState(true);
   const [showInfo, setShowInfo] = useState(true);
   const [showFamily, setShowFamily] = useState(true);
   const [showMaps, setShowMaps] = useState(false);
@@ -109,6 +110,19 @@ const MapPage = () => {
       center: [HAJJ_LOCATIONS.kaaba.lng, HAJJ_LOCATIONS.kaaba.lat],
       zoom: 11,
       pitch: 45,
+    });
+
+    // Handle map load event
+    map.current.on('load', () => {
+      setMapLoading(false);
+      map.current?.resize();
+    });
+
+    // Handle map errors
+    map.current.on('error', (e) => {
+      console.error('Mapbox error:', e);
+      setMapError('Unable to load map');
+      setMapLoading(false);
     });
 
     map.current.addControl(new mapboxgl.NavigationControl({ visualizePitch: true }), "top-right");
@@ -302,7 +316,17 @@ const MapPage = () => {
   return (
     <div className="h-screen w-screen relative overflow-hidden" dir={isRTL ? "rtl" : "ltr"}>
       {/* Map Container */}
-      <div ref={mapContainer} className="absolute inset-0" />
+      <div ref={mapContainer} className="absolute inset-0 w-full h-full" />
+      
+      {/* Map Loading Overlay */}
+      {mapLoading && (
+        <div className="absolute inset-0 z-20 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+          <div className="flex flex-col items-center gap-3">
+            <Loader2 className="w-10 h-10 animate-spin text-primary" />
+            <span className="text-sm text-muted-foreground">{language === "ar" ? "جارٍ التحميل..." : "Loading..."}</span>
+          </div>
+        </div>
+      )}
 
       {/* Top Navigation Bar */}
       <div className="absolute top-0 left-0 right-0 z-10 bg-gradient-to-b from-background/95 to-transparent p-4">
