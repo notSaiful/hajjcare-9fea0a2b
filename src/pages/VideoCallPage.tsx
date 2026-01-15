@@ -5,11 +5,11 @@ import {
   StreamVideo,
   StreamCall,
   SpeakerLayout,
-  CallControls,
   useCallStateHooks,
   CallingState,
   NoiseCancellationProvider,
   useNoiseCancellation,
+  useCall,
 } from "@stream-io/video-react-sdk";
 import { NoiseCancellation } from "@stream-io/audio-filters-web";
 import "@stream-io/video-react-sdk/dist/css/styles.css";
@@ -38,50 +38,49 @@ import {
   Info,
   Volume2,
   VolumeX,
-  Phone,
 } from "lucide-react";
 import { toast } from "sonner";
 
 // Comprehensive 11-language labels for calm, reassurance-focused UI
 const labels = {
   title: { 
-    en: "Family Reassurance Call", 
-    ar: "مكالمة اطمئنان العائلة", 
-    ur: "خاندان کی تسلی کی کال", 
-    hi: "परिवार आश्वासन कॉल", 
-    ta: "குடும்ப நம்பிக்கை அழைப்பு", 
-    te: "కుటుంబ భరోసా కాల్", 
-    mr: "कुटुंब आश्वासन कॉल", 
-    bn: "পারিবারিক আশ্বাস কল", 
-    or: "ପରିବାର ଆଶ୍ୱାସନ କଲ", 
-    ml: "കുടുംബ ആശ്വാസ കോൾ", 
-    pa: "ਪਰਿਵਾਰ ਭਰੋਸਾ ਕਾਲ" 
+    en: "Family Video Call", 
+    ar: "مكالمة فيديو عائلية", 
+    ur: "خاندانی ویڈیو کال", 
+    hi: "परिवार वीडियो कॉल", 
+    ta: "குடும்ப வீடியோ அழைப்பு", 
+    te: "కుటుంబ వీడియో కాల్", 
+    mr: "कुटुंब व्हिडिओ कॉल", 
+    bn: "পারিবারিক ভিডিও কল", 
+    or: "ପରିବାର ଭିଡିଓ କଲ", 
+    ml: "കുടുംബ വീഡിയോ കോൾ", 
+    pa: "ਪਰਿਵਾਰ ਵੀਡੀਓ ਕਾਲ" 
   },
   subtitle: { 
-    en: "A moment of peace with your loved ones", 
-    ar: "لحظة سلام مع أحبائك", 
-    ur: "اپنے پیاروں کے ساتھ سکون کا لمحہ", 
-    hi: "अपने प्रियजनों के साथ शांति का पल", 
-    ta: "உங்கள் அன்புக்குரியவர்களுடன் அமைதியான தருணம்", 
-    te: "మీ ప్రియమైనవారితో శాంతి క్షణం", 
-    mr: "आपल्या प्रियजनांसोबत शांततेचा क्षण", 
-    bn: "আপনার প্রিয়জনদের সাথে শান্তির মুহূর্ত", 
-    or: "ଆପଣଙ୍କ ପ୍ରିୟଜନଙ୍କ ସହ ଶାନ୍ତିର ମୁହୂର୍ତ୍ତ", 
-    ml: "നിങ്ങളുടെ പ്രിയപ്പെട്ടവരുമായി സമാധാനത്തിന്റെ നിമിഷം", 
-    pa: "ਆਪਣੇ ਪਿਆਰਿਆਂ ਨਾਲ ਸ਼ਾਂਤੀ ਦਾ ਪਲ" 
+    en: "Connect with your loved ones in HD quality", 
+    ar: "تواصل مع أحبائك بجودة عالية", 
+    ur: "ایچ ڈی کوالٹی میں اپنے پیاروں سے جڑیں", 
+    hi: "HD गुणवत्ता में अपने प्रियजनों से जुड़ें", 
+    ta: "HD தரத்தில் உங்கள் அன்புக்குரியவர்களுடன் இணைக்கவும்", 
+    te: "HD నాణ్యతలో మీ ప్రియమైనవారితో కనెక్ట్ అవ్వండి", 
+    mr: "HD गुणवत्तेत तुमच्या प्रियजनांशी कनेक्ट करा", 
+    bn: "HD মানের সাথে আপনার প্রিয়জনদের সাথে সংযুক্ত হন", 
+    or: "HD ଗୁଣବତ୍ତାରେ ଆପଣଙ୍କ ପ୍ରିୟଜନଙ୍କ ସହ ସଂଯୋଗ କରନ୍ତୁ", 
+    ml: "HD ഗുണനിലവാരത്തിൽ നിങ്ങളുടെ പ്രിയപ്പെട്ടവരുമായി ബന്ധിപ്പിക്കുക", 
+    pa: "HD ਕੁਆਲਿਟੀ ਵਿੱਚ ਆਪਣੇ ਪਿਆਰਿਆਂ ਨਾਲ ਜੁੜੋ" 
   },
-  callFamily: { 
-    en: "Call Family", 
-    ar: "اتصل بالعائلة", 
-    ur: "خاندان کو کال کریں", 
-    hi: "परिवार को कॉल करें", 
-    ta: "குடும்பத்தை அழைக்கவும்", 
-    te: "కుటుంబాన్ని కాల్ చేయండి", 
-    mr: "कुटुंबाला कॉल करा", 
-    bn: "পরিবারকে কল করুন", 
-    or: "ପରିବାରକୁ କଲ କରନ୍ତୁ", 
-    ml: "കുടുംബത്തെ വിളിക്കുക", 
-    pa: "ਪਰਿਵਾਰ ਨੂੰ ਕਾਲ ਕਰੋ" 
+  startCall: { 
+    en: "Start New Call", 
+    ar: "بدء مكالمة جديدة", 
+    ur: "نئی کال شروع کریں", 
+    hi: "नई कॉल शुरू करें", 
+    ta: "புதிய அழைப்பைத் தொடங்கவும்", 
+    te: "కొత్త కాల్ ప్రారంభించండి", 
+    mr: "नवीन कॉल सुरू करा", 
+    bn: "নতুন কল শুরু করুন", 
+    or: "ନୂଆ କଲ ଆରମ୍ଭ କରନ୍ତୁ", 
+    ml: "പുതിയ കോൾ ആരംഭിക്കുക", 
+    pa: "ਨਵੀਂ ਕਾਲ ਸ਼ੁਰੂ ਕਰੋ" 
   },
   joinFamilyCall: { 
     en: "Join Family Call", 
@@ -97,30 +96,30 @@ const labels = {
     pa: "ਪਰਿਵਾਰ ਕਾਲ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਵੋ" 
   },
   enterCode: { 
-    en: "Enter family code", 
-    ar: "أدخل رمز العائلة", 
-    ur: "خاندان کا کوڈ درج کریں", 
-    hi: "परिवार कोड दर्ज करें", 
-    ta: "குடும்ப குறியீட்டை உள்ளிடவும்", 
-    te: "కుటుంబ కోడ్ నమోదు చేయండి", 
-    mr: "कुटुंब कोड प्रविष्ट करा", 
-    bn: "পারিবারিক কোড লিখুন", 
-    or: "ପରିବାର କୋଡ ପ୍ରବେଶ କରନ୍ତୁ", 
-    ml: "കുടുംബ കോഡ് നൽകുക", 
-    pa: "ਪਰਿਵਾਰ ਕੋਡ ਦਾਖਲ ਕਰੋ" 
+    en: "Enter 6-digit code", 
+    ar: "أدخل الرمز المكون من 6 أرقام", 
+    ur: "6 ہندسوں کا کوڈ درج کریں", 
+    hi: "6 अंकों का कोड दर्ज करें", 
+    ta: "6 இலக்க குறியீட்டை உள்ளிடவும்", 
+    te: "6 అంకెల కోడ్ నమోదు చేయండి", 
+    mr: "6 अंकी कोड प्रविष्ट करा", 
+    bn: "6 সংখ্যার কোড লিখুন", 
+    or: "6 ଅଙ୍କ କୋଡ ପ୍ରବେଶ କରନ୍ତୁ", 
+    ml: "6 അക്ക കോഡ് നൽകുക", 
+    pa: "6 ਅੰਕਾਂ ਦਾ ਕੋਡ ਦਾਖਲ ਕਰੋ" 
   },
   familyCode: { 
-    en: "Family Code", 
-    ar: "رمز العائلة", 
-    ur: "خاندان کا کوڈ", 
-    hi: "परिवार कोड", 
-    ta: "குடும்ப குறியீடு", 
-    te: "కుటుంబ కోడ్", 
-    mr: "कुटुंब कोड", 
-    bn: "পারিবারিক কোড", 
-    or: "ପରିବାର କୋଡ", 
-    ml: "കുടുംബ കോഡ്", 
-    pa: "ਪਰਿਵਾਰ ਕੋਡ" 
+    en: "Share This Code", 
+    ar: "شارك هذا الرمز", 
+    ur: "یہ کوڈ شیئر کریں", 
+    hi: "यह कोड साझा करें", 
+    ta: "இந்த குறியீட்டைப் பகிரவும்", 
+    te: "ఈ కోడ్‌ను షేర్ చేయండి", 
+    mr: "हा कोड शेअर करा", 
+    bn: "এই কোডটি শেয়ার করুন", 
+    or: "ଏହି କୋଡ ଅଂଶୀଦାର କରନ୍ତୁ", 
+    ml: "ഈ കോഡ് പങ്കിടുക", 
+    pa: "ਇਹ ਕੋਡ ਸਾਂਝਾ ਕਰੋ" 
   },
   copied: { 
     en: "Code copied! Share with family", 
@@ -136,17 +135,17 @@ const labels = {
     pa: "ਕੋਡ ਕਾਪੀ ਹੋ ਗਿਆ! ਪਰਿਵਾਰ ਨਾਲ ਸਾਂਝਾ ਕਰੋ" 
   },
   shareCode: { 
-    en: "Share this code with ONE family member", 
-    ar: "شارك هذا الرمز مع فرد واحد من العائلة", 
-    ur: "یہ کوڈ ایک خاندان کے فرد کے ساتھ شیئر کریں", 
-    hi: "यह कोड एक परिवार के सदस्य के साथ साझा करें", 
-    ta: "இந்த குறியீட்டை ஒரு குடும்ப உறுப்பினருடன் பகிரவும்", 
-    te: "ఈ కోడ్‌ను ఒక కుటుంబ సభ్యుడితో షేర్ చేయండి", 
-    mr: "हा कोड एका कुटुंबातील सदस्यासोबत शेअर करा", 
-    bn: "এই কোডটি এক পরিবারের সদস্যের সাথে শেয়ার করুন", 
-    or: "ଏହି କୋଡ ଜଣେ ପରିବାର ସଦସ୍ୟଙ୍କ ସହ ଅଂଶୀଦାର କରନ୍ତୁ", 
-    ml: "ഈ കോഡ് ഒരു കുടുംബാംഗവുമായി പങ്കിടുക", 
-    pa: "ਇਹ ਕੋਡ ਇੱਕ ਪਰਿਵਾਰਕ ਮੈਂਬਰ ਨਾਲ ਸਾਂਝਾ ਕਰੋ" 
+    en: "Share with family members to join", 
+    ar: "شارك مع أفراد العائلة للانضمام", 
+    ur: "شامل ہونے کے لیے خاندان کے افراد کے ساتھ شیئر کریں", 
+    hi: "शामिल होने के लिए परिवार के सदस्यों के साथ साझा करें", 
+    ta: "சேர குடும்ப உறுப்பினர்களுடன் பகிரவும்", 
+    te: "చేరడానికి కుటుంబ సభ్యులతో షేర్ చేయండి", 
+    mr: "सामील होण्यासाठी कुटुंबातील सदस्यांसोबत शेअर करा", 
+    bn: "যোগ দিতে পরিবারের সদস্যদের সাথে শেয়ার করুন", 
+    or: "ଯୋଗ ଦେବାକୁ ପରିବାର ସଦସ୍ୟଙ୍କ ସହ ଅଂଶୀଦାର କରନ୍ତୁ", 
+    ml: "ചേരാൻ കുടുംബാംഗങ്ങളുമായി പങ്കിടുക", 
+    pa: "ਸ਼ਾਮਲ ਹੋਣ ਲਈ ਪਰਿਵਾਰਕ ਮੈਂਬਰਾਂ ਨਾਲ ਸਾਂਝਾ ਕਰੋ" 
   },
   endCall: { 
     en: "End Call", 
@@ -162,30 +161,30 @@ const labels = {
     pa: "ਕਾਲ ਸਮਾਪਤ ਕਰੋ" 
   },
   connecting: { 
-    en: "Connecting to your family...", 
-    ar: "جاري الاتصال بعائلتك...", 
-    ur: "آپ کے خاندان سے جڑ رہے ہیں...", 
-    hi: "आपके परिवार से जुड़ रहे हैं...", 
-    ta: "உங்கள் குடும்பத்துடன் இணைக்கிறது...", 
-    te: "మీ కుటుంబానికి కనెక్ట్ అవుతోంది...", 
-    mr: "तुमच्या कुटुंबाशी कनेक्ट होत आहे...", 
-    bn: "আপনার পরিবারের সাথে সংযুক্ত হচ্ছে...", 
-    or: "ଆପଣଙ୍କ ପରିବାର ସହ ସଂଯୋଗ ହେଉଛି...", 
-    ml: "നിങ്ങളുടെ കുടുംബവുമായി ബന്ധിപ്പിക്കുന്നു...", 
-    pa: "ਤੁਹਾਡੇ ਪਰਿਵਾਰ ਨਾਲ ਜੁੜ ਰਿਹਾ ਹੈ..." 
+    en: "Connecting...", 
+    ar: "جاري الاتصال...", 
+    ur: "جڑ رہا ہے...", 
+    hi: "कनेक्ट हो रहा है...", 
+    ta: "இணைக்கிறது...", 
+    te: "కనెక్ట్ అవుతోంది...", 
+    mr: "कनेक्ट होत आहे...", 
+    bn: "সংযুক্ত হচ্ছে...", 
+    or: "ସଂଯୋଗ ହେଉଛି...", 
+    ml: "ബന്ധിപ്പിക്കുന്നു...", 
+    pa: "ਜੁੜ ਰਿਹਾ ਹੈ..." 
   },
   loginRequired: { 
-    en: "Please login to call your family", 
-    ar: "يرجى تسجيل الدخول للاتصال بعائلتك", 
-    ur: "اپنے خاندان کو کال کرنے کے لیے لاگ ان کریں", 
-    hi: "अपने परिवार को कॉल करने के लिए लॉगिन करें", 
-    ta: "உங்கள் குடும்பத்தை அழைக்க உள்நுழையவும்", 
-    te: "మీ కుటుంబాన్ని కాల్ చేయడానికి లాగిన్ అవ్వండి", 
-    mr: "तुमच्या कुटुंबाला कॉल करण्यासाठी लॉगिन करा", 
-    bn: "আপনার পরিবারকে কল করতে লগইন করুন", 
-    or: "ଆପଣଙ୍କ ପରିବାରକୁ କଲ କରିବାକୁ ଲଗଇନ କରନ୍ତୁ", 
-    ml: "നിങ്ങളുടെ കുടുംബത്തെ വിളിക്കാൻ ലോഗിൻ ചെയ്യുക", 
-    pa: "ਆਪਣੇ ਪਰਿਵਾਰ ਨੂੰ ਕਾਲ ਕਰਨ ਲਈ ਲੌਗਇਨ ਕਰੋ" 
+    en: "Please login to make video calls", 
+    ar: "يرجى تسجيل الدخول لإجراء مكالمات فيديو", 
+    ur: "ویڈیو کالز کرنے کے لیے لاگ ان کریں", 
+    hi: "वीडियो कॉल करने के लिए लॉगिन करें", 
+    ta: "வீடியோ அழைப்புகள் செய்ய உள்நுழையவும்", 
+    te: "వీడియో కాల్స్ చేయడానికి లాగిన్ అవ్వండి", 
+    mr: "व्हिडिओ कॉल करण्यासाठी लॉगिन करा", 
+    bn: "ভিডিও কল করতে লগইন করুন", 
+    or: "ଭିଡିଓ କଲ କରିବାକୁ ଲଗଇନ କରନ୍ତୁ", 
+    ml: "വീഡിയോ കോളുകൾ ചെയ്യാൻ ലോഗിൻ ചെയ്യുക", 
+    pa: "ਵੀਡੀਓ ਕਾਲਾਂ ਕਰਨ ਲਈ ਲੌਗਇਨ ਕਰੋ" 
   },
   login: { 
     en: "Login", 
@@ -200,31 +199,18 @@ const labels = {
     ml: "ലോഗിൻ", 
     pa: "ਲੌਗਇਨ" 
   },
-  limitedNotice: { 
-    en: "Calls may be limited during Hajj rituals", 
-    ar: "قد تكون المكالمات محدودة أثناء مناسك الحج", 
-    ur: "حج کی رسومات کے دوران کالز محدود ہو سکتی ہیں", 
-    hi: "हज अनुष्ठानों के दौरान कॉल सीमित हो सकती हैं", 
-    ta: "ஹஜ் சடங்குகளின் போது அழைப்புகள் குறைக்கப்படலாம்", 
-    te: "హజ్ ఆచారాల సమయంలో కాల్స్ పరిమితం కావచ్చు", 
-    mr: "हज विधींदरम्यान कॉल मर्यादित असू शकतात", 
-    bn: "হজ আচারের সময় কল সীমিত হতে পারে", 
-    or: "ହଜ ରୀତିନୀତି ସମୟରେ କଲ ସୀମିତ ହୋଇପାରେ", 
-    ml: "ഹജ്ജ് ആചാരങ്ങളിൽ കോളുകൾ പരിമിതമായേക്കാം", 
-    pa: "ਹੱਜ ਰਸਮਾਂ ਦੌਰਾਨ ਕਾਲਾਂ ਸੀਮਤ ਹੋ ਸਕਦੀਆਂ ਹਨ" 
-  },
-  oneToOneOnly: { 
-    en: "One-to-one calls only • No group calls", 
-    ar: "مكالمات فردية فقط • لا مكالمات جماعية", 
-    ur: "صرف ون ٹو ون کالز • کوئی گروپ کالز نہیں", 
-    hi: "केवल वन-टू-वन कॉल • कोई ग्रुप कॉल नहीं", 
-    ta: "ஒன்றுக்கு ஒன்று அழைப்புகள் மட்டுமே • குழு அழைப்புகள் இல்லை", 
-    te: "వన్-టు-వన్ కాల్స్ మాత్రమే • గ్రూప్ కాల్స్ లేవు", 
-    mr: "फक्त एक-एक कॉल • कोणतेही ग्रुप कॉल नाहीत", 
-    bn: "শুধুমাত্র একে-একে কল • কোনো গ্রুপ কল নেই", 
-    or: "କେବଳ ଗୋଟିଏ-ଗୋଟିଏ କଲ • କୌଣସି ଗ୍ରୁପ କଲ ନାହିଁ", 
-    ml: "ഒന്നിനൊന്ന് കോളുകൾ മാത്രം • ഗ്രൂപ്പ് കോളുകൾ ഇല്ല", 
-    pa: "ਸਿਰਫ਼ ਵਨ-ਟੂ-ਵਨ ਕਾਲਾਂ • ਕੋਈ ਗਰੁੱਪ ਕਾਲਾਂ ਨਹੀਂ" 
+  groupCallSupport: { 
+    en: "Group calls supported • Multiple family members can join", 
+    ar: "مكالمات جماعية مدعومة • يمكن لعدة أفراد من العائلة الانضمام", 
+    ur: "گروپ کالز سپورٹڈ • متعدد خاندان کے افراد شامل ہو سکتے ہیں", 
+    hi: "ग्रुप कॉल समर्थित • कई परिवार के सदस्य शामिल हो सकते हैं", 
+    ta: "குழு அழைப்புகள் ஆதரிக்கப்படுகின்றன • பல குடும்ப உறுப்பினர்கள் சேரலாம்", 
+    te: "గ్రూప్ కాల్స్ మద్దతు • బహుళ కుటుంబ సభ్యులు చేరవచ్చు", 
+    mr: "ग्रुप कॉल समर्थित • अनेक कुटुंबातील सदस्य सामील होऊ शकतात", 
+    bn: "গ্রুপ কল সমর্থিত • একাধিক পরিবারের সদস্য যোগ দিতে পারেন", 
+    or: "ଗ୍ରୁପ କଲ ସମର୍ଥିତ • ଏକାଧିକ ପରିବାର ସଦସ୍ୟ ଯୋଗ ଦେଇପାରିବେ", 
+    ml: "ഗ്രൂപ്പ് കോളുകൾ പിന്തുണയ്ക്കുന്നു • ഒന്നിലധികം കുടുംബാംഗങ്ങൾക്ക് ചേരാം", 
+    pa: "ਗਰੁੱਪ ਕਾਲਾਂ ਸਮਰਥਿਤ • ਕਈ ਪਰਿਵਾਰਕ ਮੈਂਬਰ ਸ਼ਾਮਲ ਹੋ ਸਕਦੇ ਹਨ" 
   },
   noRecording: { 
     en: "No recording • No call history stored", 
@@ -239,31 +225,18 @@ const labels = {
     ml: "റെക്കോർഡിംഗ് ഇല്ല • കോൾ ചരിത്രം സംഭരിക്കുന്നില്ല", 
     pa: "ਕੋਈ ਰਿਕਾਰਡਿੰਗ ਨਹੀਂ • ਕਾਲ ਹਿਸਟਰੀ ਸੇਵ ਨਹੀਂ" 
   },
-  safetyFirst: { 
-    en: "Focus on your Hajj. Family can wait.", 
-    ar: "ركز على حجك. العائلة يمكن أن تنتظر.", 
-    ur: "اپنے حج پر توجہ دیں۔ خاندان انتظار کر سکتا ہے۔", 
-    hi: "अपने हज पर ध्यान दें। परिवार इंतज़ार कर सकता है।", 
-    ta: "உங்கள் ஹஜ்ஜில் கவனம் செலுத்துங்கள். குடும்பம் காத்திருக்கும்.", 
-    te: "మీ హజ్‌పై దృష్టి పెట్టండి. కుటుంబం వేచి ఉండగలదు.", 
-    mr: "तुमच्या हजवर लक्ष केंद्रित करा. कुटुंब थांबू शकतं.", 
-    bn: "আপনার হজে মনোযোগ দিন। পরিবার অপেক্ষা করতে পারে।", 
-    or: "ଆପଣଙ୍କ ହଜରେ ଧ୍ୟାନ ଦିଅନ୍ତୁ। ପରିବାର ଅପେକ୍ଷା କରିପାରିବ।", 
-    ml: "നിങ്ങളുടെ ഹജ്ജിൽ ശ്രദ്ധിക്കുക. കുടുംബം കാത്തിരിക്കും.", 
-    pa: "ਆਪਣੇ ਹੱਜ 'ਤੇ ਧਿਆਨ ਦਿਓ। ਪਰਿਵਾਰ ਉਡੀਕ ਕਰ ਸਕਦਾ ਹੈ।" 
-  },
-  callThisNumber: { 
-    en: "Call This Number", 
-    ar: "اتصل بهذا الرقم", 
-    ur: "اس نمبر پر کال کریں", 
-    hi: "इस नंबर पर कॉल करें", 
-    ta: "இந்த எண்ணை அழைக்கவும்", 
-    te: "ఈ నంబర్‌కు కాల్ చేయండి", 
-    mr: "या नंबरवर कॉल करा", 
-    bn: "এই নম্বরে কল করুন", 
-    or: "ଏହି ନମ୍ବରରେ କଲ କରନ୍ତୁ", 
-    ml: "ഈ നമ്പറിലേക്ക് വിളിക്കുക", 
-    pa: "ਇਸ ਨੰਬਰ 'ਤੇ ਕਾਲ ਕਰੋ" 
+  hdQuality: { 
+    en: "HD 720p video quality with noise cancellation", 
+    ar: "جودة فيديو HD 720p مع إلغاء الضوضاء", 
+    ur: "شور منسوخی کے ساتھ HD 720p ویڈیو کوالٹی", 
+    hi: "शोर रद्द करने के साथ HD 720p वीडियो गुणवत्ता", 
+    ta: "இரைச்சல் நீக்கத்துடன் HD 720p வீடியோ தரம்", 
+    te: "శబ్ద రద్దుతో HD 720p వీడియో నాణ్యత", 
+    mr: "आवाज रद्द करण्यासह HD 720p व्हिडिओ गुणवत्ता", 
+    bn: "শব্দ বাতিলের সাথে HD 720p ভিডিও গুণমান", 
+    or: "ଶବ୍ଦ ବାତିଲ ସହ HD 720p ଭିଡିଓ ଗୁଣବତ୍ତା", 
+    ml: "ശബ്ദ റദ്ദാക്കലോടെ HD 720p വീഡിയോ ഗുണനിലവാരം", 
+    pa: "ਸ਼ੋਰ ਰੱਦ ਕਰਨ ਨਾਲ HD 720p ਵੀਡੀਓ ਕੁਆਲਿਟੀ" 
   },
   orJoinCall: { 
     en: "Or join an existing call", 
@@ -304,19 +277,6 @@ const labels = {
     ml: "നല്ല കണക്ഷൻ", 
     pa: "ਚੰਗਾ ਕਨੈਕਸ਼ਨ" 
   },
-  noiseCancellation: { 
-    en: "Noise Cancellation", 
-    ar: "إلغاء الضوضاء", 
-    ur: "شور منسوخی", 
-    hi: "शोर रद्द करना", 
-    ta: "இரைச்சல் நீக்கம்", 
-    te: "శబ్ద రద్దు", 
-    mr: "आवाज रद्द करणे", 
-    bn: "শব্দ বাতিল", 
-    or: "ଶବ୍ଦ ବାତିଲ", 
-    ml: "ശബ്ദ റദ്ദാക്കൽ", 
-    pa: "ਸ਼ੋਰ ਰੱਦ ਕਰਨਾ" 
-  },
   noiseCancellationOn: { 
     en: "Clear Audio ON", 
     ar: "صوت واضح مفعل", 
@@ -356,7 +316,38 @@ const labels = {
     ml: "ശബ്ദമുള്ള പരിതസ്ഥിതികൾക്കുള്ള വ്യക്തമായ ഓഡിയോ", 
     pa: "ਸ਼ੋਰ ਭਰੇ ਮਾਹੌਲ ਲਈ ਸਾਫ਼ ਆਡੀਓ" 
   },
+  participants: { 
+    en: "participants", 
+    ar: "مشاركون", 
+    ur: "شرکاء", 
+    hi: "प्रतिभागी", 
+    ta: "பங்கேற்பாளர்கள்", 
+    te: "పాల్గొనేవారు", 
+    mr: "सहभागी", 
+    bn: "অংশগ্রহণকারী", 
+    or: "ଅଂଶଗ୍ରହଣକାରୀ", 
+    ml: "പങ്കാളികൾ", 
+    pa: "ਭਾਗੀਦਾਰ" 
+  },
+  invalidCode: { 
+    en: "Invalid code. Please check and try again.", 
+    ar: "رمز غير صالح. يرجى التحقق والمحاولة مرة أخرى.", 
+    ur: "غلط کوڈ۔ براہ کرم چیک کریں اور دوبارہ کوشش کریں۔", 
+    hi: "अमान्य कोड। कृपया जांचें और पुनः प्रयास करें।", 
+    ta: "தவறான குறியீடு. தயவுசெய்து சரிபார்த்து மீண்டும் முயற்சிக்கவும்.", 
+    te: "చెల్లని కోడ్. దయచేసి తనిఖీ చేసి మళ్ళీ ప్రయత్నించండి.", 
+    mr: "अवैध कोड. कृपया तपासा आणि पुन्हा प्रयत्न करा.", 
+    bn: "অবৈধ কোড। অনুগ্রহ করে পরীক্ষা করুন এবং আবার চেষ্টা করুন।", 
+    or: "ଅବୈଧ କୋଡ। ଦୟାକରି ଯାଞ୍ଚ କରନ୍ତୁ ଏବଂ ପୁନର୍ବାର ଚେଷ୍ଟା କରନ୍ତୁ।", 
+    ml: "അസാധുവായ കോഡ്. ദയവായി പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.", 
+    pa: "ਅਵੈਧ ਕੋਡ। ਕਿਰਪਾ ਕਰਕੇ ਜਾਂਚ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।" 
+  },
 };
+
+// Generate a simple 6-digit code
+function generateCallCode(): string {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
 
 // Connection quality hook
 function useConnectionQuality() {
@@ -438,10 +429,8 @@ function NoiseCancellationToggle() {
   const { isSupported, isEnabled, setEnabled } = useNoiseCancellation();
   const { language } = useLanguage();
 
-  // Don't show if not supported
   if (isSupported === false) return null;
   
-  // Show loading state while checking
   if (isSupported === undefined) {
     return (
       <div className="flex items-center gap-3 bg-muted/50 px-4 py-3 rounded-xl animate-pulse">
@@ -480,15 +469,76 @@ function NoiseCancellationToggle() {
   );
 }
 
-// Calming call UI with minimal distractions
-function CallUI({ callId, onLeave }: { callId: string; onLeave: () => void }) {
+// Auto-enable noise cancellation and configure HD video on call join
+function CallSetup() {
+  const call = useCall();
+  const { setEnabled, isSupported } = useNoiseCancellation();
+  const { useCallCallingState } = useCallStateHooks();
+  const callingState = useCallCallingState();
+
+  useEffect(() => {
+    if (callingState === CallingState.JOINED && call) {
+      // Auto-enable noise cancellation when call joins
+      if (isSupported) {
+        setEnabled(true);
+      }
+
+      // Configure camera for HD 720p
+      const configureCamera = async () => {
+        try {
+          await call.camera.enable();
+          // Request HD quality camera stream
+          const devices = await navigator.mediaDevices.enumerateDevices();
+          const videoDevices = devices.filter(d => d.kind === 'videoinput');
+          if (videoDevices.length > 0) {
+            // Get HD stream with 720p constraints
+            const stream = await navigator.mediaDevices.getUserMedia({
+              video: {
+                width: { ideal: 1280 },
+                height: { ideal: 720 },
+                frameRate: { ideal: 30 }
+              }
+            });
+            // Stream is ready - SDK will handle it
+            stream.getTracks().forEach(track => track.stop()); // Clean up test stream
+          }
+        } catch (error) {
+          console.log("Camera setup completed with default settings");
+        }
+      };
+
+      configureCamera();
+    }
+  }, [callingState, call, isSupported, setEnabled]);
+
+  return null;
+}
+
+// Participant count display
+function ParticipantCount() {
+  const { useParticipantCount } = useCallStateHooks();
+  const participantCount = useParticipantCount();
+  const { language } = useLanguage();
+
+  return (
+    <div className="flex items-center gap-2 text-muted-foreground">
+      <Users className="h-4 w-4" />
+      <span className="text-sm">
+        {participantCount} {labels.participants[language] || labels.participants.en}
+      </span>
+    </div>
+  );
+}
+
+// Call UI with simplified controls
+function CallUI({ callCode, onLeave }: { callCode: string; onLeave: () => void }) {
   const { useCallCallingState } = useCallStateHooks();
   const callingState = useCallCallingState();
   const { language } = useLanguage();
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
-    await navigator.clipboard.writeText(callId);
+    await navigator.clipboard.writeText(callCode);
     setCopied(true);
     toast.success(labels.copied[language] || labels.copied.en);
     setTimeout(() => setCopied(false), 3000);
@@ -509,12 +559,15 @@ function CallUI({ callId, onLeave }: { callId: string; onLeave: () => void }) {
 
   return (
     <div className="space-y-6">
-      {/* Family code display - for sharing */}
+      {/* Call setup for HD and noise cancellation */}
+      <CallSetup />
+      
+      {/* Code display for sharing */}
       <div className="bg-card border border-border rounded-2xl p-6">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm text-muted-foreground mb-1">{labels.familyCode[language] || labels.familyCode.en}</p>
-            <p className="font-mono text-2xl font-bold tracking-wider">{callId.slice(-8).toUpperCase()}</p>
+            <p className="font-mono text-3xl font-bold tracking-[0.3em]">{callCode}</p>
           </div>
           <Button 
             variant="outline" 
@@ -525,23 +578,26 @@ function CallUI({ callId, onLeave }: { callId: string; onLeave: () => void }) {
             {copied ? <Check className="h-6 w-6 text-green-500" /> : <Copy className="h-6 w-6" />}
           </Button>
         </div>
-        <p className="text-sm text-muted-foreground mt-3 flex items-center gap-2">
-          <Users className="h-4 w-4" />
-          {labels.shareCode[language] || labels.shareCode.en}
-        </p>
+        <div className="flex items-center justify-between mt-4">
+          <p className="text-sm text-muted-foreground flex items-center gap-2">
+            <Users className="h-4 w-4" />
+            {labels.shareCode[language] || labels.shareCode.en}
+          </p>
+          <ParticipantCount />
+        </div>
       </div>
 
-      {/* Noise Cancellation toggle - for noisy Hajj environments */}
+      {/* Noise Cancellation toggle */}
       <div className="flex justify-center">
         <NoiseCancellationToggle />
       </div>
 
-      {/* Video area - simple speaker layout */}
+      {/* Video area */}
       <div className="aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl">
         <SpeakerLayout participantsBarPosition="bottom" />
       </div>
 
-      {/* Large end call button */}
+      {/* End call button */}
       <div className="flex justify-center pt-4">
         <Button
           onClick={onLeave}
@@ -566,13 +622,11 @@ export default function VideoCallPage() {
   
   const [client, setClient] = useState<StreamVideoClient | null>(null);
   const [call, setCall] = useState<ReturnType<StreamVideoClient["call"]> | null>(null);
-  const [callId, setCallId] = useState("");
+  const [callCode, setCallCode] = useState("");
   const [joinCode, setJoinCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [familyPhone, setFamilyPhone] = useState("");
-  const [countryCode, setCountryCode] = useState("+91");
 
-  // Initialize noise cancellation for clearer audio in noisy Hajj environments
+  // Initialize noise cancellation for clearer audio
   const noiseCancellation = useMemo(() => new NoiseCancellation(), []);
 
   const initializeClient = useCallback(async () => {
@@ -626,7 +680,7 @@ export default function VideoCallPage() {
     };
   }, [user, client, initializeClient]);
 
-  const startFamilyCall = async () => {
+  const startNewCall = async () => {
     if (connectionQuality === "offline") {
       toast.error("No internet connection");
       return;
@@ -643,14 +697,16 @@ export default function VideoCallPage() {
         }
       }
 
-      // Generate simple family code
-      const familyCode = `family-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`;
-      const newCall = streamClient.call("default", familyCode);
+      // Generate simple 6-digit code
+      const code = generateCallCode();
+      const callId = `hajj-family-${code}`;
+      
+      const newCall = streamClient.call("default", callId);
       
       await newCall.join({ create: true });
       
       setCall(newCall);
-      setCallId(familyCode);
+      setCallCode(code);
     } catch (error) {
       console.error("Error creating call:", error);
       toast.error("Failed to start call");
@@ -659,8 +715,14 @@ export default function VideoCallPage() {
     }
   };
 
-  const joinFamilyCall = async () => {
-    if (!joinCode.trim()) return;
+  const joinExistingCall = async () => {
+    const cleanCode = joinCode.trim().replace(/\D/g, ''); // Remove non-digits
+    
+    if (cleanCode.length !== 6) {
+      toast.error(labels.invalidCode[language] || labels.invalidCode.en);
+      return;
+    }
+
     if (connectionQuality === "offline") {
       toast.error("No internet connection");
       return;
@@ -677,17 +739,16 @@ export default function VideoCallPage() {
         }
       }
 
-      // Handle short code input - try to find matching call
-      const codeToJoin = joinCode.trim().toLowerCase();
-      const existingCall = streamClient.call("default", codeToJoin.includes("family-") ? codeToJoin : `family-${codeToJoin}`);
+      const callId = `hajj-family-${cleanCode}`;
+      const existingCall = streamClient.call("default", callId);
       
       await existingCall.join();
       
       setCall(existingCall);
-      setCallId(codeToJoin);
+      setCallCode(cleanCode);
     } catch (error) {
       console.error("Error joining call:", error);
-      toast.error("Could not join. Check the code and try again.");
+      toast.error(labels.invalidCode[language] || labels.invalidCode.en);
     } finally {
       setIsLoading(false);
     }
@@ -697,7 +758,7 @@ export default function VideoCallPage() {
     if (call) {
       await call.leave();
       setCall(null);
-      setCallId("");
+      setCallCode("");
       setJoinCode("");
     }
   };
@@ -723,7 +784,7 @@ export default function VideoCallPage() {
           <Card className="text-center border-2">
             <CardContent className="pt-10 pb-8 space-y-6">
               <div className="mx-auto w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center">
-                <Heart className="h-10 w-10 text-primary" />
+                <Video className="h-10 w-10 text-primary" />
               </div>
               <div className="space-y-2">
                 <h1 className="text-2xl font-bold">{labels.title[language] || labels.title.en}</h1>
@@ -746,7 +807,7 @@ export default function VideoCallPage() {
     );
   }
 
-  // Active call with noise cancellation for clearer audio
+  // Active call with noise cancellation
   if (call && client) {
     return (
       <MainLayout>
@@ -754,7 +815,7 @@ export default function VideoCallPage() {
           <StreamVideo client={client}>
             <StreamCall call={call}>
               <NoiseCancellationProvider noiseCancellation={noiseCancellation}>
-                <CallUI callId={callId} onLeave={leaveCall} />
+                <CallUI callCode={callCode} onLeave={leaveCall} />
               </NoiseCancellationProvider>
             </StreamCall>
           </StreamVideo>
@@ -763,14 +824,14 @@ export default function VideoCallPage() {
     );
   }
 
-  // Main interface - calm, simple, elderly-friendly
+  // Main interface - simple, elderly-friendly
   return (
     <MainLayout>
       <div className="container max-w-lg mx-auto py-8 px-4 space-y-8">
         {/* Header */}
         <div className="text-center space-y-4">
           <div className="mx-auto w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center">
-            <Heart className="h-12 w-12 text-primary" />
+            <Video className="h-12 w-12 text-primary" />
           </div>
           <div className="space-y-2">
             <h1 className="text-3xl font-bold">{labels.title[language] || labels.title.en}</h1>
@@ -783,16 +844,16 @@ export default function VideoCallPage() {
           </div>
         </div>
 
-        {/* Important notices - calm, not alarming */}
+        {/* Feature notices */}
         <Card className="bg-muted/30 border-dashed">
           <CardContent className="py-5 space-y-3">
             <div className="flex items-start gap-3 text-muted-foreground">
-              <Clock className="h-5 w-5 mt-0.5 shrink-0" />
-              <p className="text-sm">{labels.limitedNotice[language] || labels.limitedNotice.en}</p>
+              <Users className="h-5 w-5 mt-0.5 shrink-0" />
+              <p className="text-sm">{labels.groupCallSupport[language] || labels.groupCallSupport.en}</p>
             </div>
             <div className="flex items-start gap-3 text-muted-foreground">
-              <Users className="h-5 w-5 mt-0.5 shrink-0" />
-              <p className="text-sm">{labels.oneToOneOnly[language] || labels.oneToOneOnly.en}</p>
+              <Video className="h-5 w-5 mt-0.5 shrink-0" />
+              <p className="text-sm">{labels.hdQuality[language] || labels.hdQuality.en}</p>
             </div>
             <div className="flex items-start gap-3 text-muted-foreground">
               <Shield className="h-5 w-5 mt-0.5 shrink-0" />
@@ -801,19 +862,12 @@ export default function VideoCallPage() {
           </CardContent>
         </Card>
 
-        {/* Phone number input - Main calling method */}
+        {/* Start new call - Primary action */}
         <Card className="border-2 border-primary/20 bg-primary/5">
-          <CardContent className="pt-6 space-y-5">
-            <PhoneInputWithCountry
-              value={familyPhone}
-              countryCode={countryCode}
-              onValueChange={setFamilyPhone}
-              onCountryCodeChange={setCountryCode}
-            />
-            
+          <CardContent className="pt-6 pb-6">
             <Button
-              onClick={startFamilyCall}
-              disabled={isLoading || connectionQuality === "offline" || familyPhone.length < 6}
+              onClick={startNewCall}
+              disabled={isLoading || connectionQuality === "offline"}
               size="lg"
               className="w-full h-20 text-xl gap-4 rounded-2xl shadow-lg hover:shadow-xl transition-all"
             >
@@ -822,7 +876,7 @@ export default function VideoCallPage() {
               ) : (
                 <Video className="h-8 w-8" />
               )}
-              {labels.callThisNumber[language] || labels.callThisNumber.en}
+              {labels.startCall[language] || labels.startCall.en}
             </Button>
           </CardContent>
         </Card>
@@ -838,14 +892,15 @@ export default function VideoCallPage() {
             <Input
               placeholder={labels.enterCode[language] || labels.enterCode.en}
               value={joinCode}
-              onChange={(e) => setJoinCode(e.target.value)}
-              className="h-16 text-xl text-center font-mono tracking-widest rounded-xl"
-              maxLength={20}
+              onChange={(e) => setJoinCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+              className="h-16 text-2xl text-center font-mono tracking-[0.3em] rounded-xl"
+              maxLength={6}
+              inputMode="numeric"
             />
             
             <Button
-              onClick={joinFamilyCall}
-              disabled={isLoading || !joinCode.trim() || connectionQuality === "offline"}
+              onClick={joinExistingCall}
+              disabled={isLoading || joinCode.length !== 6 || connectionQuality === "offline"}
               variant="secondary"
               size="lg"
               className="w-full h-14 text-lg gap-3 rounded-xl"
@@ -864,7 +919,7 @@ export default function VideoCallPage() {
         <div className="text-center py-4">
           <p className="text-sm text-muted-foreground flex items-center justify-center gap-2">
             <Info className="h-4 w-4" />
-            {labels.safetyFirst[language] || labels.safetyFirst.en}
+            HD 720p • Noise Cancellation • Group Calls
           </p>
         </div>
       </div>

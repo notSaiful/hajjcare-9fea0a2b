@@ -162,6 +162,13 @@ export type Database = {
     }
     Functions: {
       is_member_of_group: { Args: { p_group_id: string }; Returns: boolean }
+      lookup_user_id_by_phone: {
+        Args: { target_phone: string }
+        Returns: {
+          full_name: string
+          user_id: string
+        }[]
+      }
       upsert_member_location:
         | {
             Args: {
