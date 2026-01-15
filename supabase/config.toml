@@ -40,3 +40,6 @@ verify_jwt = false
 
 [functions.elevenlabs-agent-token]
 verify_jwt = false
+
+[functions.stream-video-token]
+verify_jwt = false

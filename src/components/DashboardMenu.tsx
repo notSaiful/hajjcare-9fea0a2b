@@ -25,6 +25,7 @@ import {
   Heart,
   Flower2,
   Share2,
+  Video,
 } from "lucide-react";
 
 interface MenuItem {
@@ -155,9 +156,16 @@ const menuSections: MenuSection[] = [
       {
         id: "women",
         icon: Flower2,
-        label: { en: "Women", ar: "النساء", ur: "خواتین", hi: "महिलाएं", ta: "பெண்கள்", te: "మహిళలు", mr: "महिला", bn: "মহিলা", or: "ମହିଳା", ml: "സ്ത്രീകൾ", pa: "ਔਰਤਾਂ" },
+        label: { en: "Women", ar: "النساء", ur: "خواتین", hi: "महिलाएं", ta: "பெண்கள்", te: "మహిళలు", mr: "महिला", bn: "মহিলা", or: "ମହিଳା", ml: "സ്ത്രീകൾ", pa: "ਔਰਤਾਂ" },
         route: "/women",
         color: "pink",
+      },
+      {
+        id: "video-call",
+        icon: Video,
+        label: { en: "Video Call", ar: "مكالمة فيديو", ur: "ویڈیو کال", hi: "वीडियो कॉल", ta: "வீடியோ அழைப்பு", te: "వీడియో కాల్", mr: "व्हिडिओ कॉल", bn: "ভিডিও কল", or: "ଭିଡିଓ କଲ", ml: "വീഡിയോ കോൾ", pa: "ਵੀਡੀਓ ਕਾਲ" },
+        route: "/video-call",
+        color: "blue",
       },
     ],
   },
