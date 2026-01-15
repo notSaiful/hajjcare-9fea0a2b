@@ -1,33 +1,31 @@
 import { useNavigate } from "react-router-dom";
 import { SimpleHeader } from "@/components/SimpleHeader";
 import { AmbientBackground } from "@/components/AmbientBackground";
-
-
 import { HelpButton } from "@/components/HelpButton";
 import { EmergencyButton } from "@/components/EmergencyButton";
 import { DashboardMenu } from "@/components/DashboardMenu";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
-
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import kaabaGreenDome from "@/assets/kaaba-green-dome-new.jpeg";
-
 type PilgrimStatus = "safe" | "assistance" | "emergency";
-
 const HomePage = () => {
-  const { t, isRTL, language } = useLanguage();
-  const { isAuthenticated, loading: authLoading } = useAuth();
-  
+  const {
+    t,
+    isRTL,
+    language
+  } = useLanguage();
+  const {
+    isAuthenticated,
+    loading: authLoading
+  } = useAuth();
   const navigate = useNavigate();
-  
   const [status, setStatus] = useState<PilgrimStatus>("safe");
-
   const handleEmergency = () => {
     setStatus("emergency");
     console.log("Emergency triggered");
   };
-
   const welcomeLabels = {
     en: "Welcome to HajCare",
     ar: "مرحباً بكم في حج كير",
@@ -39,23 +37,18 @@ const HomePage = () => {
     bn: "হজকেয়ার তে স্বাগতম",
     or: "ହଜକେୟାର କୁ ସ୍ୱାଗତ",
     ml: "ഹജ്‌കെയർ ലേക്ക് സ്വാഗതം",
-    pa: "ਹਜਕੇਅਰ ਵਿੱਚ ਜੀ ਆਇਆਂ ਨੂੰ",
+    pa: "ਹਜਕੇਅਰ ਵਿੱਚ ਜੀ ਆਇਆਂ ਨੂੰ"
   };
-
   if (authLoading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+    return <div className="min-h-screen bg-background flex items-center justify-center">
         <AmbientBackground variant="minimal" />
         <div className="relative z-10 flex flex-col items-center gap-4">
           <Loader2 className="w-8 h-8 animate-spin text-primary" />
           <p className="text-sm text-muted-foreground animate-fade-in">Loading...</p>
         </div>
-      </div>
-    );
+      </div>;
   }
-
-  return (
-    <div className="min-h-screen bg-background" dir={isRTL ? "rtl" : "ltr"}>
+  return <div className="min-h-screen bg-background" dir={isRTL ? "rtl" : "ltr"}>
       {/* Ambient Background - subtle, calming */}
       <AmbientBackground />
 
@@ -67,13 +60,11 @@ const HomePage = () => {
         <div className="space-y-5 sm:space-y-6">
           
           {/* Kaaba & Green Dome Image + Welcome Title */}
-          <section className="text-center animate-fade-up" style={{ animationDelay: "0ms" }}>
+          <section className="text-center animate-fade-up" style={{
+          animationDelay: "0ms"
+        }}>
             <div className="h-20 sm:h-28 overflow-hidden mx-auto mb-3 flex items-start justify-center">
-              <img 
-                src={kaabaGreenDome} 
-                alt="Kaaba & Green Dome" 
-                className="h-24 sm:h-32 w-auto object-cover object-top"
-              />
+              <img src={kaabaGreenDome} alt="Kaaba & Green Dome" className="h-24 sm:h-32 w-auto object-cover object-top" />
             </div>
             <h1 className="text-xl sm:text-2xl font-bold text-foreground">
               {welcomeLabels[language as keyof typeof welcomeLabels] || welcomeLabels.en}
@@ -82,7 +73,9 @@ const HomePage = () => {
 
 
           {/* 2. Dashboard Menu - 16 Icons with Bismillah header */}
-          <section className="animate-fade-up" style={{ animationDelay: "80ms" }}>
+          <section className="animate-fade-up" style={{
+          animationDelay: "80ms"
+        }}>
             {/* Bismillah header */}
             <div className="text-center mb-4 sm:mb-5">
               <p className="text-lg sm:text-xl font-semibold text-emerald-700 dark:text-emerald-400" dir="rtl">
@@ -94,33 +87,32 @@ const HomePage = () => {
 
 
           {/* 4. One-Tap Help - Voice first, accessible */}
-          <section className="animate-fade-up" style={{ animationDelay: "160ms" }}>
+          <section className="animate-fade-up" style={{
+          animationDelay: "160ms"
+        }}>
             <HelpButton />
           </section>
 
           {/* 5. Emergency Button - Visible, serious, never flashy */}
-          <section className="animate-fade-up" style={{ animationDelay: "200ms" }}>
+          <section className="animate-fade-up" style={{
+          animationDelay: "200ms"
+        }}>
             <EmergencyButton onConfirm={handleEmergency} />
           </section>
 
           {/* Auth prompt if not logged in */}
-          {!isAuthenticated && (
-            <section className="text-center pt-2 animate-fade-up" style={{ animationDelay: "240ms" }}>
-              <button 
-                onClick={() => navigate("/auth")}
-                className="text-sm text-primary hover:text-primary/80 underline underline-offset-4 transition-colors duration-300"
-              >
+          {!isAuthenticated && <section className="text-center pt-2 animate-fade-up" style={{
+          animationDelay: "240ms"
+        }}>
+              <button onClick={() => navigate("/auth")} className="text-sm text-primary hover:text-primary/80 underline underline-offset-4 transition-colors duration-300">
                 {t("signIn")}
               </button>
-            </section>
-          )}
+            </section>}
         </div>
 
         {/* Bottom spacing for iOS safe area */}
-        <div className="h-8 sm:h-12" />
+        
       </main>
-    </div>
-  );
+    </div>;
 };
-
 export default HomePage;
