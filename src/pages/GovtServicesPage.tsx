@@ -1,8 +1,9 @@
 import { MainLayout } from "@/components/MainLayout";
-import { useLanguage, getLocalizedText } from "@/contexts/LanguageContext";
+import { useLanguage, getLocalizedText, LocalizedString } from "@/contexts/LanguageContext";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { 
   Accessibility, 
   Utensils, 
@@ -16,10 +17,14 @@ import {
   AlertCircle,
   MapPin,
   CheckCircle2,
-  Users
+  Users,
+  PhoneCall,
+  HelpCircle,
+  Lock
 } from "lucide-react";
 import { govtServicesPageContent, govtServices, GovtService } from "@/data/govtServicesContent";
 import { TextToSpeechButton } from "@/components/TextToSpeechButton";
+import { useNavigate } from "react-router-dom";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   wheelchair: Accessibility,
@@ -31,16 +36,121 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   "heart-handshake": HeartHandshake,
   info: Info,
   search: Search,
+  "phone-call": PhoneCall,
 };
 
-const providerLabels = {
-  india: { en: "India", color: "bg-orange-500/10 text-orange-600 border-orange-500/30" },
-  saudi: { en: "Saudi Arabia", color: "bg-green-500/10 text-green-600 border-green-500/30" },
-  both: { en: "India & Saudi", color: "bg-blue-500/10 text-blue-600 border-blue-500/30" },
+const providerLabels: Record<string, { label: LocalizedString; color: string }> = {
+  india: { 
+    label: { en: "India", ar: "الهند", ur: "ہندوستان", hi: "भारत" } as LocalizedString, 
+    color: "bg-orange-500/10 text-orange-600 border-orange-500/30" 
+  },
+  saudi: { 
+    label: { en: "Saudi Arabia", ar: "السعودية", ur: "سعودی عرب", hi: "सऊदी अरब" } as LocalizedString, 
+    color: "bg-green-500/10 text-green-600 border-green-500/30" 
+  },
+  both: { 
+    label: { en: "India & Saudi", ar: "الهند والسعودية", ur: "ہندوستان اور سعودی", hi: "भारत और सऊदी" } as LocalizedString, 
+    color: "bg-blue-500/10 text-blue-600 border-blue-500/30" 
+  },
+};
+
+// Localized section labels
+const sectionLabels = {
+  eligibility: {
+    en: "Who Can Use It",
+    ar: "من يمكنه استخدامها",
+    ur: "یہ کون استعمال کر سکتا ہے",
+    hi: "इसका उपयोग कौन कर सकता है",
+    ta: "யார் பயன்படுத்தலாம்",
+    te: "దీనిని ఎవరు ఉపయోగించవచ్చు",
+    mr: "हे कोण वापरू शकतात",
+    bn: "কারা ব্যবহার করতে পারে",
+    or: "ଏହା କିଏ ବ୍ୟବହାର କରିପାରିବେ",
+    ml: "ആർക്ക് ഉപയോഗിക്കാം",
+    pa: "ਇਸਦੀ ਵਰਤੋਂ ਕੌਣ ਕਰ ਸਕਦਾ ਹੈ",
+    tr: "Kimler Kullanabilir",
+    ru: "Кто может использовать",
+  } as LocalizedString,
+  howToAccess: {
+    en: "How to Access",
+    ar: "كيفية الوصول",
+    ur: "کیسے حاصل کریں",
+    hi: "कैसे प्राप्त करें",
+    ta: "அணுகுவது எப்படி",
+    te: "ఎలా యాక్సెస్ చేయాలి",
+    mr: "कसे मिळवायचे",
+    bn: "কীভাবে পেতে হবে",
+    or: "କିପରି ପାଇବେ",
+    ml: "എങ്ങനെ ലഭ്യമാക്കാം",
+    pa: "ਕਿਵੇਂ ਪ੍ਰਾਪਤ ਕਰੀਏ",
+    tr: "Nasıl Erişilir",
+    ru: "Как получить доступ",
+  } as LocalizedString,
+  whereToFind: {
+    en: "Where to Find",
+    ar: "أين تجدها",
+    ur: "کہاں ملے گا",
+    hi: "कहाँ मिलेगा",
+    ta: "எங்கே கிடைக்கும்",
+    te: "ఎక్కడ కనుగొనాలి",
+    mr: "कुठे मिळेल",
+    bn: "কোথায় পাবেন",
+    or: "କେଉଁଠି ମିଳିବ",
+    ml: "എവിടെ കണ്ടെത്താം",
+    pa: "ਕਿੱਥੇ ਮਿਲੇਗਾ",
+    tr: "Nerede Bulunur",
+    ru: "Где найти",
+  } as LocalizedString,
+  importantNotes: {
+    en: "Important Notes",
+    ar: "ملاحظات مهمة",
+    ur: "اہم نوٹس",
+    hi: "महत्वपूर्ण नोट्स",
+    ta: "முக்கிய குறிப்புகள்",
+    te: "ముఖ్యమైన గమనికలు",
+    mr: "महत्त्वाच्या टिपा",
+    bn: "গুরুত্বপূর্ণ নোট",
+    or: "ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ ନୋଟ୍",
+    ml: "പ്രധാന കുറിപ്പുകൾ",
+    pa: "ਮਹੱਤਵਪੂਰਨ ਨੋਟਸ",
+    tr: "Önemli Notlar",
+    ru: "Важные замечания",
+  } as LocalizedString,
+  needHelp: {
+    en: "Need Help?",
+    ar: "تحتاج مساعدة؟",
+    ur: "مدد چاہیے؟",
+    hi: "मदद चाहिए?",
+    ta: "உதவி வேண்டுமா?",
+    te: "సహాయం కావాలా?",
+    mr: "मदत हवी?",
+    bn: "সাহায্য দরকার?",
+    or: "ସାହାଯ୍ୟ ଦରକାର?",
+    ml: "സഹായം വേണോ?",
+    pa: "ਮਦਦ ਚਾਹੀਦੀ ਹੈ?",
+    tr: "Yardım mı gerekiyor?",
+    ru: "Нужна помощь?",
+  } as LocalizedString,
+  footerNote: {
+    en: "For any assistance not covered here, please contact your building coordinator or visit the Indian Hajj Mission office.",
+    ar: "لأي مساعدة غير مشمولة هنا، يرجى الاتصال بمنسق المبنى أو زيارة مكتب بعثة الحج الهندية.",
+    ur: "یہاں شامل نہ ہونے والی کسی بھی مدد کے لیے، براہ کرم اپنے بلڈنگ کوآرڈینیٹر سے رابطہ کریں یا ہندوستانی حج مشن آفس جائیں۔",
+    hi: "यहां शामिल न होने वाली किसी भी सहायता के लिए, कृपया अपने बिल्डिंग कोऑर्डिनेटर से संपर्क करें या भारतीय हज मिशन कार्यालय जाएं।",
+    ta: "இங்கே உள்ளடங்காத எந்த உதவிக்கும், உங்கள் கட்டிட ஒருங்கிணைப்பாளரை தொடர்பு கொள்ளவும் அல்லது இந்திய ஹஜ் மிஷன் அலுவலகத்திற்கு செல்லவும்.",
+    te: "ఇక్కడ చేర్చబడని ఏదైనా సహాయం కోసం, దయచేసి మీ బిల్డింగ్ కోఆర్డినేటర్‌ను సంప్రదించండి లేదా ఇండియన్ హజ్ మిషన్ కార్యాలయానికి వెళ్ళండి.",
+    mr: "येथे समाविष्ट नसलेल्या कोणत्याही मदतीसाठी, कृपया आपल्या इमारत समन्वयकाशी संपर्क साधा किंवा भारतीय हज मिशन कार्यालयास भेट द्या.",
+    bn: "এখানে অন্তর্ভুক্ত নয় এমন কোনো সহায়তার জন্য, অনুগ্রহ করে আপনার বিল্ডিং সমন্বয়কারীর সাথে যোগাযোগ করুন বা ভারতীয় হজ মিশন অফিসে যান।",
+    or: "ଏଠାରେ ଅନ୍ତର୍ଭୁକ୍ତ ନଥିବା କୌଣସି ସହାୟତା ପାଇଁ, ଦୟାକରି ଆପଣଙ୍କ ବିଲ୍ଡିଂ କୋଆର୍ଡିନେଟରଙ୍କ ସହ ଯୋଗାଯୋଗ କରନ୍ତୁ କିମ୍ବା ଭାରତୀୟ ହଜ ମିଶନ୍ ଅଫିସ୍ ଯାଆନ୍ତୁ।",
+    ml: "ഇവിടെ ഉൾപ്പെടാത്ത ഏതെങ്കിലും സഹായത്തിന്, നിങ്ങളുടെ ബിൽഡിംഗ് കോർഡിനേറ്ററെ ബന്ധപ്പെടുക അല്ലെങ്കിൽ ഇന്ത്യൻ ഹജ്ജ് മിഷൻ ഓഫീസ് സന്ദർശിക്കുക.",
+    pa: "ਇੱਥੇ ਸ਼ਾਮਲ ਨਾ ਹੋਣ ਵਾਲੀ ਕਿਸੇ ਵੀ ਸਹਾਇਤਾ ਲਈ, ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਬਿਲਡਿੰਗ ਕੋਆਰਡੀਨੇਟਰ ਨਾਲ ਸੰਪਰਕ ਕਰੋ ਜਾਂ ਭਾਰਤੀ ਹੱਜ ਮਿਸ਼ਨ ਦਫ਼ਤਰ ਜਾਓ।",
+    tr: "Burada yer almayan herhangi bir yardım için, lütfen bina koordinatörünüzle iletişime geçin veya Hindistan Hac Misyonu ofisini ziyaret edin.",
+    ru: "Для получения любой помощи, не описанной здесь, обратитесь к координатору вашего здания или посетите офис Индийской хадж-миссии.",
+  } as LocalizedString,
 };
 
 function ServiceCard({ service }: { service: GovtService }) {
   const { language } = useLanguage();
+  const navigate = useNavigate();
   const IconComponent = iconMap[service.icon] || Info;
   const providerInfo = providerLabels[service.provider];
 
@@ -49,7 +159,7 @@ function ServiceCard({ service }: { service: GovtService }) {
   const eligibility = service.eligibility ? getLocalizedText(service.eligibility, language) : null;
 
   // Build speech text
-  const speechText = `${title}. ${description}. ${eligibility ? `Eligibility: ${eligibility}.` : ""} ${
+  const speechText = `${title}. ${description}. ${eligibility ? `${getLocalizedText(sectionLabels.eligibility, language)}: ${eligibility}.` : ""} ${
     service.howToAccess.map((step) => getLocalizedText(step, language)).join(". ")
   }`;
 
@@ -65,7 +175,7 @@ function ServiceCard({ service }: { service: GovtService }) {
               <CardTitle className="text-lg leading-tight">{title}</CardTitle>
               <Badge variant="outline" className={`mt-1.5 text-xs ${providerInfo.color}`}>
                 <Users className="h-3 w-3 mr-1" />
-                {providerInfo.en}
+                {getLocalizedText(providerInfo.label, language)}
               </Badge>
             </div>
           </div>
@@ -79,7 +189,9 @@ function ServiceCard({ service }: { service: GovtService }) {
           <div className="flex items-start gap-2 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20">
             <AlertCircle className="h-4 w-4 text-amber-600 flex-shrink-0 mt-0.5" />
             <div>
-              <p className="text-xs font-medium text-amber-700 mb-1">Eligibility</p>
+              <p className="text-xs font-medium text-amber-700 mb-1">
+                {getLocalizedText(sectionLabels.eligibility, language)}
+              </p>
               <p className="text-xs text-amber-600">{eligibility}</p>
             </div>
           </div>
@@ -88,7 +200,7 @@ function ServiceCard({ service }: { service: GovtService }) {
         <div>
           <h4 className="text-sm font-semibold mb-2 flex items-center gap-2">
             <CheckCircle2 className="h-4 w-4 text-green-500" />
-            How to Access
+            {getLocalizedText(sectionLabels.howToAccess, language)}
           </h4>
           <ol className="space-y-2">
             {service.howToAccess.map((step, index) => (
@@ -105,7 +217,7 @@ function ServiceCard({ service }: { service: GovtService }) {
         <div>
           <h4 className="text-sm font-semibold mb-2 flex items-center gap-2">
             <MapPin className="h-4 w-4 text-primary" />
-            Where to Find
+            {getLocalizedText(sectionLabels.whereToFind, language)}
           </h4>
           <ul className="space-y-1.5">
             {service.locations.map((location, index) => (
@@ -121,7 +233,7 @@ function ServiceCard({ service }: { service: GovtService }) {
           <div className="p-3 rounded-lg bg-muted/50 border border-border">
             <p className="text-xs font-medium text-foreground mb-1.5 flex items-center gap-1">
               <Info className="h-3 w-3" />
-              Important Notes
+              {getLocalizedText(sectionLabels.importantNotes, language)}
             </p>
             <ul className="space-y-1">
               {service.importantNotes.map((note, index) => (
@@ -132,6 +244,17 @@ function ServiceCard({ service }: { service: GovtService }) {
             </ul>
           </div>
         )}
+
+        {/* Need Help Button */}
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="w-full mt-2 text-primary hover:text-primary hover:bg-primary/5"
+          onClick={() => navigate('/grievances')}
+        >
+          <HelpCircle className="h-4 w-4 mr-2" />
+          {getLocalizedText(sectionLabels.needHelp, language)}
+        </Button>
       </CardContent>
     </Card>
   );
@@ -177,9 +300,7 @@ export default function GovtServicesPage() {
           {/* Footer Note */}
           <div className="mt-8 p-4 rounded-lg bg-muted/50 border border-border text-center">
             <p className="text-sm text-muted-foreground">
-              For any assistance not covered here, please contact your{" "}
-              <strong>building coordinator</strong> or visit the{" "}
-              <strong>Indian Hajj Mission office</strong>.
+              {getLocalizedText(sectionLabels.footerNote, language)}
             </p>
           </div>
         </div>
