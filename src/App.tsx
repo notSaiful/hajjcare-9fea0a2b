@@ -37,6 +37,7 @@ const PreHajjIndiaPage = lazy(() => import("./pages/PreHajjIndiaPage"));
 const PostHajjGuidePage = lazy(() => import("./pages/PostHajjGuidePage"));
 const WomenSolutionsPage = lazy(() => import("./pages/WomenSolutionsPage"));
 const SocialsPage = lazy(() => import("./pages/SocialsPage"));
+const VideoCallPage = lazy(() => import("./pages/VideoCallPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const ChatPage = lazy(() => import("./pages/ChatPage"));
 
@@ -90,6 +91,7 @@ const App = () => (
               <Route path="/post-hajj" element={<PostHajjGuidePage />} />
               <Route path="/women" element={<WomenSolutionsPage />} />
               <Route path="/socials" element={<SocialsPage />} />
+              <Route path="/video-call" element={<VideoCallPage />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
