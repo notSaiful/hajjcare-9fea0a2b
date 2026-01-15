@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
+import { PhoneInputWithCountry } from "@/components/PhoneInputWithCountry";
 import { 
   Video, 
   PhoneCall, 
@@ -37,6 +38,7 @@ import {
   Info,
   Volume2,
   VolumeX,
+  Phone,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -249,6 +251,32 @@ const labels = {
     or: "ଆପଣଙ୍କ ହଜରେ ଧ୍ୟାନ ଦିଅନ୍ତୁ। ପରିବାର ଅପେକ୍ଷା କରିପାରିବ।", 
     ml: "നിങ്ങളുടെ ഹജ്ജിൽ ശ്രദ്ധിക്കുക. കുടുംബം കാത്തിരിക്കും.", 
     pa: "ਆਪਣੇ ਹੱਜ 'ਤੇ ਧਿਆਨ ਦਿਓ। ਪਰਿਵਾਰ ਉਡੀਕ ਕਰ ਸਕਦਾ ਹੈ।" 
+  },
+  callThisNumber: { 
+    en: "Call This Number", 
+    ar: "اتصل بهذا الرقم", 
+    ur: "اس نمبر پر کال کریں", 
+    hi: "इस नंबर पर कॉल करें", 
+    ta: "இந்த எண்ணை அழைக்கவும்", 
+    te: "ఈ నంబర్‌కు కాల్ చేయండి", 
+    mr: "या नंबरवर कॉल करा", 
+    bn: "এই নম্বরে কল করুন", 
+    or: "ଏହି ନମ୍ବରରେ କଲ କରନ୍ତୁ", 
+    ml: "ഈ നമ്പറിലേക്ക് വിളിക്കുക", 
+    pa: "ਇਸ ਨੰਬਰ 'ਤੇ ਕਾਲ ਕਰੋ" 
+  },
+  orJoinCall: { 
+    en: "Or join an existing call", 
+    ar: "أو انضم إلى مكالمة موجودة", 
+    ur: "یا موجودہ کال میں شامل ہوں", 
+    hi: "या मौजूदा कॉल में शामिल हों", 
+    ta: "அல்லது ஏற்கனவே உள்ள அழைப்பில் சேரவும்", 
+    te: "లేదా ఇప్పటికే ఉన్న కాల్‌లో చేరండి", 
+    mr: "किंवा विद्यमान कॉलमध्ये सामील व्हा", 
+    bn: "অথবা একটি বিদ্যমান কলে যোগ দিন", 
+    or: "କିମ୍ବା ବିଦ୍ୟମାନ କଲରେ ଯୋଗ ଦିଅନ୍ତୁ", 
+    ml: "അല്ലെങ്കിൽ നിലവിലുള്ള കോളിൽ ചേരുക", 
+    pa: "ਜਾਂ ਮੌਜੂਦਾ ਕਾਲ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਵੋ" 
   },
   lowBandwidth: { 
     en: "Weak connection detected", 
@@ -541,6 +569,8 @@ export default function VideoCallPage() {
   const [callId, setCallId] = useState("");
   const [joinCode, setJoinCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [familyPhone, setFamilyPhone] = useState("");
+  const [countryCode, setCountryCode] = useState("+91");
 
   // Initialize noise cancellation for clearer audio in noisy Hajj environments
   const noiseCancellation = useMemo(() => new NoiseCancellation(), []);
@@ -771,27 +801,38 @@ export default function VideoCallPage() {
           </CardContent>
         </Card>
 
-        {/* Main action - Start call */}
-        <Button
-          onClick={startFamilyCall}
-          disabled={isLoading || connectionQuality === "offline"}
-          size="lg"
-          className="w-full h-20 text-xl gap-4 rounded-2xl shadow-lg hover:shadow-xl transition-all"
-        >
-          {isLoading ? (
-            <Loader2 className="h-8 w-8 animate-spin" />
-          ) : (
-            <Video className="h-8 w-8" />
-          )}
-          {labels.callFamily[language] || labels.callFamily.en}
-        </Button>
+        {/* Phone number input - Main calling method */}
+        <Card className="border-2 border-primary/20 bg-primary/5">
+          <CardContent className="pt-6 space-y-5">
+            <PhoneInputWithCountry
+              value={familyPhone}
+              countryCode={countryCode}
+              onValueChange={setFamilyPhone}
+              onCountryCodeChange={setCountryCode}
+            />
+            
+            <Button
+              onClick={startFamilyCall}
+              disabled={isLoading || connectionQuality === "offline" || familyPhone.length < 6}
+              size="lg"
+              className="w-full h-20 text-xl gap-4 rounded-2xl shadow-lg hover:shadow-xl transition-all"
+            >
+              {isLoading ? (
+                <Loader2 className="h-8 w-8 animate-spin" />
+              ) : (
+                <Video className="h-8 w-8" />
+              )}
+              {labels.callThisNumber[language] || labels.callThisNumber.en}
+            </Button>
+          </CardContent>
+        </Card>
 
-        {/* Join existing call */}
-        <Card className="border-2">
+        {/* Join existing call - Secondary option */}
+        <Card className="border border-border">
           <CardContent className="pt-6 space-y-5">
             <div className="flex items-center gap-2 text-muted-foreground">
               <PhoneCall className="h-5 w-5" />
-              <span className="font-medium">{labels.joinFamilyCall[language] || labels.joinFamilyCall.en}</span>
+              <span className="font-medium">{labels.orJoinCall[language] || labels.orJoinCall.en}</span>
             </div>
             
             <Input
