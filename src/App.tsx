@@ -49,6 +49,7 @@ const ShippingPolicyPage = lazy(() => import("./pages/ShippingPolicyPage"));
 const ContactUsPage = lazy(() => import("./pages/ContactUsPage"));
 const AboutUsPage = lazy(() => import("./pages/AboutUsPage"));
 const PricingDisclosurePage = lazy(() => import("./pages/PricingDisclosurePage"));
+const GovtServicesPage = lazy(() => import("./pages/GovtServicesPage"));
 
 const queryClient = new QueryClient();
 
@@ -109,6 +110,7 @@ const App = () => (
               <Route path="/contact-us" element={<ContactUsPage />} />
               <Route path="/about-us" element={<AboutUsPage />} />
               <Route path="/pricing" element={<PricingDisclosurePage />} />
+              <Route path="/govt-services" element={<GovtServicesPage />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
