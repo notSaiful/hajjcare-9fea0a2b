@@ -26,6 +26,7 @@ import {
   Flower2,
   Share2,
   Video,
+  HeartHandshake,
 } from "lucide-react";
 
 interface MenuItem {
@@ -156,9 +157,16 @@ const menuSections: MenuSection[] = [
       {
         id: "women",
         icon: Flower2,
-        label: { en: "Women", ar: "النساء", ur: "خواتین", hi: "महिलाएं", ta: "பெண்கள்", te: "మహిళలు", mr: "महिला", bn: "মহিলা", or: "ମହିଳା", ml: "സ്ത്രീകൾ", pa: "ਔਰਤਾਂ" },
+        label: { en: "Women", ar: "النساء", ur: "خواتین", hi: "महिलाएं", ta: "பெண்கள்", te: "మహిళలు", mr: "महिला", bn: "মহিলা", or: "ମହিଳା", ml: "സ്ത്രീകൾ", pa: "ਔਰਤਾਂ" },
         route: "/women",
         color: "pink",
+      },
+      {
+        id: "services",
+        icon: HeartHandshake,
+        label: { en: "Services", ar: "الخدمات", ur: "خدمات", hi: "सेवाएं", ta: "சேவைகள்", te: "సేవలు", mr: "सेवा", bn: "সেবা", or: "ସେବା", ml: "സേവനങ്ങൾ", pa: "ਸੇਵਾਵਾਂ" },
+        route: "/govt-services",
+        color: "cyan",
       },
     ],
   },
