@@ -1,47 +1,88 @@
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { 
+  Shield, 
+  FileText, 
+  RotateCcw, 
+  Package, 
+  Phone, 
+  Info, 
+  IndianRupee,
+  Mail,
+  Home
+} from "lucide-react";
 
 export function Footer() {
   const { isRTL } = useLanguage();
 
   const legalLinks = [
-    { label: "Privacy Policy", href: "/privacy-policy" },
-    { label: "Terms & Conditions", href: "/terms-conditions" },
-    { label: "Refund Policy", href: "/refund-policy" },
-    { label: "Shipping Policy", href: "/shipping-policy" },
+    { label: "Privacy Policy", href: "/privacy-policy", icon: Shield },
+    { label: "Terms & Conditions", href: "/terms-conditions", icon: FileText },
+    { label: "Refund Policy", href: "/refund-policy", icon: RotateCcw },
+    { label: "Shipping Policy", href: "/shipping-policy", icon: Package },
   ];
 
   const companyLinks = [
-    { label: "About Us", href: "/about-us" },
-    { label: "Contact Us", href: "/contact-us" },
-    { label: "Pricing", href: "/pricing" },
+    { label: "About Us", href: "/about-us", icon: Info },
+    { label: "Contact Us", href: "/contact-us", icon: Phone },
+    { label: "Pricing", href: "/pricing", icon: IndianRupee },
+  ];
+
+  const quickLinks = [
+    { label: "Home", href: "/", icon: Home },
+    { label: "Hajj Guide", href: "/prepare", icon: FileText },
+    { label: "Umrah Guide", href: "/umrah", icon: FileText },
   ];
 
   return (
-    <footer className="bg-muted/30 border-t border-border mt-auto" dir={isRTL ? "rtl" : "ltr"}>
+    <footer className="bg-muted/50 border-t border-border mt-auto" dir={isRTL ? "rtl" : "ltr"}>
+      {/* Main Footer Content */}
       <div className="container mx-auto px-4 py-8">
-        <div className="grid gap-8 md:grid-cols-3">
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {/* Brand */}
+          <div className="sm:col-span-2 lg:col-span-1">
+            <h3 className="font-bold text-lg text-foreground mb-3">HajjCare</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+              A digital guidance and support platform for Hajj and Umrah pilgrims.
+            </p>
+            <a 
+              href="mailto:support@hajjcare.app" 
+              className="inline-flex items-center gap-2 text-sm text-primary hover:underline"
+            >
+              <Mail className="h-4 w-4" />
+              support@hajjcare.app
+            </a>
+          </div>
+
+          {/* Quick Links */}
           <div>
-            <h3 className="font-semibold text-foreground mb-3">HajjCare</h3>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              A digital guidance and support platform for Hajj and Umrah pilgrims. We provide informational content and assistance tools to make your journey easier.
-            </p>
-            <p className="text-xs text-muted-foreground mt-3">
-              © {new Date().getFullYear()} HajjCare. All rights reserved.
-            </p>
+            <h4 className="font-semibold text-foreground mb-4 text-sm uppercase tracking-wider">Quick Links</h4>
+            <ul className="space-y-3">
+              {quickLinks.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    to={link.href}
+                    className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <link.icon className="h-4 w-4" />
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
 
           {/* Legal Links */}
           <div>
-            <h4 className="font-semibold text-foreground mb-3 text-sm">Legal</h4>
-            <ul className="space-y-2">
+            <h4 className="font-semibold text-foreground mb-4 text-sm uppercase tracking-wider">Legal</h4>
+            <ul className="space-y-3">
               {legalLinks.map((link) => (
                 <li key={link.href}>
                   <Link
                     to={link.href}
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
                   >
+                    <link.icon className="h-4 w-4" />
                     {link.label}
                   </Link>
                 </li>
@@ -51,34 +92,55 @@ export function Footer() {
 
           {/* Company Links */}
           <div>
-            <h4 className="font-semibold text-foreground mb-3 text-sm">Company</h4>
-            <ul className="space-y-2">
+            <h4 className="font-semibold text-foreground mb-4 text-sm uppercase tracking-wider">Company</h4>
+            <ul className="space-y-3">
               {companyLinks.map((link) => (
                 <li key={link.href}>
                   <Link
                     to={link.href}
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
                   >
+                    <link.icon className="h-4 w-4" />
                     {link.label}
                   </Link>
                 </li>
               ))}
             </ul>
-            <div className="mt-4 pt-4 border-t border-border">
-              <p className="text-xs text-muted-foreground">
-                <strong>Support:</strong>{" "}
-                <a href="mailto:support@hajjcare.app" className="text-primary hover:underline">
-                  support@hajjcare.app
-                </a>
-              </p>
-            </div>
           </div>
         </div>
+      </div>
 
-        {/* Disclaimer */}
-        <div className="mt-8 pt-6 border-t border-border">
-          <p className="text-xs text-muted-foreground text-center leading-relaxed">
-            <strong>Disclaimer:</strong> HajjCare is a digital information and assistance platform. We do not provide religious rulings (fatwas), medical advice, or legal advice. All content is for informational purposes only. Please consult qualified professionals for specific guidance.
+      {/* Bottom Bar */}
+      <div className="border-t border-border bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <p className="text-xs text-muted-foreground">
+              © {new Date().getFullYear()} HajjCare. All rights reserved.
+            </p>
+            
+            {/* Compact Footer Links for Mobile */}
+            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
+              <Link to="/privacy-policy" className="text-xs text-muted-foreground hover:text-foreground">
+                Privacy
+              </Link>
+              <span className="text-muted-foreground/50">•</span>
+              <Link to="/terms-conditions" className="text-xs text-muted-foreground hover:text-foreground">
+                Terms
+              </Link>
+              <span className="text-muted-foreground/50">•</span>
+              <Link to="/refund-policy" className="text-xs text-muted-foreground hover:text-foreground">
+                Refunds
+              </Link>
+              <span className="text-muted-foreground/50">•</span>
+              <Link to="/contact-us" className="text-xs text-muted-foreground hover:text-foreground">
+                Contact
+              </Link>
+            </div>
+          </div>
+
+          {/* Disclaimer */}
+          <p className="text-[10px] text-muted-foreground/70 text-center mt-4 leading-relaxed">
+            <strong>Disclaimer:</strong> HajjCare is a digital information platform. We do not provide religious rulings, medical advice, or legal advice.
           </p>
         </div>
       </div>
