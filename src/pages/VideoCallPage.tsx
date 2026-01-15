@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   StreamVideoClient,
@@ -8,7 +8,10 @@ import {
   CallControls,
   useCallStateHooks,
   CallingState,
+  NoiseCancellationProvider,
+  useNoiseCancellation,
 } from "@stream-io/video-react-sdk";
+import { NoiseCancellation } from "@stream-io/audio-filters-web";
 import "@stream-io/video-react-sdk/dist/css/styles.css";
 import { MainLayout } from "@/components/MainLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -31,7 +34,9 @@ import {
   Clock,
   Users,
   PhoneOff,
-  Info
+  Info,
+  Volume2,
+  VolumeX,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -271,6 +276,58 @@ const labels = {
     ml: "നല്ല കണക്ഷൻ", 
     pa: "ਚੰਗਾ ਕਨੈਕਸ਼ਨ" 
   },
+  noiseCancellation: { 
+    en: "Noise Cancellation", 
+    ar: "إلغاء الضوضاء", 
+    ur: "شور منسوخی", 
+    hi: "शोर रद्द करना", 
+    ta: "இரைச்சல் நீக்கம்", 
+    te: "శబ్ద రద్దు", 
+    mr: "आवाज रद्द करणे", 
+    bn: "শব্দ বাতিল", 
+    or: "ଶବ୍ଦ ବାତିଲ", 
+    ml: "ശബ്ദ റദ്ദാക്കൽ", 
+    pa: "ਸ਼ੋਰ ਰੱਦ ਕਰਨਾ" 
+  },
+  noiseCancellationOn: { 
+    en: "Clear Audio ON", 
+    ar: "صوت واضح مفعل", 
+    ur: "صاف آڈیو آن", 
+    hi: "स्पष्ट ऑडियो चालू", 
+    ta: "தெளிவான ஆடியோ இயக்கம்", 
+    te: "స్పష్టమైన ఆడియో ఆన్", 
+    mr: "स्पष्ट ऑडिओ चालू", 
+    bn: "পরিষ্কার অডিও চালু", 
+    or: "ସ୍ୱଚ୍ଛ ଅଡିଓ ଚାଲୁ", 
+    ml: "വ്യക്തമായ ഓഡിയോ ഓൺ", 
+    pa: "ਸਾਫ਼ ਆਡੀਓ ਚਾਲੂ" 
+  },
+  noiseCancellationOff: { 
+    en: "Clear Audio OFF", 
+    ar: "صوت واضح متوقف", 
+    ur: "صاف آڈیو آف", 
+    hi: "स्पष्ट ऑडियो बंद", 
+    ta: "தெளிவான ஆடியோ அணைப்பு", 
+    te: "స్పష్టమైన ఆడియో ఆఫ్", 
+    mr: "स्पष्ट ऑडिओ बंद", 
+    bn: "পরিষ্কার অডিও বন্ধ", 
+    or: "ସ୍ୱଚ୍ଛ ଅଡିଓ ବନ୍ଦ", 
+    ml: "വ്യക്തമായ ഓഡിയോ ഓഫ്", 
+    pa: "ਸਾਫ਼ ਆਡੀਓ ਬੰਦ" 
+  },
+  clearerAudio: { 
+    en: "Clearer audio for noisy environments", 
+    ar: "صوت أوضح للبيئات الصاخبة", 
+    ur: "شور والے ماحول کے لیے صاف آواز", 
+    hi: "शोर भरे वातावरण के लिए स्पष्ट ऑडियो", 
+    ta: "சத்தமான சூழலுக்கு தெளிவான ஆடியோ", 
+    te: "శబ్దంతో కూడిన వాతావరణాల కోసం స్పష్టమైన ఆడియో", 
+    mr: "गोंगाटाच्या वातावरणासाठी स्पष्ट ऑडिओ", 
+    bn: "শোরগোল পরিবেশের জন্য পরিষ্কার অডিও", 
+    or: "ଗୋଳମାଳିଆ ପରିବେଶ ପାଇଁ ସ୍ୱଚ୍ଛ ଅଡିଓ", 
+    ml: "ശബ്ദമുള്ള പരിതസ്ഥിതികൾക്കുള്ള വ്യക്തമായ ഓഡിയോ", 
+    pa: "ਸ਼ੋਰ ਭਰੇ ਮਾਹੌਲ ਲਈ ਸਾਫ਼ ਆਡੀਓ" 
+  },
 };
 
 // Connection quality hook
@@ -348,6 +405,53 @@ function ConnectionIndicator() {
   );
 }
 
+// Noise cancellation toggle button
+function NoiseCancellationToggle() {
+  const { isSupported, isEnabled, setEnabled } = useNoiseCancellation();
+  const { language } = useLanguage();
+
+  // Don't show if not supported
+  if (isSupported === false) return null;
+  
+  // Show loading state while checking
+  if (isSupported === undefined) {
+    return (
+      <div className="flex items-center gap-3 bg-muted/50 px-4 py-3 rounded-xl animate-pulse">
+        <Volume2 className="h-5 w-5 text-muted-foreground" />
+        <span className="text-sm text-muted-foreground">...</span>
+      </div>
+    );
+  }
+
+  return (
+    <button
+      onClick={() => setEnabled(!isEnabled)}
+      className={`flex items-center gap-3 px-5 py-3 rounded-xl transition-all ${
+        isEnabled 
+          ? "bg-green-500/20 text-green-600 border border-green-500/30" 
+          : "bg-muted/50 text-muted-foreground border border-border"
+      }`}
+    >
+      {isEnabled ? (
+        <Volume2 className="h-5 w-5" />
+      ) : (
+        <VolumeX className="h-5 w-5" />
+      )}
+      <div className="text-left">
+        <p className="text-sm font-medium">
+          {isEnabled 
+            ? (labels.noiseCancellationOn[language] || labels.noiseCancellationOn.en)
+            : (labels.noiseCancellationOff[language] || labels.noiseCancellationOff.en)
+          }
+        </p>
+        <p className="text-xs opacity-70">
+          {labels.clearerAudio[language] || labels.clearerAudio.en}
+        </p>
+      </div>
+    </button>
+  );
+}
+
 // Calming call UI with minimal distractions
 function CallUI({ callId, onLeave }: { callId: string; onLeave: () => void }) {
   const { useCallCallingState } = useCallStateHooks();
@@ -399,6 +503,11 @@ function CallUI({ callId, onLeave }: { callId: string; onLeave: () => void }) {
         </p>
       </div>
 
+      {/* Noise Cancellation toggle - for noisy Hajj environments */}
+      <div className="flex justify-center">
+        <NoiseCancellationToggle />
+      </div>
+
       {/* Video area - simple speaker layout */}
       <div className="aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl">
         <SpeakerLayout participantsBarPosition="bottom" />
@@ -432,6 +541,9 @@ export default function VideoCallPage() {
   const [callId, setCallId] = useState("");
   const [joinCode, setJoinCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  // Initialize noise cancellation for clearer audio in noisy Hajj environments
+  const noiseCancellation = useMemo(() => new NoiseCancellation(), []);
 
   const initializeClient = useCallback(async () => {
     if (!user) return null;
@@ -604,14 +716,16 @@ export default function VideoCallPage() {
     );
   }
 
-  // Active call
+  // Active call with noise cancellation for clearer audio
   if (call && client) {
     return (
       <MainLayout>
         <div className="container max-w-2xl mx-auto py-6 px-4">
           <StreamVideo client={client}>
             <StreamCall call={call}>
-              <CallUI callId={callId} onLeave={leaveCall} />
+              <NoiseCancellationProvider noiseCancellation={noiseCancellation}>
+                <CallUI callId={callId} onLeave={leaveCall} />
+              </NoiseCancellationProvider>
             </StreamCall>
           </StreamVideo>
         </div>
