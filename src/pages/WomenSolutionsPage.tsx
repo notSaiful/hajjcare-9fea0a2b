@@ -1,9 +1,11 @@
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Flower2, Heart, Droplets, ShieldCheck, Moon, Footprints, Clock, Smile, AlertCircle, Users } from "lucide-react";
+import { ArrowLeft, Flower2, Heart, Droplets, ShieldCheck, Moon, Footprints, Clock, Smile, AlertCircle, Users, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { MainLayout } from "@/components/MainLayout";
+import { TextToSpeechButton } from "@/components/TextToSpeechButton";
+import { useMemo } from "react";
 
 const pageLabels: Record<string, Record<string, string>> = {
   title: {
@@ -18,6 +20,8 @@ const pageLabels: Record<string, Record<string, string>> = {
     or: "ମହିଳା ସମାଧାନ",
     ml: "സ്ത്രീ പരിഹാരങ്ങൾ",
     pa: "ਔਰਤਾਂ ਦੇ ਹੱਲ",
+    tr: "Kadın Çözümleri",
+    ru: "Решения для женщин",
   },
   subtitle: {
     en: "Private guidance for women pilgrims",
@@ -31,6 +35,8 @@ const pageLabels: Record<string, Record<string, string>> = {
     or: "ମହିଳା ତୀର୍ଥଯାତ୍ରୀଙ୍କ ପାଇଁ ବ୍ୟକ୍ତିଗତ ମାର୍ଗଦର୍ଶନ",
     ml: "സ്ത്രീ തീർത്ഥാടകർക്കുള്ള സ്വകാര്യ മാർഗ്ഗനിർദ്ദേശം",
     pa: "ਔਰਤ ਯਾਤਰੀਆਂ ਲਈ ਨਿੱਜੀ ਮਾਰਗਦਰਸ਼ਨ",
+    tr: "Kadın hacılar için özel rehberlik",
+    ru: "Личное руководство для женщин-паломниц",
   },
   disclaimer: {
     en: "Please follow the guidance given by your Hajj group or trainer.",
@@ -44,6 +50,8 @@ const pageLabels: Record<string, Record<string, string>> = {
     or: "ଦୟାକରି ଆପଣଙ୍କ ହଜ ଗ୍ରୁପ୍ କିମ୍ବା ଟ୍ରେନର୍ ଦ୍ୱାରା ଦିଆଯାଇଥିବା ମାର୍ଗଦର୍ଶନ ଅନୁସରଣ କରନ୍ତୁ।",
     ml: "നിങ്ങളുടെ ഹജ്ജ് ഗ്രൂപ്പ് അല്ലെങ്കിൽ പരിശീലകൻ നൽകുന്ന മാർഗ്ഗനിർദ്ദേശം പിന്തുടരുക.",
     pa: "ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਹੱਜ ਗਰੁੱਪ ਜਾਂ ਟ੍ਰੇਨਰ ਦੁਆਰਾ ਦਿੱਤੀ ਗਈ ਮਾਰਗਦਰਸ਼ਨ ਦੀ ਪਾਲਣਾ ਕਰੋ।",
+    tr: "Lütfen Hac grubunuz veya eğitmeniniz tarafından verilen rehberliği takip edin.",
+    ru: "Пожалуйста, следуйте указаниям вашей группы Хаджа или инструктора.",
   },
   back: {
     en: "Back",
@@ -57,6 +65,23 @@ const pageLabels: Record<string, Record<string, string>> = {
     or: "ପଛକୁ",
     ml: "മടങ്ങുക",
     pa: "ਵਾਪਸ",
+    tr: "Geri",
+    ru: "Назад",
+  },
+  privacyNotice: {
+    en: "This is a private space. Your activity is not tracked.",
+    ar: "هذا مكان خاص. لا يتم تتبع نشاطك.",
+    ur: "یہ ایک نجی جگہ ہے۔ آپ کی سرگرمی ٹریک نہیں کی جاتی۔",
+    hi: "यह एक निजी स्थान है। आपकी गतिविधि ट्रैक नहीं की जाती।",
+    ta: "இது ஒரு தனிப்பட்ட இடம். உங்கள் செயல்பாடு கண்காணிக்கப்படவில்லை.",
+    te: "ఇది ప్రైవేట్ ప్రదేశం. మీ కార్యాచరణ ట్రాక్ చేయబడదు.",
+    mr: "हे एक खाजगी ठिकाण आहे. तुमची क्रिया ट्रॅक केली जात नाही.",
+    bn: "এটি একটি ব্যক্তিগত স্থান। আপনার কার্যকলাপ ট্র্যাক করা হয় না।",
+    or: "ଏହା ଏକ ବ୍ୟକ୍ତିଗତ ସ୍ଥାନ। ଆପଣଙ୍କ କାର୍ଯ୍ୟକଳାପ ଟ୍ରାକ୍ କରାଯାଏ ନାହିଁ।",
+    ml: "ഇത് ഒരു സ്വകാര്യ ഇടമാണ്. നിങ്ങളുടെ പ്രവർത്തനം ട്രാക്ക് ചെയ്യപ്പെടുന്നില്ല.",
+    pa: "ਇਹ ਇੱਕ ਨਿੱਜੀ ਥਾਂ ਹੈ। ਤੁਹਾਡੀ ਗਤੀਵਿਧੀ ਟ੍ਰੈਕ ਨਹੀਂ ਕੀਤੀ ਜਾਂਦੀ।",
+    tr: "Bu özel bir alandır. Etkinliğiniz izlenmez.",
+    ru: "Это личное пространство. Ваша активность не отслеживается.",
   },
 };
 
@@ -579,6 +604,8 @@ const sectionLabels: Record<string, Record<string, string>> = {
     or: "ପରିସ୍ଥିତି",
     ml: "സാഹചര്യം",
     pa: "ਸਥਿਤੀ",
+    tr: "Durum",
+    ru: "Ситуация",
   },
   whatYouCanDo: {
     en: "What You Can Do",
@@ -592,6 +619,8 @@ const sectionLabels: Record<string, Record<string, string>> = {
     or: "ଆପଣ କ'ଣ କରିପାରିବେ",
     ml: "നിങ്ങൾക്ക് എന്ത് ചെയ്യാൻ കഴിയും",
     pa: "ਤੁਸੀਂ ਕੀ ਕਰ ਸਕਦੇ ਹੋ",
+    tr: "Ne Yapabilirsiniz",
+    ru: "Что вы можете сделать",
   },
   whatMayBePaused: {
     en: "What May Be Paused",
@@ -605,6 +634,8 @@ const sectionLabels: Record<string, Record<string, string>> = {
     or: "କ'ଣ ବନ୍ଦ ହୋଇପାରେ",
     ml: "എന്ത് നിർത്തിവയ്ക്കാം",
     pa: "ਕੀ ਰੁਕ ਸਕਦਾ ਹੈ",
+    tr: "Ne Durdurulabilir",
+    ru: "Что можно приостановить",
   },
   reminder: {
     en: "Remember",
@@ -618,6 +649,8 @@ const sectionLabels: Record<string, Record<string, string>> = {
     or: "ମନେ ରଖନ୍ତୁ",
     ml: "ഓർക്കുക",
     pa: "ਯਾਦ ਰੱਖੋ",
+    tr: "Hatırlayın",
+    ru: "Помните",
   },
   seekHelp: {
     en: "When to Seek Help",
@@ -631,12 +664,26 @@ const sectionLabels: Record<string, Record<string, string>> = {
     or: "ସାହାଯ୍ୟ କେବେ ନେବେ",
     ml: "സഹായം എപ്പോൾ തേടണം",
     pa: "ਮਦਦ ਕਦੋਂ ਲੈਣੀ ਹੈ",
+    tr: "Ne Zaman Yardım İstenmeli",
+    ru: "Когда обращаться за помощью",
   },
 };
 
 export default function WomenSolutionsPage() {
   const navigate = useNavigate();
   const { language } = useLanguage();
+
+  // Generate TTS content for each card
+  const getTtsContent = (card: SolutionCard) => {
+    const title = card.title[language] || card.title.en;
+    const situation = card.situation[language] || card.situation.en;
+    const whatYouCanDo = card.whatYouCanDo[language] || card.whatYouCanDo.en;
+    const whatMayBePaused = card.whatMayBePaused[language] || card.whatMayBePaused.en;
+    const reminder = card.reminder[language] || card.reminder.en;
+    const seekHelp = card.seekHelp[language] || card.seekHelp.en;
+    
+    return `${title}. ${situation}. ${whatYouCanDo}. ${whatMayBePaused}. ${reminder}. ${seekHelp}`;
+  };
 
   return (
     <MainLayout>
@@ -667,6 +714,16 @@ export default function WomenSolutionsPage() {
             </div>
           </header>
 
+          {/* Privacy Notice Banner */}
+          <Card className="mb-4 border-purple-200 dark:border-purple-800 bg-purple-50/50 dark:bg-purple-950/20">
+            <CardContent className="p-3 flex items-center gap-3">
+              <Lock className="h-4 w-4 text-purple-600 dark:text-purple-400 shrink-0" />
+              <p className="text-xs text-purple-700 dark:text-purple-300 font-medium">
+                {pageLabels.privacyNotice[language] || pageLabels.privacyNotice.en}
+              </p>
+            </CardContent>
+          </Card>
+
           {/* Disclaimer Banner */}
           <Card className="mb-6 border-pink-200 dark:border-pink-800 bg-pink-50/50 dark:bg-pink-950/20">
             <CardContent className="p-4 flex items-start gap-3">
@@ -682,13 +739,20 @@ export default function WomenSolutionsPage() {
             {solutionCards.map((card) => (
               <Card key={card.id} className="overflow-hidden border-border/50 hover:border-pink-300 dark:hover:border-pink-700 transition-colors">
                 <CardHeader className="pb-3">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-full bg-pink-100 dark:bg-pink-900/30">
-                      <card.icon className="h-5 w-5 text-pink-600 dark:text-pink-400" />
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 rounded-full bg-pink-100 dark:bg-pink-900/30">
+                        <card.icon className="h-5 w-5 text-pink-600 dark:text-pink-400" />
+                      </div>
+                      <CardTitle className="text-lg">
+                        {card.title[language] || card.title.en}
+                      </CardTitle>
                     </div>
-                    <CardTitle className="text-lg">
-                      {card.title[language] || card.title.en}
-                    </CardTitle>
+                    <TextToSpeechButton 
+                      text={getTtsContent(card)} 
+                      size="sm"
+                      className="shrink-0"
+                    />
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4 pt-0">
