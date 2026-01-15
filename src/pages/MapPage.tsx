@@ -17,7 +17,11 @@ import {
   Target,
   Users,
   FileText,
-  Download
+  Download,
+  ChevronUp,
+  ChevronDown,
+  MapPinned,
+  Home
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -76,6 +80,7 @@ const MapPage = () => {
         const { data: { session } } = await supabase.auth.getSession();
         if (!session?.access_token) {
           setMapError("Please log in to view the map");
+          setMapLoading(false);
           return;
         }
         
@@ -93,6 +98,7 @@ const MapPage = () => {
       } catch (err) {
         console.error("Error fetching Mapbox token:", err);
         setMapError("Unable to load map");
+        setMapLoading(false);
       }
     };
     fetchToken();
@@ -178,24 +184,10 @@ const MapPage = () => {
       userMarker.current.setLngLat([lng, lat]);
     } else {
       const el = document.createElement("div");
+      el.className = "user-location-marker";
       el.innerHTML = `
-        <div style="
-          width: 24px;
-          height: 24px;
-          background: #166534;
-          border: 4px solid white;
-          border-radius: 50%;
-          box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-          position: relative;
-        ">
-          <div style="
-            position: absolute;
-            inset: -8px;
-            border: 2px solid #166534;
-            border-radius: 50%;
-            animation: ping 1.5s cubic-bezier(0,0,0.2,1) infinite;
-            opacity: 0.5;
-          "></div>
+        <div class="user-marker-inner">
+          <div class="user-marker-ping"></div>
         </div>
       `;
 
@@ -289,20 +281,6 @@ const MapPage = () => {
     });
   };
 
-  if (mapError) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <div className="bg-destructive/10 border border-destructive/20 rounded-2xl p-6 flex flex-col items-center gap-4">
-          <AlertCircle className="w-12 h-12 text-destructive" />
-          <span className="text-lg text-destructive">{t("unableToLoadMap")}</span>
-          <Link to="/">
-            <Button variant="outline">{t("backToChat")}</Button>
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
   const stageNameByLang: Record<string, { ar: string; en: string }> = {
     kaaba: { ar: "الكعبة", en: "Kaaba" },
     mina: { ar: "منى", en: "Mina" },
@@ -313,66 +291,143 @@ const MapPage = () => {
 
   const otherMembers = memberLocations.filter(l => l.member_id !== memberId);
 
+  // Enhanced Error State
+  if (mapError) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-background via-background to-primary/5 flex flex-col items-center justify-center p-6" dir={isRTL ? "rtl" : "ltr"}>
+        {/* Ambient Background */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-primary/5 rounded-full blur-3xl" />
+        </div>
+        
+        <div className="relative z-10 flex flex-col items-center gap-6 max-w-sm text-center">
+          {/* Icon Container */}
+          <div className="w-24 h-24 rounded-full bg-muted/50 backdrop-blur-sm flex items-center justify-center border border-border/50">
+            <MapPinned className="w-12 h-12 text-muted-foreground" />
+          </div>
+          
+          {/* Error Message */}
+          <div className="space-y-2">
+            <h2 className="text-xl font-semibold text-foreground">
+              {language === "ar" ? "تعذر تحميل الخريطة" : "Unable to Load Map"}
+            </h2>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              {mapError === "Please log in to view the map" 
+                ? (language === "ar" ? "يرجى تسجيل الدخول لعرض الخريطة" : "Please log in to view the map")
+                : (language === "ar" ? "حدث خطأ أثناء تحميل الخريطة. يرجى المحاولة مرة أخرى." : "An error occurred while loading the map. Please try again.")
+              }
+            </p>
+          </div>
+          
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row gap-3 w-full">
+            <Button 
+              onClick={() => window.location.reload()}
+              className="flex-1 gap-2"
+            >
+              <RefreshCw className="w-4 h-4" />
+              {language === "ar" ? "إعادة المحاولة" : "Try Again"}
+            </Button>
+            <Link to="/" className="flex-1">
+              <Button variant="outline" className="w-full gap-2">
+                <Home className="w-4 h-4" />
+                {language === "ar" ? "الصفحة الرئيسية" : "Go Home"}
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="h-screen w-screen relative overflow-hidden" dir={isRTL ? "rtl" : "ltr"}>
+    <div className="h-screen w-screen relative overflow-hidden bg-background" dir={isRTL ? "rtl" : "ltr"}>
       {/* Map Container */}
       <div ref={mapContainer} className="absolute inset-0 w-full h-full" />
       
-      {/* Map Loading Overlay */}
+      {/* Enhanced Loading Overlay */}
       {mapLoading && (
-        <div className="absolute inset-0 z-20 flex items-center justify-center bg-background/80 backdrop-blur-sm">
-          <div className="flex flex-col items-center gap-3">
-            <Loader2 className="w-10 h-10 animate-spin text-primary" />
-            <span className="text-sm text-muted-foreground">{language === "ar" ? "جارٍ التحميل..." : "Loading..."}</span>
+        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-gradient-to-b from-background via-background to-primary/10">
+          {/* Ambient glow */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[400px] h-[400px] bg-primary/10 rounded-full blur-3xl animate-pulse" />
+          </div>
+          
+          <div className="relative z-10 flex flex-col items-center gap-6">
+            {/* Map Icon with Loader */}
+            <div className="relative">
+              <div className="w-20 h-20 rounded-full bg-card/80 backdrop-blur-sm flex items-center justify-center border border-border/50 shadow-lg">
+                <Compass className="w-10 h-10 text-primary" />
+              </div>
+              <div className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+                <Loader2 className="w-4 h-4 animate-spin text-primary-foreground" />
+              </div>
+            </div>
+            
+            {/* Loading Text */}
+            <div className="text-center space-y-1">
+              <p className="text-lg font-medium text-foreground">
+                {language === "ar" ? "جارٍ تحميل الخريطة" : "Loading Map"}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                {language === "ar" ? "يرجى الانتظار..." : "Please wait..."}
+              </p>
+            </div>
           </div>
         </div>
       )}
 
-      {/* Top Navigation Bar */}
-      <div className="absolute top-0 left-0 right-0 z-10 bg-gradient-to-b from-background/95 to-transparent p-4">
-        <div className="flex items-center justify-between max-w-4xl mx-auto">
-          <Link to="/">
-            <Button variant="secondary" size="sm" className="shadow-elevated gap-2">
-              <ArrowLeft className="w-4 h-4" />
-              {t("backToChat")}
+      {/* Frosted Glass Top Navigation Bar */}
+      <div className="absolute top-0 left-0 right-0 z-10 safe-area-top">
+        <div className="bg-background/70 backdrop-blur-xl border-b border-border/30">
+          <div className="flex items-center justify-between px-4 py-3 max-w-4xl mx-auto">
+            <Link to="/">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="gap-2 hover:bg-background/50 rounded-full px-4"
+              >
+                <ArrowLeft className={`w-4 h-4 ${isRTL ? 'rotate-180' : ''}`} />
+                <span className="hidden sm:inline">{language === "ar" ? "الرئيسية" : "Home"}</span>
+              </Button>
+            </Link>
+            
+            <div className="flex items-center gap-2 bg-primary/10 rounded-full px-4 py-2">
+              <Compass className="w-4 h-4 text-primary" />
+              <span className="font-semibold text-sm text-primary">{t("liveMap")}</span>
+            </div>
+            
+            <Button 
+              variant="ghost"
+              size="icon"
+              className="hover:bg-background/50 rounded-full"
+              onClick={() => refresh()}
+            >
+              {isLoading ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <RefreshCw className="w-4 h-4" />
+              )}
             </Button>
-          </Link>
-          <div className="flex items-center gap-2 bg-card/90 backdrop-blur-sm rounded-full px-4 py-2 shadow-elevated">
-            <Compass className="w-5 h-5 text-primary" />
-            <span className="font-semibold text-sm">{t("liveMap")}</span>
           </div>
-          <Button 
-            variant="secondary" 
-            size="icon"
-            className="shadow-elevated"
-            onClick={() => {
-              refresh();
-            }}
-          >
-            {isLoading ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <RefreshCw className="w-4 h-4" />
-            )}
-          </Button>
         </div>
       </div>
 
-      {/* Top Action Buttons */}
-      <div className="absolute top-20 right-4 z-10 flex flex-col gap-2">
+      {/* Right Side Action Buttons */}
+      <div className={`absolute top-24 ${isRTL ? 'left-4' : 'right-4'} z-10 flex flex-col gap-2`}>
         {/* Downloadable Maps Button */}
         <Dialog open={showMaps} onOpenChange={setShowMaps}>
           <DialogTrigger asChild>
             <Button
               size="sm"
               variant="secondary"
-              className="shadow-elevated gap-2"
+              className="shadow-lg gap-2 rounded-full bg-card/90 backdrop-blur-sm border border-border/50 hover:bg-card"
             >
               <FileText className="w-4 h-4" />
-              {language === "ar" ? "الخرائط" : "Maps"}
+              <span className="hidden sm:inline">{language === "ar" ? "الخرائط" : "Maps"}</span>
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-md">
+          <DialogContent className="max-w-md mx-4">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <FileText className="w-5 h-5 text-primary" />
@@ -380,23 +435,23 @@ const MapPage = () => {
               </DialogTitle>
             </DialogHeader>
             <div className="space-y-3 mt-4">
-              {downloadableMaps.map((map) => (
+              {downloadableMaps.map((mapItem) => (
                 <a
-                  key={map.id}
-                  href={map.file}
+                  key={mapItem.id}
+                  href={mapItem.file}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-3 p-4 bg-muted/50 hover:bg-muted rounded-xl transition-colors"
+                  className="flex items-center gap-3 p-4 bg-muted/50 hover:bg-muted rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98]"
                 >
-                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0">
                     <FileText className="w-6 h-6 text-primary" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-sm">
-                      {language === "ar" ? map.nameAr : map.nameEn}
+                      {language === "ar" ? mapItem.nameAr : mapItem.nameEn}
                     </p>
                     <p className="text-xs text-muted-foreground truncate">
-                      {language === "ar" ? map.descAr : map.descEn}
+                      {language === "ar" ? mapItem.descAr : mapItem.descEn}
                     </p>
                   </div>
                   <Download className="w-5 h-5 text-muted-foreground flex-shrink-0" />
@@ -412,100 +467,118 @@ const MapPage = () => {
             onClick={() => setShowFamily(!showFamily)}
             size="sm"
             variant={showFamily ? "default" : "secondary"}
-            className="shadow-elevated gap-2"
+            className={`shadow-lg gap-2 rounded-full ${!showFamily ? 'bg-card/90 backdrop-blur-sm border border-border/50 hover:bg-card' : ''}`}
           >
             <Users className="w-4 h-4" />
-            {otherMembers.length}
+            <span className="text-xs font-bold">{otherMembers.length}</span>
           </Button>
         )}
       </div>
 
-      {/* Current Location Button */}
+      {/* Quick Location Pills - Horizontal Scroll */}
+      <div className={`absolute ${showInfo ? 'bottom-[340px]' : 'bottom-24'} left-0 right-0 z-10 transition-all duration-300`}>
+        <div className="overflow-x-auto scrollbar-hide px-4">
+          <div className="flex gap-2 pb-2">
+            {[
+              { key: "kaaba", loc: HAJJ_LOCATIONS.kaaba, color: "#D4AF37" },
+              { key: "mina", loc: HAJJ_LOCATIONS.mina, color: "#C9A227" },
+              { key: "arafat", loc: HAJJ_LOCATIONS.arafat, color: "#8B4513" },
+              { key: "muzdalifah", loc: HAJJ_LOCATIONS.muzdalifah, color: "#2F4F4F" },
+              { key: "jamarat", loc: HAJJ_LOCATIONS.jamarat, color: "#800020" },
+            ].map(({ key, loc, color }) => (
+              <button
+                key={key}
+                className="flex items-center gap-2 px-4 py-2.5 bg-card/90 backdrop-blur-sm rounded-full shadow-lg border border-border/50 whitespace-nowrap transition-all hover:scale-105 active:scale-95 min-h-[44px]"
+                onClick={() => flyToLocation(loc.lng, loc.lat)}
+              >
+                <div 
+                  className="w-3 h-3 rounded-full flex-shrink-0" 
+                  style={{ backgroundColor: color }}
+                />
+                <span className="text-sm font-medium">
+                  {language === "ar" 
+                    ? stageNameByLang[key]?.ar 
+                    : stageNameByLang[key]?.en}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Enhanced Current Location Button */}
       <Button
         onClick={flyToUser}
         disabled={!lat || !lng}
         size="icon"
-        className="absolute bottom-32 right-4 z-10 h-12 w-12 rounded-full shadow-elevated bg-primary hover:bg-primary/90"
+        className={`absolute ${showInfo ? 'bottom-[400px]' : 'bottom-32'} ${isRTL ? 'left-4' : 'right-4'} z-10 h-14 w-14 rounded-full shadow-xl bg-primary hover:bg-primary/90 transition-all duration-300 disabled:opacity-50`}
       >
-        <Target className="w-5 h-5 text-primary-foreground" />
+        <Target className="w-6 h-6 text-primary-foreground" />
+        {lat && lng && (
+          <span className="absolute inset-0 rounded-full bg-primary/30 animate-ping" />
+        )}
       </Button>
 
-      {/* Location Quick Access */}
-      <div className="absolute bottom-32 left-4 z-10 flex flex-col gap-2">
-        {[
-          { key: "kaaba", loc: HAJJ_LOCATIONS.kaaba, color: "#D4AF37" },
-          { key: "mina", loc: HAJJ_LOCATIONS.mina, color: "#C9A227" },
-          { key: "arafat", loc: HAJJ_LOCATIONS.arafat, color: "#8B4513" },
-          { key: "muzdalifah", loc: HAJJ_LOCATIONS.muzdalifah, color: "#2F4F4F" },
-          { key: "jamarat", loc: HAJJ_LOCATIONS.jamarat, color: "#800020" },
-        ].map(({ key, loc, color }) => (
-          <Button
-            key={key}
-            variant="secondary"
-            size="sm"
-            className="shadow-elevated text-xs justify-start gap-2"
-            onClick={() => flyToLocation(loc.lng, loc.lat)}
-          >
-            <div 
-              className="w-3 h-3 rounded-full" 
-              style={{ backgroundColor: color }}
-            />
-            {language === "ar" 
-              ? stageNameByLang[key]?.ar 
-              : stageNameByLang[key]?.en}
-          </Button>
-        ))}
-      </div>
-
-      {/* Bottom Info Card */}
+      {/* Elegant Bottom Drawer */}
       <div 
-        className={`absolute bottom-0 left-0 right-0 z-10 transition-transform duration-300 ${
-          showInfo ? "translate-y-0" : "translate-y-[calc(100%-48px)]"
+        className={`absolute bottom-0 left-0 right-0 z-10 transition-transform duration-300 ease-out ${
+          showInfo ? "translate-y-0" : "translate-y-[calc(100%-60px)]"
         }`}
       >
+        {/* Drawer Handle */}
         <button 
           onClick={() => setShowInfo(!showInfo)}
-          className="w-full flex justify-center py-2"
+          className="w-full flex flex-col items-center pt-2 pb-3 bg-card/95 backdrop-blur-xl rounded-t-3xl border-t border-x border-border/30"
         >
-          <div className="w-12 h-1 bg-muted-foreground/30 rounded-full" />
+          <div className="w-10 h-1 bg-muted-foreground/30 rounded-full mb-2" />
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            {showInfo ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
+            <span>{showInfo ? (language === "ar" ? "إخفاء التفاصيل" : "Hide Details") : (language === "ar" ? "عرض التفاصيل" : "Show Details")}</span>
+          </div>
         </button>
         
-        <div className="bg-card/95 backdrop-blur-md rounded-t-3xl shadow-elevated p-4 pb-8">
+        <div className="bg-card/95 backdrop-blur-xl px-4 pb-8 safe-area-bottom">
           {/* Stage Indicator */}
           <div 
-            className="flex items-center gap-3 p-3 rounded-2xl mb-3"
-            style={{ backgroundColor: `${stageInfo.color}20` }}
+            className="flex items-center gap-3 p-4 rounded-2xl mb-4 border"
+            style={{ 
+              backgroundColor: `${stageInfo.color}10`,
+              borderColor: `${stageInfo.color}30`
+            }}
           >
             <div 
-              className="w-4 h-4 rounded-full animate-pulse"
-              style={{ backgroundColor: stageInfo.color }}
+              className="w-5 h-5 rounded-full animate-pulse shadow-lg"
+              style={{ 
+                backgroundColor: stageInfo.color,
+                boxShadow: `0 0 12px ${stageInfo.color}50`
+              }}
             />
             <div className="flex-1">
-              <p className="font-arabic font-bold" style={{ color: stageInfo.color }}>
+              <p className="font-semibold text-base" style={{ color: stageInfo.color }}>
                 {language === "ar" ? stageInfo.nameAr : stageInfo.nameEn}
               </p>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-muted-foreground mt-0.5">
                 {language === "ar" ? stageInfo.descriptionAr : stageInfo.descriptionEn}
               </p>
             </div>
-            <MapPin className="w-5 h-5" style={{ color: stageInfo.color }} />
+            <MapPin className="w-6 h-6" style={{ color: stageInfo.color }} />
           </div>
 
           {/* Family Members in Group */}
           {group && otherMembers.length > 0 && (
-            <div className="mb-3 p-3 bg-blue-500/10 rounded-2xl">
-              <div className="flex items-center gap-2 mb-2">
+            <div className="mb-4 p-4 bg-blue-500/10 rounded-2xl border border-blue-500/20">
+              <div className="flex items-center gap-2 mb-3">
                 <Users className="w-4 h-4 text-blue-500" />
-                <p className="text-xs font-medium text-blue-500">{t("familyGroup")}: {group.name}</p>
+                <p className="text-sm font-medium text-blue-500">{t("familyGroup")}: {group.name}</p>
               </div>
               <div className="flex flex-wrap gap-2">
                 {otherMembers.map((loc) => (
                   <button
                     key={loc.member_id}
                     onClick={() => flyToLocation(loc.longitude, loc.latitude)}
-                    className="flex items-center gap-1 bg-blue-500/20 hover:bg-blue-500/30 px-2 py-1 rounded-full text-xs transition-colors"
+                    className="flex items-center gap-2 bg-blue-500/20 hover:bg-blue-500/30 px-3 py-2 rounded-full text-xs font-medium transition-all hover:scale-105 active:scale-95 min-h-[36px]"
                   >
-                    <div className="w-2 h-2 bg-blue-500 rounded-full" />
+                    <div className="w-2.5 h-2.5 bg-blue-500 rounded-full" />
                     {loc.member_name}
                   </button>
                 ))}
@@ -514,24 +587,26 @@ const MapPage = () => {
           )}
 
           {/* Next Step */}
-          <div className="flex items-start gap-3 mb-3">
-            <Navigation className="w-5 h-5 text-islamic-gold mt-0.5" />
-            <div>
-              <p className="text-xs text-muted-foreground">{t("nextStep")}</p>
-              <p className="text-sm font-medium">
+          <div className="flex items-start gap-3 mb-4 p-3 bg-muted/30 rounded-xl">
+            <div className="w-10 h-10 rounded-full bg-islamic-gold/10 flex items-center justify-center flex-shrink-0">
+              <Navigation className="w-5 h-5 text-islamic-gold" />
+            </div>
+            <div className="flex-1">
+              <p className="text-xs text-muted-foreground font-medium">{t("nextStep")}</p>
+              <p className="text-sm font-medium mt-0.5">
                 {language === "ar" ? stageInfo.nextStageAr : stageInfo.nextStageEn}
               </p>
             </div>
           </div>
 
           {/* Tips */}
-          <div className="bg-muted/50 rounded-xl p-3">
-            <p className="text-xs text-muted-foreground mb-2 font-medium">{t("tips")}</p>
-            <ul className="space-y-1">
+          <div className="bg-muted/30 rounded-xl p-4">
+            <p className="text-xs text-muted-foreground mb-3 font-semibold uppercase tracking-wide">{t("tips")}</p>
+            <ul className="space-y-2">
               {(language === "ar" ? stageInfo.tipsAr : stageInfo.tipsEn).slice(0, 2).map((tip, i) => (
-                <li key={i} className="text-xs flex items-start gap-2">
-                  <span className="text-islamic-gold">•</span>
-                  <span>{tip}</span>
+                <li key={i} className="text-sm flex items-start gap-2">
+                  <span className="text-islamic-gold text-lg leading-none">•</span>
+                  <span className="text-foreground/80">{tip}</span>
                 </li>
               ))}
             </ul>
@@ -539,10 +614,10 @@ const MapPage = () => {
 
           {/* Error */}
           {error && (
-            <div className="mt-3 p-3 bg-destructive/10 rounded-xl flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 text-destructive" />
-              <span className="text-xs text-destructive flex-1">{error}</span>
-              <Button variant="ghost" size="sm" className="text-xs" onClick={refresh}>
+            <div className="mt-4 p-4 bg-destructive/10 rounded-xl flex items-center gap-3 border border-destructive/20">
+              <AlertCircle className="w-5 h-5 text-destructive flex-shrink-0" />
+              <span className="text-sm text-destructive flex-1">{error}</span>
+              <Button variant="ghost" size="sm" className="text-xs shrink-0" onClick={refresh}>
                 {t("tryAgain")}
               </Button>
             </div>

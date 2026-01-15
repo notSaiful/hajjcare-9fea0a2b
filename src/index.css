@@ -11,6 +11,64 @@
 @tailwind utilities;
 
 /* ============================================
+   MAP PAGE CUSTOM STYLES
+   ============================================ */
+
+/* User location marker */
+.user-location-marker {
+  position: relative;
+}
+
+.user-marker-inner {
+  width: 24px;
+  height: 24px;
+  background: hsl(var(--primary));
+  border: 4px solid white;
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  position: relative;
+}
+
+.user-marker-ping {
+  position: absolute;
+  inset: -8px;
+  border: 2px solid hsl(var(--primary));
+  border-radius: 50%;
+  animation: marker-ping 1.5s cubic-bezier(0,0,0.2,1) infinite;
+  opacity: 0.75;
+}
+
+@keyframes marker-ping {
+  0% {
+    transform: scale(1);
+    opacity: 0.75;
+  }
+  75%, 100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+/* Safe area padding for iOS */
+.safe-area-top {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Hide scrollbar for location pills */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* ============================================
    SACRED CALM DESIGN SYSTEM
    Government-Grade • Hajj 2026
    "Sacred calm, silent power."
