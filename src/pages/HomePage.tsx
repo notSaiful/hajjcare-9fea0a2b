@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { SimpleHeader } from "@/components/SimpleHeader";
 import { AmbientBackground } from "@/components/AmbientBackground";
-import { HelpButton } from "@/components/HelpButton";
+
 import { EmergencyButton } from "@/components/EmergencyButton";
 import { DashboardMenu } from "@/components/DashboardMenu";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -86,12 +86,6 @@ const HomePage = () => {
           </section>
 
 
-          {/* 4. One-Tap Help - Voice first, accessible */}
-          <section className="animate-fade-up" style={{
-          animationDelay: "160ms"
-        }}>
-            <HelpButton />
-          </section>
 
           {/* 5. Emergency Button - Visible, serious, never flashy */}
           <section className="animate-fade-up" style={{
