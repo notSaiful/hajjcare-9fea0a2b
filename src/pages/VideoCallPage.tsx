@@ -15,87 +15,422 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
-import { Video, PhoneCall, Copy, Check, Loader2, LogIn, Plus } from "lucide-react";
+import { 
+  Video, 
+  PhoneCall, 
+  Copy, 
+  Check, 
+  Loader2, 
+  LogIn, 
+  Heart,
+  Shield,
+  Wifi,
+  WifiOff,
+  Clock,
+  Users,
+  PhoneOff,
+  Info
+} from "lucide-react";
 import { toast } from "sonner";
 
+// Comprehensive 11-language labels for calm, reassurance-focused UI
 const labels = {
-  title: { en: "Video Call", ar: "مكالمة فيديو", ur: "ویڈیو کال", hi: "वीडियो कॉल", ta: "வீடியோ அழைப்பு", te: "వీడియో కాల్", mr: "व्हिडिओ कॉल", bn: "ভিডিও কল", or: "ଭିଡିଓ କଲ", ml: "വീഡിയോ കോൾ", pa: "ਵੀਡੀਓ ਕਾਲ" },
-  subtitle: { en: "Connect with your family during Hajj", ar: "تواصل مع عائلتك أثناء الحج", ur: "حج کے دوران اپنے خاندان سے رابطہ کریں", hi: "हज के दौरान अपने परिवार से जुड़ें", ta: "ஹஜ்ஜின் போது உங்கள் குடும்பத்துடன் இணையுங்கள்", te: "హజ్ సమయంలో మీ కుటుంబంతో కనెక్ట్ అవ్వండి", mr: "हज दरम्यान तुमच्या कुटुंबाशी कनेक्ट व्हा", bn: "হজের সময় আপনার পরিবারের সাথে সংযোগ করুন", or: "ହଜ ସମୟରେ ଆପଣଙ୍କ ପରିବାର ସହିତ ସଂଯୋଗ କରନ୍ତୁ", ml: "ഹജ്ജ് സമയത്ത് നിങ്ങളുടെ കുടുംബവുമായി ബന്ധപ്പെടുക", pa: "ਹੱਜ ਦੌਰਾਨ ਆਪਣੇ ਪਰਿਵਾਰ ਨਾਲ ਜੁੜੋ" },
-  createCall: { en: "Create New Call", ar: "إنشاء مكالمة جديدة", ur: "نئی کال بنائیں", hi: "नई कॉल बनाएं", ta: "புதிய அழைப்பை உருவாக்கவும்", te: "కొత్త కాల్ సృష్టించండి", mr: "नवीन कॉल तयार करा", bn: "নতুন কল তৈরি করুন", or: "ନୂଆ କଲ ସୃଷ୍ଟି କରନ୍ତୁ", ml: "പുതിയ കോൾ സൃഷ്ടിക്കുക", pa: "ਨਵੀਂ ਕਾਲ ਬਣਾਓ" },
-  joinCall: { en: "Join Call", ar: "الانضمام إلى المكالمة", ur: "کال میں شامل ہوں", hi: "कॉल में शामिल हों", ta: "அழைப்பில் சேரவும்", te: "కాల్‌లో చేరండి", mr: "कॉलमध्ये सामील व्हा", bn: "কলে যোগ দিন", or: "କଲରେ ଯୋଗ ଦିଅନ୍ତୁ", ml: "കോളിൽ ചേരുക", pa: "ਕਾਲ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਵੋ" },
-  enterCallId: { en: "Enter Call ID", ar: "أدخل معرف المكالمة", ur: "کال آئی ڈی درج کریں", hi: "कॉल आईडी दर्ज करें", ta: "அழைப்பு ஐடியை உள்ளிடவும்", te: "కాల్ ఐడి నమోదు చేయండి", mr: "कॉल आयडी प्रविष्ट करा", bn: "কল আইডি লিখুন", or: "କଲ ଆଇଡି ପ୍ରବେଶ କରନ୍ତୁ", ml: "കോൾ ഐഡി നൽകുക", pa: "ਕਾਲ ਆਈਡੀ ਦਾਖਲ ਕਰੋ" },
-  callId: { en: "Call ID", ar: "معرف المكالمة", ur: "کال آئی ڈی", hi: "कॉल आईडी", ta: "அழைப்பு ஐடி", te: "కాల్ ఐడి", mr: "कॉल आयडी", bn: "কল আইডি", or: "କଲ ଆଇଡି", ml: "കോൾ ഐഡി", pa: "ਕਾਲ ਆਈਡੀ" },
-  copied: { en: "Copied!", ar: "تم النسخ!", ur: "کاپی ہو گیا!", hi: "कॉपी हो गया!", ta: "நகலெடுக்கப்பட்டது!", te: "కాపీ చేయబడింది!", mr: "कॉपी केले!", bn: "কপি করা হয়েছে!", or: "କପି ହୋଇଛି!", ml: "പകർത്തി!", pa: "ਕਾਪੀ ਕੀਤਾ!" },
-  shareCallId: { en: "Share this Call ID with family members", ar: "شارك معرف المكالمة مع أفراد العائلة", ur: "اس کال آئی ڈی کو خاندان کے افراد کے ساتھ شیئر کریں", hi: "इस कॉल आईडी को परिवार के सदस्यों के साथ साझा करें", ta: "இந்த அழைப்பு ஐடியை குடும்ப உறுப்பினர்களுடன் பகிரவும்", te: "ఈ కాల్ ఐడిని కుటుంబ సభ్యులతో షేర్ చేయండి", mr: "हे कॉल आयडी कुटुंबातील सदस्यांसोबत शेअर करा", bn: "এই কল আইডি পরিবারের সদস্যদের সাথে শেয়ার করুন", or: "ଏହି କଲ ଆଇଡି ପରିବାର ସଦସ୍ୟଙ୍କ ସହ ଅଂଶୀଦାର କରନ୍ତୁ", ml: "ഈ കോൾ ഐഡി കുടുംബാംഗങ്ങളുമായി പങ്കിടുക", pa: "ਇਸ ਕਾਲ ਆਈਡੀ ਨੂੰ ਪਰਿਵਾਰਕ ਮੈਂਬਰਾਂ ਨਾਲ ਸਾਂਝਾ ਕਰੋ" },
-  leaveCall: { en: "Leave Call", ar: "مغادرة المكالمة", ur: "کال چھوڑیں", hi: "कॉल छोड़ें", ta: "அழைப்பை விடுங்கள்", te: "కాల్ వదిలివేయండి", mr: "कॉल सोडा", bn: "কল ছেড়ে দিন", or: "କଲ ଛାଡନ୍ତୁ", ml: "കോൾ വിടുക", pa: "ਕਾਲ ਛੱਡੋ" },
-  connecting: { en: "Connecting...", ar: "جاري الاتصال...", ur: "کنیکٹ ہو رہا ہے...", hi: "कनेक्ट हो रहा है...", ta: "இணைக்கிறது...", te: "కనెక్ట్ అవుతోంది...", mr: "कनेक्ट होत आहे...", bn: "সংযুক্ত হচ্ছে...", or: "ସଂଯୋଗ ହେଉଛି...", ml: "ബന്ധിപ്പിക്കുന്നു...", pa: "ਕਨੈਕਟ ਹੋ ਰਿਹਾ ਹੈ..." },
-  loginRequired: { en: "Please login to make video calls", ar: "يرجى تسجيل الدخول لإجراء مكالمات فيديو", ur: "ویڈیو کالز کرنے کے لیے لاگ ان کریں", hi: "वीडियो कॉल करने के लिए कृपया लॉगिन करें", ta: "வீடியோ அழைப்புகள் செய்ய உள்நுழையவும்", te: "వీడియో కాల్స్ చేయడానికి దయచేసి లాగిన్ అవ్వండి", mr: "व्हिडिओ कॉल करण्यासाठी कृपया लॉगिन करा", bn: "ভিডিও কল করতে অনুগ্রহ করে লগইন করুন", or: "ଭିଡିଓ କଲ କରିବାକୁ ଦୟାକରି ଲଗଇନ କରନ୍ତୁ", ml: "വീഡിയോ കോളുകൾ ചെയ്യാൻ ദയവായി ലോഗിൻ ചെയ്യുക", pa: "ਵੀਡੀਓ ਕਾਲਾਂ ਕਰਨ ਲਈ ਕਿਰਪਾ ਕਰਕੇ ਲੌਗਇਨ ਕਰੋ" },
-  login: { en: "Login", ar: "تسجيل الدخول", ur: "لاگ ان", hi: "लॉगिन", ta: "உள்நுழை", te: "లాగిన్", mr: "लॉगिन", bn: "লগইন", or: "ଲଗଇନ", ml: "ലോഗിൻ", pa: "ਲੌਗਇਨ" },
+  title: { 
+    en: "Family Reassurance Call", 
+    ar: "مكالمة اطمئنان العائلة", 
+    ur: "خاندان کی تسلی کی کال", 
+    hi: "परिवार आश्वासन कॉल", 
+    ta: "குடும்ப நம்பிக்கை அழைப்பு", 
+    te: "కుటుంబ భరోసా కాల్", 
+    mr: "कुटुंब आश्वासन कॉल", 
+    bn: "পারিবারিক আশ্বাস কল", 
+    or: "ପରିବାର ଆଶ୍ୱାସନ କଲ", 
+    ml: "കുടുംബ ആശ്വാസ കോൾ", 
+    pa: "ਪਰਿਵਾਰ ਭਰੋਸਾ ਕਾਲ" 
+  },
+  subtitle: { 
+    en: "A moment of peace with your loved ones", 
+    ar: "لحظة سلام مع أحبائك", 
+    ur: "اپنے پیاروں کے ساتھ سکون کا لمحہ", 
+    hi: "अपने प्रियजनों के साथ शांति का पल", 
+    ta: "உங்கள் அன்புக்குரியவர்களுடன் அமைதியான தருணம்", 
+    te: "మీ ప్రియమైనవారితో శాంతి క్షణం", 
+    mr: "आपल्या प्रियजनांसोबत शांततेचा क्षण", 
+    bn: "আপনার প্রিয়জনদের সাথে শান্তির মুহূর্ত", 
+    or: "ଆପଣଙ୍କ ପ୍ରିୟଜନଙ୍କ ସହ ଶାନ୍ତିର ମୁହୂର୍ତ୍ତ", 
+    ml: "നിങ്ങളുടെ പ്രിയപ്പെട്ടവരുമായി സമാധാനത്തിന്റെ നിമിഷം", 
+    pa: "ਆਪਣੇ ਪਿਆਰਿਆਂ ਨਾਲ ਸ਼ਾਂਤੀ ਦਾ ਪਲ" 
+  },
+  callFamily: { 
+    en: "Call Family", 
+    ar: "اتصل بالعائلة", 
+    ur: "خاندان کو کال کریں", 
+    hi: "परिवार को कॉल करें", 
+    ta: "குடும்பத்தை அழைக்கவும்", 
+    te: "కుటుంబాన్ని కాల్ చేయండి", 
+    mr: "कुटुंबाला कॉल करा", 
+    bn: "পরিবারকে কল করুন", 
+    or: "ପରିବାରକୁ କଲ କରନ୍ତୁ", 
+    ml: "കുടുംബത്തെ വിളിക്കുക", 
+    pa: "ਪਰਿਵਾਰ ਨੂੰ ਕਾਲ ਕਰੋ" 
+  },
+  joinFamilyCall: { 
+    en: "Join Family Call", 
+    ar: "انضم إلى مكالمة العائلة", 
+    ur: "خاندان کی کال میں شامل ہوں", 
+    hi: "परिवार कॉल में शामिल हों", 
+    ta: "குடும்ப அழைப்பில் சேரவும்", 
+    te: "కుటుంబ కాల్‌లో చేరండి", 
+    mr: "कुटुंब कॉलमध्ये सामील व्हा", 
+    bn: "পারিবারিক কলে যোগ দিন", 
+    or: "ପରିବାର କଲରେ ଯୋଗ ଦିଅନ୍ତୁ", 
+    ml: "കുടുംബ കോളിൽ ചേരുക", 
+    pa: "ਪਰਿਵਾਰ ਕਾਲ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਵੋ" 
+  },
+  enterCode: { 
+    en: "Enter family code", 
+    ar: "أدخل رمز العائلة", 
+    ur: "خاندان کا کوڈ درج کریں", 
+    hi: "परिवार कोड दर्ज करें", 
+    ta: "குடும்ப குறியீட்டை உள்ளிடவும்", 
+    te: "కుటుంబ కోడ్ నమోదు చేయండి", 
+    mr: "कुटुंब कोड प्रविष्ट करा", 
+    bn: "পারিবারিক কোড লিখুন", 
+    or: "ପରିବାର କୋଡ ପ୍ରବେଶ କରନ୍ତୁ", 
+    ml: "കുടുംബ കോഡ് നൽകുക", 
+    pa: "ਪਰਿਵਾਰ ਕੋਡ ਦਾਖਲ ਕਰੋ" 
+  },
+  familyCode: { 
+    en: "Family Code", 
+    ar: "رمز العائلة", 
+    ur: "خاندان کا کوڈ", 
+    hi: "परिवार कोड", 
+    ta: "குடும்ப குறியீடு", 
+    te: "కుటుంబ కోడ్", 
+    mr: "कुटुंब कोड", 
+    bn: "পারিবারিক কোড", 
+    or: "ପରିବାର କୋଡ", 
+    ml: "കുടുംബ കോഡ്", 
+    pa: "ਪਰਿਵਾਰ ਕੋਡ" 
+  },
+  copied: { 
+    en: "Code copied! Share with family", 
+    ar: "تم نسخ الرمز! شاركه مع العائلة", 
+    ur: "کوڈ کاپی ہو گیا! خاندان کے ساتھ شیئر کریں", 
+    hi: "कोड कॉपी हो गया! परिवार के साथ साझा करें", 
+    ta: "குறியீடு நகலெடுக்கப்பட்டது! குடும்பத்துடன் பகிரவும்", 
+    te: "కోడ్ కాపీ చేయబడింది! కుటుంబంతో షేర్ చేయండి", 
+    mr: "कोड कॉपी झाला! कुटुंबासोबत शेअर करा", 
+    bn: "কোড কপি হয়েছে! পরিবারের সাথে শেয়ার করুন", 
+    or: "କୋଡ କପି ହୋଇଛି! ପରିବାର ସହ ଅଂଶୀଦାର କରନ୍ତୁ", 
+    ml: "കോഡ് പകർത്തി! കുടുംബവുമായി പങ്കിടുക", 
+    pa: "ਕੋਡ ਕਾਪੀ ਹੋ ਗਿਆ! ਪਰਿਵਾਰ ਨਾਲ ਸਾਂਝਾ ਕਰੋ" 
+  },
+  shareCode: { 
+    en: "Share this code with ONE family member", 
+    ar: "شارك هذا الرمز مع فرد واحد من العائلة", 
+    ur: "یہ کوڈ ایک خاندان کے فرد کے ساتھ شیئر کریں", 
+    hi: "यह कोड एक परिवार के सदस्य के साथ साझा करें", 
+    ta: "இந்த குறியீட்டை ஒரு குடும்ப உறுப்பினருடன் பகிரவும்", 
+    te: "ఈ కోడ్‌ను ఒక కుటుంబ సభ్యుడితో షేర్ చేయండి", 
+    mr: "हा कोड एका कुटुंबातील सदस्यासोबत शेअर करा", 
+    bn: "এই কোডটি এক পরিবারের সদস্যের সাথে শেয়ার করুন", 
+    or: "ଏହି କୋଡ ଜଣେ ପରିବାର ସଦସ୍ୟଙ୍କ ସହ ଅଂଶୀଦାର କରନ୍ତୁ", 
+    ml: "ഈ കോഡ് ഒരു കുടുംബാംഗവുമായി പങ്കിടുക", 
+    pa: "ਇਹ ਕੋਡ ਇੱਕ ਪਰਿਵਾਰਕ ਮੈਂਬਰ ਨਾਲ ਸਾਂਝਾ ਕਰੋ" 
+  },
+  endCall: { 
+    en: "End Call", 
+    ar: "إنهاء المكالمة", 
+    ur: "کال ختم کریں", 
+    hi: "कॉल समाप्त करें", 
+    ta: "அழைப்பை முடிக்கவும்", 
+    te: "కాల్ ముగించండి", 
+    mr: "कॉल समाप्त करा", 
+    bn: "কল শেষ করুন", 
+    or: "କଲ ଶେଷ କରନ୍ତୁ", 
+    ml: "കോൾ അവസാനിപ്പിക്കുക", 
+    pa: "ਕਾਲ ਸਮਾਪਤ ਕਰੋ" 
+  },
+  connecting: { 
+    en: "Connecting to your family...", 
+    ar: "جاري الاتصال بعائلتك...", 
+    ur: "آپ کے خاندان سے جڑ رہے ہیں...", 
+    hi: "आपके परिवार से जुड़ रहे हैं...", 
+    ta: "உங்கள் குடும்பத்துடன் இணைக்கிறது...", 
+    te: "మీ కుటుంబానికి కనెక్ట్ అవుతోంది...", 
+    mr: "तुमच्या कुटुंबाशी कनेक्ट होत आहे...", 
+    bn: "আপনার পরিবারের সাথে সংযুক্ত হচ্ছে...", 
+    or: "ଆପଣଙ୍କ ପରିବାର ସହ ସଂଯୋଗ ହେଉଛି...", 
+    ml: "നിങ്ങളുടെ കുടുംബവുമായി ബന്ധിപ്പിക്കുന്നു...", 
+    pa: "ਤੁਹਾਡੇ ਪਰਿਵਾਰ ਨਾਲ ਜੁੜ ਰਿਹਾ ਹੈ..." 
+  },
+  loginRequired: { 
+    en: "Please login to call your family", 
+    ar: "يرجى تسجيل الدخول للاتصال بعائلتك", 
+    ur: "اپنے خاندان کو کال کرنے کے لیے لاگ ان کریں", 
+    hi: "अपने परिवार को कॉल करने के लिए लॉगिन करें", 
+    ta: "உங்கள் குடும்பத்தை அழைக்க உள்நுழையவும்", 
+    te: "మీ కుటుంబాన్ని కాల్ చేయడానికి లాగిన్ అవ్వండి", 
+    mr: "तुमच्या कुटुंबाला कॉल करण्यासाठी लॉगिन करा", 
+    bn: "আপনার পরিবারকে কল করতে লগইন করুন", 
+    or: "ଆପଣଙ୍କ ପରିବାରକୁ କଲ କରିବାକୁ ଲଗଇନ କରନ୍ତୁ", 
+    ml: "നിങ്ങളുടെ കുടുംബത്തെ വിളിക്കാൻ ലോഗിൻ ചെയ്യുക", 
+    pa: "ਆਪਣੇ ਪਰਿਵਾਰ ਨੂੰ ਕਾਲ ਕਰਨ ਲਈ ਲੌਗਇਨ ਕਰੋ" 
+  },
+  login: { 
+    en: "Login", 
+    ar: "تسجيل الدخول", 
+    ur: "لاگ ان", 
+    hi: "लॉगिन", 
+    ta: "உள்நுழை", 
+    te: "లాగిన్", 
+    mr: "लॉगिन", 
+    bn: "লগইন", 
+    or: "ଲଗଇନ", 
+    ml: "ലോഗിൻ", 
+    pa: "ਲੌਗਇਨ" 
+  },
+  limitedNotice: { 
+    en: "Calls may be limited during Hajj rituals", 
+    ar: "قد تكون المكالمات محدودة أثناء مناسك الحج", 
+    ur: "حج کی رسومات کے دوران کالز محدود ہو سکتی ہیں", 
+    hi: "हज अनुष्ठानों के दौरान कॉल सीमित हो सकती हैं", 
+    ta: "ஹஜ் சடங்குகளின் போது அழைப்புகள் குறைக்கப்படலாம்", 
+    te: "హజ్ ఆచారాల సమయంలో కాల్స్ పరిమితం కావచ్చు", 
+    mr: "हज विधींदरम्यान कॉल मर्यादित असू शकतात", 
+    bn: "হজ আচারের সময় কল সীমিত হতে পারে", 
+    or: "ହଜ ରୀତିନୀତି ସମୟରେ କଲ ସୀମିତ ହୋଇପାରେ", 
+    ml: "ഹജ്ജ് ആചാരങ്ങളിൽ കോളുകൾ പരിമിതമായേക്കാം", 
+    pa: "ਹੱਜ ਰਸਮਾਂ ਦੌਰਾਨ ਕਾਲਾਂ ਸੀਮਤ ਹੋ ਸਕਦੀਆਂ ਹਨ" 
+  },
+  oneToOneOnly: { 
+    en: "One-to-one calls only • No group calls", 
+    ar: "مكالمات فردية فقط • لا مكالمات جماعية", 
+    ur: "صرف ون ٹو ون کالز • کوئی گروپ کالز نہیں", 
+    hi: "केवल वन-टू-वन कॉल • कोई ग्रुप कॉल नहीं", 
+    ta: "ஒன்றுக்கு ஒன்று அழைப்புகள் மட்டுமே • குழு அழைப்புகள் இல்லை", 
+    te: "వన్-టు-వన్ కాల్స్ మాత్రమే • గ్రూప్ కాల్స్ లేవు", 
+    mr: "फक्त एक-एक कॉल • कोणतेही ग्रुप कॉल नाहीत", 
+    bn: "শুধুমাত্র একে-একে কল • কোনো গ্রুপ কল নেই", 
+    or: "କେବଳ ଗୋଟିଏ-ଗୋଟିଏ କଲ • କୌଣସି ଗ୍ରୁପ କଲ ନାହିଁ", 
+    ml: "ഒന്നിനൊന്ന് കോളുകൾ മാത്രം • ഗ്രൂപ്പ് കോളുകൾ ഇല്ല", 
+    pa: "ਸਿਰਫ਼ ਵਨ-ਟੂ-ਵਨ ਕਾਲਾਂ • ਕੋਈ ਗਰੁੱਪ ਕਾਲਾਂ ਨਹੀਂ" 
+  },
+  noRecording: { 
+    en: "No recording • No call history stored", 
+    ar: "لا تسجيل • لا يتم تخزين سجل المكالمات", 
+    ur: "کوئی ریکارڈنگ نہیں • کال ہسٹری محفوظ نہیں", 
+    hi: "कोई रिकॉर्डिंग नहीं • कॉल हिस्ट्री सेव नहीं", 
+    ta: "பதிவு இல்லை • அழைப்பு வரலாறு சேமிக்கப்படவில்லை", 
+    te: "రికార్డింగ్ లేదు • కాల్ హిస్టరీ నిల్వ చేయబడదు", 
+    mr: "कोणतेही रेकॉर्डिंग नाही • कॉल इतिहास साठवला जात नाही", 
+    bn: "কোনো রেকর্ডিং নেই • কল হিস্ট্রি সংরক্ষণ করা হয় না", 
+    or: "କୌଣସି ରେକର୍ଡିଂ ନାହିଁ • କଲ ଇତିହାସ ସଂରକ୍ଷିତ ହେଉନାହିଁ", 
+    ml: "റെക്കോർഡിംഗ് ഇല്ല • കോൾ ചരിത്രം സംഭരിക്കുന്നില്ല", 
+    pa: "ਕੋਈ ਰਿਕਾਰਡਿੰਗ ਨਹੀਂ • ਕਾਲ ਹਿਸਟਰੀ ਸੇਵ ਨਹੀਂ" 
+  },
+  safetyFirst: { 
+    en: "Focus on your Hajj. Family can wait.", 
+    ar: "ركز على حجك. العائلة يمكن أن تنتظر.", 
+    ur: "اپنے حج پر توجہ دیں۔ خاندان انتظار کر سکتا ہے۔", 
+    hi: "अपने हज पर ध्यान दें। परिवार इंतज़ार कर सकता है।", 
+    ta: "உங்கள் ஹஜ்ஜில் கவனம் செலுத்துங்கள். குடும்பம் காத்திருக்கும்.", 
+    te: "మీ హజ్‌పై దృష్టి పెట్టండి. కుటుంబం వేచి ఉండగలదు.", 
+    mr: "तुमच्या हजवर लक्ष केंद्रित करा. कुटुंब थांबू शकतं.", 
+    bn: "আপনার হজে মনোযোগ দিন। পরিবার অপেক্ষা করতে পারে।", 
+    or: "ଆପଣଙ୍କ ହଜରେ ଧ୍ୟାନ ଦିଅନ୍ତୁ। ପରିବାର ଅପେକ୍ଷା କରିପାରିବ।", 
+    ml: "നിങ്ങളുടെ ഹജ്ജിൽ ശ്രദ്ധിക്കുക. കുടുംബം കാത്തിരിക്കും.", 
+    pa: "ਆਪਣੇ ਹੱਜ 'ਤੇ ਧਿਆਨ ਦਿਓ। ਪਰਿਵਾਰ ਉਡੀਕ ਕਰ ਸਕਦਾ ਹੈ।" 
+  },
+  lowBandwidth: { 
+    en: "Weak connection detected", 
+    ar: "تم اكتشاف اتصال ضعيف", 
+    ur: "کمزور کنکشن کا پتہ چلا", 
+    hi: "कमज़ोर कनेक्शन का पता चला", 
+    ta: "பலவீனமான இணைப்பு கண்டறியப்பட்டது", 
+    te: "బలహీనమైన కనెక్షన్ గుర్తించబడింది", 
+    mr: "कमकुवत कनेक्शन आढळले", 
+    bn: "দুর্বল সংযোগ সনাক্ত করা হয়েছে", 
+    or: "ଦୁର୍ବଳ ସଂଯୋଗ ଚିହ୍ନଟ ହୋଇଛି", 
+    ml: "ദുർബലമായ കണക്ഷൻ കണ്ടെത്തി", 
+    pa: "ਕਮਜ਼ੋਰ ਕਨੈਕਸ਼ਨ ਦਾ ਪਤਾ ਲੱਗਾ" 
+  },
+  goodConnection: { 
+    en: "Good connection", 
+    ar: "اتصال جيد", 
+    ur: "اچھا کنکشن", 
+    hi: "अच्छा कनेक्शन", 
+    ta: "நல்ல இணைப்பு", 
+    te: "మంచి కనెక్షన్", 
+    mr: "चांगले कनेक्शन", 
+    bn: "ভালো সংযোগ", 
+    or: "ଭଲ ସଂଯୋଗ", 
+    ml: "നല്ല കണക്ഷൻ", 
+    pa: "ਚੰਗਾ ਕਨੈਕਸ਼ਨ" 
+  },
 };
 
-function CallUI({ callId, onLeave }: { callId: string; onLeave: () => void }) {
-  const { useCallCallingState } = useCallStateHooks();
-  const callingState = useCallCallingState();
+// Connection quality hook
+function useConnectionQuality() {
+  const [quality, setQuality] = useState<"good" | "weak" | "offline">("good");
+
+  useEffect(() => {
+    const updateQuality = () => {
+      if (!navigator.onLine) {
+        setQuality("offline");
+        return;
+      }
+      
+      const connection = (navigator as any).connection;
+      if (connection) {
+        const effectiveType = connection.effectiveType;
+        if (effectiveType === "slow-2g" || effectiveType === "2g") {
+          setQuality("weak");
+        } else {
+          setQuality("good");
+        }
+      }
+    };
+
+    updateQuality();
+    
+    window.addEventListener("online", updateQuality);
+    window.addEventListener("offline", updateQuality);
+    
+    const connection = (navigator as any).connection;
+    if (connection) {
+      connection.addEventListener("change", updateQuality);
+    }
+
+    return () => {
+      window.removeEventListener("online", updateQuality);
+      window.removeEventListener("offline", updateQuality);
+      if (connection) {
+        connection.removeEventListener("change", updateQuality);
+      }
+    };
+  }, []);
+
+  return quality;
+}
+
+// Connection status indicator
+function ConnectionIndicator() {
+  const quality = useConnectionQuality();
   const { language } = useLanguage();
 
-  if (callingState !== CallingState.JOINED) {
+  if (quality === "offline") {
     return (
-      <div className="flex flex-col items-center justify-center h-64 gap-4">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <p className="text-muted-foreground">{labels.connecting[language] || labels.connecting.en}</p>
+      <div className="flex items-center gap-2 text-destructive bg-destructive/10 px-4 py-2 rounded-full">
+        <WifiOff className="h-4 w-4" />
+        <span className="text-sm font-medium">Offline</span>
+      </div>
+    );
+  }
+
+  if (quality === "weak") {
+    return (
+      <div className="flex items-center gap-2 text-amber-600 bg-amber-500/10 px-4 py-2 rounded-full">
+        <Wifi className="h-4 w-4" />
+        <span className="text-sm font-medium">{labels.lowBandwidth[language] || labels.lowBandwidth.en}</span>
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
-      <div className="bg-muted/50 rounded-lg p-4 flex items-center justify-between">
-        <div>
-          <p className="text-sm text-muted-foreground">{labels.callId[language] || labels.callId.en}</p>
-          <p className="font-mono font-medium">{callId}</p>
-        </div>
-        <CopyButton text={callId} />
-      </div>
-      <p className="text-sm text-muted-foreground text-center">
-        {labels.shareCallId[language] || labels.shareCallId.en}
-      </p>
-      <div className="aspect-video bg-black rounded-xl overflow-hidden">
-        <SpeakerLayout participantsBarPosition="bottom" />
-      </div>
-      <CallControls onLeave={onLeave} />
+    <div className="flex items-center gap-2 text-green-600 bg-green-500/10 px-4 py-2 rounded-full">
+      <Wifi className="h-4 w-4" />
+      <span className="text-sm font-medium">{labels.goodConnection[language] || labels.goodConnection.en}</span>
     </div>
   );
 }
 
-function CopyButton({ text }: { text: string }) {
-  const [copied, setCopied] = useState(false);
+// Calming call UI with minimal distractions
+function CallUI({ callId, onLeave }: { callId: string; onLeave: () => void }) {
+  const { useCallCallingState } = useCallStateHooks();
+  const callingState = useCallCallingState();
   const { language } = useLanguage();
+  const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
-    await navigator.clipboard.writeText(text);
+    await navigator.clipboard.writeText(callId);
     setCopied(true);
     toast.success(labels.copied[language] || labels.copied.en);
-    setTimeout(() => setCopied(false), 2000);
+    setTimeout(() => setCopied(false), 3000);
   };
 
+  if (callingState !== CallingState.JOINED) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[50vh] gap-6">
+        <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center animate-pulse">
+          <Heart className="h-12 w-12 text-primary" />
+        </div>
+        <p className="text-xl text-muted-foreground text-center">
+          {labels.connecting[language] || labels.connecting.en}
+        </p>
+      </div>
+    );
+  }
+
   return (
-    <Button variant="outline" size="icon" onClick={handleCopy}>
-      {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
-    </Button>
+    <div className="space-y-6">
+      {/* Family code display - for sharing */}
+      <div className="bg-card border border-border rounded-2xl p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm text-muted-foreground mb-1">{labels.familyCode[language] || labels.familyCode.en}</p>
+            <p className="font-mono text-2xl font-bold tracking-wider">{callId.slice(-8).toUpperCase()}</p>
+          </div>
+          <Button 
+            variant="outline" 
+            size="lg"
+            onClick={handleCopy}
+            className="h-14 w-14 rounded-full"
+          >
+            {copied ? <Check className="h-6 w-6 text-green-500" /> : <Copy className="h-6 w-6" />}
+          </Button>
+        </div>
+        <p className="text-sm text-muted-foreground mt-3 flex items-center gap-2">
+          <Users className="h-4 w-4" />
+          {labels.shareCode[language] || labels.shareCode.en}
+        </p>
+      </div>
+
+      {/* Video area - simple speaker layout */}
+      <div className="aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl">
+        <SpeakerLayout participantsBarPosition="bottom" />
+      </div>
+
+      {/* Large end call button */}
+      <div className="flex justify-center pt-4">
+        <Button
+          onClick={onLeave}
+          variant="destructive"
+          size="lg"
+          className="h-20 px-12 rounded-full text-xl gap-3 shadow-lg hover:shadow-xl transition-all"
+        >
+          <PhoneOff className="h-8 w-8" />
+          {labels.endCall[language] || labels.endCall.en}
+        </Button>
+      </div>
+    </div>
   );
 }
 
+// Main page component
 export default function VideoCallPage() {
   const navigate = useNavigate();
   const { language } = useLanguage();
   const { user, loading: authLoading } = useAuth();
+  const connectionQuality = useConnectionQuality();
   
   const [client, setClient] = useState<StreamVideoClient | null>(null);
   const [call, setCall] = useState<ReturnType<StreamVideoClient["call"]> | null>(null);
   const [callId, setCallId] = useState("");
-  const [joinCallId, setJoinCallId] = useState("");
+  const [joinCode, setJoinCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const initializeClient = useCallback(async () => {
@@ -149,7 +484,12 @@ export default function VideoCallPage() {
     };
   }, [user, client, initializeClient]);
 
-  const createNewCall = async () => {
+  const startFamilyCall = async () => {
+    if (connectionQuality === "offline") {
+      toast.error("No internet connection");
+      return;
+    }
+
     setIsLoading(true);
     try {
       let streamClient = client;
@@ -161,23 +501,28 @@ export default function VideoCallPage() {
         }
       }
 
-      const newCallId = `hajj-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-      const newCall = streamClient.call("default", newCallId);
+      // Generate simple family code
+      const familyCode = `family-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`;
+      const newCall = streamClient.call("default", familyCode);
       
       await newCall.join({ create: true });
       
       setCall(newCall);
-      setCallId(newCallId);
+      setCallId(familyCode);
     } catch (error) {
       console.error("Error creating call:", error);
-      toast.error("Failed to create call");
+      toast.error("Failed to start call");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const joinExistingCall = async () => {
-    if (!joinCallId.trim()) return;
+  const joinFamilyCall = async () => {
+    if (!joinCode.trim()) return;
+    if (connectionQuality === "offline") {
+      toast.error("No internet connection");
+      return;
+    }
     
     setIsLoading(true);
     try {
@@ -190,14 +535,17 @@ export default function VideoCallPage() {
         }
       }
 
-      const existingCall = streamClient.call("default", joinCallId.trim());
+      // Handle short code input - try to find matching call
+      const codeToJoin = joinCode.trim().toLowerCase();
+      const existingCall = streamClient.call("default", codeToJoin.includes("family-") ? codeToJoin : `family-${codeToJoin}`);
+      
       await existingCall.join();
       
       setCall(existingCall);
-      setCallId(joinCallId.trim());
+      setCallId(codeToJoin);
     } catch (error) {
       console.error("Error joining call:", error);
-      toast.error("Failed to join call. Please check the Call ID.");
+      toast.error("Could not join. Check the code and try again.");
     } finally {
       setIsLoading(false);
     }
@@ -208,36 +556,45 @@ export default function VideoCallPage() {
       await call.leave();
       setCall(null);
       setCallId("");
+      setJoinCode("");
     }
   };
 
+  // Loading state
   if (authLoading) {
     return (
       <MainLayout>
         <div className="min-h-screen flex items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center animate-pulse">
+            <Heart className="h-8 w-8 text-primary" />
+          </div>
         </div>
       </MainLayout>
     );
   }
 
+  // Not logged in
   if (!user) {
     return (
       <MainLayout>
-        <div className="container max-w-md mx-auto py-8 px-4">
-          <Card className="text-center">
-            <CardHeader>
-              <div className="mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                <Video className="h-8 w-8 text-primary" />
+        <div className="container max-w-md mx-auto py-12 px-4">
+          <Card className="text-center border-2">
+            <CardContent className="pt-10 pb-8 space-y-6">
+              <div className="mx-auto w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center">
+                <Heart className="h-10 w-10 text-primary" />
               </div>
-              <CardTitle>{labels.title[language] || labels.title.en}</CardTitle>
-              <CardDescription>
-                {labels.loginRequired[language] || labels.loginRequired.en}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button onClick={() => navigate("/auth")} className="w-full gap-2">
-                <LogIn className="h-4 w-4" />
+              <div className="space-y-2">
+                <h1 className="text-2xl font-bold">{labels.title[language] || labels.title.en}</h1>
+                <p className="text-muted-foreground text-lg">
+                  {labels.loginRequired[language] || labels.loginRequired.en}
+                </p>
+              </div>
+              <Button 
+                onClick={() => navigate("/auth")} 
+                size="lg"
+                className="w-full h-16 text-lg gap-3 rounded-xl"
+              >
+                <LogIn className="h-6 w-6" />
                 {labels.login[language] || labels.login.en}
               </Button>
             </CardContent>
@@ -247,76 +604,114 @@ export default function VideoCallPage() {
     );
   }
 
-  return (
-    <MainLayout>
-      <div className="container max-w-2xl mx-auto py-6 px-4 space-y-6">
-        <div className="text-center space-y-2">
-          <div className="mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-            <Video className="h-8 w-8 text-primary" />
-          </div>
-          <h1 className="text-2xl font-bold">{labels.title[language] || labels.title.en}</h1>
-          <p className="text-muted-foreground">{labels.subtitle[language] || labels.subtitle.en}</p>
-        </div>
-
-        {call && client ? (
+  // Active call
+  if (call && client) {
+    return (
+      <MainLayout>
+        <div className="container max-w-2xl mx-auto py-6 px-4">
           <StreamVideo client={client}>
             <StreamCall call={call}>
               <CallUI callId={callId} onLeave={leaveCall} />
             </StreamCall>
           </StreamVideo>
-        ) : (
-          <div className="space-y-6">
-            {/* Create New Call */}
-            <Card>
-              <CardContent className="pt-6">
-                <Button
-                  onClick={createNewCall}
-                  disabled={isLoading}
-                  className="w-full gap-2"
-                  size="lg"
-                >
-                  {isLoading ? (
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                  ) : (
-                    <Plus className="h-5 w-5" />
-                  )}
-                  {labels.createCall[language] || labels.createCall.en}
-                </Button>
-              </CardContent>
-            </Card>
+        </div>
+      </MainLayout>
+    );
+  }
 
-            {/* Join Existing Call */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <PhoneCall className="h-5 w-5" />
-                  {labels.joinCall[language] || labels.joinCall.en}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <Input
-                  placeholder={labels.enterCallId[language] || labels.enterCallId.en}
-                  value={joinCallId}
-                  onChange={(e) => setJoinCallId(e.target.value)}
-                  className="font-mono"
-                />
-                <Button
-                  onClick={joinExistingCall}
-                  disabled={isLoading || !joinCallId.trim()}
-                  className="w-full gap-2"
-                  variant="secondary"
-                >
-                  {isLoading ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <PhoneCall className="h-4 w-4" />
-                  )}
-                  {labels.joinCall[language] || labels.joinCall.en}
-                </Button>
-              </CardContent>
-            </Card>
+  // Main interface - calm, simple, elderly-friendly
+  return (
+    <MainLayout>
+      <div className="container max-w-lg mx-auto py-8 px-4 space-y-8">
+        {/* Header */}
+        <div className="text-center space-y-4">
+          <div className="mx-auto w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center">
+            <Heart className="h-12 w-12 text-primary" />
           </div>
-        )}
+          <div className="space-y-2">
+            <h1 className="text-3xl font-bold">{labels.title[language] || labels.title.en}</h1>
+            <p className="text-muted-foreground text-lg">{labels.subtitle[language] || labels.subtitle.en}</p>
+          </div>
+          
+          {/* Connection status */}
+          <div className="flex justify-center">
+            <ConnectionIndicator />
+          </div>
+        </div>
+
+        {/* Important notices - calm, not alarming */}
+        <Card className="bg-muted/30 border-dashed">
+          <CardContent className="py-5 space-y-3">
+            <div className="flex items-start gap-3 text-muted-foreground">
+              <Clock className="h-5 w-5 mt-0.5 shrink-0" />
+              <p className="text-sm">{labels.limitedNotice[language] || labels.limitedNotice.en}</p>
+            </div>
+            <div className="flex items-start gap-3 text-muted-foreground">
+              <Users className="h-5 w-5 mt-0.5 shrink-0" />
+              <p className="text-sm">{labels.oneToOneOnly[language] || labels.oneToOneOnly.en}</p>
+            </div>
+            <div className="flex items-start gap-3 text-muted-foreground">
+              <Shield className="h-5 w-5 mt-0.5 shrink-0" />
+              <p className="text-sm">{labels.noRecording[language] || labels.noRecording.en}</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Main action - Start call */}
+        <Button
+          onClick={startFamilyCall}
+          disabled={isLoading || connectionQuality === "offline"}
+          size="lg"
+          className="w-full h-20 text-xl gap-4 rounded-2xl shadow-lg hover:shadow-xl transition-all"
+        >
+          {isLoading ? (
+            <Loader2 className="h-8 w-8 animate-spin" />
+          ) : (
+            <Video className="h-8 w-8" />
+          )}
+          {labels.callFamily[language] || labels.callFamily.en}
+        </Button>
+
+        {/* Join existing call */}
+        <Card className="border-2">
+          <CardContent className="pt-6 space-y-5">
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <PhoneCall className="h-5 w-5" />
+              <span className="font-medium">{labels.joinFamilyCall[language] || labels.joinFamilyCall.en}</span>
+            </div>
+            
+            <Input
+              placeholder={labels.enterCode[language] || labels.enterCode.en}
+              value={joinCode}
+              onChange={(e) => setJoinCode(e.target.value)}
+              className="h-16 text-xl text-center font-mono tracking-widest rounded-xl"
+              maxLength={20}
+            />
+            
+            <Button
+              onClick={joinFamilyCall}
+              disabled={isLoading || !joinCode.trim() || connectionQuality === "offline"}
+              variant="secondary"
+              size="lg"
+              className="w-full h-14 text-lg gap-3 rounded-xl"
+            >
+              {isLoading ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
+              ) : (
+                <PhoneCall className="h-5 w-5" />
+              )}
+              {labels.joinFamilyCall[language] || labels.joinFamilyCall.en}
+            </Button>
+          </CardContent>
+        </Card>
+
+        {/* Gentle reminder */}
+        <div className="text-center py-4">
+          <p className="text-sm text-muted-foreground flex items-center justify-center gap-2">
+            <Info className="h-4 w-4" />
+            {labels.safetyFirst[language] || labels.safetyFirst.en}
+          </p>
+        </div>
       </div>
     </MainLayout>
   );
