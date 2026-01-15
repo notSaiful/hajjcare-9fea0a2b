@@ -6,6 +6,7 @@ import {
   StreamCall,
   SpeakerLayout,
   useCallStateHooks,
+  useCall,
   CallingState,
   NoiseCancellationProvider,
   useNoiseCancellation,
@@ -213,18 +214,18 @@ const labels = {
     ml: "ഹജ്ജ് ആചാരങ്ങളിൽ കോളുകൾ പരിമിതമായേക്കാം", 
     pa: "ਹੱਜ ਰਸਮਾਂ ਦੌਰਾਨ ਕਾਲਾਂ ਸੀਮਤ ਹੋ ਸਕਦੀਆਂ ਹਨ" 
   },
-  oneToOneOnly: { 
-    en: "One-to-one calls only • No group calls", 
-    ar: "مكالمات فردية فقط • لا مكالمات جماعية", 
-    ur: "صرف ون ٹو ون کالز • کوئی گروپ کالز نہیں", 
-    hi: "केवल वन-टू-वन कॉल • कोई ग्रुप कॉल नहीं", 
-    ta: "ஒன்றுக்கு ஒன்று அழைப்புகள் மட்டுமே • குழு அழைப்புகள் இல்லை", 
-    te: "వన్-టు-వన్ కాల్స్ మాత్రమే • గ్రూప్ కాల్స్ లేవు", 
-    mr: "फक्त एक-एक कॉल • कोणतेही ग्रुप कॉल नाहीत", 
-    bn: "শুধুমাত্র একে-একে কল • কোনো গ্রুপ কল নেই", 
-    or: "କେବଳ ଗୋଟିଏ-ଗୋଟିଏ କଲ • କୌଣସି ଗ୍ରୁପ କଲ ନାହିଁ", 
-    ml: "ഒന്നിനൊന്ന് കോളുകൾ മാത്രം • ഗ്രൂപ്പ് കോളുകൾ ഇല്ല", 
-    pa: "ਸਿਰਫ਼ ਵਨ-ਟੂ-ਵਨ ਕਾਲਾਂ • ਕੋਈ ਗਰੁੱਪ ਕਾਲਾਂ ਨਹੀਂ" 
+  groupCallsSupported: { 
+    en: "Group calls supported • Call multiple family members", 
+    ar: "مكالمات جماعية مدعومة • اتصل بعدة أفراد من العائلة", 
+    ur: "گروپ کالز سپورٹڈ • کئی خاندان کے افراد کو کال کریں", 
+    hi: "ग्रुप कॉल समर्थित • कई परिवार के सदस्यों को कॉल करें", 
+    ta: "குழு அழைப்புகள் ஆதரிக்கப்படுகின்றன • பல குடும்ப உறுப்பினர்களை அழைக்கவும்", 
+    te: "గ్రూప్ కాల్స్ మద్దతు • బహుళ కుటుంబ సభ్యులకు కాల్ చేయండి", 
+    mr: "ग्रुप कॉल समर्थित • अनेक कुटुंबातील सदस्यांना कॉल करा", 
+    bn: "গ্রুপ কল সমর্থিত • একাধিক পরিবারের সদস্যদের কল করুন", 
+    or: "ଗ୍ରୁପ କଲ ସମର୍ଥିତ • ଏକାଧିକ ପରିବାର ସଦସ୍ୟଙ୍କୁ କଲ କରନ୍ତୁ", 
+    ml: "ഗ്രൂപ്പ് കോളുകൾ പിന്തുണയ്ക്കുന്നു • ഒന്നിലധികം കുടുംബാംഗങ്ങളെ വിളിക്കുക", 
+    pa: "ਗਰੁੱਪ ਕਾਲਾਂ ਸਮਰਥਿਤ • ਕਈ ਪਰਿਵਾਰਕ ਮੈਂਬਰਾਂ ਨੂੰ ਕਾਲ ਕਰੋ" 
   },
   noRecording: { 
     en: "No recording • No call history stored", 
@@ -238,6 +239,19 @@ const labels = {
     or: "କୌଣସି ରେକର୍ଡିଂ ନାହିଁ • କଲ ଇତିହାସ ସଂରକ୍ଷିତ ହେଉନାହିଁ", 
     ml: "റെക്കോർഡിംഗ് ഇല്ല • കോൾ ചരിത്രം സംഭരിക്കുന്നില്ല", 
     pa: "ਕੋਈ ਰਿਕਾਰਡਿੰਗ ਨਹੀਂ • ਕਾਲ ਹਿਸਟਰੀ ਸੇਵ ਨਹੀਂ" 
+  },
+  hdQuality: {
+    en: "HD video quality (720p) • Noise cancellation enabled",
+    ar: "جودة فيديو عالية الدقة (720p) • تمكين إلغاء الضوضاء",
+    ur: "ایچ ڈی ویڈیو کوالٹی (720p) • شور کی منسوخی فعال",
+    hi: "एचडी वीडियो क्वालिटी (720p) • नॉइस कैंसलेशन सक्षम",
+    ta: "HD வீடியோ தரம் (720p) • இரைச்சல் நீக்கம் இயக்கப்பட்டது",
+    te: "HD వీడియో నాణ్యత (720p) • శబ్ద రద్దు ప్రారంభించబడింది",
+    mr: "HD व्हिडिओ गुणवत्ता (720p) • आवाज रद्द करणे सक्षम",
+    bn: "HD ভিডিও গুণমান (720p) • শব্দ বাতিল সক্রিয়",
+    or: "HD ଭିଡିଓ ଗୁଣବତ୍ତା (720p) • ଶବ୍ଦ ବାତିଲ ସକ୍ଷମ",
+    ml: "HD വീഡിയോ ഗുണനിലവാരം (720p) • ശബ്ദ റദ്ദാക്കൽ പ്രവർത്തനക്ഷമമാക്കി",
+    pa: "HD ਵੀਡੀਓ ਕੁਆਲਿਟੀ (720p) • ਨੋਇਜ਼ ਕੈਂਸਲੇਸ਼ਨ ਸਮਰੱਥ",
   },
   safetyFirst: { 
     en: "Focus on your Hajj. Family can wait.", 
@@ -519,12 +533,25 @@ function NoiseCancellationToggle() {
   );
 }
 
-// Calming call UI with minimal distractions
+// Calming call UI with minimal distractions - HD 720p quality enabled
 function CallUI({ callId, onLeave }: { callId: string; onLeave: () => void }) {
+  const call = useCall();
   const { useCallCallingState } = useCallStateHooks();
   const callingState = useCallCallingState();
   const { language } = useLanguage();
   const [copied, setCopied] = useState(false);
+  const { setEnabled: setNoiseCancellationEnabled } = useNoiseCancellation();
+
+  // Set HD 720p video quality and enable noise cancellation when call joins
+  useEffect(() => {
+    if (call && callingState === CallingState.JOINED) {
+      // Set preferred incoming video resolution to 720p HD
+      call.setPreferredIncomingVideoResolution({ width: 1280, height: 720 });
+      
+      // Auto-enable noise cancellation for clearer audio
+      setNoiseCancellationEnabled(true);
+    }
+  }, [call, callingState, setNoiseCancellationEnabled]);
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(callId);
@@ -971,7 +998,11 @@ export default function VideoCallPage() {
             </div>
             <div className="flex items-start gap-3 text-muted-foreground">
               <Users className="h-5 w-5 mt-0.5 shrink-0" />
-              <p className="text-sm">{labels.oneToOneOnly[language] || labels.oneToOneOnly.en}</p>
+              <p className="text-sm">{labels.groupCallsSupported[language] || labels.groupCallsSupported.en}</p>
+            </div>
+            <div className="flex items-start gap-3 text-green-600">
+              <Video className="h-5 w-5 mt-0.5 shrink-0" />
+              <p className="text-sm">{labels.hdQuality[language] || labels.hdQuality.en}</p>
             </div>
             <div className="flex items-start gap-3 text-muted-foreground">
               <Shield className="h-5 w-5 mt-0.5 shrink-0" />
