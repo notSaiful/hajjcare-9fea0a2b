@@ -11,7 +11,6 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2, Mail, Lock, User, MapPin } from "lucide-react";
 import { z } from "zod";
 import logo from "@/assets/logo.jpeg";
-import { PhoneInputWithCountry } from "@/components/PhoneInputWithCountry";
 
 // Hajj 2026 Embarkation Points (India)
 const EMBARKATION_POINTS = [
@@ -46,11 +45,6 @@ const nameSchema = z
     /^[\p{L}\p{M}\s'-]+$/u,
     "Name can only contain letters, spaces, hyphens and apostrophes"
   );
-const phoneSchema = z
-  .string()
-  .min(7, "Phone number must be at least 7 digits")
-  .max(15, "Phone number must be less than 15 digits")
-  .regex(/^\d+$/, "Phone number can only contain digits");
 
 const AuthPage = () => {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -58,8 +52,6 @@ const AuthPage = () => {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [embarkationPoint, setEmbarkationPoint] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [countryCode, setCountryCode] = useState("+91");
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   
@@ -95,10 +87,6 @@ const AuthPage = () => {
       if (!embarkationPoint) {
         newErrors.embarkationPoint = "Please select your embarkation point";
       }
-      const phoneResult = phoneSchema.safeParse(phoneNumber);
-      if (!phoneResult.success) {
-        newErrors.phone = phoneResult.error.errors[0].message;
-      }
     }
     
     setErrors(newErrors);
@@ -114,8 +102,7 @@ const AuthPage = () => {
     
     try {
       if (isSignUp) {
-        const fullPhone = `${countryCode}${phoneNumber}`;
-        const { error } = await signUp(email, password, fullName, embarkationPoint, fullPhone);
+        const { error } = await signUp(email, password, fullName, embarkationPoint);
         if (error) {
           if (error.message.includes("already registered")) {
             toast({
@@ -251,18 +238,6 @@ const AuthPage = () => {
                   </div>
                   {errors.embarkationPoint && (
                     <p className="text-xs text-destructive px-1">{errors.embarkationPoint}</p>
-                  )}
-                </div>
-                
-                <div className="space-y-2">
-                  <PhoneInputWithCountry
-                    value={phoneNumber}
-                    countryCode={countryCode}
-                    onValueChange={setPhoneNumber}
-                    onCountryCodeChange={setCountryCode}
-                  />
-                  {errors.phone && (
-                    <p className="text-xs text-destructive px-1">{errors.phone}</p>
                   )}
                 </div>
               </>
