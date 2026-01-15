@@ -66,11 +66,10 @@ serve(async (req) => {
       { global: { headers: { Authorization: authHeader } } }
     );
 
-    const token = authHeader.replace("Bearer ", "");
-    const { data: authData, error: authError } = await supabaseClient.auth.getClaims(token);
+    const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
     
-    if (authError || !authData?.claims) {
-      console.error("Authentication failed:", authError?.message);
+    if (authError || !user) {
+      console.error("Authentication failed:", authError?.message || "No user found");
       return new Response(
         JSON.stringify({ error: "Unauthorized" }),
         { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -84,7 +83,7 @@ serve(async (req) => {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    console.log("Received messages from user:", authData.claims.sub, "Language:", language);
+    console.log("Received messages from user:", user.id, "Language:", language);
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
