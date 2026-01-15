@@ -1,6 +1,8 @@
+import { memo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { IconCircle } from "@/components/IconCircle";
+import { getPrefetchProps } from "@/hooks/useRoutePrefetch";
 import {
   Landmark,
   Moon,
@@ -256,9 +258,58 @@ const menuSections: MenuSection[] = [
   },
 ];
 
-export function DashboardMenu() {
+// Memoized menu item for performance
+const MenuItem = memo(function MenuItem({ 
+  item, 
+  language, 
+  itemIndex,
+  onNavigate 
+}: { 
+  item: MenuItem; 
+  language: string; 
+  itemIndex: number;
+  onNavigate: (route: string) => void;
+}) {
+  const prefetchProps = getPrefetchProps(item.route);
+  
+  const handleClick = useCallback(() => {
+    onNavigate(item.route);
+  }, [item.route, onNavigate]);
+  
+  return (
+    <button
+      onClick={handleClick}
+      {...prefetchProps}
+      className="flex flex-col items-center gap-2 p-2 sm:p-3 rounded-xl bg-card/50 hover:bg-card border border-border/50 hover:border-primary/30 transition-all duration-150 hover:shadow-lg hover:-translate-y-0.5 group active:scale-95 active:opacity-90 touch-manipulation select-none"
+      style={{ 
+        animationDelay: `${Math.min(itemIndex * 30, 300)}ms`,
+        animationFillMode: 'backwards'
+      }}
+    >
+      <IconCircle 
+        icon={item.icon} 
+        size="md"
+        variant={item.color as any}
+        className="group-hover:scale-105 transition-transform duration-150"
+      />
+      <span className="text-xs sm:text-sm font-medium text-foreground text-center leading-tight line-clamp-2">
+        {item.label[language] || item.label.en}
+      </span>
+    </button>
+  );
+});
+
+export const DashboardMenu = memo(function DashboardMenu() {
   const navigate = useNavigate();
   const { language } = useLanguage();
+
+  const handleNavigate = useCallback((route: string) => {
+    // Haptic feedback
+    if ("vibrate" in navigator) {
+      navigator.vibrate(10);
+    }
+    navigate(route);
+  }, [navigate]);
 
   let globalIndex = 0;
 
@@ -276,22 +327,13 @@ export function DashboardMenu() {
             {section.items.map((item) => {
               const itemIndex = globalIndex++;
               return (
-                <button
+                <MenuItem
                   key={item.id}
-                  onClick={() => navigate(item.route)}
-                  className="flex flex-col items-center gap-2 p-2 sm:p-3 rounded-xl bg-card/50 hover:bg-card border border-border/50 hover:border-primary/30 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 group animate-fade-up"
-                  style={{ animationDelay: `${itemIndex * 50}ms` }}
-                >
-                  <IconCircle 
-                    icon={item.icon} 
-                    size="md"
-                    variant={item.color as any}
-                    className="group-hover:scale-110 group-hover:rotate-6 transition-all duration-300"
-                  />
-                  <span className="text-xs sm:text-sm font-medium text-foreground text-center leading-tight line-clamp-2">
-                    {item.label[language] || item.label.en}
-                  </span>
-                </button>
+                  item={item}
+                  language={language}
+                  itemIndex={itemIndex}
+                  onNavigate={handleNavigate}
+                />
               );
             })}
           </div>
@@ -299,4 +341,4 @@ export function DashboardMenu() {
       ))}
     </div>
   );
-}
+});

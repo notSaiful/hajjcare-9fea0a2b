@@ -1,4 +1,4 @@
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, memo, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -52,17 +52,104 @@ const PricingDisclosurePage = lazy(() => import("./pages/PricingDisclosurePage")
 const GovtServicesPage = lazy(() => import("./pages/GovtServicesPage"));
 const DonorsPage = lazy(() => import("./pages/DonorsPage"));
 
-const queryClient = new QueryClient();
+// Optimized Query Client with caching
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      gcTime: 30 * 60 * 1000, // 30 minutes (formerly cacheTime)
+      retry: 2,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
-// Loading fallback for lazy-loaded pages
-const PageLoader = () => (
+// Fast, minimal loading fallback - shows instantly
+const PageLoader = memo(() => (
   <div className="min-h-screen flex items-center justify-center bg-background">
-    <div className="animate-pulse flex flex-col items-center gap-2">
-      <div className="w-12 h-12 rounded-full bg-primary/20"></div>
-      <div className="h-2 w-24 rounded bg-primary/20"></div>
+    <div className="flex flex-col items-center gap-3">
+      {/* Minimal spinner - fast to render */}
+      <div className="w-8 h-8 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
+      <p className="text-sm text-muted-foreground">Loading...</p>
     </div>
   </div>
-);
+));
+PageLoader.displayName = "PageLoader";
+
+// Preload critical routes after initial render
+function useCriticalPreload() {
+  useEffect(() => {
+    const preload = () => {
+      // Preload most-used routes after initial paint
+      const routes = [
+        () => import("./pages/PreparePage"),
+        () => import("./pages/UmrahGuidePage"),
+        () => import("./pages/ChatPage"),
+      ];
+      routes.forEach((load) => {
+        try { load(); } catch { /* non-critical */ }
+      });
+    };
+
+    if ("requestIdleCallback" in window) {
+      (window as any).requestIdleCallback(preload, { timeout: 2000 });
+    } else {
+      setTimeout(preload, 1000);
+    }
+  }, []);
+}
+
+// App wrapper with preloading
+function AppContent() {
+  useCriticalPreload();
+  
+  return (
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route path="/prepare" element={<PreparePage />} />
+      <Route path="/prepare/:ritualId" element={<RitualDetailPage />} />
+      <Route path="/umrah" element={<UmrahGuidePage />} />
+      <Route path="/umrah/:ritualId" element={<UmrahDetailPage />} />
+      <Route path="/makkah-guide" element={<MakkahGuidePage />} />
+      <Route path="/makkah-guide/:topicId" element={<MakkahGuideDetailPage />} />
+      <Route path="/madinah-guide" element={<MadinahGuidePage />} />
+      <Route path="/madinah-guide/:topicId" element={<MadinahGuideDetailPage />} />
+      <Route path="/preparation" element={<PreparationGuidePage />} />
+      <Route path="/dua" element={<DuaGuidePage />} />
+      <Route path="/health" element={<HealthGuidePage />} />
+      <Route path="/money" element={<MoneyGuidePage />} />
+      <Route path="/telecom" element={<TelecomGuidePage />} />
+      <Route path="/grievances" element={<GrievancesPage />} />
+      <Route path="/contacts" element={<ContactNumbersPage />} />
+      <Route path="/haj-directory" element={<HajMissionDirectoryPage />} />
+      <Route path="/rules" element={<RulesBriefingPage />} />
+      <Route path="/rules/:sectionId" element={<RulesSectionPage />} />
+      <Route path="/family-status" element={<FamilyViewPage />} />
+      <Route path="/family-dashboard" element={<FamilyDashboardPage />} />
+      <Route path="/family" element={<FamilyPage />} />
+      <Route path="/map" element={<MapPage />} />
+      <Route path="/auth" element={<AuthPage />} />
+      <Route path="/chat" element={<ChatPage />} />
+      <Route path="/pre-hajj-india" element={<PreHajjIndiaPage />} />
+      <Route path="/post-hajj" element={<PostHajjGuidePage />} />
+      <Route path="/women" element={<WomenSolutionsPage />} />
+      <Route path="/socials" element={<SocialsPage />} />
+      <Route path="/video-call" element={<VideoCallPage />} />
+      {/* Legal & Compliance Pages */}
+      <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+      <Route path="/terms-conditions" element={<TermsConditionsPage />} />
+      <Route path="/refund-policy" element={<RefundPolicyPage />} />
+      <Route path="/shipping-policy" element={<ShippingPolicyPage />} />
+      <Route path="/contact-us" element={<ContactUsPage />} />
+      <Route path="/about-us" element={<AboutUsPage />} />
+      <Route path="/pricing" element={<PricingDisclosurePage />} />
+      <Route path="/govt-services" element={<GovtServicesPage />} />
+      <Route path="/donors" element={<DonorsPage />} />
+      {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
+}
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -72,50 +159,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Suspense fallback={<PageLoader />}>
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/prepare" element={<PreparePage />} />
-              <Route path="/prepare/:ritualId" element={<RitualDetailPage />} />
-              <Route path="/umrah" element={<UmrahGuidePage />} />
-              <Route path="/umrah/:ritualId" element={<UmrahDetailPage />} />
-              <Route path="/makkah-guide" element={<MakkahGuidePage />} />
-              <Route path="/makkah-guide/:topicId" element={<MakkahGuideDetailPage />} />
-              <Route path="/madinah-guide" element={<MadinahGuidePage />} />
-              <Route path="/madinah-guide/:topicId" element={<MadinahGuideDetailPage />} />
-              <Route path="/preparation" element={<PreparationGuidePage />} />
-              <Route path="/dua" element={<DuaGuidePage />} />
-              <Route path="/health" element={<HealthGuidePage />} />
-              <Route path="/money" element={<MoneyGuidePage />} />
-              <Route path="/telecom" element={<TelecomGuidePage />} />
-              <Route path="/grievances" element={<GrievancesPage />} />
-              <Route path="/contacts" element={<ContactNumbersPage />} />
-              <Route path="/haj-directory" element={<HajMissionDirectoryPage />} />
-              <Route path="/rules" element={<RulesBriefingPage />} />
-              <Route path="/rules/:sectionId" element={<RulesSectionPage />} />
-              <Route path="/family-status" element={<FamilyViewPage />} />
-              <Route path="/family-dashboard" element={<FamilyDashboardPage />} />
-              <Route path="/family" element={<FamilyPage />} />
-              <Route path="/map" element={<MapPage />} />
-              <Route path="/auth" element={<AuthPage />} />
-              <Route path="/chat" element={<ChatPage />} />
-              <Route path="/pre-hajj-india" element={<PreHajjIndiaPage />} />
-              <Route path="/post-hajj" element={<PostHajjGuidePage />} />
-              <Route path="/women" element={<WomenSolutionsPage />} />
-              <Route path="/socials" element={<SocialsPage />} />
-              <Route path="/video-call" element={<VideoCallPage />} />
-              {/* Legal & Compliance Pages */}
-              <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
-              <Route path="/terms-conditions" element={<TermsConditionsPage />} />
-              <Route path="/refund-policy" element={<RefundPolicyPage />} />
-              <Route path="/shipping-policy" element={<ShippingPolicyPage />} />
-              <Route path="/contact-us" element={<ContactUsPage />} />
-              <Route path="/about-us" element={<AboutUsPage />} />
-              <Route path="/pricing" element={<PricingDisclosurePage />} />
-              <Route path="/govt-services" element={<GovtServicesPage />} />
-              <Route path="/donors" element={<DonorsPage />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+            <AppContent />
           </Suspense>
         </BrowserRouter>
       </TooltipProvider>
