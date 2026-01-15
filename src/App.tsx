@@ -41,6 +41,15 @@ const VideoCallPage = lazy(() => import("./pages/VideoCallPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const ChatPage = lazy(() => import("./pages/ChatPage"));
 
+// Legal & Compliance Pages
+const PrivacyPolicyPage = lazy(() => import("./pages/PrivacyPolicyPage"));
+const TermsConditionsPage = lazy(() => import("./pages/TermsConditionsPage"));
+const RefundPolicyPage = lazy(() => import("./pages/RefundPolicyPage"));
+const ShippingPolicyPage = lazy(() => import("./pages/ShippingPolicyPage"));
+const ContactUsPage = lazy(() => import("./pages/ContactUsPage"));
+const AboutUsPage = lazy(() => import("./pages/AboutUsPage"));
+const PricingDisclosurePage = lazy(() => import("./pages/PricingDisclosurePage"));
+
 const queryClient = new QueryClient();
 
 // Loading fallback for lazy-loaded pages
@@ -92,6 +101,14 @@ const App = () => (
               <Route path="/women" element={<WomenSolutionsPage />} />
               <Route path="/socials" element={<SocialsPage />} />
               <Route path="/video-call" element={<VideoCallPage />} />
+              {/* Legal & Compliance Pages */}
+              <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+              <Route path="/terms-conditions" element={<TermsConditionsPage />} />
+              <Route path="/refund-policy" element={<RefundPolicyPage />} />
+              <Route path="/shipping-policy" element={<ShippingPolicyPage />} />
+              <Route path="/contact-us" element={<ContactUsPage />} />
+              <Route path="/about-us" element={<AboutUsPage />} />
+              <Route path="/pricing" element={<PricingDisclosurePage />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

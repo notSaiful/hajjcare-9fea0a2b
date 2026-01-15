@@ -1,13 +1,15 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
+import { Footer } from "@/components/Footer";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface MainLayoutProps {
   children: React.ReactNode;
   showHeader?: boolean;
+  showFooter?: boolean;
 }
 
-export function MainLayout({ children, showHeader = true }: MainLayoutProps) {
+export function MainLayout({ children, showHeader = true, showFooter = true }: MainLayoutProps) {
   const { isRTL } = useLanguage();
 
   return (
@@ -21,6 +23,7 @@ export function MainLayout({ children, showHeader = true }: MainLayoutProps) {
             </header>
           )}
           <main className="flex-1">{children}</main>
+          {showFooter && <Footer />}
         </div>
       </div>
     </SidebarProvider>
