@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { GlobalCallListener } from "@/components/GlobalCallListener";
 
 // Eager load the home page for fast initial render
 import HomePage from "./pages/HomePage";
@@ -60,42 +61,44 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Suspense fallback={<PageLoader />}>
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/prepare" element={<PreparePage />} />
-              <Route path="/prepare/:ritualId" element={<RitualDetailPage />} />
-              <Route path="/umrah" element={<UmrahGuidePage />} />
-              <Route path="/umrah/:ritualId" element={<UmrahDetailPage />} />
-              <Route path="/makkah-guide" element={<MakkahGuidePage />} />
-              <Route path="/makkah-guide/:topicId" element={<MakkahGuideDetailPage />} />
-              <Route path="/madinah-guide" element={<MadinahGuidePage />} />
-              <Route path="/madinah-guide/:topicId" element={<MadinahGuideDetailPage />} />
-              <Route path="/preparation" element={<PreparationGuidePage />} />
-              <Route path="/dua" element={<DuaGuidePage />} />
-              <Route path="/health" element={<HealthGuidePage />} />
-              <Route path="/money" element={<MoneyGuidePage />} />
-              <Route path="/telecom" element={<TelecomGuidePage />} />
-              <Route path="/grievances" element={<GrievancesPage />} />
-              <Route path="/contacts" element={<ContactNumbersPage />} />
-              <Route path="/haj-directory" element={<HajMissionDirectoryPage />} />
-              <Route path="/rules" element={<RulesBriefingPage />} />
-              <Route path="/rules/:sectionId" element={<RulesSectionPage />} />
-              <Route path="/family-status" element={<FamilyViewPage />} />
-              <Route path="/family-dashboard" element={<FamilyDashboardPage />} />
-              <Route path="/family" element={<FamilyPage />} />
-              <Route path="/map" element={<MapPage />} />
-              <Route path="/auth" element={<AuthPage />} />
-              <Route path="/chat" element={<ChatPage />} />
-              <Route path="/pre-hajj-india" element={<PreHajjIndiaPage />} />
-              <Route path="/post-hajj" element={<PostHajjGuidePage />} />
-              <Route path="/women" element={<WomenSolutionsPage />} />
-              <Route path="/socials" element={<SocialsPage />} />
-              <Route path="/video-call" element={<VideoCallPage />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Suspense>
+          <GlobalCallListener>
+            <Suspense fallback={<PageLoader />}>
+              <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/prepare" element={<PreparePage />} />
+                <Route path="/prepare/:ritualId" element={<RitualDetailPage />} />
+                <Route path="/umrah" element={<UmrahGuidePage />} />
+                <Route path="/umrah/:ritualId" element={<UmrahDetailPage />} />
+                <Route path="/makkah-guide" element={<MakkahGuidePage />} />
+                <Route path="/makkah-guide/:topicId" element={<MakkahGuideDetailPage />} />
+                <Route path="/madinah-guide" element={<MadinahGuidePage />} />
+                <Route path="/madinah-guide/:topicId" element={<MadinahGuideDetailPage />} />
+                <Route path="/preparation" element={<PreparationGuidePage />} />
+                <Route path="/dua" element={<DuaGuidePage />} />
+                <Route path="/health" element={<HealthGuidePage />} />
+                <Route path="/money" element={<MoneyGuidePage />} />
+                <Route path="/telecom" element={<TelecomGuidePage />} />
+                <Route path="/grievances" element={<GrievancesPage />} />
+                <Route path="/contacts" element={<ContactNumbersPage />} />
+                <Route path="/haj-directory" element={<HajMissionDirectoryPage />} />
+                <Route path="/rules" element={<RulesBriefingPage />} />
+                <Route path="/rules/:sectionId" element={<RulesSectionPage />} />
+                <Route path="/family-status" element={<FamilyViewPage />} />
+                <Route path="/family-dashboard" element={<FamilyDashboardPage />} />
+                <Route path="/family" element={<FamilyPage />} />
+                <Route path="/map" element={<MapPage />} />
+                <Route path="/auth" element={<AuthPage />} />
+                <Route path="/chat" element={<ChatPage />} />
+                <Route path="/pre-hajj-india" element={<PreHajjIndiaPage />} />
+                <Route path="/post-hajj" element={<PostHajjGuidePage />} />
+                <Route path="/women" element={<WomenSolutionsPage />} />
+                <Route path="/socials" element={<SocialsPage />} />
+                <Route path="/video-call" element={<VideoCallPage />} />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Suspense>
+          </GlobalCallListener>
         </BrowserRouter>
       </TooltipProvider>
     </LanguageProvider>

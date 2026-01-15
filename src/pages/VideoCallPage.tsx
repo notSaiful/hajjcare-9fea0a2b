@@ -1,11 +1,10 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   StreamVideoClient,
   StreamVideo,
   StreamCall,
   SpeakerLayout,
-  CallControls,
   useCallStateHooks,
   CallingState,
   NoiseCancellationProvider,
@@ -21,6 +20,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { PhoneInputWithCountry } from "@/components/PhoneInputWithCountry";
+import { OutgoingCallScreen } from "@/components/OutgoingCallScreen";
 import { 
   Video, 
   PhoneCall, 
@@ -38,7 +38,7 @@ import {
   Info,
   Volume2,
   VolumeX,
-  Phone,
+  AlertCircle,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -266,17 +266,17 @@ const labels = {
     pa: "ਇਸ ਨੰਬਰ 'ਤੇ ਕਾਲ ਕਰੋ" 
   },
   orJoinCall: { 
-    en: "Or join an existing call", 
-    ar: "أو انضم إلى مكالمة موجودة", 
-    ur: "یا موجودہ کال میں شامل ہوں", 
-    hi: "या मौजूदा कॉल में शामिल हों", 
-    ta: "அல்லது ஏற்கனவே உள்ள அழைப்பில் சேரவும்", 
-    te: "లేదా ఇప్పటికే ఉన్న కాల్‌లో చేరండి", 
-    mr: "किंवा विद्यमान कॉलमध्ये सामील व्हा", 
-    bn: "অথবা একটি বিদ্যমান কলে যোগ দিন", 
-    or: "କିମ୍ବା ବିଦ୍ୟମାନ କଲରେ ଯୋଗ ଦିଅନ୍ତୁ", 
-    ml: "അല്ലെങ്കിൽ നിലവിലുള്ള കോളിൽ ചേരുക", 
-    pa: "ਜਾਂ ਮੌਜੂਦਾ ਕਾਲ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਵੋ" 
+    en: "Or join with a code", 
+    ar: "أو انضم باستخدام رمز", 
+    ur: "یا کوڈ کے ساتھ شامل ہوں", 
+    hi: "या कोड के साथ शामिल हों", 
+    ta: "அல்லது குறியீட்டுடன் சேரவும்", 
+    te: "లేదా కోడ్‌తో చేరండి", 
+    mr: "किंवा कोडसह सामील व्हा", 
+    bn: "অথবা কোড দিয়ে যোগ দিন", 
+    or: "କିମ୍ବା କୋଡ ସହ ଯୋଗ ଦିଅନ୍ତୁ", 
+    ml: "അല്ലെങ്കിൽ കോഡ് ഉപയോഗിച്ച് ചേരുക", 
+    pa: "ਜਾਂ ਕੋਡ ਨਾਲ ਸ਼ਾਮਲ ਹੋਵੋ" 
   },
   lowBandwidth: { 
     en: "Weak connection detected", 
@@ -303,19 +303,6 @@ const labels = {
     or: "ଭଲ ସଂଯୋଗ", 
     ml: "നല്ല കണക്ഷൻ", 
     pa: "ਚੰਗਾ ਕਨੈਕਸ਼ਨ" 
-  },
-  noiseCancellation: { 
-    en: "Noise Cancellation", 
-    ar: "إلغاء الضوضاء", 
-    ur: "شور منسوخی", 
-    hi: "शोर रद्द करना", 
-    ta: "இரைச்சல் நீக்கம்", 
-    te: "శబ్ద రద్దు", 
-    mr: "आवाज रद्द करणे", 
-    bn: "শব্দ বাতিল", 
-    or: "ଶବ୍ଦ ବାତିଲ", 
-    ml: "ശബ്ദ റദ്ദാക്കൽ", 
-    pa: "ਸ਼ੋਰ ਰੱਦ ਕਰਨਾ" 
   },
   noiseCancellationOn: { 
     en: "Clear Audio ON", 
@@ -355,6 +342,58 @@ const labels = {
     or: "ଗୋଳମାଳିଆ ପରିବେଶ ପାଇଁ ସ୍ୱଚ୍ଛ ଅଡିଓ", 
     ml: "ശബ്ദമുള്ള പരിതസ്ഥിതികൾക്കുള്ള വ്യക്തമായ ഓഡിയോ", 
     pa: "ਸ਼ੋਰ ਭਰੇ ਮਾਹੌਲ ਲਈ ਸਾਫ਼ ਆਡੀਓ" 
+  },
+  userNotFound: {
+    en: "This person hasn't registered on HajjCare yet",
+    ar: "هذا الشخص لم يسجل في حج كير بعد",
+    ur: "یہ شخص ابھی حج کیئر پر رجسٹرڈ نہیں ہے",
+    hi: "यह व्यक्ति अभी हज केयर पर पंजीकृत नहीं है",
+    ta: "இந்த நபர் இன்னும் ஹஜ்கேரில் பதிவு செய்யவில்லை",
+    te: "ఈ వ్యక్తి ఇంకా హజ్‌కేర్‌లో నమోదు కాలేదు",
+    mr: "या व्यक्तीने अजून हजकेअरवर नोंदणी केलेली नाही",
+    bn: "এই ব্যক্তি এখনও হজ কেয়ারে নিবন্ধন করেননি",
+    or: "ଏହି ବ୍ୟକ୍ତି ଏପର୍ଯ୍ୟନ୍ତ ହଜକେୟାରରେ ପଞ୍ଜିକୃତ ହୋଇନାହାନ୍ତି",
+    ml: "ഈ വ്യക്തി ഇതുവരെ ഹജ്ജ് കെയറിൽ രജിസ്റ്റർ ചെയ്തിട്ടില്ല",
+    pa: "ਇਹ ਵਿਅਕਤੀ ਅਜੇ ਹੱਜ ਕੇਅਰ 'ਤੇ ਰਜਿਸਟਰਡ ਨਹੀਂ ਹੈ",
+  },
+  askToInstall: {
+    en: "Ask them to install HajjCare and enable Family Sharing",
+    ar: "اطلب منهم تثبيت حج كير وتمكين مشاركة العائلة",
+    ur: "انہیں حج کیئر انسٹال کرنے اور فیملی شیئرنگ فعال کرنے کو کہیں",
+    hi: "उन्हें हज केयर इंस्टॉल करने और परिवार साझाकरण सक्षम करने के लिए कहें",
+    ta: "ஹஜ்கேர் நிறுவி குடும்ப பகிர்வை இயக்கச் சொல்லுங்கள்",
+    te: "హజ్‌కేర్ ఇన్‌స్టాల్ చేసి ఫ్యామిలీ షేరింగ్ ఎనేబుల్ చేయమని వారిని అడగండి",
+    mr: "त्यांना हजकेअर इंस्टॉल करण्यास आणि फॅमिली शेअरिंग सक्षम करण्यास सांगा",
+    bn: "তাদের হজ কেয়ার ইনস্টল করতে এবং পারিবারিক শেয়ারিং সক্ষম করতে বলুন",
+    or: "ସେମାନଙ୍କୁ ହଜକେୟାର ଇନଷ୍ଟଲ କରି ଫ୍ୟାମିଲି ସେୟାରିଂ ସକ୍ଷମ କରିବାକୁ କୁହନ୍ତୁ",
+    ml: "ഹജ്ജ് കെയർ ഇൻസ്റ്റാൾ ചെയ്യാനും ഫാമിലി ഷെയറിംഗ് പ്രവർത്തനക്ഷമമാക്കാനും അവരോട് ആവശ്യപ്പെടുക",
+    pa: "ਉਨ੍ਹਾਂ ਨੂੰ ਹੱਜ ਕੇਅਰ ਇੰਸਟਾਲ ਕਰਨ ਅਤੇ ਫੈਮਿਲੀ ਸ਼ੇਅਰਿੰਗ ਸਮਰੱਥ ਕਰਨ ਲਈ ਕਹੋ",
+  },
+  lookingUp: {
+    en: "Finding family member...",
+    ar: "جارٍ البحث عن فرد العائلة...",
+    ur: "خاندان کے فرد کو تلاش کر رہے ہیں...",
+    hi: "परिवार के सदस्य को खोज रहे हैं...",
+    ta: "குடும்ப உறுப்பினரைத் தேடுகிறது...",
+    te: "కుటుంబ సభ్యుడిని కనుగొంటోంది...",
+    mr: "कुटुंबातील सदस्य शोधत आहे...",
+    bn: "পরিবারের সদস্য খুঁজছে...",
+    or: "ପରିବାର ସଦସ୍ୟ ଖୋଜୁଛି...",
+    ml: "കുടുംബാംഗത്തെ കണ്ടെത്തുന്നു...",
+    pa: "ਪਰਿਵਾਰਕ ਮੈਂਬਰ ਲੱਭ ਰਿਹਾ ਹੈ...",
+  },
+  recipientMustHaveAppOpen: {
+    en: "Note: They must have HajjCare open to receive the call",
+    ar: "ملاحظة: يجب أن يكون تطبيق حج كير مفتوحاً لديهم لاستقبال المكالمة",
+    ur: "نوٹ: کال وصول کرنے کے لیے ان کے پاس حج کیئر کھلا ہونا ضروری ہے",
+    hi: "नोट: कॉल प्राप्त करने के लिए उनके पास हज केयर खुला होना चाहिए",
+    ta: "குறிப்பு: அழைப்பைப் பெற அவர்களிடம் ஹஜ்கேர் திறந்திருக்க வேண்டும்",
+    te: "గమనిక: కాల్ స్వీకరించడానికి వారికి హజ్‌కేర్ ఓపెన్‌గా ఉండాలి",
+    mr: "टीप: कॉल प्राप्त करण्यासाठी त्यांचे हजकेअर उघडे असणे आवश्यक आहे",
+    bn: "দ্রষ্টব্য: কল পেতে তাদের হজ কেয়ার খোলা থাকতে হবে",
+    or: "ଟିପ୍ପଣୀ: କଲ ଗ୍ରହଣ କରିବାକୁ ସେମାନଙ୍କର ହଜକେୟାର ଖୋଲା ଥିବା ଆବଶ୍ୟକ",
+    ml: "കുറിപ്പ്: കോൾ സ്വീകരിക്കാൻ അവരുടെ ഹജ്ജ് കെയർ തുറന്നിരിക്കണം",
+    pa: "ਨੋਟ: ਕਾਲ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਉਨ੍ਹਾਂ ਕੋਲ ਹੱਜ ਕੇਅਰ ਖੁੱਲ੍ਹਾ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ",
   },
 };
 
@@ -560,6 +599,7 @@ function CallUI({ callId, onLeave }: { callId: string; onLeave: () => void }) {
 // Main page component
 export default function VideoCallPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { language } = useLanguage();
   const { user, loading: authLoading } = useAuth();
   const connectionQuality = useConnectionQuality();
@@ -571,9 +611,32 @@ export default function VideoCallPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [familyPhone, setFamilyPhone] = useState("");
   const [countryCode, setCountryCode] = useState("+91");
+  const [callState, setCallState] = useState<"idle" | "looking-up" | "outgoing" | "connected">("idle");
+  const [calleeName, setCalleeName] = useState("");
 
   // Initialize noise cancellation for clearer audio in noisy Hajj environments
   const noiseCancellation = useMemo(() => new NoiseCancellation(), []);
+
+  // Check for incoming call ID in URL params (from GlobalCallListener redirect)
+  useEffect(() => {
+    const incomingCallId = searchParams.get("callId");
+    if (incomingCallId && client && !call) {
+      // Join the call that was accepted via incoming call overlay
+      const joinIncomingCall = async () => {
+        try {
+          const incomingCall = client.call("default", incomingCallId);
+          await incomingCall.join();
+          setCall(incomingCall);
+          setCallId(incomingCallId);
+          setCallState("connected");
+        } catch (error) {
+          console.error("Error joining incoming call:", error);
+          toast.error("Failed to join call");
+        }
+      };
+      joinIncomingCall();
+    }
+  }, [searchParams, client, call]);
 
   const initializeClient = useCallback(async () => {
     if (!user) return null;
@@ -626,34 +689,110 @@ export default function VideoCallPage() {
     };
   }, [user, client, initializeClient]);
 
+  // Call family member by phone number - uses ring call
   const startFamilyCall = async () => {
     if (connectionQuality === "offline") {
       toast.error("No internet connection");
       return;
     }
 
+    const fullPhone = `${countryCode}${familyPhone}`;
+    
+    if (familyPhone.length < 6) {
+      toast.error("Please enter a valid phone number");
+      return;
+    }
+
     setIsLoading(true);
+    setCallState("looking-up");
+    
     try {
       let streamClient = client;
       if (!streamClient) {
         streamClient = await initializeClient();
         if (!streamClient) {
           setIsLoading(false);
+          setCallState("idle");
           return;
         }
       }
 
-      // Generate simple family code
-      const familyCode = `family-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`;
+      // Get current session for auth
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (!sessionData.session) {
+        toast.error("Please login first");
+        setIsLoading(false);
+        setCallState("idle");
+        return;
+      }
+
+      // Look up the recipient by phone number
+      const lookupResponse = await supabase.functions.invoke("lookup-user-by-phone", {
+        body: { phone: fullPhone },
+        headers: {
+          Authorization: `Bearer ${sessionData.session.access_token}`,
+        },
+      });
+
+      if (lookupResponse.error) {
+        console.error("Lookup error:", lookupResponse.error);
+        toast.error("Failed to look up family member");
+        setIsLoading(false);
+        setCallState("idle");
+        return;
+      }
+
+      const { found, userId: recipientUserId, userName: recipientName } = lookupResponse.data;
+
+      if (!found || !recipientUserId) {
+        // User not found - show helpful message
+        toast.error(labels.userNotFound[language] || labels.userNotFound.en, {
+          description: labels.askToInstall[language] || labels.askToInstall.en,
+          duration: 5000,
+        });
+        setIsLoading(false);
+        setCallState("idle");
+        return;
+      }
+
+      // Create a ring call with the recipient
+      const familyCode = `call-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`;
       const newCall = streamClient.call("default", familyCode);
       
-      await newCall.join({ create: true });
+      // Create call with ring: true to notify the recipient
+      await newCall.getOrCreate({
+        ring: true,
+        data: {
+          members: [
+            { user_id: user!.id },
+            { user_id: recipientUserId },
+          ],
+        },
+      });
       
       setCall(newCall);
       setCallId(familyCode);
+      setCalleeName(recipientName || "Family Member");
+      setCallState("outgoing");
+
+      // Listen for call state changes
+      newCall.on("call.accepted", () => {
+        setCallState("connected");
+      });
+
+      newCall.on("call.rejected", () => {
+        toast.error("Call was declined");
+        leaveCall();
+      });
+
+      newCall.on("call.ended", () => {
+        leaveCall();
+      });
+
     } catch (error) {
       console.error("Error creating call:", error);
       toast.error("Failed to start call");
+      setCallState("idle");
     } finally {
       setIsLoading(false);
     }
@@ -679,12 +818,13 @@ export default function VideoCallPage() {
 
       // Handle short code input - try to find matching call
       const codeToJoin = joinCode.trim().toLowerCase();
-      const existingCall = streamClient.call("default", codeToJoin.includes("family-") ? codeToJoin : `family-${codeToJoin}`);
+      const existingCall = streamClient.call("default", codeToJoin.includes("call-") || codeToJoin.includes("family-") ? codeToJoin : `family-${codeToJoin}`);
       
       await existingCall.join();
       
       setCall(existingCall);
       setCallId(codeToJoin);
+      setCallState("connected");
     } catch (error) {
       console.error("Error joining call:", error);
       toast.error("Could not join. Check the code and try again.");
@@ -695,11 +835,31 @@ export default function VideoCallPage() {
 
   const leaveCall = async () => {
     if (call) {
-      await call.leave();
+      try {
+        await call.leave();
+      } catch (e) {
+        // Ignore errors on leave
+      }
       setCall(null);
       setCallId("");
       setJoinCode("");
+      setCallState("idle");
+      setCalleeName("");
     }
+  };
+
+  const cancelOutgoingCall = async () => {
+    if (call) {
+      try {
+        await call.leave({ reject: true });
+      } catch (e) {
+        // Ignore errors
+      }
+    }
+    setCall(null);
+    setCallId("");
+    setCallState("idle");
+    setCalleeName("");
   };
 
   // Loading state
@@ -746,13 +906,32 @@ export default function VideoCallPage() {
     );
   }
 
+  // Outgoing call - ringing
+  if (callState === "outgoing" && call && client) {
+    return (
+      <MainLayout>
+        <div className="container max-w-lg mx-auto py-8 px-4">
+          <StreamVideo client={client}>
+            <StreamCall call={call}>
+              <OutgoingCallScreen 
+                call={call} 
+                calleeName={calleeName}
+                onCancel={cancelOutgoingCall}
+              />
+            </StreamCall>
+          </StreamVideo>
+        </div>
+      </MainLayout>
+    );
+  }
+
   // Active call with noise cancellation for clearer audio
-  if (call && client) {
+  if ((callState === "connected" || call) && client) {
     return (
       <MainLayout>
         <div className="container max-w-2xl mx-auto py-6 px-4">
           <StreamVideo client={client}>
-            <StreamCall call={call}>
+            <StreamCall call={call!}>
               <NoiseCancellationProvider noiseCancellation={noiseCancellation}>
                 <CallUI callId={callId} onLeave={leaveCall} />
               </NoiseCancellationProvider>
@@ -801,7 +980,7 @@ export default function VideoCallPage() {
           </CardContent>
         </Card>
 
-        {/* Phone number input - Main calling method */}
+        {/* Phone number input - Main calling method with ring calls */}
         <Card className="border-2 border-primary/20 bg-primary/5">
           <CardContent className="pt-6 space-y-5">
             <PhoneInputWithCountry
@@ -811,6 +990,14 @@ export default function VideoCallPage() {
               onCountryCodeChange={setCountryCode}
             />
             
+            {/* Note about recipient needing app open */}
+            <div className="flex items-start gap-2 text-muted-foreground bg-muted/50 rounded-lg px-3 py-2">
+              <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
+              <p className="text-xs">
+                {labels.recipientMustHaveAppOpen[language] || labels.recipientMustHaveAppOpen.en}
+              </p>
+            </div>
+            
             <Button
               onClick={startFamilyCall}
               disabled={isLoading || connectionQuality === "offline" || familyPhone.length < 6}
@@ -818,16 +1005,24 @@ export default function VideoCallPage() {
               className="w-full h-20 text-xl gap-4 rounded-2xl shadow-lg hover:shadow-xl transition-all"
             >
               {isLoading ? (
-                <Loader2 className="h-8 w-8 animate-spin" />
+                <>
+                  <Loader2 className="h-8 w-8 animate-spin" />
+                  {callState === "looking-up" 
+                    ? (labels.lookingUp[language] || labels.lookingUp.en)
+                    : (labels.connecting[language] || labels.connecting.en)
+                  }
+                </>
               ) : (
-                <Video className="h-8 w-8" />
+                <>
+                  <Video className="h-8 w-8" />
+                  {labels.callThisNumber[language] || labels.callThisNumber.en}
+                </>
               )}
-              {labels.callThisNumber[language] || labels.callThisNumber.en}
             </Button>
           </CardContent>
         </Card>
 
-        {/* Join existing call - Secondary option */}
+        {/* Join existing call - Secondary option (fallback) */}
         <Card className="border border-border">
           <CardContent className="pt-6 space-y-5">
             <div className="flex items-center gap-2 text-muted-foreground">
