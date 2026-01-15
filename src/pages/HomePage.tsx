@@ -2,14 +2,13 @@ import { useNavigate } from "react-router-dom";
 import { SimpleHeader } from "@/components/SimpleHeader";
 import { AmbientBackground } from "@/components/AmbientBackground";
 
-import { EmergencyButton } from "@/components/EmergencyButton";
+
 import { DashboardMenu } from "@/components/DashboardMenu";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
 import { Loader2 } from "lucide-react";
-import { useState } from "react";
 import kaabaGreenDome from "@/assets/kaaba-green-dome-new.jpeg";
-type PilgrimStatus = "safe" | "assistance" | "emergency";
+
 const HomePage = () => {
   const {
     t,
@@ -21,11 +20,6 @@ const HomePage = () => {
     loading: authLoading
   } = useAuth();
   const navigate = useNavigate();
-  const [status, setStatus] = useState<PilgrimStatus>("safe");
-  const handleEmergency = () => {
-    setStatus("emergency");
-    console.log("Emergency triggered");
-  };
   const welcomeLabels = {
     en: "Welcome to HajCare",
     ar: "مرحباً بكم في حج كير",
@@ -87,12 +81,6 @@ const HomePage = () => {
 
 
 
-          {/* 5. Emergency Button - Visible, serious, never flashy */}
-          <section className="animate-fade-up" style={{
-          animationDelay: "200ms"
-        }}>
-            <EmergencyButton onConfirm={handleEmergency} />
-          </section>
 
           {/* Auth prompt if not logged in */}
           {!isAuthenticated && <section className="text-center pt-2 animate-fade-up" style={{
