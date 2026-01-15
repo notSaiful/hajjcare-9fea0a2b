@@ -1,10 +1,56 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { StreamClient } from "https://esm.sh/@stream-io/node-sdk@0.1.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
+
+// Base64URL encode (no padding, URL-safe characters)
+function base64UrlEncode(str: string): string {
+  return btoa(str)
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=/g, '');
+}
+
+// HMAC-SHA256 signing using Web Crypto API
+async function hmacSha256Sign(message: string, secret: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const keyData = encoder.encode(secret);
+  const messageData = encoder.encode(message);
+  
+  const cryptoKey = await crypto.subtle.importKey(
+    "raw",
+    keyData,
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"]
+  );
+  
+  const signature = await crypto.subtle.sign("HMAC", cryptoKey, messageData);
+  return base64UrlEncode(String.fromCharCode(...new Uint8Array(signature)));
+}
+
+// Generate Stream JWT token manually
+async function createStreamToken(userId: string, apiSecret: string): Promise<string> {
+  const header = { alg: "HS256", typ: "JWT" };
+  const now = Math.floor(Date.now() / 1000);
+  const payload = {
+    user_id: userId,
+    iat: now - 60,           // Issued 1 minute ago (clock skew buffer)
+    exp: now + 60 * 60 * 24, // Expires in 24 hours
+  };
+
+  const encodedHeader = base64UrlEncode(JSON.stringify(header));
+  const encodedPayload = base64UrlEncode(JSON.stringify(payload));
+  
+  const signature = await hmacSha256Sign(
+    `${encodedHeader}.${encodedPayload}`,
+    apiSecret
+  );
+  
+  return `${encodedHeader}.${encodedPayload}.${signature}`;
+}
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -27,17 +73,17 @@ Deno.serve(async (req) => {
       global: { headers: { Authorization: authHeader } },
     });
 
-    const token = authHeader.replace("Bearer ", "");
-    const { data: claimsData, error: claimsError } = await supabase.auth.getClaims(token);
+    // Get authenticated user
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
     
-    if (claimsError || !claimsData?.claims) {
+    if (userError || !user) {
       return new Response(
         JSON.stringify({ error: "Invalid token" }),
         { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    const userId = claimsData.claims.sub as string;
+    const userId = user.id;
 
     // Fetch user profile for display name
     const { data: profile } = await supabase
@@ -56,13 +102,8 @@ Deno.serve(async (req) => {
       );
     }
 
-    const streamClient = new StreamClient(streamApiKey, streamApiSecret);
-    
-    // Generate token valid for 24 hours
-    const expirationTime = Math.floor(Date.now() / 1000) + 60 * 60 * 24;
-    const issuedAt = Math.floor(Date.now() / 1000) - 60;
-    
-    const streamToken = streamClient.createToken(userId, expirationTime, issuedAt);
+    // Generate token using manual JWT creation
+    const streamToken = await createStreamToken(userId, streamApiSecret);
 
     return new Response(
       JSON.stringify({
