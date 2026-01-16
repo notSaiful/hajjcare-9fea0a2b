@@ -169,6 +169,7 @@ export type Database = {
           user_id: string
         }[]
       }
+      shares_group_with: { Args: { target_user_id: string }; Returns: boolean }
       upsert_member_location:
         | {
             Args: {
