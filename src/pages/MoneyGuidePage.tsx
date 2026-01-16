@@ -188,7 +188,7 @@ const MoneyGuidePage = () => {
                 <img 
                   src={sbiHajjCard} 
                   alt="SBI Hajj Card - Prepaid International Forex Card for Haj Pilgrims" 
-                  className="w-full h-full object-fill"
+                  className="w-full h-full object-cover"
                 />
                 
                 {/* Subtle border glow */}
