@@ -147,10 +147,15 @@ const MoneyGuidePage = () => {
         </div>
 
         {/* SBI Hajj Card Section */}
-        <Card className="border-2 border-blue-500/30 bg-gradient-to-br from-blue-500/5 to-indigo-500/5">
-          <CardContent className="p-4 sm:p-5">
-            <div className="flex items-center justify-between gap-4 mb-4">
-              <h2 className="text-lg font-semibold text-blue-700">{sbiCardContent.title[language] || sbiCardContent.title.en}</h2>
+        <Card className="border-2 border-blue-500/30 overflow-hidden">
+          <CardContent className="p-4 sm:p-5 space-y-4">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center border-2 border-blue-500/20">
+                  <CreditCard className="w-6 h-6 text-blue-600" />
+                </div>
+                <h2 className="text-lg font-semibold text-blue-700">{sbiCardContent.title[language] || sbiCardContent.title.en}</h2>
+              </div>
               <TextToSpeechButton
                 text={`${sbiCardContent.title[language] || sbiCardContent.title.en}. ${sbiCardContent.description[language] || sbiCardContent.description.en}. ${sbiCardContent.tips.map(tip => tip[language] || tip.en).join('. ')}`}
                 size="icon"
@@ -159,28 +164,76 @@ const MoneyGuidePage = () => {
               />
             </div>
             
-            <div className="flex flex-col sm:flex-row gap-4 items-center">
-              <img 
-                src={sbiHajjCard} 
-                alt="SBI Hajj Card" 
-                className="w-full sm:w-48 md:w-56 rounded-lg shadow-md object-contain"
-              />
-              <div className="flex-1 space-y-3">
-                <p className="text-sm text-muted-foreground">
-                  {sbiCardContent.description[language] || sbiCardContent.description.en}
-                </p>
-                <ul className="space-y-2">
-                  {sbiCardContent.tips.map((tip, idx) => (
-                    <li key={idx} className="flex items-start gap-3">
-                      <div className="w-1.5 h-1.5 rounded-full bg-blue-600 mt-2 flex-shrink-0" />
-                      <span className="text-sm text-muted-foreground">{tip[language] || tip.en}</span>
-                    </li>
-                  ))}
-                </ul>
+            {/* Card Display - Forex Card Aspect Ratio (85.6mm x 53.98mm = ~1.586:1) */}
+            <div className="relative mx-auto w-full max-w-md perspective-1000">
+              <div 
+                className="relative w-full rounded-2xl overflow-hidden shadow-2xl transition-all duration-500 hover:scale-[1.02]"
+                style={{ 
+                  aspectRatio: '1.586 / 1',
+                  transform: 'rotateX(2deg) rotateY(-2deg)',
+                  transformStyle: 'preserve-3d',
+                  boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 12px 24px -8px rgba(59, 130, 246, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+                }}
+              >
+                {/* Holographic shimmer effect */}
+                <div 
+                  className="absolute inset-0 opacity-30 pointer-events-none z-10"
+                  style={{
+                    background: 'linear-gradient(105deg, transparent 40%, rgba(255, 255, 255, 0.4) 45%, rgba(255, 255, 255, 0.1) 50%, transparent 55%)',
+                    animation: 'shimmer 3s ease-in-out infinite'
+                  }}
+                />
+                
+                {/* Card image */}
+                <img 
+                  src={sbiHajjCard} 
+                  alt="SBI Hajj Card - Prepaid International Forex Card for Haj Pilgrims" 
+                  className="w-full h-full object-cover"
+                />
+                
+                {/* Subtle border glow */}
+                <div className="absolute inset-0 rounded-2xl border border-white/20 pointer-events-none" />
               </div>
+              
+              {/* Card shadow reflection */}
+              <div 
+                className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-4/5 h-8 rounded-full blur-xl opacity-30"
+                style={{ background: 'linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.5), transparent)' }}
+              />
+            </div>
+
+            {/* Card Details Below */}
+            <div className="bg-gradient-to-br from-blue-500/5 to-indigo-500/10 rounded-xl p-4 space-y-3 border border-blue-500/10">
+              <p className="text-sm text-foreground leading-relaxed">
+                {sbiCardContent.description[language] || sbiCardContent.description.en}
+              </p>
+              
+              <div className="h-px bg-gradient-to-r from-transparent via-blue-500/30 to-transparent" />
+              
+              <ul className="space-y-2">
+                {sbiCardContent.tips.map((tip, idx) => (
+                  <li key={idx} className="flex items-start gap-3">
+                    <div className="w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <div className="w-2 h-2 rounded-full bg-blue-500" />
+                    </div>
+                    <span className="text-sm text-muted-foreground">{tip[language] || tip.en}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
           </CardContent>
         </Card>
+
+        {/* Add shimmer keyframes */}
+        <style>{`
+          @keyframes shimmer {
+            0%, 100% { transform: translateX(-100%); }
+            50% { transform: translateX(100%); }
+          }
+          .perspective-1000 {
+            perspective: 1000px;
+          }
+        `}</style>
 
         <div className="space-y-4">
           {sections.map((section, idx) => (
