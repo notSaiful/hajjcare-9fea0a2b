@@ -164,12 +164,11 @@ const MoneyGuidePage = () => {
               />
             </div>
             
-            {/* Card Display - Forex Card Aspect Ratio (85.6mm x 53.98mm = ~1.586:1) */}
-            <div className="relative mx-auto w-full max-w-md perspective-1000">
+            {/* Card Display - Full Image Size */}
+            <div className="relative mx-auto w-full perspective-1000">
               <div 
                 className="relative w-full rounded-2xl overflow-hidden shadow-2xl transition-all duration-500 hover:scale-[1.02]"
                 style={{ 
-                  aspectRatio: '1.586 / 1',
                   transform: 'rotateX(2deg) rotateY(-2deg)',
                   transformStyle: 'preserve-3d',
                   boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 12px 24px -8px rgba(59, 130, 246, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
@@ -188,7 +187,7 @@ const MoneyGuidePage = () => {
                 <img 
                   src={sbiHajjCard} 
                   alt="SBI Hajj Card - Prepaid International Forex Card for Haj Pilgrims" 
-                  className="w-full h-full object-cover"
+                  className="w-full h-auto object-contain"
                 />
                 
                 {/* Subtle border glow */}
