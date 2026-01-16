@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, Heart, Thermometer, Droplets, AlertTriangle, Pill, Sun } from "lucide-react";
 import { TextToSpeechButton } from "@/components/TextToSpeechButton";
 import MedicalStaffSection from "@/components/MedicalStaffSection";
+import HealthCardSection from "@/components/HealthCardSection";
 
 const HealthGuidePage = () => {
   const { language, isRTL } = useLanguage();
@@ -130,6 +131,9 @@ const HealthGuidePage = () => {
             </Card>
           ))}
         </div>
+
+        {/* Health Card Section */}
+        <HealthCardSection />
 
         {/* Medical Staff Section */}
         <MedicalStaffSection />
