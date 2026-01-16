@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, Wallet, CreditCard, Banknote, AlertCircle, ShoppingBag } from "lucide-react";
 import { TextToSpeechButton } from "@/components/TextToSpeechButton";
+import sbiHajjCard from "@/assets/sbi-hajj-card.png";
 
 const MoneyGuidePage = () => {
   const { language, isRTL } = useLanguage();
@@ -13,6 +14,51 @@ const MoneyGuidePage = () => {
     title: { en: "Money Management", ar: "إدارة المال", ur: "مالی انتظام", hi: "धन प्रबंधन", ta: "பண மேலாண்மை", te: "డబ్బు నిర్వహణ", mr: "पैसे व्यवस्थापन", bn: "অর্থ ব্যবস্থাপনা", or: "ଅର୍ଥ ପରିଚାଳନା", ml: "പണ മാനേജ്മെന്റ്", pa: "ਪੈਸੇ ਪ੍ਰਬੰਧਨ" },
     subtitle: { en: "Financial tips for your pilgrimage", ar: "نصائح مالية لحجك", ur: "حج کے لیے مالی تجاویز", hi: "तीर्थयात्रा के लिए वित्तीय सुझाव", ta: "உங்கள் யாத்திரைக்கான நிதி குறிப்புகள்", te: "మీ తీర్థయాత్ర కోసం ఆర్థిక చిట్కాలు", mr: "तुमच्या तीर्थयात्रेसाठी आर्थिक टिप्स", bn: "আপনার তীর্থযাত্রার জন্য আর্থিক টিপস", or: "ଆପଣଙ୍କ ତୀର୍ଥଯାତ୍ରା ପାଇଁ ଆର୍ଥିକ ଟିପ୍ସ", ml: "നിങ്ങളുടെ തീർത്ഥാടനത്തിനുള്ള സാമ്പത്തിക നുറുങ്ങുകൾ", pa: "ਤੁਹਾਡੀ ਤੀਰਥ ਯਾਤਰਾ ਲਈ ਵਿੱਤੀ ਸੁਝਾਅ" },
     back: { en: "Back", ar: "رجوع", ur: "واپس", hi: "वापस", ta: "பின்", te: "వెనుకకు", mr: "मागे", bn: "পিছনে", or: "ପଛକୁ", ml: "പിന്നിലേക്ക്", pa: "ਵਾਪਸ" },
+  };
+
+  const sbiCardContent = {
+    title: { en: "SBI Hajj Card", ar: "بطاقة SBI للحج", ur: "SBI حج کارڈ", hi: "SBI हज कार्ड", ta: "SBI ஹஜ் அட்டை", te: "SBI హజ్ కార్డ్", mr: "SBI हज कार्ड", bn: "SBI হজ কার্ড", or: "SBI ହଜ କାର୍ଡ", ml: "SBI ഹജ്ജ് കാർഡ്", pa: "SBI ਹੱਜ ਕਾਰਡ" },
+    description: { 
+      en: "A prepaid international card issued for Indian Hajj pilgrims to make payments and withdraw cash safely in Saudi Arabia.", 
+      ar: "بطاقة دولية مسبقة الدفع للحجاج الهنود للدفع وسحب النقود بأمان في السعودية.", 
+      ur: "ہندوستانی حاجیوں کے لیے سعودی عرب میں محفوظ طریقے سے ادائیگی اور رقم نکالنے کے لیے پری پیڈ انٹرنیشنل کارڈ۔", 
+      hi: "भारतीय हज यात्रियों के लिए सऊदी अरब में सुरक्षित भुगतान और नकद निकासी के लिए प्रीपेड अंतर्राष्ट्रीय कार्ड।", 
+      ta: "இந்திய ஹஜ் யாத்ரீகர்களுக்காக சவுதி அரேபியாவில் பாதுகாப்பான கட்டணம் மற்றும் பணம் எடுக்க வழங்கப்படும் ப்ரீபெய்ட் சர்வதேச அட்டை.",
+      te: "భారతీయ హజ్ యాత్రికులకు సౌదీ అరేబియాలో సురక్షిత చెల్లింపులు మరియు నగదు విత్‌డ్రా కోసం ప్రీపెయిడ్ ఇంటర్నేషనల్ కార్డ్.",
+      mr: "भारतीय हज यात्रेकरूंसाठी सौदी अरेबियात सुरक्षित पेमेंट आणि कॅश विड्रॉल करण्यासाठी प्रीपेड आंतरराष्ट्रीय कार्ड.",
+      bn: "ভারতীয় হজ যাত্রীদের জন্য সৌদি আরবে নিরাপদ পেমেন্ট এবং নগদ উত্তোলনের জন্য প্রিপেইড আন্তর্জাতিক কার্ড।",
+      or: "ଭାରତୀୟ ହଜ ତୀର୍ଥଯାତ୍ରୀଙ୍କ ପାଇଁ ସୌଦି ଆରବରେ ସୁରକ୍ଷିତ ଦେୟ ଏବଂ ନଗଦ ଉଠାଣ ପାଇଁ ପ୍ରିପେଡ୍ ଆନ୍ତର୍ଜାତିକ କାର୍ଡ।",
+      ml: "ഇന്ത്യൻ ഹജ്ജ് തീർത്ഥാടകർക്കായി സൗദി അറേബ്യയിൽ സുരക്ഷിത പേയ്‌മെന്റുകളും ക്യാഷ് പിൻവലിക്കലും നടത്താൻ പ്രീപെയ്ഡ് ഇന്റർനാഷണൽ കാർഡ്.",
+      pa: "ਭਾਰਤੀ ਹੱਜ ਯਾਤਰੀਆਂ ਲਈ ਸਾਊਦੀ ਅਰਬ ਵਿੱਚ ਸੁਰੱਖਿਅਤ ਭੁਗਤਾਨ ਅਤੇ ਨਕਦ ਕਢਵਾਉਣ ਲਈ ਪ੍ਰੀਪੇਡ ਅੰਤਰਰਾਸ਼ਟਰੀ ਕਾਰਡ।"
+    },
+    tips: [
+      { 
+        en: "Carry limited cash and use the card where possible.", 
+        ar: "احمل نقوداً محدودة واستخدم البطاقة قدر الإمكان.", 
+        ur: "محدود نقد رکھیں اور جہاں ممکن ہو کارڈ استعمال کریں۔", 
+        hi: "सीमित नकद रखें और जहां संभव हो कार्ड का उपयोग करें।",
+        ta: "குறைந்த பணத்தை எடுத்துச் செல்லுங்கள், முடிந்த இடங்களில் அட்டையைப் பயன்படுத்துங்கள்.",
+        te: "పరిమిత నగదు తీసుకెళ్ళండి మరియు సాధ్యమైన చోట కార్డ్ ఉపయోగించండి.",
+        mr: "मर्यादित रोख रक्कम घ्या आणि शक्य तिथे कार्ड वापरा.",
+        bn: "সীমিত নগদ বহন করুন এবং যেখানে সম্ভব কার্ড ব্যবহার করুন।",
+        or: "ସୀମିତ ନଗଦ ରଖନ୍ତୁ ଏବଂ ସମ୍ଭବ ହେଲେ କାର୍ଡ ବ୍ୟବହାର କରନ୍ତୁ।",
+        ml: "പരിമിതമായ പണം കൊണ്ടുപോകുക, സാധ്യമായിടത്ത് കാർഡ് ഉപയോഗിക്കുക.",
+        pa: "ਸੀਮਤ ਨਕਦ ਰੱਖੋ ਅਤੇ ਜਿੱਥੇ ਸੰਭਵ ਹੋਵੇ ਕਾਰਡ ਵਰਤੋ।"
+      },
+      { 
+        en: "If the card is lost or not working, contact the issuing bank immediately.", 
+        ar: "إذا فقدت البطاقة أو لم تعمل، اتصل بالبنك المصدر فوراً.", 
+        ur: "اگر کارڈ گم ہو جائے یا کام نہ کرے، فوری طور پر جاری کرنے والے بینک سے رابطہ کریں۔", 
+        hi: "यदि कार्ड खो जाए या काम न करे, तो तुरंत जारीकर्ता बैंक से संपर्क करें।",
+        ta: "அட்டை தொலைந்தால் அல்லது வேலை செய்யவில்லை என்றால், உடனடியாக வழங்கும் வங்கியைத் தொடர்பு கொள்ளுங்கள்.",
+        te: "కార్డ్ పోయినా లేదా పనిచేయకపోతే, వెంటనే జారీ చేసిన బ్యాంకును సంప్రదించండి.",
+        mr: "कार्ड हरवले किंवा काम करत नसल्यास, लगेच जारी करणाऱ्या बँकेशी संपर्क साधा.",
+        bn: "কার্ড হারিয়ে গেলে বা কাজ না করলে, অবিলম্বে ইস্যুকারী ব্যাংকে যোগাযোগ করুন।",
+        or: "କାର୍ଡ ହଜିଗଲେ କିମ୍ବା କାମ ନକଲେ, ତୁରନ୍ତ ଇସ୍ୟୁ କରୁଥିବା ବ୍ୟାଙ୍କ ସହ ଯୋଗାଯୋଗ କରନ୍ତୁ।",
+        ml: "കാർഡ് നഷ്ടപ്പെടുകയോ പ്രവർത്തിക്കാതിരിക്കുകയോ ചെയ്താൽ, ഉടൻ ഇഷ്യൂ ചെയ്ത ബാങ്കുമായി ബന്ധപ്പെടുക.",
+        pa: "ਜੇ ਕਾਰਡ ਗੁੰਮ ਹੋ ਜਾਵੇ ਜਾਂ ਕੰਮ ਨਾ ਕਰੇ, ਤੁਰੰਤ ਜਾਰੀ ਕਰਨ ਵਾਲੇ ਬੈਂਕ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।"
+      },
+    ],
   };
 
   const sections = [
@@ -99,6 +145,42 @@ const MoneyGuidePage = () => {
             </div>
           </div>
         </div>
+
+        {/* SBI Hajj Card Section */}
+        <Card className="border-2 border-blue-500/30 bg-gradient-to-br from-blue-500/5 to-indigo-500/5">
+          <CardContent className="p-4 sm:p-5">
+            <div className="flex items-center justify-between gap-4 mb-4">
+              <h2 className="text-lg font-semibold text-blue-700">{sbiCardContent.title[language] || sbiCardContent.title.en}</h2>
+              <TextToSpeechButton
+                text={`${sbiCardContent.title[language] || sbiCardContent.title.en}. ${sbiCardContent.description[language] || sbiCardContent.description.en}. ${sbiCardContent.tips.map(tip => tip[language] || tip.en).join('. ')}`}
+                size="icon"
+                variant="ghost"
+                showLabel={false}
+              />
+            </div>
+            
+            <div className="flex flex-col sm:flex-row gap-4 items-center">
+              <img 
+                src={sbiHajjCard} 
+                alt="SBI Hajj Card" 
+                className="w-full sm:w-48 md:w-56 rounded-lg shadow-md object-contain"
+              />
+              <div className="flex-1 space-y-3">
+                <p className="text-sm text-muted-foreground">
+                  {sbiCardContent.description[language] || sbiCardContent.description.en}
+                </p>
+                <ul className="space-y-2">
+                  {sbiCardContent.tips.map((tip, idx) => (
+                    <li key={idx} className="flex items-start gap-3">
+                      <div className="w-1.5 h-1.5 rounded-full bg-blue-600 mt-2 flex-shrink-0" />
+                      <span className="text-sm text-muted-foreground">{tip[language] || tip.en}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         <div className="space-y-4">
           {sections.map((section, idx) => (
