@@ -153,7 +153,7 @@ const menuSections: MenuSection[] = [
         id: "qurbani",
         icon: Sword,
         label: { en: "Qurbani", ar: "قربانی", ur: "قربانی", hi: "कुर्बानी", ta: "குர்பானி", te: "ఖుర్బానీ", mr: "कुर्बानी", bn: "কোরবানি", or: "କୁର୍ବାନୀ", ml: "ഖുർബാനി", pa: "ਕੁਰਬਾਨੀ" },
-        route: "/family",
+        route: "/qurbani",
         color: "orange",
       },
       {
