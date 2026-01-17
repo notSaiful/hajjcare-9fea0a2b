@@ -34,6 +34,7 @@ const GrievancesPage = lazy(() => import("./pages/GrievancesPage"));
 const ContactNumbersPage = lazy(() => import("./pages/ContactNumbersPage"));
 const HajMissionDirectoryPage = lazy(() => import("./pages/HajMissionDirectoryPage"));
 const PreHajjIndiaPage = lazy(() => import("./pages/PreHajjIndiaPage"));
+const PreHajjIndiaDetailPage = lazy(() => import("./pages/PreHajjIndiaDetailPage"));
 const PostHajjGuidePage = lazy(() => import("./pages/PostHajjGuidePage"));
 const WomenSolutionsPage = lazy(() => import("./pages/WomenSolutionsPage"));
 const SocialsPage = lazy(() => import("./pages/SocialsPage"));
@@ -132,6 +133,7 @@ function AppContent() {
       <Route path="/auth" element={<AuthPage />} />
       <Route path="/chat" element={<ChatPage />} />
       <Route path="/pre-hajj-india" element={<PreHajjIndiaPage />} />
+      <Route path="/pre-hajj-india/:sectionId" element={<PreHajjIndiaDetailPage />} />
       <Route path="/post-hajj" element={<PostHajjGuidePage />} />
       <Route path="/women" element={<WomenSolutionsPage />} />
       <Route path="/socials" element={<SocialsPage />} />
