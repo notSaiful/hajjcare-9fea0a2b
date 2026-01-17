@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, CheckCircle2, AlertTriangle, Heart, Shield, Volume2, BookOpen, Check } from "lucide-react";
 import { MANASIK_RITUALS, getRitualById, getNextRitual, getPreviousRitual } from "@/data/manasikContent";
 import { useProgression } from "@/hooks/useProgression";
+import QurbaniStatusTracker from "@/components/QurbaniStatusTracker";
 
 const RitualDetailPage = () => {
   const { ritualId } = useParams<{ ritualId: string }>();
@@ -119,6 +120,11 @@ const RitualDetailPage = () => {
             </p>
           </CardContent>
         </Card>
+
+        {/* Qurbani Status Tracker - Only show on qurbani-halq page */}
+        {ritualId === "qurbani-halq" && (
+          <QurbaniStatusTracker />
+        )}
 
         {/* What To Do */}
         <Card>
