@@ -4,6 +4,7 @@ import { MainLayout } from "@/components/MainLayout";
 import { Card } from "@/components/ui/card";
 import { IconCircle } from "@/components/IconCircle";
 import { PRE_HAJJ_SECTIONS } from "@/data/preHajjIndiaContent";
+import { PreHajjNotifications } from "@/components/PreHajjNotifications";
 import { ChevronLeft, ChevronRight, Building2, Landmark, GraduationCap, UserCheck, Plane, ClipboardList, LucideIcon } from "lucide-react";
 
 const iconMap: Record<string, LucideIcon> = {
@@ -50,6 +51,9 @@ const PreHajjIndiaPage = () => {
           <h1 className="text-2xl font-bold text-foreground">{l.title}</h1>
           <p className="text-muted-foreground mt-2">{l.subtitle}</p>
         </div>
+
+        {/* Notifications Section */}
+        <PreHajjNotifications />
 
         <div className="space-y-4">
           {PRE_HAJJ_SECTIONS.map((section) => {
