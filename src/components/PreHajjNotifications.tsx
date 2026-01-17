@@ -1,7 +1,9 @@
-import { Bell, AlertCircle, Info, CheckCircle2 } from "lucide-react";
+import { Bell, AlertCircle, Info, CheckCircle2, ChevronDown } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Badge } from "@/components/ui/badge";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { useState } from "react";
 
 interface Notification {
   id: string;
@@ -166,86 +168,102 @@ const NOTIFICATIONS: Notification[] = [
 ];
 
 const labels = {
-  en: { title: "Notifications & Updates", newBadge: "New" },
-  ar: { title: "الإشعارات والتحديثات", newBadge: "جديد" },
-  ur: { title: "اطلاعات اور اپڈیٹس", newBadge: "نیا" },
-  hi: { title: "सूचनाएं और अपडेट", newBadge: "नया" },
-  ta: { title: "அறிவிப்புகள் & புதுப்பிப்புகள்", newBadge: "புதியது" },
-  te: { title: "నోటిఫికేషన్లు & అప్‌డేట్‌లు", newBadge: "కొత్త" },
-  mr: { title: "सूचना आणि अपडेट्स", newBadge: "नवीन" },
-  bn: { title: "বিজ্ঞপ্তি ও আপডেট", newBadge: "নতুন" },
-  or: { title: "ବିଜ୍ଞପ୍ତି ଏବଂ ଅପଡେଟ୍", newBadge: "ନୂଆ" },
-  ml: { title: "അറിയിപ്പുകളും അപ്‌ഡേറ്റുകളും", newBadge: "പുതിയത്" },
-  pa: { title: "ਸੂਚਨਾਵਾਂ ਅਤੇ ਅੱਪਡੇਟ", newBadge: "ਨਵਾਂ" },
+  en: { title: "Notifications & Updates", newBadge: "New", count: "updates" },
+  ar: { title: "الإشعارات والتحديثات", newBadge: "جديد", count: "تحديثات" },
+  ur: { title: "اطلاعات اور اپڈیٹس", newBadge: "نیا", count: "اپڈیٹس" },
+  hi: { title: "सूचनाएं और अपडेट", newBadge: "नया", count: "अपडेट" },
+  ta: { title: "அறிவிப்புகள் & புதுப்பிப்புகள்", newBadge: "புதியது", count: "புதுப்பிப்புகள்" },
+  te: { title: "నోటిఫికేషన్లు & అప్‌డేట్‌లు", newBadge: "కొత్త", count: "అప్‌డేట్‌లు" },
+  mr: { title: "सूचना आणि अपडेट्स", newBadge: "नवीन", count: "अपडेट्स" },
+  bn: { title: "বিজ্ঞপ্তি ও আপডেট", newBadge: "নতুন", count: "আপডেট" },
+  or: { title: "ବିଜ୍ଞପ୍ତି ଏବଂ ଅପଡେଟ୍", newBadge: "ନୂଆ", count: "ଅପଡେଟ୍" },
+  ml: { title: "അറിയിപ്പുകളും അപ്‌ഡേറ്റുകളും", newBadge: "പുതിയത്", count: "അപ്‌ഡേറ്റുകൾ" },
+  pa: { title: "ਸੂਚਨਾਵਾਂ ਅਤੇ ਅੱਪਡੇਟ", newBadge: "ਨਵਾਂ", count: "ਅੱਪਡੇਟ" },
 };
 
 const getIcon = (type: Notification["type"]) => {
   switch (type) {
     case "warning":
-      return <AlertCircle className="w-5 h-5 text-amber-500" />;
+      return <AlertCircle className="w-4 h-4 text-amber-500 flex-shrink-0" />;
     case "success":
-      return <CheckCircle2 className="w-5 h-5 text-emerald-500" />;
+      return <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />;
     default:
-      return <Info className="w-5 h-5 text-primary" />;
-  }
-};
-
-const getCardStyle = (type: Notification["type"]) => {
-  switch (type) {
-    case "warning":
-      return "border-l-4 border-l-amber-500 bg-amber-50/50 dark:bg-amber-950/20";
-    case "success":
-      return "border-l-4 border-l-emerald-500 bg-emerald-50/50 dark:bg-emerald-950/20";
-    default:
-      return "border-l-4 border-l-primary bg-primary/5";
+      return <Info className="w-4 h-4 text-primary flex-shrink-0" />;
   }
 };
 
 export const PreHajjNotifications = () => {
   const { language } = useLanguage();
+  const [isOpen, setIsOpen] = useState(false);
   const l = labels[language as keyof typeof labels] || labels.en;
+  
+  const newCount = NOTIFICATIONS.filter((n) => n.isNew).length;
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-2">
-        <Bell className="w-5 h-5 text-primary" />
-        <h2 className="text-lg font-semibold text-foreground">{l.title}</h2>
-      </div>
-
-      <div className="space-y-3">
-        {NOTIFICATIONS.map((notification) => (
-          <Card
-            key={notification.id}
-            className={`p-4 ${getCardStyle(notification.type)}`}
-          >
-            <div className="flex items-start gap-3">
-              <div className="mt-0.5">{getIcon(notification.type)}</div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <h3 className="font-medium text-foreground">
-                    {notification.title[language as keyof typeof notification.title] ||
-                      notification.title.en}
-                  </h3>
-                  {notification.isNew && (
-                    <Badge variant="secondary" className="text-xs bg-primary/10 text-primary">
-                      {l.newBadge}
-                    </Badge>
-                  )}
-                </div>
-                <p className="text-sm text-muted-foreground mt-1">
-                  {notification.message[language as keyof typeof notification.message] ||
-                    notification.message.en}
-                </p>
-                <p className="text-xs text-muted-foreground/70 mt-2">
-                  {new Date(notification.date).toLocaleDateString(
-                    language === "ar" || language === "ur" ? "ar-SA" : "en-IN"
-                  )}
-                </p>
-              </div>
+    <Card className="overflow-hidden border-primary/20 bg-gradient-to-r from-primary/5 to-transparent">
+      <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+        <CollapsibleTrigger className="w-full p-4 flex items-center justify-between hover:bg-primary/5 transition-colors">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+              <Bell className="w-5 h-5 text-primary" />
             </div>
-          </Card>
-        ))}
-      </div>
-    </div>
+            <div className="text-left">
+              <h2 className="font-semibold text-foreground">{l.title}</h2>
+              <p className="text-sm text-muted-foreground">
+                {NOTIFICATIONS.length} {l.count}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            {newCount > 0 && (
+              <Badge className="bg-primary text-primary-foreground">
+                {newCount} {l.newBadge}
+              </Badge>
+            )}
+            <ChevronDown
+              className={`w-5 h-5 text-muted-foreground transition-transform duration-200 ${
+                isOpen ? "rotate-180" : ""
+              }`}
+            />
+          </div>
+        </CollapsibleTrigger>
+
+        <CollapsibleContent>
+          <div className="px-4 pb-4 space-y-2">
+            {NOTIFICATIONS.map((notification) => (
+              <div
+                key={notification.id}
+                className="flex items-start gap-3 p-3 rounded-lg bg-background/50 border border-border/50"
+              >
+                <div className="mt-0.5">{getIcon(notification.type)}</div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h3 className="font-medium text-sm text-foreground">
+                      {notification.title[language as keyof typeof notification.title] ||
+                        notification.title.en}
+                    </h3>
+                    {notification.isNew && (
+                      <Badge variant="secondary" className="text-xs bg-primary/10 text-primary px-1.5 py-0">
+                        {l.newBadge}
+                      </Badge>
+                    )}
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                    {notification.message[language as keyof typeof notification.message] ||
+                      notification.message.en}
+                  </p>
+                </div>
+                <span className="text-xs text-muted-foreground/60 flex-shrink-0">
+                  {new Date(notification.date).toLocaleDateString(
+                    language === "ar" || language === "ur" ? "ar-SA" : "en-IN",
+                    { month: "short", day: "numeric" }
+                  )}
+                </span>
+              </div>
+            ))}
+          </div>
+        </CollapsibleContent>
+      </Collapsible>
+    </Card>
   );
 };
