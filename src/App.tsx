@@ -38,6 +38,7 @@ const PostHajjGuidePage = lazy(() => import("./pages/PostHajjGuidePage"));
 const WomenSolutionsPage = lazy(() => import("./pages/WomenSolutionsPage"));
 const SocialsPage = lazy(() => import("./pages/SocialsPage"));
 const VideoCallPage = lazy(() => import("./pages/VideoCallPage"));
+const QurbaniPage = lazy(() => import("./pages/QurbaniPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const ChatPage = lazy(() => import("./pages/ChatPage"));
 
@@ -135,6 +136,7 @@ function AppContent() {
       <Route path="/women" element={<WomenSolutionsPage />} />
       <Route path="/socials" element={<SocialsPage />} />
       <Route path="/video-call" element={<VideoCallPage />} />
+      <Route path="/qurbani" element={<QurbaniPage />} />
       {/* Legal & Compliance Pages */}
       <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
       <Route path="/terms-conditions" element={<TermsConditionsPage />} />
