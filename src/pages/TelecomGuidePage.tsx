@@ -99,6 +99,17 @@ const TelecomGuidePage = () => {
           </div>
         </div>
 
+        {/* SIM Card Guide Image */}
+        <Card className="border-2 overflow-hidden">
+          <CardContent className="p-0">
+            <img 
+              src="/images/sim-card-guide.jpeg" 
+              alt={language === "ar" ? "دليل بطاقة SIM للحج" : "SIM Card Guide for Hajj"} 
+              className="w-full h-auto"
+            />
+          </CardContent>
+        </Card>
+
         <div className="space-y-4">
           {sections.map((section, idx) => (
             <Card key={idx} className="border-2">
