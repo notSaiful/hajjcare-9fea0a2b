@@ -63,6 +63,14 @@ const MapPage = () => {
       descEn: "Azizia Area Accommodation Map",
       descAr: "خريطة سكن منطقة العزيزية",
       file: "/maps/azizia-map.pdf"
+    },
+    {
+      id: "azizia-images",
+      nameEn: "Azizia Map (Images)",
+      nameAr: "خريطة العزيزية (صور)",
+      descEn: "Azizia Map as viewable images",
+      descAr: "خريطة العزيزية كصور قابلة للعرض",
+      file: "/maps/azizia-map-pages.zip"
     }
   ];
 
