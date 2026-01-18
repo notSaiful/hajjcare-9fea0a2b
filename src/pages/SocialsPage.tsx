@@ -33,7 +33,7 @@ const socialLinks = [
     icon: Instagram,
     name: { en: "Instagram", ar: "انستغرام", ur: "انسٹاگرام", hi: "इंस्टाग्राम", ta: "இன்ஸ்டாகிராம்", te: "ఇన్‌స్టాగ్రామ్", mr: "इंस्टाग्राम", bn: "ইনস্টাগ্রাম", or: "ଇନଷ୍ଟାଗ୍ରାମ", ml: "ഇൻസ്റ്റാഗ്രാം", pa: "ਇੰਸਟਾਗ੍ਰਾਮ" },
     description: { en: "HajjCare Updates & Photos", ar: "تحديثات وصور HajjCare", ur: "HajjCare اپڈیٹس اور تصاویر", hi: "HajjCare अपडेट और फोटो", ta: "HajjCare புதுப்பிப்புகள் & புகைப்படங்கள்", te: "HajjCare అప్‌డేట్లు & ఫోటోలు", mr: "HajjCare अद्यतने आणि फोटो", bn: "HajjCare আপডেট ও ছবি", or: "HajjCare ଅପଡେଟ ଓ ଫଟୋ", ml: "HajjCare അപ്ഡേറ്റുകളും ഫോട്ടോകളും", pa: "HajjCare ਅੱਪਡੇਟ ਅਤੇ ਫੋਟੋ" },
-    url: "https://instagram.com/hajjcare",
+    url: "https://www.instagram.com/rafiqulharmain?igsh=cDd5NnoxbnVwYWN2",
     color: "bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400",
   },
 ];
