@@ -1,7 +1,7 @@
 import { MainLayout } from "@/components/MainLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Card, CardContent } from "@/components/ui/card";
-import { MessageCircle, Youtube, Instagram, AlertCircle } from "lucide-react";
+import { MessageCircle, Youtube, Instagram, AlertCircle, Twitter } from "lucide-react";
 
 const socialLinks = [
   {
@@ -11,6 +11,14 @@ const socialLinks = [
     description: { en: "Official HajjCare Channel", ar: "قناة HajjCare الرسمية", ur: "آفیشل HajjCare چینل", hi: "आधिकारिक HajjCare चैनल", ta: "அதிகாரப்பூர்வ HajjCare சேனல்", te: "అధికారిక HajjCare ఛానెల్", mr: "अधिकृत HajjCare चॅनल", bn: "অফিসিয়াল HajjCare চ্যানেল", or: "ଅଫିସିଆଲ HajjCare ଚ୍ୟାନେଲ", ml: "ഔദ്യോഗിക HajjCare ചാനൽ", pa: "ਅਧਿਕਾਰਤ HajjCare ਚੈਨਲ" },
     url: "https://wa.me/message/3CX3XMUXMKECL1",
     color: "bg-green-500",
+  },
+  {
+    id: "x",
+    icon: Twitter,
+    name: { en: "X (Twitter)", ar: "إكس (تويتر)", ur: "ایکس (ٹویٹر)", hi: "एक्स (ट्विटर)", ta: "எக்ஸ் (ட்விட்டர்)", te: "ఎక్స్ (ట్విట్టర్)", mr: "एक्स (ट्विटर)", bn: "এক্স (টুইটার)", or: "ଏକ୍ସ (ଟ୍ୱିଟର)", ml: "എക്സ് (ട്വിറ്റർ)", pa: "ਐਕਸ (ਟਵਿੱਟਰ)" },
+    description: { en: "HajjCare Updates & News", ar: "تحديثات وأخبار HajjCare", ur: "HajjCare اپڈیٹس اور خبریں", hi: "HajjCare अपडेट और समाचार", ta: "HajjCare புதுப்பிப்புகள் & செய்திகள்", te: "HajjCare అప్‌డేట్లు & వార్తలు", mr: "HajjCare अद्यतने आणि बातम्या", bn: "HajjCare আপডেট ও সংবাদ", or: "HajjCare ଅପଡେଟ ଓ ଖବର", ml: "HajjCare അപ്ഡേറ്റുകളും വാർത്തകളും", pa: "HajjCare ਅੱਪਡੇਟ ਅਤੇ ਖ਼ਬਰਾਂ" },
+    url: "https://x.com/UlHaramain50604",
+    color: "bg-black",
   },
   {
     id: "youtube",
