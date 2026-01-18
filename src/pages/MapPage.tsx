@@ -5,7 +5,7 @@ import { useHajjLocation, HAJJ_LOCATIONS, HAJJ_STAGES } from "@/hooks/useHajjLoc
 import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useFamilyGroup } from "@/hooks/useFamilyGroup";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { 
   MapPin, 
   Navigation, 
@@ -23,7 +23,8 @@ import {
   MapPinned,
   Home,
   Eye,
-  X
+  X,
+  Utensils
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -419,6 +420,18 @@ const MapPage = () => {
 
       {/* Right Side Action Buttons */}
       <div className={`absolute top-24 ${isRTL ? 'left-4' : 'right-4'} z-10 flex flex-col gap-2`}>
+        {/* Food Guide Button */}
+        <Link to="/food-guide">
+          <Button
+            size="sm"
+            variant="secondary"
+            className="shadow-lg gap-2 rounded-full bg-amber-50 dark:bg-amber-950/50 backdrop-blur-sm border border-amber-200 dark:border-amber-800 hover:bg-amber-100 dark:hover:bg-amber-900/50 text-amber-700 dark:text-amber-400"
+          >
+            <Utensils className="w-4 h-4" />
+            <span className="hidden sm:inline">{language === "ar" ? "الطعام" : "Food"}</span>
+          </Button>
+        </Link>
+        
         {/* Downloadable Maps Button */}
         <Dialog open={showMaps} onOpenChange={setShowMaps}>
           <DialogTrigger asChild>
