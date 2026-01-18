@@ -21,7 +21,9 @@ import {
   ChevronUp,
   ChevronDown,
   MapPinned,
-  Home
+  Home,
+  Eye,
+  X
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -47,6 +49,8 @@ const MapPage = () => {
   const [showFamily, setShowFamily] = useState(true);
   const [showMaps, setShowMaps] = useState(false);
 
+  const [selectedMapView, setSelectedMapView] = useState<string | null>(null);
+
   const downloadableMaps = [
     {
       id: "makkah-building",
@@ -63,14 +67,6 @@ const MapPage = () => {
       descEn: "Azizia Area Accommodation Map",
       descAr: "خريطة سكن منطقة العزيزية",
       file: "/maps/azizia-map.pdf"
-    },
-    {
-      id: "azizia-images",
-      nameEn: "Azizia Map (Images)",
-      nameAr: "خريطة العزيزية (صور)",
-      descEn: "Azizia Map as viewable images",
-      descAr: "خريطة العزيزية كصور قابلة للعرض",
-      file: "/maps/azizia-map-pages.zip"
     }
   ];
 
@@ -435,37 +431,89 @@ const MapPage = () => {
               <span className="hidden sm:inline">{language === "ar" ? "الخرائط" : "Maps"}</span>
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-md mx-4">
+          <DialogContent className="max-w-4xl mx-4 max-h-[90vh] overflow-hidden flex flex-col">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <FileText className="w-5 h-5 text-primary" />
-                {language === "ar" ? "تحميل الخرائط" : "Downloadable Maps"}
+                {language === "ar" ? "خرائط الحج" : "Hajj Maps"}
               </DialogTitle>
             </DialogHeader>
-            <div className="space-y-3 mt-4">
-              {downloadableMaps.map((mapItem) => (
-                <a
-                  key={mapItem.id}
-                  href={mapItem.file}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-3 p-4 bg-muted/50 hover:bg-muted rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98]"
-                >
-                  <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <FileText className="w-6 h-6 text-primary" />
+            
+            {selectedMapView ? (
+              // PDF Viewer Mode
+              <div className="flex-1 flex flex-col min-h-0">
+                <div className="flex items-center justify-between mb-3">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setSelectedMapView(null)}
+                    className="gap-2"
+                  >
+                    <ArrowLeft className={`w-4 h-4 ${isRTL ? 'rotate-180' : ''}`} />
+                    {language === "ar" ? "رجوع" : "Back"}
+                  </Button>
+                  <a
+                    href={selectedMapView}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-sm text-primary hover:underline"
+                  >
+                    <Download className="w-4 h-4" />
+                    {language === "ar" ? "تحميل" : "Download"}
+                  </a>
+                </div>
+                <div className="flex-1 min-h-[60vh] bg-muted/30 rounded-xl overflow-hidden">
+                  <iframe
+                    src={selectedMapView}
+                    className="w-full h-full border-0"
+                    title="Map Viewer"
+                  />
+                </div>
+              </div>
+            ) : (
+              // Map List Mode
+              <div className="space-y-3 mt-4 overflow-y-auto">
+                {downloadableMaps.map((mapItem) => (
+                  <div
+                    key={mapItem.id}
+                    className="flex items-center gap-3 p-4 bg-muted/50 hover:bg-muted rounded-xl transition-all"
+                  >
+                    <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <FileText className="w-6 h-6 text-primary" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-sm">
+                        {language === "ar" ? mapItem.nameAr : mapItem.nameEn}
+                      </p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {language === "ar" ? mapItem.descAr : mapItem.descEn}
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => setSelectedMapView(mapItem.file)}
+                        className="gap-1"
+                      >
+                        <Eye className="w-4 h-4" />
+                        <span className="hidden sm:inline">{language === "ar" ? "عرض" : "View"}</span>
+                      </Button>
+                      <a
+                        href={mapItem.file}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <Button size="sm" variant="outline" className="gap-1">
+                          <Download className="w-4 h-4" />
+                          <span className="hidden sm:inline">{language === "ar" ? "تحميل" : "Download"}</span>
+                        </Button>
+                      </a>
+                    </div>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-sm">
-                      {language === "ar" ? mapItem.nameAr : mapItem.nameEn}
-                    </p>
-                    <p className="text-xs text-muted-foreground truncate">
-                      {language === "ar" ? mapItem.descAr : mapItem.descEn}
-                    </p>
-                  </div>
-                  <Download className="w-5 h-5 text-muted-foreground flex-shrink-0" />
-                </a>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </DialogContent>
         </Dialog>
 
