@@ -25,7 +25,7 @@ const socialLinks = [
     icon: Youtube,
     name: { en: "YouTube", ar: "يوتيوب", ur: "یوٹیوب", hi: "यूट्यूब", ta: "யூடியூப்", te: "యూట్యూబ్", mr: "यूट्यूब", bn: "ইউটিউব", or: "ୟୁଟ୍ୟୁବ", ml: "യൂട്യൂബ്", pa: "ਯੂਟਿਊਬ" },
     description: { en: "HajjCare Videos & Guides", ar: "فيديوهات وإرشادات HajjCare", ur: "HajjCare ویڈیوز اور گائیڈز", hi: "HajjCare वीडियो और गाइड", ta: "HajjCare வீடியோக்கள் & வழிகாட்டிகள்", te: "HajjCare వీడియోలు & గైడ్లు", mr: "HajjCare व्हिडिओ आणि मार्गदर्शक", bn: "HajjCare ভিডিও ও গাইড", or: "HajjCare ଭିଡିଓ ଓ ଗାଇଡ", ml: "HajjCare വീഡിയോകളും ഗൈഡുകളും", pa: "HajjCare ਵੀਡੀਓ ਅਤੇ ਗਾਈਡ" },
-    url: "https://youtube.com/@hajjcare",
+    url: "https://youtube.com/@rafiqulharmain-y8d?si=7_kH_Kie4nZYMVyP",
     color: "bg-red-500",
   },
   {
