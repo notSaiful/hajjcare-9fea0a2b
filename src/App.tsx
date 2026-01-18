@@ -141,6 +141,7 @@ function AppContent() {
       <Route path="/video-call" element={<VideoCallPage />} />
       <Route path="/qurbani" element={<QurbaniPage />} />
       <Route path="/food-guide" element={<FoodGuidePage />} />
+      <Route path="/food" element={<FoodGuidePage />} />
       {/* Legal & Compliance Pages */}
       <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
       <Route path="/terms-conditions" element={<TermsConditionsPage />} />
