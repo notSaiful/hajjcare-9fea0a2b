@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Check, Lock, ArrowRight, ArrowLeft, ChevronRight } from "lucide-react";
 import { MANASIK_RITUALS } from "@/data/manasikContent";
 import { useProgression } from "@/hooks/useProgression";
+import HajjJourneyVisuals from "@/components/HajjJourneyVisuals";
 
 const PreparePage = () => {
   const { language, isRTL } = useLanguage();
@@ -72,6 +73,9 @@ const PreparePage = () => {
             <p className="text-sm sm:text-base text-status-safe font-semibold">{labels.complete[language] || labels.complete.en}</p>
           </div>
         )}
+
+        {/* Hajj Journey Visual Guide */}
+        <HajjJourneyVisuals />
 
         {/* Ritual List */}
         <div className="space-y-2.5 sm:space-y-3">
