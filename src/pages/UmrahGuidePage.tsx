@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Check, Lock, ChevronRight } from "lucide-react";
 import { UMRAH_RITUALS } from "@/data/umrahContent";
 import { useProgression } from "@/hooks/useProgression";
+import HajjJourneyVisuals from "@/components/HajjJourneyVisuals";
 
 const UmrahGuidePage = () => {
   const { language, isRTL } = useLanguage();
@@ -72,6 +73,9 @@ const UmrahGuidePage = () => {
             </p>
           </div>
         )}
+
+        {/* Visual Journey Guide */}
+        <HajjJourneyVisuals />
 
         {/* Ritual List */}
         <div className="space-y-2.5 sm:space-y-3">
