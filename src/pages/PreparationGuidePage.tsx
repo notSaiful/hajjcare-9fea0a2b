@@ -3,8 +3,10 @@ import { MainLayout } from "@/components/MainLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ArrowRight, CheckCircle2, Briefcase, FileText, Stethoscope, Plane, Brain, Dumbbell, Heart } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle2, Circle, Briefcase, FileText, Stethoscope, Plane, Brain, Dumbbell, Heart, RotateCcw } from "lucide-react";
 import { TextToSpeechButton } from "@/components/TextToSpeechButton";
+import { Progress } from "@/components/ui/progress";
+import { useState, useEffect, useMemo } from "react";
 
 const PreparationGuidePage = () => {
   const { language, isRTL } = useLanguage();
@@ -48,6 +50,45 @@ const PreparationGuidePage = () => {
       or: "ପଛକୁ",
       ml: "തിരികെ",
       pa: "ਪਿੱਛੇ",
+    },
+    progress: {
+      en: "Preparation Progress",
+      ar: "تقدم التحضير",
+      ur: "تیاری کی پیشرفت",
+      hi: "तैयारी की प्रगति",
+      ta: "தயாரிப்பு முன்னேற்றம்",
+      te: "సన్నాహ పురోగతి",
+      mr: "तयारी प्रगती",
+      bn: "প্রস্তুতি অগ্রগতি",
+      or: "ପ୍ରସ୍ତୁତି ଅଗ୍ରଗତି",
+      ml: "തയ്യാറെടുപ്പ് പുരോഗതി",
+      pa: "ਤਿਆਰੀ ਪ੍ਰਗਤੀ",
+    },
+    complete: {
+      en: "All preparation complete! You are ready for your journey.",
+      ar: "اكتمل التحضير! أنت جاهز لرحلتك.",
+      ur: "تمام تیاری مکمل! آپ اپنے سفر کے لیے تیار ہیں۔",
+      hi: "सारी तैयारी पूरी! आप अपनी यात्रा के लिए तैयार हैं।",
+      ta: "அனைத்து தயாரிப்புகளும் முடிந்தன! நீங்கள் உங்கள் பயணத்திற்கு தயார்.",
+      te: "అన్ని సన్నాహాలు పూర్తయ్యాయి! మీరు మీ ప్రయాణానికి సిద్ధంగా ఉన్నారు.",
+      mr: "सर्व तयारी पूर्ण! तुम्ही तुमच्या प्रवासासाठी तयार आहात.",
+      bn: "সব প্রস্তুতি সম্পন্ন! আপনি আপনার যাত্রার জন্য প্রস্তুত।",
+      or: "ସମସ୍ତ ପ୍ରସ୍ତୁତି ସମ୍ପୂର୍ଣ୍ଣ! ଆପଣ ଆପଣଙ୍କ ଯାତ୍ରା ପାଇଁ ପ୍ରସ୍ତୁତ।",
+      ml: "എല്ലാ തയ്യാറെടുപ്പുകളും പൂർത്തിയായി! നിങ്ങൾ യാത്രയ്ക്ക് തയ്യാറാണ്.",
+      pa: "ਸਾਰੀ ਤਿਆਰੀ ਪੂਰੀ! ਤੁਸੀਂ ਆਪਣੀ ਯਾਤਰਾ ਲਈ ਤਿਆਰ ਹੋ।",
+    },
+    reset: {
+      en: "Reset Progress",
+      ar: "إعادة تعيين التقدم",
+      ur: "پیشرفت ری سیٹ کریں",
+      hi: "प्रगति रीसेट करें",
+      ta: "முன்னேற்றத்தை மீட்டமை",
+      te: "పురోగతిని రీసెట్ చేయండి",
+      mr: "प्रगती रीसेट करा",
+      bn: "অগ্রগতি রিসেট করুন",
+      or: "ଅଗ୍ରଗତି ରିସେଟ୍ କରନ୍ତୁ",
+      ml: "പുരോഗതി റീസെറ്റ് ചെയ്യുക",
+      pa: "ਪ੍ਰਗਤੀ ਰੀਸੈਟ ਕਰੋ",
     },
   };
 
@@ -144,6 +185,49 @@ const PreparationGuidePage = () => {
     },
   ];
 
+  // Generate all item IDs for progress tracking
+  const allItems = useMemo(() => {
+    const items: { id: string; sectionIdx: number; itemIdx: number }[] = [];
+    sections.forEach((section, sectionIdx) => {
+      section.items.forEach((_, itemIdx) => {
+        items.push({ id: `prep-${sectionIdx}-${itemIdx}`, sectionIdx, itemIdx });
+      });
+    });
+    return items;
+  }, []);
+
+  const totalItems = allItems.length;
+
+  // Progress tracking state with localStorage persistence
+  const [completedItems, setCompletedItems] = useState<Set<string>>(() => {
+    const saved = localStorage.getItem('preparation-progress');
+    return saved ? new Set(JSON.parse(saved)) : new Set();
+  });
+
+  useEffect(() => {
+    localStorage.setItem('preparation-progress', JSON.stringify([...completedItems]));
+  }, [completedItems]);
+
+  const progress = totalItems > 0 ? Math.round((completedItems.size / totalItems) * 100) : 0;
+  const isComplete = progress === 100;
+
+  const toggleItem = (itemId: string) => {
+    setCompletedItems(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(itemId)) {
+        newSet.delete(itemId);
+      } else {
+        newSet.add(itemId);
+      }
+      return newSet;
+    });
+  };
+
+  const resetProgress = () => {
+    setCompletedItems(new Set());
+    localStorage.removeItem('preparation-progress');
+  };
+
   return (
     <MainLayout>
       <div className="container max-w-2xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
@@ -159,9 +243,44 @@ const PreparationGuidePage = () => {
           <p className="text-sm sm:text-base text-muted-foreground">{labels.subtitle[language] || labels.subtitle.en}</p>
         </div>
 
+        {/* Progress Tracker */}
+        <Card className="border-2 border-primary/20 bg-primary/5">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-medium">{labels.progress[language] || labels.progress.en}</span>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-bold text-primary">{progress}%</span>
+                {completedItems.size > 0 && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={resetProgress}
+                    className="h-7 px-2 text-xs text-muted-foreground hover:text-destructive"
+                  >
+                    <RotateCcw className="w-3 h-3 mr-1" />
+                    {labels.reset[language] || labels.reset.en}
+                  </Button>
+                )}
+              </div>
+            </div>
+            <Progress value={progress} className="h-3" />
+            <p className="text-xs text-muted-foreground mt-2">
+              {completedItems.size} / {totalItems}
+            </p>
+            {isComplete && (
+              <div className="mt-3 p-3 bg-status-safe/10 border border-status-safe/30 rounded-lg">
+                <p className="text-sm text-status-safe font-medium flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4" />
+                  {labels.complete[language] || labels.complete.en}
+                </p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
         <div className="space-y-4">
-          {sections.map((section, idx) => (
-            <Card key={idx} className="border-2">
+          {sections.map((section, sectionIdx) => (
+            <Card key={sectionIdx} className="border-2">
               <CardContent className="p-4 sm:p-5">
                 <div className="flex items-center justify-between gap-4 mb-4">
                   <div className="flex items-center gap-4">
@@ -178,12 +297,26 @@ const PreparationGuidePage = () => {
                   />
                 </div>
                 <ul className="space-y-2.5">
-                  {section.items.map((item, itemIdx) => (
-                    <li key={itemIdx} className="flex items-start gap-3">
-                      <CheckCircle2 className="w-4 h-4 text-status-safe mt-0.5 flex-shrink-0" />
-                      <span className="text-sm text-muted-foreground">{item[language] || item.en}</span>
-                    </li>
-                  ))}
+                  {section.items.map((item, itemIdx) => {
+                    const itemId = `prep-${sectionIdx}-${itemIdx}`;
+                    const isChecked = completedItems.has(itemId);
+                    return (
+                      <li
+                        key={itemIdx}
+                        className="flex items-start gap-3 cursor-pointer hover:bg-muted/50 rounded-lg p-2 -mx-2 transition-colors"
+                        onClick={() => toggleItem(itemId)}
+                      >
+                        {isChecked ? (
+                          <CheckCircle2 className="w-5 h-5 text-status-safe mt-0.5 flex-shrink-0" />
+                        ) : (
+                          <Circle className="w-5 h-5 text-muted-foreground/50 mt-0.5 flex-shrink-0" />
+                        )}
+                        <span className={`text-sm ${isChecked ? 'text-muted-foreground line-through' : 'text-foreground'}`}>
+                          {item[language] || item.en}
+                        </span>
+                      </li>
+                    );
+                  })}
                 </ul>
               </CardContent>
             </Card>
