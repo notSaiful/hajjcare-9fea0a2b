@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { NavLink } from "@/components/NavLink";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useUserRole } from "@/hooks/useUserRole";
 import {
   BookOpen,
   Compass,
@@ -19,6 +20,9 @@ import {
   Smartphone,
   MessageSquareWarning,
   Phone,
+  Shield,
+  Activity,
+  Crown,
 } from "lucide-react";
 import {
   Sidebar,
@@ -177,14 +181,41 @@ const labels = {
     tr: "Medine Adabı",
     ru: "Этикет Медины",
   },
+  admin: {
+    en: "Admin",
+    ar: "الإدارة",
+    ur: "ایڈمن",
+    hi: "एडमिन",
+    tr: "Yönetici",
+    ru: "Админ",
+  },
+  coordinatorDashboard: {
+    en: "Health Tickets",
+    ar: "تذاكر الصحة",
+    ur: "صحت ٹکٹس",
+    hi: "हेल्थ टिकट",
+    tr: "Sağlık Biletleri",
+    ru: "Заявки здоровья",
+  },
+  roleManagement: {
+    en: "Role Management",
+    ar: "إدارة الأدوار",
+    ur: "کردار انتظام",
+    hi: "भूमिका प्रबंधन",
+    tr: "Rol Yönetimi",
+    ru: "Управление ролями",
+  },
 };
 
 export function AppSidebar() {
   const { language, isRTL } = useLanguage();
+  const { hasAnyCoordinatorRole, isAdmin } = useUserRole();
   const location = useLocation();
   const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
 
+  const adminRoutes = ["/coordinator", "/admin/roles"];
+  
   const guideRoutes = [
     "/prepare",
     "/umrah",
@@ -204,8 +235,26 @@ export function AppSidebar() {
   const isGuidesActive = guideRoutes.some((route) =>
     location.pathname.startsWith(route)
   );
+  
+  const isAdminActive = adminRoutes.some((route) =>
+    location.pathname.startsWith(route)
+  );
 
   const [guidesOpen, setGuidesOpen] = useState(isGuidesActive);
+  const [adminOpen, setAdminOpen] = useState(isAdminActive);
+
+  const adminItems = [
+    {
+      title: labels.coordinatorDashboard[language] || labels.coordinatorDashboard.en,
+      url: "/coordinator",
+      icon: Activity,
+    },
+    ...(isAdmin ? [{
+      title: labels.roleManagement[language] || labels.roleManagement.en,
+      url: "/admin/roles",
+      icon: Crown,
+    }] : []),
+  ];
 
   const guideItems = [
     {
@@ -375,6 +424,54 @@ export function AppSidebar() {
             </CollapsibleContent>
           </Collapsible>
         </SidebarGroup>
+
+        {/* Admin Section - Only for coordinators/admins */}
+        {hasAnyCoordinatorRole && (
+          <SidebarGroup>
+            <Collapsible open={adminOpen} onOpenChange={setAdminOpen}>
+              <CollapsibleTrigger className="w-full">
+                <SidebarGroupLabel className="flex items-center justify-between w-full cursor-pointer hover:bg-muted/40 rounded-lg px-3 py-2 transition-colors">
+                  <span className="text-xs font-medium text-muted-foreground flex items-center gap-2">
+                    {!isCollapsed && (
+                      <>
+                        <Shield className="w-4 h-4" />
+                        {labels.admin[language] || labels.admin.en}
+                      </>
+                    )}
+                    {isCollapsed && <Shield className="w-4 h-4" />}
+                  </span>
+                  {!isCollapsed && (
+                    adminOpen ? (
+                      <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                    ) : (
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    )
+                  )}
+                </SidebarGroupLabel>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <SidebarGroupContent>
+                  <SidebarMenu>
+                    {adminItems.map((item) => (
+                      <SidebarMenuItem key={item.url}>
+                        <SidebarMenuButton asChild tooltip={item.title}>
+                          <NavLink
+                            to={item.url}
+                            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
+                            activeClassName="bg-primary/10 text-primary hover:bg-primary/15"
+                          >
+                            <item.icon className="w-5 h-5 flex-shrink-0" />
+                            {!isCollapsed && <span>{item.title}</span>}
+                          </NavLink>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    ))}
+                  </SidebarMenu>
+                </SidebarGroupContent>
+              </CollapsibleContent>
+            </Collapsible>
+          </SidebarGroup>
+        )}
       </SidebarContent>
 
       <SidebarFooter className="border-t border-border/50 p-4">
