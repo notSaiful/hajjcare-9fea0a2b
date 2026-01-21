@@ -44,6 +44,7 @@ const FoodGuidePage = lazy(() => import("./pages/FoodGuidePage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const ChatPage = lazy(() => import("./pages/ChatPage"));
 const HealthHelpPage = lazy(() => import("./pages/HealthHelpPage"));
+const CoordinatorDashboardPage = lazy(() => import("./pages/CoordinatorDashboardPage"));
 
 // Legal & Compliance Pages
 const PrivacyPolicyPage = lazy(() => import("./pages/PrivacyPolicyPage"));
@@ -144,6 +145,7 @@ function AppContent() {
       <Route path="/food-guide" element={<FoodGuidePage />} />
       <Route path="/food" element={<FoodGuidePage />} />
       <Route path="/help" element={<HealthHelpPage />} />
+      <Route path="/coordinator" element={<CoordinatorDashboardPage />} />
       {/* Legal & Compliance Pages */}
       <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
       <Route path="/terms-conditions" element={<TermsConditionsPage />} />

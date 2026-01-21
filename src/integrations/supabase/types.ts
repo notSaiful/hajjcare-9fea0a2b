@@ -234,11 +234,43 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          created_at: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+          zone: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+          zone?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+          zone?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_coordinator_or_admin: { Args: { _user_id: string }; Returns: boolean }
       is_member_of_group: { Args: { p_group_id: string }; Returns: boolean }
       lookup_user_id_by_phone: {
         Args: { target_phone: string }
@@ -280,6 +312,7 @@ export type Database = {
           }
     }
     Enums: {
+      app_role: "admin" | "coordinator" | "medical_staff" | "user"
       health_ticket_status:
         | "submitted"
         | "ai_triaged"
@@ -417,6 +450,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      app_role: ["admin", "coordinator", "medical_staff", "user"],
       health_ticket_status: [
         "submitted",
         "ai_triaged",
