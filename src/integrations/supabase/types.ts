@@ -76,6 +76,84 @@ export type Database = {
           },
         ]
       }
+      health_tickets: {
+        Row: {
+          action_taken: string | null
+          ai_category: string | null
+          ai_recommendations: string[] | null
+          ai_translated_text: string | null
+          ai_triage_summary: string | null
+          ai_urgency_level: Database["public"]["Enums"]["urgency_level"] | null
+          alert_sent_at: string | null
+          coordinator_notes: string | null
+          created_at: string | null
+          description: string
+          id: string
+          location_lat: number | null
+          location_lng: number | null
+          original_language: string | null
+          outcome: string | null
+          professional_response: string | null
+          resolved_at: string | null
+          status: Database["public"]["Enums"]["health_ticket_status"] | null
+          symptoms: string[] | null
+          updated_at: string | null
+          user_id: string | null
+          whatsapp_group_alerted: string | null
+          zone: string | null
+        }
+        Insert: {
+          action_taken?: string | null
+          ai_category?: string | null
+          ai_recommendations?: string[] | null
+          ai_translated_text?: string | null
+          ai_triage_summary?: string | null
+          ai_urgency_level?: Database["public"]["Enums"]["urgency_level"] | null
+          alert_sent_at?: string | null
+          coordinator_notes?: string | null
+          created_at?: string | null
+          description: string
+          id?: string
+          location_lat?: number | null
+          location_lng?: number | null
+          original_language?: string | null
+          outcome?: string | null
+          professional_response?: string | null
+          resolved_at?: string | null
+          status?: Database["public"]["Enums"]["health_ticket_status"] | null
+          symptoms?: string[] | null
+          updated_at?: string | null
+          user_id?: string | null
+          whatsapp_group_alerted?: string | null
+          zone?: string | null
+        }
+        Update: {
+          action_taken?: string | null
+          ai_category?: string | null
+          ai_recommendations?: string[] | null
+          ai_translated_text?: string | null
+          ai_triage_summary?: string | null
+          ai_urgency_level?: Database["public"]["Enums"]["urgency_level"] | null
+          alert_sent_at?: string | null
+          coordinator_notes?: string | null
+          created_at?: string | null
+          description?: string
+          id?: string
+          location_lat?: number | null
+          location_lng?: number | null
+          original_language?: string | null
+          outcome?: string | null
+          professional_response?: string | null
+          resolved_at?: string | null
+          status?: Database["public"]["Enums"]["health_ticket_status"] | null
+          symptoms?: string[] | null
+          updated_at?: string | null
+          user_id?: string | null
+          whatsapp_group_alerted?: string | null
+          zone?: string | null
+        }
+        Relationships: []
+      }
       member_locations: {
         Row: {
           current_stage: string | null
@@ -202,7 +280,16 @@ export type Database = {
           }
     }
     Enums: {
-      [_ in never]: never
+      health_ticket_status:
+        | "submitted"
+        | "ai_triaged"
+        | "coordinator_reviewing"
+        | "whatsapp_alerted"
+        | "professional_responding"
+        | "action_taken"
+        | "resolved"
+        | "closed"
+      urgency_level: "low" | "medium" | "high" | "critical"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -329,6 +416,18 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      health_ticket_status: [
+        "submitted",
+        "ai_triaged",
+        "coordinator_reviewing",
+        "whatsapp_alerted",
+        "professional_responding",
+        "action_taken",
+        "resolved",
+        "closed",
+      ],
+      urgency_level: ["low", "medium", "high", "critical"],
+    },
   },
 } as const
