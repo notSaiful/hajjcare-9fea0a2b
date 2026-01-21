@@ -355,10 +355,37 @@ const HealthHelpPage = () => {
             ai_urgency_level: triage.urgency_level,
             ai_category: triage.category,
             ai_recommendations: triage.recommendations,
-            whatsapp_group_alerted: triage.suggested_zone,
+            zone: triage.suggested_zone,
             status: 'ai_triaged',
           })
           .eq('id', ticketData.id);
+
+        // Step 4: For high/critical urgency, trigger WhatsApp alert
+        if (triage.urgency_level === 'critical' || triage.urgency_level === 'high') {
+          try {
+            await fetch(
+              `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/whatsapp-alert`,
+              {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+                },
+                body: JSON.stringify({
+                  ticketId: ticketData.id,
+                  zone: triage.suggested_zone,
+                  urgencyLevel: triage.urgency_level,
+                  summary: triage.summary,
+                  arabicText: triage.arabic_translation,
+                  category: triage.category,
+                }),
+              }
+            );
+          } catch (alertErr) {
+            console.error('WhatsApp alert error:', alertErr);
+            // Non-blocking - ticket is still saved
+          }
+        }
       }
 
       setDescription("");
