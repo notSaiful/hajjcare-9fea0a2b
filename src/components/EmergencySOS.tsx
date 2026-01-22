@@ -19,6 +19,47 @@ import { toast } from "sonner";
 
 type SOSStatus = "idle" | "confirming" | "sending" | "success" | "error";
 
+// Haptic feedback utility
+const triggerHaptic = (pattern: "light" | "medium" | "heavy" | "success" | "error") => {
+  if (!("vibrate" in navigator)) return;
+  
+  const patterns: Record<string, number | number[]> = {
+    light: 50,
+    medium: 100,
+    heavy: 200,
+    success: [100, 50, 100],
+    error: [200, 100, 200, 100, 200],
+  };
+  
+  try {
+    navigator.vibrate(patterns[pattern]);
+  } catch (e) {
+    console.log("Vibration not supported");
+  }
+};
+
+// Audio feedback utility
+const playAlertSound = () => {
+  try {
+    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.value = 880; // A5 note - attention-grabbing
+    oscillator.type = "sine";
+    gainNode.gain.value = 0.3;
+    
+    oscillator.start();
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+    oscillator.stop(audioContext.currentTime + 0.3);
+  } catch (e) {
+    console.log("Audio not supported");
+  }
+};
+
 const labels = {
   sosButton: {
     en: "Emergency SOS",
@@ -105,6 +146,10 @@ export const EmergencySOS = () => {
       return;
     }
 
+    // Trigger strong haptic and audio feedback
+    triggerHaptic("heavy");
+    playAlertSound();
+    
     setStatus("sending");
 
     try {
@@ -156,6 +201,7 @@ export const EmergencySOS = () => {
       }
 
       setStatus("success");
+      triggerHaptic("success");
       toast.success(getLabel("success"));
 
       // Reset after 5 seconds
@@ -164,6 +210,7 @@ export const EmergencySOS = () => {
     } catch (error) {
       console.error("SOS error:", error);
       setStatus("error");
+      triggerHaptic("error");
       toast.error(getLabel("error"));
       setTimeout(() => setStatus("idle"), 5000);
     }
@@ -174,6 +221,8 @@ export const EmergencySOS = () => {
       toast.error(getLabel("loginRequired"));
       return;
     }
+    // Light haptic on button press
+    triggerHaptic("medium");
     setStatus("confirming");
   };
 

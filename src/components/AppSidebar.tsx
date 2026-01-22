@@ -23,6 +23,7 @@ import {
   Shield,
   Activity,
   Crown,
+  AlertTriangle,
 } from "lucide-react";
 import {
   Sidebar,
@@ -205,6 +206,14 @@ const labels = {
     tr: "Rol Yönetimi",
     ru: "Управление ролями",
   },
+  medicalAlerts: {
+    en: "Emergency Alerts",
+    ar: "تنبيهات الطوارئ",
+    ur: "ایمرجنسی الرٹس",
+    hi: "आपातकालीन अलर्ट",
+    tr: "Acil Uyarılar",
+    ru: "Экстренные оповещения",
+  },
 };
 
 export function AppSidebar() {
@@ -214,7 +223,7 @@ export function AppSidebar() {
   const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
 
-  const adminRoutes = ["/coordinator", "/admin/roles"];
+  const adminRoutes = ["/coordinator", "/admin/roles", "/medical-alerts"];
   
   const guideRoutes = [
     "/prepare",
@@ -244,6 +253,11 @@ export function AppSidebar() {
   const [adminOpen, setAdminOpen] = useState(isAdminActive);
 
   const adminItems = [
+    {
+      title: labels.medicalAlerts[language] || labels.medicalAlerts.en,
+      url: "/medical-alerts",
+      icon: AlertTriangle,
+    },
     {
       title: labels.coordinatorDashboard[language] || labels.coordinatorDashboard.en,
       url: "/coordinator",
