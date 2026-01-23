@@ -24,6 +24,7 @@ import {
   Activity,
   Crown,
   AlertTriangle,
+  BarChart3,
 } from "lucide-react";
 import {
   Sidebar,
@@ -214,6 +215,14 @@ const labels = {
     tr: "Acil Uyarılar",
     ru: "Экстренные оповещения",
   },
+  emergencyMetrics: {
+    en: "Response Metrics",
+    ar: "مقاييس الاستجابة",
+    ur: "ردعمل کے میٹرکس",
+    hi: "प्रतिक्रिया मेट्रिक्स",
+    tr: "Yanıt Metrikleri",
+    ru: "Метрики отклика",
+  },
 };
 
 export function AppSidebar() {
@@ -223,7 +232,7 @@ export function AppSidebar() {
   const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
 
-  const adminRoutes = ["/coordinator", "/admin/roles", "/medical-alerts"];
+  const adminRoutes = ["/coordinator", "/admin/roles", "/medical-alerts", "/admin/metrics"];
   
   const guideRoutes = [
     "/prepare",
@@ -263,11 +272,18 @@ export function AppSidebar() {
       url: "/coordinator",
       icon: Activity,
     },
-    ...(isAdmin ? [{
-      title: labels.roleManagement[language] || labels.roleManagement.en,
-      url: "/admin/roles",
-      icon: Crown,
-    }] : []),
+    ...(isAdmin ? [
+      {
+        title: labels.roleManagement[language] || labels.roleManagement.en,
+        url: "/admin/roles",
+        icon: Crown,
+      },
+      {
+        title: labels.emergencyMetrics[language] || labels.emergencyMetrics.en,
+        url: "/admin/metrics",
+        icon: BarChart3,
+      },
+    ] : []),
   ];
 
   const guideItems = [

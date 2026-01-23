@@ -47,6 +47,7 @@ const HealthHelpPage = lazy(() => import("./pages/HealthHelpPage"));
 const CoordinatorDashboardPage = lazy(() => import("./pages/CoordinatorDashboardPage"));
 const AdminRolesPage = lazy(() => import("./pages/AdminRolesPage"));
 const MedicalAlertsPage = lazy(() => import("./pages/MedicalAlertsPage"));
+const EmergencyMetricsPage = lazy(() => import("./pages/EmergencyMetricsPage"));
 
 // Legal & Compliance Pages
 const PrivacyPolicyPage = lazy(() => import("./pages/PrivacyPolicyPage"));
@@ -150,6 +151,7 @@ function AppContent() {
       <Route path="/coordinator" element={<CoordinatorDashboardPage />} />
       <Route path="/medical-alerts" element={<MedicalAlertsPage />} />
       <Route path="/admin/roles" element={<AdminRolesPage />} />
+      <Route path="/admin/metrics" element={<EmergencyMetricsPage />} />
       {/* Legal & Compliance Pages */}
       <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
       <Route path="/terms-conditions" element={<TermsConditionsPage />} />
