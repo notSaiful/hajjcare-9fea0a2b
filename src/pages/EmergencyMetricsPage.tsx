@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useUserRole } from "@/hooks/useUserRole";
+import { toast } from "sonner";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -34,6 +35,8 @@ import {
   Timer,
   Users,
   ShieldAlert,
+  RefreshCw,
+  Wifi,
 } from "lucide-react";
 
 interface HealthTicket {
@@ -81,6 +84,8 @@ const labels = {
   noAccessDesc: { en: "You don't have permission to view this page.", hi: "आपके पास इस पृष्ठ को देखने की अनुमति नहीं है।", ar: "ليس لديك إذن لعرض هذه الصفحة." },
   submitted: { en: "Submitted", hi: "प्रस्तुत", ar: "مقدم" },
   loading: { en: "Loading metrics...", hi: "मेट्रिक्स लोड हो रहे हैं...", ar: "جاري تحميل المقاييس..." },
+  liveUpdates: { en: "Live", hi: "लाइव", ar: "مباشر" },
+  dataUpdated: { en: "Data updated", hi: "डेटा अपडेट किया गया", ar: "تم تحديث البيانات" },
 };
 
 const URGENCY_COLORS = {
@@ -96,14 +101,10 @@ const EmergencyMetricsPage: React.FC = () => {
   const { isAdmin, isLoading: roleLoading } = useUserRole();
   const [metrics, setMetrics] = useState<MetricsData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isLive, setIsLive] = useState(true);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
-  useEffect(() => {
-    if (!roleLoading && isAdmin) {
-      fetchMetrics();
-    }
-  }, [roleLoading, isAdmin]);
-
-  const fetchMetrics = async () => {
+  const fetchMetrics = useCallback(async (showToast = false) => {
     try {
       const { data: tickets, error } = await supabase
         .from("health_tickets")
@@ -115,12 +116,49 @@ const EmergencyMetricsPage: React.FC = () => {
       const ticketData = (tickets || []) as HealthTicket[];
       const processedMetrics = calculateMetrics(ticketData);
       setMetrics(processedMetrics);
+      setLastUpdated(new Date());
+      
+      if (showToast) {
+        toast.success(labels.dataUpdated[language] || labels.dataUpdated.en);
+      }
     } catch (err) {
       console.error("Error fetching metrics:", err);
     } finally {
       setLoading(false);
     }
-  };
+  }, [language]);
+
+  // Initial fetch
+  useEffect(() => {
+    if (!roleLoading && isAdmin) {
+      fetchMetrics();
+    }
+  }, [roleLoading, isAdmin, fetchMetrics]);
+
+  // Real-time subscription
+  useEffect(() => {
+    if (!isAdmin || !isLive) return;
+
+    const channel = supabase
+      .channel("metrics-realtime")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "health_tickets",
+        },
+        () => {
+          // Refetch metrics on any change
+          fetchMetrics(true);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [isAdmin, isLive, fetchMetrics]);
 
   const calculateMetrics = (tickets: HealthTicket[]): MetricsData => {
     const totalTickets = tickets.length;
@@ -264,15 +302,47 @@ const EmergencyMetricsPage: React.FC = () => {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border">
-        <div className="flex items-center gap-3 px-4 py-3">
-          <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
+        <div className="flex items-center justify-between px-4 py-3">
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
+            <div className="flex items-center gap-2">
+              <Activity className="w-5 h-5 text-primary" />
+              <h1 className="font-semibold text-lg">{t("title")}</h1>
+            </div>
+          </div>
+          
           <div className="flex items-center gap-2">
-            <Activity className="w-5 h-5 text-primary" />
-            <h1 className="font-semibold text-lg">{t("title")}</h1>
+            {/* Live indicator */}
+            <Button
+              variant={isLive ? "default" : "outline"}
+              size="sm"
+              onClick={() => setIsLive(!isLive)}
+              className="gap-2"
+            >
+              <Wifi className={`w-4 h-4 ${isLive ? "animate-pulse" : ""}`} />
+              <span className="hidden sm:inline">{t("liveUpdates")}</span>
+            </Button>
+            
+            {/* Manual refresh */}
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => fetchMetrics(true)}
+              disabled={loading}
+            >
+              <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
+            </Button>
           </div>
         </div>
+        
+        {/* Last updated indicator */}
+        {lastUpdated && (
+          <div className="px-4 pb-2 text-xs text-muted-foreground">
+            Last updated: {lastUpdated.toLocaleTimeString(language === "hi" ? "hi-IN" : language === "ar" ? "ar-SA" : "en-US")}
+          </div>
+        )}
       </header>
 
       <main className="p-4 space-y-6 pb-8 max-w-6xl mx-auto">
