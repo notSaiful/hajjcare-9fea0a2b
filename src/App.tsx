@@ -48,6 +48,7 @@ const CoordinatorDashboardPage = lazy(() => import("./pages/CoordinatorDashboard
 const AdminRolesPage = lazy(() => import("./pages/AdminRolesPage"));
 const MedicalAlertsPage = lazy(() => import("./pages/MedicalAlertsPage"));
 const EmergencyMetricsPage = lazy(() => import("./pages/EmergencyMetricsPage"));
+const InspectorDashboardPage = lazy(() => import("./pages/InspectorDashboardPage"));
 
 // Legal & Compliance Pages
 const PrivacyPolicyPage = lazy(() => import("./pages/PrivacyPolicyPage"));
@@ -152,6 +153,7 @@ function AppContent() {
       <Route path="/medical-alerts" element={<MedicalAlertsPage />} />
       <Route path="/admin/roles" element={<AdminRolesPage />} />
       <Route path="/admin/metrics" element={<EmergencyMetricsPage />} />
+      <Route path="/inspector" element={<InspectorDashboardPage />} />
       {/* Legal & Compliance Pages */}
       <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
       <Route path="/terms-conditions" element={<TermsConditionsPage />} />
