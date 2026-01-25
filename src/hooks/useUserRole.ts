@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
-type AppRole = 'admin' | 'coordinator' | 'medical_staff' | 'user';
+type AppRole = 'admin' | 'coordinator' | 'medical_staff' | 'inspector' | 'user';
 
 interface UserRole {
   role: AppRole;
@@ -14,6 +14,7 @@ export const useUserRole = () => {
   const [isCoordinator, setIsCoordinator] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isMedicalStaff, setIsMedicalStaff] = useState(false);
+  const [isInspector, setIsInspector] = useState(false);
 
   useEffect(() => {
     const fetchRoles = async () => {
@@ -44,6 +45,7 @@ export const useUserRole = () => {
         setIsCoordinator(userRoles.some(r => r.role === 'coordinator'));
         setIsAdmin(userRoles.some(r => r.role === 'admin'));
         setIsMedicalStaff(userRoles.some(r => r.role === 'medical_staff'));
+        setIsInspector(userRoles.some(r => r.role === 'inspector'));
       } catch (err) {
         console.error('Error in useUserRole:', err);
       } finally {
@@ -60,7 +62,7 @@ export const useUserRole = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const hasAnyCoordinatorRole = isCoordinator || isAdmin || isMedicalStaff;
+  const hasAnyCoordinatorRole = isCoordinator || isAdmin || isMedicalStaff || isInspector;
 
   return {
     roles,
@@ -68,6 +70,7 @@ export const useUserRole = () => {
     isCoordinator,
     isAdmin,
     isMedicalStaff,
+    isInspector,
     hasAnyCoordinatorRole,
   };
 };

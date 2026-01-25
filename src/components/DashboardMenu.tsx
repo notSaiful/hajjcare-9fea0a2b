@@ -29,6 +29,7 @@ import {
   Share2,
   Video,
   HeartHandshake,
+  UserSearch,
 } from "lucide-react";
 
 interface MenuItem {
@@ -239,6 +240,13 @@ const menuSections: MenuSection[] = [
         label: { en: "AI Assistant", ar: "المساعد", ur: "اے آئی", hi: "AI सहायक", ta: "AI உதவி", te: "AI సహాయం", mr: "AI मदत", bn: "AI সহায়ক", or: "AI ସହାୟକ", ml: "AI സഹായി", pa: "AI ਸਹਾਇਕ" },
         route: "/chat",
         color: "violet",
+      },
+      {
+        id: "inspector",
+        icon: UserSearch,
+        label: { en: "Inspector", ar: "المفتش", ur: "انسپکٹر", hi: "इंस्पेक्टर", ta: "ஆய்வாளர்", te: "ఇన్‌స్పెక్టర్", mr: "इन्स्पेक्टर", bn: "ইন্সপেক্টর", or: "ଇନ୍ସପେକ୍ଟର", ml: "ഇൻസ്‌പെക്ടർ", pa: "ਇੰਸਪੈਕਟਰ" },
+        route: "/inspector",
+        color: "indigo",
       },
     ],
   },
