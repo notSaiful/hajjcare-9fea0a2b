@@ -5,7 +5,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { HajiCard } from '@/components/inspector/HajiCard';
+import { EmergencyAlertCard, EmergencyAlert } from '@/components/inspector/EmergencyAlertCard';
 import { useHajis } from '@/hooks/useHajis';
+import { useEmergencyAlert } from '@/hooks/useEmergencyAlert';
 import { Haji, HajiStatus, STATUS_COLORS, STATUS_LABELS } from '@/types/haji';
 import { 
   AlertTriangle, 
@@ -15,7 +17,9 @@ import {
   ArrowUpDown,
   Accessibility,
   Heart,
-  Search
+  Search,
+  Bell,
+  BellOff
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
@@ -33,13 +37,35 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
+// Demo emergency alert matching the user's format
+const DEMO_EMERGENCY_ALERT: EmergencyAlert = {
+  id: 'ea-001',
+  pilgrim_id: 'HCI2026-458921',
+  name: 'Abdul Rahman',
+  age: 67,
+  gender: 'Male',
+  country: 'India',
+  medical_conditions: ['Diabetic', 'Heart Patient'],
+  wheelchair: true,
+  location: 'Masjid al-Haram – Gate 79',
+  latitude: 21.4225,
+  longitude: 39.8262,
+  inspector_name: 'Md Anisul Haque',
+  inspector_phone: '+91XXXXXXXX',
+  timestamp: new Date().toISOString(),
+  status: 'ACTIVE',
+};
+
 const InspectorDashboardPage = () => {
   const navigate = useNavigate();
   const { hajis, isLoading, isUsingDemo, updateHajiStatus } = useHajis();
+  const { triggerAlertOnce, startEmergencyAlert, stopEmergencyAlert, isAlertActive } = useEmergencyAlert();
   const [emergencyMode, setEmergencyMode] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<HajiStatus | 'ALL'>('ALL');
   const [selectedHaji, setSelectedHaji] = useState<Haji | null>(null);
+  const [activeAlert, setActiveAlert] = useState<EmergencyAlert | null>(null);
+  const [soundEnabled, setSoundEnabled] = useState(true);
 
   // Stats calculation
   const stats = useMemo(() => {
@@ -89,6 +115,25 @@ const InspectorDashboardPage = () => {
       await updateHajiStatus(selectedHaji.id, status);
       setSelectedHaji(prev => prev ? { ...prev, status } : null);
     }
+  };
+
+  // Demo: trigger emergency alert
+  const handleDemoAlert = () => {
+    setActiveAlert(DEMO_EMERGENCY_ALERT);
+    if (soundEnabled) {
+      triggerAlertOnce();
+    }
+  };
+
+  // Handle alert status changes
+  const handleAlertRespond = (alertId: string) => {
+    setActiveAlert(prev => prev ? { ...prev, status: 'RESPONDING' } : null);
+  };
+
+  const handleAlertResolve = (alertId: string) => {
+    setActiveAlert(prev => prev ? { ...prev, status: 'RESOLVED' } : null);
+    // Auto-dismiss after resolved
+    setTimeout(() => setActiveAlert(null), 2000);
   };
 
   if (isLoading) {
@@ -152,14 +197,45 @@ const InspectorDashboardPage = () => {
           </CardContent>
         </Card>
 
+        {/* Active Emergency Alert */}
+        {activeAlert && (
+          <EmergencyAlertCard
+            alert={activeAlert}
+            onRespond={handleAlertRespond}
+            onResolve={handleAlertResolve}
+          />
+        )}
+
+        {/* Demo Alert Trigger & Sound Toggle */}
+        <div className="flex gap-2">
+          <Button
+            onClick={handleDemoAlert}
+            variant="outline"
+            className="flex-1 border-destructive text-destructive hover:bg-destructive/10"
+          >
+            <Bell className="w-4 h-4 mr-2" />
+            Simulate Alert
+          </Button>
+          <Button
+            onClick={() => setSoundEnabled(!soundEnabled)}
+            variant="outline"
+            size="icon"
+            className={cn(
+              soundEnabled ? "text-emerald-600" : "text-muted-foreground"
+            )}
+          >
+            {soundEnabled ? <Bell className="w-4 h-4" /> : <BellOff className="w-4 h-4" />}
+          </Button>
+        </div>
+
         {/* Emergency Mode Button - matches btnEmergencyMode */}
         <Button
           onClick={() => setEmergencyMode(!emergencyMode)}
           className={cn(
             "w-full h-12 text-base font-bold transition-all",
             emergencyMode 
-              ? "bg-red-600 hover:bg-red-700 text-white animate-pulse" 
-              : "bg-red-100 hover:bg-red-200 text-red-700 dark:bg-red-950 dark:text-red-300"
+              ? "bg-destructive hover:bg-destructive/90 text-destructive-foreground animate-pulse" 
+              : "bg-destructive/10 hover:bg-destructive/20 text-destructive"
           )}
         >
           <AlertTriangle className="w-5 h-5 mr-2" />
