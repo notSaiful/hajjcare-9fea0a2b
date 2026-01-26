@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Haji, STATUS_COLORS, STATUS_LABELS } from "@/types/haji";
+import { Haji, HajiStatus, STATUS_COLORS, STATUS_LABELS } from "@/types/haji";
 import { Accessibility, Heart, Droplets, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -9,6 +9,14 @@ interface HajiCardProps {
   onClick?: (haji: Haji) => void;
 }
 
+// Background colors matching Android adapter
+const STATUS_BG_COLORS: Record<HajiStatus, string> = {
+  NORMAL: 'bg-card',
+  EMERGENCY: 'bg-destructive/10',
+  MISSING: 'bg-amber-100 dark:bg-amber-950/50',
+  HOSPITAL: 'bg-blue-100 dark:bg-blue-950/50',
+};
+
 export function HajiCard({ haji, onClick }: HajiCardProps) {
   const isHighPriority = haji.wheelchair || haji.age > 60 || haji.status !== 'NORMAL';
   
@@ -16,6 +24,7 @@ export function HajiCard({ haji, onClick }: HajiCardProps) {
     <Card 
       className={cn(
         "cursor-pointer transition-all hover:shadow-md active:scale-[0.98]",
+        STATUS_BG_COLORS[haji.status],
         isHighPriority && "border-l-4 border-l-amber-500"
       )}
       onClick={() => onClick?.(haji)}
