@@ -117,6 +117,37 @@ const FreeUmrahAdminPage = () => {
     setFilteredApplicants(filtered);
   };
 
+  const sendWhatsAppNotification = async (applicant: Applicant, newStatus: string) => {
+    if (newStatus !== 'Approved' && newStatus !== 'Rejected') return;
+    
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/free-umrah-notify`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: JSON.stringify({
+            applicationId: applicant.application_id,
+            applicantName: applicant.full_name,
+            mobile: applicant.mobile,
+            status: newStatus,
+          }),
+        }
+      );
+
+      if (response.ok) {
+        toast.success("WhatsApp notification sent");
+      } else {
+        console.error("WhatsApp notification failed");
+      }
+    } catch (err) {
+      console.error("Error sending WhatsApp notification:", err);
+    }
+  };
+
   const updateStatus = async (newStatus: string) => {
     if (!selectedApplicant) return;
 
@@ -134,6 +165,11 @@ const FreeUmrahAdminPage = () => {
       setApplicants((prev) =>
         prev.map((a) => (a.id === selectedApplicant.id ? { ...a, status: newStatus } : a))
       );
+      
+      // Send WhatsApp notification for Approved/Rejected
+      if (newStatus === 'Approved' || newStatus === 'Rejected') {
+        await sendWhatsAppNotification(selectedApplicant, newStatus);
+      }
     }
 
     setIsUpdating(false);

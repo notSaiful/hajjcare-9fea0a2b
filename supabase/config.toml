@@ -46,3 +46,6 @@ verify_jwt = false
 
 [functions.create-razorpay-order]
 verify_jwt = false
+
+[functions.free-umrah-notify]
+verify_jwt = false
