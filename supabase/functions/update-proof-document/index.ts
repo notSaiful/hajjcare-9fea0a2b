@@ -13,6 +13,34 @@ serve(async (req) => {
   }
 
   try {
+    // Require authentication
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(
+        JSON.stringify({ error: "Unauthorized - Missing authentication" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Verify user with anon key
+    const supabaseAuth = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_ANON_KEY")!,
+      { global: { headers: { Authorization: authHeader } } }
+    );
+
+    const token = authHeader.replace("Bearer ", "");
+    const { data: claimsData, error: claimsError } = await supabaseAuth.auth.getClaims(token);
+    
+    if (claimsError || !claimsData?.claims) {
+      return new Response(
+        JSON.stringify({ error: "Unauthorized - Invalid token" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const userId = claimsData.claims.sub;
+
     const { applicationId, proofUrl, proofType } = await req.json();
 
     if (!applicationId || !proofUrl) {
@@ -29,10 +57,10 @@ serve(async (req) => {
       { auth: { persistSession: false } }
     );
 
-    // First verify the application exists and is in a valid status
+    // First verify the application exists, belongs to the user, and is in a valid status
     const { data: application, error: fetchError } = await supabaseAdmin
       .from("applicants")
-      .select("id, status, proof_url")
+      .select("id, status, proof_url, user_id")
       .eq("application_id", applicationId)
       .single();
 
@@ -40,6 +68,14 @@ serve(async (req) => {
       return new Response(
         JSON.stringify({ error: "Application not found" }),
         { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Verify ownership - user can only update their own application
+    if (application.user_id !== userId) {
+      return new Response(
+        JSON.stringify({ error: "Forbidden - You can only update your own application" }),
+        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
