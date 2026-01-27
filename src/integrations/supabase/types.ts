@@ -362,7 +362,24 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      applicants_status_check: {
+        Row: {
+          application_id: string | null
+          created_at: string | null
+          status: string | null
+        }
+        Insert: {
+          application_id?: string | null
+          created_at?: string | null
+          status?: string | null
+        }
+        Update: {
+          application_id?: string | null
+          created_at?: string | null
+          status?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       has_role: {
