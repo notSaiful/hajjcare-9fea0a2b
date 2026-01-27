@@ -25,6 +25,7 @@ import {
   Crown,
   AlertTriangle,
   BarChart3,
+  Gift,
 } from "lucide-react";
 import {
   Sidebar,
@@ -223,6 +224,14 @@ const labels = {
     tr: "Yanıt Metrikleri",
     ru: "Метрики отклика",
   },
+  freeUmrahAdmin: {
+    en: "Free Umrah Applications",
+    ar: "طلبات العمرة المجانية",
+    ur: "مفت عمرہ درخواستیں",
+    hi: "मुफ्त उमराह आवेदन",
+    tr: "Ücretsiz Umre Başvuruları",
+    ru: "Заявки на бесплатную умру",
+  },
 };
 
 export function AppSidebar() {
@@ -232,7 +241,7 @@ export function AppSidebar() {
   const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
 
-  const adminRoutes = ["/coordinator", "/admin/roles", "/medical-alerts", "/admin/metrics"];
+  const adminRoutes = ["/coordinator", "/admin/roles", "/medical-alerts", "/admin/metrics", "/admin/free-umrah"];
   
   const guideRoutes = [
     "/prepare",
@@ -273,6 +282,11 @@ export function AppSidebar() {
       icon: Activity,
     },
     ...(isAdmin ? [
+      {
+        title: labels.freeUmrahAdmin[language] || labels.freeUmrahAdmin.en,
+        url: "/admin/free-umrah",
+        icon: Gift,
+      },
       {
         title: labels.roleManagement[language] || labels.roleManagement.en,
         url: "/admin/roles",
