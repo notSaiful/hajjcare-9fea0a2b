@@ -4,6 +4,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Mic, MicOff, Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const FUNCTION_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/elevenlabs-agent-token`;
 
@@ -33,13 +34,26 @@ export const HelpButton = () => {
   const startHelp = useCallback(async () => {
     setIsConnecting(true);
     try {
+      // Get user session for authentication
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session?.access_token) {
+        toast({
+          title: t("helpError"),
+          description: "Please sign in to use voice help",
+          variant: "destructive",
+        });
+        setIsConnecting(false);
+        return;
+      }
+
       await navigator.mediaDevices.getUserMedia({ audio: true });
 
       const response = await fetch(FUNCTION_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          Authorization: `Bearer ${session.access_token}`,
         },
       });
 

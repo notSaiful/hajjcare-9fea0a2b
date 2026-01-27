@@ -4,6 +4,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Mic, MicOff, Loader2, Volume2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const FUNCTION_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/elevenlabs-agent-token`;
 
@@ -39,6 +40,19 @@ export const VoiceAssistant = () => {
   const startConversation = useCallback(async () => {
     setIsConnecting(true);
     try {
+      // Get user session for authentication
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session?.access_token) {
+        toast({
+          title: isRTL ? "خطأ" : "Error",
+          description: isRTL ? "يرجى تسجيل الدخول أولاً" : "Please sign in first",
+          variant: "destructive",
+        });
+        setIsConnecting(false);
+        return;
+      }
+
       // Request microphone permission
       await navigator.mediaDevices.getUserMedia({ audio: true });
 
@@ -47,7 +61,7 @@ export const VoiceAssistant = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          Authorization: `Bearer ${session.access_token}`,
         },
       });
 

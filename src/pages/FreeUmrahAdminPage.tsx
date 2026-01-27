@@ -124,13 +124,20 @@ const FreeUmrahAdminPage = () => {
     if (newStatus !== 'Approved' && newStatus !== 'Rejected') return;
     
     try {
+      // Get session for authenticated API calls
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        console.error("No session for WhatsApp notification");
+        return;
+      }
+
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/free-umrah-notify`,
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+            'Authorization': `Bearer ${session.access_token}`,
           },
           body: JSON.stringify({
             applicationId: applicant.application_id,

@@ -312,6 +312,18 @@ const HealthHelpPage = () => {
 
     setIsSubmitting(true);
     try {
+      // Get session for authenticated API calls
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        toast({
+          title: "Error",
+          description: "Please sign in to submit a health request",
+          variant: "destructive",
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
       // Step 1: Create ticket in submitted state
       const { data: ticketData, error: insertError } = await supabase
         .from('health_tickets')
@@ -326,14 +338,14 @@ const HealthHelpPage = () => {
 
       if (insertError) throw insertError;
 
-      // Step 2: Call AI triage edge function
+      // Step 2: Call AI triage edge function with user token
       const triageResponse = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/health-triage`,
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+            Authorization: `Bearer ${session.access_token}`,
           },
           body: JSON.stringify({
             description: description.trim(),
@@ -369,7 +381,7 @@ const HealthHelpPage = () => {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
-                  Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+                  Authorization: `Bearer ${session.access_token}`,
                 },
                 body: JSON.stringify({
                   ticketId: ticketData.id,

@@ -33,6 +33,16 @@ serve(async (req) => {
   }
 
   try {
+    // Validate authentication
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      console.error("Missing or invalid Authorization header");
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const WHATSAPP_TOKEN = Deno.env.get('WHATSAPP_TOKEN');
     const WHATSAPP_PHONE_ID = Deno.env.get('WHATSAPP_PHONE_ID');
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
@@ -48,6 +58,24 @@ serve(async (req) => {
       throw new Error('Supabase credentials not configured');
     }
 
+    // Validate caller is authenticated
+    const supabaseClient = createClient(
+      SUPABASE_URL,
+      Deno.env.get("SUPABASE_ANON_KEY")!,
+      { global: { headers: { Authorization: authHeader } } }
+    );
+
+    const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
+    
+    if (authError || !user) {
+      console.error("Authentication failed:", authError?.message || "No user found");
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Use service role for database updates
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
     const { ticketId, zone, urgencyLevel, summary, arabicText, category, location }: AlertRequest = await req.json();
@@ -55,6 +83,15 @@ serve(async (req) => {
     if (!ticketId || !zone) {
       return new Response(
         JSON.stringify({ error: 'ticketId and zone are required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Validate ticketId format (UUID)
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(ticketId)) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid ticketId format' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -149,7 +186,7 @@ Please respond via the Coordinator Dashboard.`;
     const successes = sendResults.filter(r => r.status === 'fulfilled').length;
     const failures = sendResults.filter(r => r.status === 'rejected').length;
 
-    console.log(`WhatsApp alerts sent: ${successes} success, ${failures} failed`);
+    console.log(`WhatsApp alerts sent by user ${user.id}: ${successes} success, ${failures} failed`);
 
     // Update ticket status
     const { error: updateError } = await supabase
