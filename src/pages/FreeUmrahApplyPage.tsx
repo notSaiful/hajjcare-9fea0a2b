@@ -81,6 +81,12 @@ const FreeUmrahApplyPage = () => {
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Validate file type - only PDF and images allowed
+      const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+      if (!allowedTypes.includes(file.type)) {
+        toast.error("Only PDF and image files (JPEG, PNG, GIF, WebP) are allowed");
+        return;
+      }
       if (file.size > 10 * 1024 * 1024) {
         toast.error("File size must be less than 10MB");
         return;
@@ -513,7 +519,7 @@ const FreeUmrahApplyPage = () => {
                   <input
                     ref={fileInputRef}
                     type="file"
-                    accept="image/*,video/*,.pdf"
+                    accept=".pdf,.jpg,.jpeg,.png,.gif,.webp,image/jpeg,image/png,image/gif,image/webp,application/pdf"
                     onChange={handleFileSelect}
                     className="hidden"
                   />
