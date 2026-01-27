@@ -34,7 +34,7 @@ const applicationSchema = z.object({
   low_income: z.literal(true, { errorMap: () => ({ message: "Declaration required" }) }),
   social_harmony: z.literal(true, { errorMap: () => ({ message: "Declaration required" }) }),
   no_money_paid: z.literal(true, { errorMap: () => ({ message: "Declaration required" }) }),
-  proof_type: z.enum(["Masjid Certificate", "Self Video"]).optional(),
+  proof_type: z.enum(["Masjid Certificate"]).optional(),
 });
 
 const generateApplicationId = (city: string, pincode: string): string => {
@@ -500,21 +500,8 @@ const FreeUmrahApplyPage = () => {
                 {errors.no_money_paid && <p className="text-sm text-destructive">{errors.no_money_paid}</p>}
               </div>
 
-              <div className="space-y-2 pt-4">
-                <Label>{t.proofType}</Label>
-                <Select
-                  value={formData.proof_type}
-                  onValueChange={(value) => setFormData({ ...formData, proof_type: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Masjid Certificate">Masjid Certificate</SelectItem>
-                    <SelectItem value="Self Video">Self Video</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+              {/* Hidden proof type - defaulting to Masjid Certificate */}
+              <input type="hidden" value="Masjid Certificate" />
 
               {/* File Upload */}
               <div className="space-y-2">

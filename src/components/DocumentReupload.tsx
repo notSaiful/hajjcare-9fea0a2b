@@ -86,7 +86,7 @@ export const DocumentReupload = ({
   const [isUploading, setIsUploading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [proofType, setProofType] = useState<string>("Masjid Certificate");
+  const proofType = "Masjid Certificate";
 
   // Only allow re-upload for Applied or Under Review status
   const canReupload = currentStatus === "Applied" || currentStatus === "Under Review";
@@ -189,18 +189,6 @@ export const DocumentReupload = ({
         <p className="text-xs text-muted-foreground">{t.description}</p>
       </div>
 
-      <div className="space-y-2">
-        <Label className="text-xs">{t.proofType}</Label>
-        <Select value={proofType} onValueChange={setProofType}>
-          <SelectTrigger className="h-9">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="Masjid Certificate">{t.masjidCert}</SelectItem>
-            <SelectItem value="Self Video">{t.selfVideo}</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
 
       <div 
         className="border-2 border-dashed border-border rounded-lg p-4 text-center cursor-pointer hover:border-primary/50 transition-colors"
