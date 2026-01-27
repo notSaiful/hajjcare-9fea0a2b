@@ -199,7 +199,7 @@ const FreeUmrahApplyPage = () => {
     if (error || !data) {
       setCheckResult("not_found");
     } else {
-      setCheckResult((data as { status: string }).status);
+      setCheckResult((data as unknown as { status: string }).status);
     }
     setIsChecking(false);
   };
