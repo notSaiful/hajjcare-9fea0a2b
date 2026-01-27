@@ -188,8 +188,10 @@ const FreeUmrahApplyPage = () => {
     setIsChecking(true);
     setCheckResult(null);
 
+    // Use the secure status check view (only exposes application_id, status, created_at)
+    // This protects PII while allowing public status checks
     const { data, error } = await supabase
-      .from("applicants")
+      .from("applicants_status_check" as any)
       .select("status")
       .eq("application_id", checkId.trim())
       .maybeSingle();
@@ -197,7 +199,7 @@ const FreeUmrahApplyPage = () => {
     if (error || !data) {
       setCheckResult("not_found");
     } else {
-      setCheckResult(data.status);
+      setCheckResult((data as { status: string }).status);
     }
     setIsChecking(false);
   };
