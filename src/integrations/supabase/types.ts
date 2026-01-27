@@ -18,6 +18,7 @@ export type Database = {
         Row: {
           age: number
           application_id: string
+          city: string | null
           created_at: string
           full_name: string
           id: string
@@ -26,6 +27,7 @@ export type Database = {
           mobile: string
           never_umrah: boolean
           no_money_paid: boolean
+          pincode: string | null
           proof_type: string | null
           proof_url: string | null
           role: string
@@ -39,6 +41,7 @@ export type Database = {
         Insert: {
           age: number
           application_id?: string
+          city?: string | null
           created_at?: string
           full_name: string
           id?: string
@@ -47,6 +50,7 @@ export type Database = {
           mobile: string
           never_umrah?: boolean
           no_money_paid?: boolean
+          pincode?: string | null
           proof_type?: string | null
           proof_url?: string | null
           role: string
@@ -60,6 +64,7 @@ export type Database = {
         Update: {
           age?: number
           application_id?: string
+          city?: string | null
           created_at?: string
           full_name?: string
           id?: string
@@ -68,6 +73,7 @@ export type Database = {
           mobile?: string
           never_umrah?: boolean
           no_money_paid?: boolean
+          pincode?: string | null
           proof_type?: string | null
           proof_url?: string | null
           role?: string

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
@@ -12,18 +12,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Loader2, CheckCircle, Search, Upload, FileText, X } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Loader2, CheckCircle, Search } from "lucide-react";
 import { z } from "zod";
+import { freeUmrahContent } from "@/data/freeUmrahContent";
 
 const applicationSchema = z.object({
   full_name: z.string().min(2, "Name must be at least 2 characters").max(100, "Name too long"),
   age: z.number().min(18, "Must be at least 18").max(100, "Age must be under 100"),
   mobile: z.string().regex(/^[0-9]{10}$/, "Enter valid 10-digit mobile number"),
   state: z.string().min(2, "State is required"),
+  city: z.string().min(2, "City is required"),
+  pincode: z.string().regex(/^[0-9]{6}$/, "Enter valid 6-digit pincode"),
   role: z.enum(["Imam", "Muazzin", "Hafiz"], { required_error: "Select your role" }),
   masjid_name: z.string().min(2, "Masjid/Madrasa name is required"),
   years_of_service: z.number().min(0, "Years must be positive").max(80, "Invalid years"),
@@ -34,150 +36,35 @@ const applicationSchema = z.object({
   proof_type: z.enum(["Masjid Certificate", "Self Video"]).optional(),
 });
 
-const content = {
-  en: {
-    title: "Free Umrah – Deeni Khidmat",
-    subtitle: "Pilot Program: 10 Beneficiaries",
-    fullName: "Full Name",
-    age: "Age",
-    mobile: "Mobile Number",
-    state: "State / District",
-    role: "Select Role",
-    masjidName: "Masjid / Madrasa Name",
-    yearsOfService: "Years of Service",
-    declarations: "Declarations",
-    neverUmrah: "I have never performed Umrah before",
-    lowIncome: "I belong to a low-income family",
-    socialHarmony: "I have never posted hate/communal content online",
-    noMoneyPaid: "I understand I will not pay any money for this",
-    proofType: "Proof Type",
-    submit: "Submit Application",
-    submitting: "Submitting...",
-    success: "Application submitted successfully!",
-    applicationId: "Your Application ID",
-    checkStatus: "Check Status",
-    statusPlaceholder: "Enter Application ID",
-    check: "Check",
-    status: "Status",
-    notFound: "Application not found",
-    applied: "Applied",
-    underReview: "Under Review",
-    approved: "Approved",
-    rejected: "Rejected",
-    completed: "Completed",
-  },
-  ur: {
-    title: "مفت عمرہ – دینی خدمت",
-    subtitle: "پائلٹ پروگرام: 10 مستفیدین",
-    fullName: "پورا نام",
-    age: "عمر",
-    mobile: "موبائل نمبر",
-    state: "ریاست / ضلع",
-    role: "کردار منتخب کریں",
-    masjidName: "مسجد / مدرسہ کا نام",
-    yearsOfService: "خدمت کے سال",
-    declarations: "اقرار نامہ",
-    neverUmrah: "میں نے پہلے کبھی عمرہ نہیں کیا",
-    lowIncome: "میں کم آمدنی والے خاندان سے ہوں",
-    socialHarmony: "میں نے کبھی نفرت/فرقہ وارانہ مواد پوسٹ نہیں کیا",
-    noMoneyPaid: "میں سمجھتا ہوں کہ اس کے لیے کوئی رقم نہیں دوں گا",
-    proofType: "ثبوت کی قسم",
-    submit: "درخواست جمع کرائیں",
-    submitting: "جمع ہو رہا ہے...",
-    success: "درخواست کامیابی سے جمع ہو گئی!",
-    applicationId: "آپ کی درخواست کا نمبر",
-    checkStatus: "حیثیت چیک کریں",
-    statusPlaceholder: "درخواست نمبر درج کریں",
-    check: "چیک کریں",
-    status: "حیثیت",
-    notFound: "درخواست نہیں ملی",
-    applied: "درخواست دی گئی",
-    underReview: "جائزہ میں",
-    approved: "منظور",
-    rejected: "مسترد",
-    completed: "مکمل",
-  },
-  hi: {
-    title: "मुफ्त उमराह – दीनी खिदमत",
-    subtitle: "पायलट प्रोग्राम: 10 लाभार्थी",
-    fullName: "पूरा नाम",
-    age: "उम्र",
-    mobile: "मोबाइल नंबर",
-    state: "राज्य / जिला",
-    role: "भूमिका चुनें",
-    masjidName: "मस्जिद / मदरसा का नाम",
-    yearsOfService: "सेवा के वर्ष",
-    declarations: "घोषणाएं",
-    neverUmrah: "मैंने पहले कभी उमराह नहीं किया",
-    lowIncome: "मैं कम आय वाले परिवार से हूं",
-    socialHarmony: "मैंने कभी नफरत/सांप्रदायिक सामग्री पोस्ट नहीं की",
-    noMoneyPaid: "मैं समझता हूं कि इसके लिए कोई पैसा नहीं दूंगा",
-    proofType: "प्रमाण प्रकार",
-    submit: "आवेदन जमा करें",
-    submitting: "जमा हो रहा है...",
-    success: "आवेदन सफलतापूर्वक जमा हो गया!",
-    applicationId: "आपकी आवेदन संख्या",
-    checkStatus: "स्थिति जांचें",
-    statusPlaceholder: "आवेदन संख्या दर्ज करें",
-    check: "जांचें",
-    status: "स्थिति",
-    notFound: "आवेदन नहीं मिला",
-    applied: "आवेदन किया गया",
-    underReview: "समीक्षा में",
-    approved: "स्वीकृत",
-    rejected: "अस्वीकृत",
-    completed: "पूर्ण",
-  },
-  ar: {
-    title: "عمرة مجانية – خدمة دينية",
-    subtitle: "البرنامج التجريبي: 10 مستفيدين",
-    fullName: "الاسم الكامل",
-    age: "العمر",
-    mobile: "رقم الجوال",
-    state: "الولاية / المنطقة",
-    role: "اختر الدور",
-    masjidName: "اسم المسجد / المدرسة",
-    yearsOfService: "سنوات الخدمة",
-    declarations: "الإقرارات",
-    neverUmrah: "لم أؤدِ العمرة من قبل",
-    lowIncome: "أنا من أسرة ذات دخل منخفض",
-    socialHarmony: "لم أنشر محتوى كراهية/طائفي",
-    noMoneyPaid: "أفهم أنني لن أدفع أي مال",
-    proofType: "نوع الإثبات",
-    submit: "تقديم الطلب",
-    submitting: "جاري التقديم...",
-    success: "تم تقديم الطلب بنجاح!",
-    applicationId: "رقم طلبك",
-    checkStatus: "تحقق من الحالة",
-    statusPlaceholder: "أدخل رقم الطلب",
-    check: "تحقق",
-    status: "الحالة",
-    notFound: "الطلب غير موجود",
-    applied: "تم التقديم",
-    underReview: "قيد المراجعة",
-    approved: "موافق عليه",
-    rejected: "مرفوض",
-    completed: "مكتمل",
-  },
+const generateApplicationId = (city: string, pincode: string): string => {
+  const cityCode = city.substring(0, 4).toUpperCase().padEnd(4, 'X');
+  const pincodeEnd = pincode.slice(-2);
+  const randomPart = Math.random().toString(36).substring(2, 6).toUpperCase();
+  return `${cityCode}-${pincodeEnd}-${randomPart}`;
 };
 
 const FreeUmrahApplyPage = () => {
   const { language } = useLanguage();
   const navigate = useNavigate();
-  const t = content[language as keyof typeof content] || content.en;
+  const t = freeUmrahContent[language as keyof typeof freeUmrahContent] || freeUmrahContent.en;
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [submittedId, setSubmittedId] = useState<string | null>(null);
   const [checkId, setCheckId] = useState("");
   const [checkResult, setCheckResult] = useState<string | null>(null);
   const [isChecking, setIsChecking] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const [formData, setFormData] = useState({
     full_name: "",
     age: "",
     mobile: "",
     state: "",
+    city: "",
+    pincode: "",
     role: "",
     masjid_name: "",
     years_of_service: "",
@@ -187,6 +74,45 @@ const FreeUmrahApplyPage = () => {
     no_money_paid: false,
     proof_type: "Masjid Certificate",
   });
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 10 * 1024 * 1024) {
+        toast.error("File size must be less than 10MB");
+        return;
+      }
+      setSelectedFile(file);
+    }
+  };
+
+  const uploadFile = async (applicationId: string): Promise<string | null> => {
+    if (!selectedFile) return null;
+    
+    setIsUploading(true);
+    try {
+      const fileExt = selectedFile.name.split('.').pop();
+      const filePath = `${applicationId}/${Date.now()}.${fileExt}`;
+      
+      const { error: uploadError } = await supabase.storage
+        .from('proof-documents')
+        .upload(filePath, selectedFile);
+      
+      if (uploadError) throw uploadError;
+      
+      const { data: { publicUrl } } = supabase.storage
+        .from('proof-documents')
+        .getPublicUrl(filePath);
+      
+      return publicUrl;
+    } catch (err) {
+      console.error('Upload error:', err);
+      toast.error("Failed to upload document");
+      return null;
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -203,13 +129,25 @@ const FreeUmrahApplyPage = () => {
 
       setIsSubmitting(true);
 
+      // Generate custom application ID
+      const customAppId = generateApplicationId(validated.city, validated.pincode);
+
+      // Upload file if selected
+      let proofUrl: string | null = null;
+      if (selectedFile) {
+        proofUrl = await uploadFile(customAppId);
+      }
+
       const { data, error } = await supabase
         .from("applicants")
         .insert({
+          application_id: customAppId,
           full_name: validated.full_name,
           age: validated.age,
           mobile: validated.mobile,
           state: validated.state,
+          city: validated.city,
+          pincode: validated.pincode,
           role: validated.role,
           masjid_name: validated.masjid_name,
           years_of_service: validated.years_of_service,
@@ -218,6 +156,7 @@ const FreeUmrahApplyPage = () => {
           social_harmony: validated.social_harmony,
           no_money_paid: validated.no_money_paid,
           proof_type: validated.proof_type,
+          proof_url: proofUrl,
         })
         .select("application_id")
         .single();
@@ -296,10 +235,10 @@ const FreeUmrahApplyPage = () => {
                 <p className="text-2xl font-mono font-bold text-primary mt-1">{submittedId}</p>
               </div>
               <p className="text-sm text-muted-foreground">
-                Save this ID to check your application status
+                {t.saveIdHint}
               </p>
               <Button onClick={() => navigate("/")} className="w-full mt-4">
-                Go Home
+                {t.goHome}
               </Button>
             </CardContent>
           </Card>
@@ -405,6 +344,30 @@ const FreeUmrahApplyPage = () => {
                   required
                 />
                 {errors.state && <p className="text-sm text-destructive">{errors.state}</p>}
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="city">{t.city} *</Label>
+                  <Input
+                    id="city"
+                    value={formData.city}
+                    onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                    required
+                  />
+                  {errors.city && <p className="text-sm text-destructive">{errors.city}</p>}
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="pincode">{t.pincode} *</Label>
+                  <Input
+                    id="pincode"
+                    value={formData.pincode}
+                    onChange={(e) => setFormData({ ...formData, pincode: e.target.value })}
+                    maxLength={6}
+                    required
+                  />
+                  {errors.pincode && <p className="text-sm text-destructive">{errors.pincode}</p>}
+                </div>
               </div>
 
               <div className="space-y-2">
@@ -517,8 +480,54 @@ const FreeUmrahApplyPage = () => {
                 </Select>
               </div>
 
-              <Button type="submit" className="w-full" disabled={isSubmitting}>
-                {isSubmitting ? (
+              {/* File Upload */}
+              <div className="space-y-2">
+                <Label>{t.proofDocument}</Label>
+                <div 
+                  className="border-2 border-dashed border-border rounded-lg p-4 text-center cursor-pointer hover:border-primary/50 transition-colors"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*,video/*,.pdf"
+                    onChange={handleFileSelect}
+                    className="hidden"
+                  />
+                  {selectedFile ? (
+                    <div className="flex items-center justify-center gap-2">
+                      <FileText className="w-5 h-5 text-primary" />
+                      <span className="text-sm text-foreground truncate max-w-[200px]">
+                        {selectedFile.name}
+                      </span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedFile(null);
+                        }}
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <>
+                      <Upload className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
+                      <p className="text-sm text-muted-foreground">{t.uploadHint}</p>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              <Button type="submit" className="w-full" disabled={isSubmitting || isUploading}>
+                {isUploading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    {t.uploading}
+                  </>
+                ) : isSubmitting ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                     {t.submitting}
