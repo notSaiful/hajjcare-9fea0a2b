@@ -29,10 +29,11 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { ArrowLeft, Search, Loader2, CheckCircle, XCircle, Eye, Clock, ExternalLink } from "lucide-react";
+import { ArrowLeft, Search, Loader2, CheckCircle, XCircle, Eye, Clock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { adminContent } from "@/data/freeUmrahContent";
+import { ApplicantDetailsModal } from "@/components/ApplicantDetailsModal";
 
 interface Applicant {
   id: string;
@@ -67,6 +68,7 @@ const FreeUmrahAdminPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [selectedApplicant, setSelectedApplicant] = useState<Applicant | null>(null);
+  const [detailsApplicant, setDetailsApplicant] = useState<Applicant | null>(null);
   const [actionDialog, setActionDialog] = useState<{ open: boolean; action: "approve" | "reject" | null }>({
     open: false,
     action: null,
@@ -314,18 +316,14 @@ const FreeUmrahAdminPage = () => {
                         <TableCell>{getStatusBadge(applicant.status)}</TableCell>
                         <TableCell>
                           <div className="flex items-center justify-end gap-2">
-                            {applicant.proof_url ? (
-                              <Button variant="ghost" size="sm" asChild>
-                                <a
-                                  href={applicant.proof_url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                >
-                                  <Eye className="w-4 h-4 mr-1" />
-                                  <span className="hidden sm:inline">{t.viewProof}</span>
-                                </a>
-                              </Button>
-                            ) : null}
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setDetailsApplicant(applicant)}
+                            >
+                              <Eye className="w-4 h-4 mr-1" />
+                              <span className="hidden sm:inline">{t.viewDetails || "Details"}</span>
+                            </Button>
                             {applicant.status === "Applied" && (
                               <Button
                                 variant="outline"
@@ -419,6 +417,14 @@ const FreeUmrahAdminPage = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Applicant Details Modal */}
+      <ApplicantDetailsModal
+        applicant={detailsApplicant}
+        open={!!detailsApplicant}
+        onOpenChange={(open) => !open && setDetailsApplicant(null)}
+        language={language}
+      />
     </div>
   );
 };
