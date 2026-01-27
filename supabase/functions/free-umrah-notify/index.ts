@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -19,6 +20,48 @@ serve(async (req) => {
   }
 
   try {
+    // Validate authentication - only coordinators/admins should send notifications
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      console.error("Missing or invalid Authorization header");
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const supabaseClient = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_ANON_KEY")!,
+      { global: { headers: { Authorization: authHeader } } }
+    );
+
+    const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
+    
+    if (authError || !user) {
+      console.error("Authentication failed:", authError?.message || "No user found");
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Check if user has coordinator or admin role
+    const { data: roleData } = await supabaseClient
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', user.id)
+      .in('role', ['admin', 'coordinator'])
+      .maybeSingle();
+
+    if (!roleData) {
+      console.error("User is not a coordinator or admin:", user.id);
+      return new Response(
+        JSON.stringify({ error: "Forbidden - Coordinator access required" }),
+        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const WHATSAPP_TOKEN = Deno.env.get('WHATSAPP_TOKEN');
     const WHATSAPP_PHONE_ID = Deno.env.get('WHATSAPP_PHONE_ID');
 
@@ -38,10 +81,26 @@ serve(async (req) => {
       );
     }
 
+    // Validate status
+    if (!['Approved', 'Rejected'].includes(status)) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid status. Must be Approved or Rejected' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     // Format phone number - ensure it has country code (India default)
     let formattedPhone = mobile.replace(/[^0-9]/g, '');
     if (formattedPhone.length === 10) {
       formattedPhone = '91' + formattedPhone; // Add India country code
+    }
+
+    // Validate phone number length
+    if (formattedPhone.length < 10 || formattedPhone.length > 15) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid mobile number format' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     // Construct message based on status
@@ -96,7 +155,7 @@ Haj Care AI - Deeni Khidmat Program
     }
 
     const result = await response.json();
-    console.log(`WhatsApp notification sent to ${formattedPhone} for application ${applicationId}`);
+    console.log(`WhatsApp notification sent by ${user.id} to ${formattedPhone} for application ${applicationId}`);
 
     return new Response(
       JSON.stringify({

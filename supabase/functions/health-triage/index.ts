@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -14,11 +15,53 @@ serve(async (req) => {
   }
 
   try {
+    // Validate authentication
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      console.error("Missing or invalid Authorization header");
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const supabaseClient = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_ANON_KEY")!,
+      { global: { headers: { Authorization: authHeader } } }
+    );
+
+    const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
+    
+    if (authError || !user) {
+      console.error("Authentication failed:", authError?.message || "No user found");
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const { description, symptoms, language } = await req.json();
 
-    if (!description) {
+    if (!description || typeof description !== 'string') {
       return new Response(
-        JSON.stringify({ error: 'Description is required' }),
+        JSON.stringify({ error: 'Description is required and must be a string' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Validate description length
+    if (description.length > 2000) {
+      return new Response(
+        JSON.stringify({ error: 'Description too long. Maximum 2000 characters.' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Validate symptoms if provided
+    if (symptoms && (!Array.isArray(symptoms) || symptoms.length > 20)) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid symptoms format or too many symptoms' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -105,6 +148,8 @@ Respond in this exact JSON format:
         suggested_zone: "general"
       };
     }
+
+    console.log(`Health triage completed for user ${user.id}:`, triageResult.urgency_level);
 
     return new Response(
       JSON.stringify({

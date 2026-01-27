@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -12,6 +13,32 @@ serve(async (req) => {
   }
 
   try {
+    // Validate authentication
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      console.error("Missing or invalid Authorization header");
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const supabaseClient = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_ANON_KEY")!,
+      { global: { headers: { Authorization: authHeader } } }
+    );
+
+    const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
+    
+    if (authError || !user) {
+      console.error("Authentication failed:", authError?.message || "No user found");
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const RAZORPAY_KEY_ID = Deno.env.get("RAZORPAY_KEY_ID");
     const RAZORPAY_KEY_SECRET = Deno.env.get("RAZORPAY_KEY_SECRET");
 
@@ -29,9 +56,20 @@ serve(async (req) => {
     const { amount, currency = "INR" } = await req.json();
 
     // Validate amount (minimum 100 paise = ₹1, we require ₹10 = 1000 paise)
-    if (!amount || amount < 1000) {
+    if (!amount || typeof amount !== "number" || amount < 1000 || amount > 10000000) {
       return new Response(
-        JSON.stringify({ error: "Invalid amount. Minimum is ₹10" }),
+        JSON.stringify({ error: "Invalid amount. Must be between ₹10 and ₹100,000" }),
+        { 
+          status: 400, 
+          headers: { ...corsHeaders, "Content-Type": "application/json" } 
+        }
+      );
+    }
+
+    // Validate currency
+    if (currency !== "INR") {
+      return new Response(
+        JSON.stringify({ error: "Only INR currency is supported" }),
         { 
           status: 400, 
           headers: { ...corsHeaders, "Content-Type": "application/json" } 
@@ -51,9 +89,10 @@ serve(async (req) => {
       body: JSON.stringify({
         amount: amount,
         currency: currency,
-        receipt: `donation_${Date.now()}`,
+        receipt: `donation_${user.id}_${Date.now()}`,
         notes: {
           purpose: "HajjCare App Maintenance Donation",
+          user_id: user.id,
         },
       }),
     });
@@ -71,6 +110,7 @@ serve(async (req) => {
     }
 
     const order = await orderResponse.json();
+    console.log(`Payment order created for user ${user.id}: ${order.id}`);
 
     return new Response(
       JSON.stringify({

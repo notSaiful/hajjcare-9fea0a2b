@@ -6,6 +6,10 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+const MAX_MESSAGES = 50;
+const MAX_MESSAGE_LENGTH = 2000;
+const ALLOWED_ROLES = ["user", "assistant"];
+
 const getSystemPrompt = (language: string) => {
   const languageInstructions: Record<string, string> = {
     ar: "يجب أن ترد دائماً باللغة العربية فقط.",
@@ -44,6 +48,11 @@ Guidelines:
 Remember: This is a sacred journey. Help pilgrims focus on their worship while ensuring they perform the rituals correctly.`;
 };
 
+interface ChatMessage {
+  role: string;
+  content: string;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -77,13 +86,55 @@ serve(async (req) => {
     }
 
     const { messages, language = "en" } = await req.json();
+    
+    // Validate messages is an array
+    if (!Array.isArray(messages)) {
+      return new Response(
+        JSON.stringify({ error: "Messages must be an array" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Limit conversation history to prevent abuse
+    if (messages.length > MAX_MESSAGES) {
+      return new Response(
+        JSON.stringify({ error: `Too many messages. Maximum ${MAX_MESSAGES} messages allowed in history.` }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Validate each message structure and size
+    for (const msg of messages as ChatMessage[]) {
+      if (!msg.role || !msg.content || typeof msg.content !== "string") {
+        return new Response(
+          JSON.stringify({ error: "Invalid message format" }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      
+      if (msg.content.length > MAX_MESSAGE_LENGTH) {
+        return new Response(
+          JSON.stringify({ error: `Message too long. Maximum ${MAX_MESSAGE_LENGTH} characters per message.` }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      
+      // Validate role is expected value
+      if (!ALLOWED_ROLES.includes(msg.role)) {
+        return new Response(
+          JSON.stringify({ error: "Invalid message role" }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+    }
+
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     
     if (!LOVABLE_API_KEY) {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    console.log("Received messages from user:", user.id, "Language:", language);
+    console.log("Received messages from user:", user.id, "Language:", language, "Message count:", messages.length);
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
