@@ -34,6 +34,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { adminContent } from "@/data/freeUmrahContent";
 import { ApplicantDetailsModal } from "@/components/ApplicantDetailsModal";
+import { FreeUmrahStats } from "@/components/FreeUmrahStats";
 
 interface Applicant {
   id: string;
@@ -235,6 +236,9 @@ const FreeUmrahAdminPage = () => {
       </header>
 
       <div className="container max-w-6xl mx-auto px-4 py-6 space-y-6">
+        {/* Statistics Dashboard */}
+        <FreeUmrahStats applicants={applicants} language={language} />
+
         <Card>
           <CardHeader>
             <CardTitle>{t.title}</CardTitle>
