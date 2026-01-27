@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,9 +18,11 @@ import {
   Building2, 
   Calendar, 
   FileText,
-  ExternalLink 
+  ExternalLink,
+  Loader2
 } from "lucide-react";
 import { format } from "date-fns";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Applicant {
   id: string;
@@ -79,6 +82,8 @@ const content = {
     appliedOn: "Applied On",
     close: "Close",
     years: "years",
+    loadingDocument: "Loading document...",
+    documentError: "Failed to load document",
   },
   ar: {
     title: "تفاصيل الطلب",
@@ -108,6 +113,8 @@ const content = {
     appliedOn: "تاريخ التقديم",
     close: "إغلاق",
     years: "سنوات",
+    loadingDocument: "جاري تحميل المستند...",
+    documentError: "فشل تحميل المستند",
   },
   ur: {
     title: "درخواست کی تفصیلات",
@@ -137,6 +144,8 @@ const content = {
     appliedOn: "درخواست کی تاریخ",
     close: "بند کریں",
     years: "سال",
+    loadingDocument: "دستاویز لوڈ ہو رہی ہے...",
+    documentError: "دستاویز لوڈ کرنے میں ناکام",
   },
   hi: {
     title: "आवेदन विवरण",
@@ -166,6 +175,8 @@ const content = {
     appliedOn: "आवेदन तिथि",
     close: "बंद करें",
     years: "वर्ष",
+    loadingDocument: "दस्तावेज़ लोड हो रहा है...",
+    documentError: "दस्तावेज़ लोड करने में विफल",
   },
 };
 
@@ -230,6 +241,53 @@ export const ApplicantDetailsModal = ({
   language,
 }: ApplicantDetailsModalProps) => {
   const t = content[language as keyof typeof content] || content.en;
+  const [signedUrl, setSignedUrl] = useState<string | null>(null);
+  const [isLoadingUrl, setIsLoadingUrl] = useState(false);
+  const [urlError, setUrlError] = useState(false);
+
+  // Fetch signed URL when modal opens with a proof document
+  useEffect(() => {
+    const fetchSignedUrl = async () => {
+      if (!open || !applicant?.proof_url) {
+        setSignedUrl(null);
+        setUrlError(false);
+        return;
+      }
+
+      // Check if proof_url is already a full URL (legacy data) or just a path
+      if (applicant.proof_url.startsWith('http')) {
+        // Legacy data with full public URL - use as is
+        setSignedUrl(applicant.proof_url);
+        return;
+      }
+
+      setIsLoadingUrl(true);
+      setUrlError(false);
+
+      try {
+        // Generate a signed URL valid for 1 hour
+        const { data, error } = await supabase.storage
+          .from('proof-documents')
+          .createSignedUrl(applicant.proof_url, 3600);
+
+        if (error) {
+          console.error('Error creating signed URL:', error);
+          setUrlError(true);
+          setSignedUrl(null);
+        } else {
+          setSignedUrl(data.signedUrl);
+        }
+      } catch (err) {
+        console.error('Failed to fetch signed URL:', err);
+        setUrlError(true);
+        setSignedUrl(null);
+      } finally {
+        setIsLoadingUrl(false);
+      }
+    };
+
+    fetchSignedUrl();
+  }, [open, applicant?.proof_url]);
 
   if (!applicant) return null;
 
@@ -238,6 +296,16 @@ export const ApplicantDetailsModal = ({
     applicant.state,
     applicant.pincode,
   ].filter(Boolean);
+
+  // Get file extension from proof_url path for display logic
+  const getFileExtension = (path: string) => {
+    const match = path.match(/\.([^.]+)$/i);
+    return match ? match[1].toLowerCase() : '';
+  };
+
+  const fileExtension = applicant.proof_url ? getFileExtension(applicant.proof_url) : '';
+  const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(fileExtension);
+  const isPdf = fileExtension === 'pdf';
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -331,18 +399,35 @@ export const ApplicantDetailsModal = ({
                   
                   {/* Document Preview */}
                   <div className="border rounded-lg overflow-hidden bg-muted/30">
-                    {applicant.proof_url.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
-                      <img
-                        src={applicant.proof_url}
-                        alt="Proof document"
-                        className="w-full max-h-64 object-contain"
-                      />
-                    ) : applicant.proof_url.match(/\.pdf$/i) ? (
-                      <iframe
-                        src={applicant.proof_url}
-                        className="w-full h-64"
-                        title="Proof document"
-                      />
+                    {isLoadingUrl ? (
+                      <div className="p-8 text-center text-muted-foreground">
+                        <Loader2 className="w-8 h-8 mx-auto mb-2 animate-spin" />
+                        <p className="text-sm">{t.loadingDocument}</p>
+                      </div>
+                    ) : urlError ? (
+                      <div className="p-8 text-center text-muted-foreground">
+                        <XCircle className="w-12 h-12 mx-auto mb-2 opacity-50" />
+                        <p className="text-sm">{t.documentError}</p>
+                      </div>
+                    ) : signedUrl ? (
+                      isImage ? (
+                        <img
+                          src={signedUrl}
+                          alt="Proof document"
+                          className="w-full max-h-64 object-contain"
+                        />
+                      ) : isPdf ? (
+                        <iframe
+                          src={signedUrl}
+                          className="w-full h-64"
+                          title="Proof document"
+                        />
+                      ) : (
+                        <div className="p-8 text-center text-muted-foreground">
+                          <FileText className="w-12 h-12 mx-auto mb-2 opacity-50" />
+                          <p className="text-sm">Document preview not available</p>
+                        </div>
+                      )
                     ) : (
                       <div className="p-8 text-center text-muted-foreground">
                         <FileText className="w-12 h-12 mx-auto mb-2 opacity-50" />
@@ -351,16 +436,18 @@ export const ApplicantDetailsModal = ({
                     )}
                   </div>
 
-                  <Button variant="outline" size="sm" asChild className="w-full">
-                    <a
-                      href={applicant.proof_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <ExternalLink className="w-4 h-4 mr-2" />
-                      {t.viewDocument}
-                    </a>
-                  </Button>
+                  {signedUrl && !isLoadingUrl && !urlError && (
+                    <Button variant="outline" size="sm" asChild className="w-full">
+                      <a
+                        href={signedUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <ExternalLink className="w-4 h-4 mr-2" />
+                        {t.viewDocument}
+                      </a>
+                    </Button>
+                  )}
                 </div>
               ) : (
                 <p className="text-sm text-muted-foreground">{t.noProof}</p>
