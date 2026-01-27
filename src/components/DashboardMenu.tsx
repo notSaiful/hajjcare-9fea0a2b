@@ -29,6 +29,7 @@ import {
   Video,
   HeartHandshake,
   UserSearch,
+  Gift,
 } from "lucide-react";
 
 interface MenuItem {
@@ -253,6 +254,13 @@ const menuSections: MenuSection[] = [
         label: { en: "Haj Mabroor", ar: "حج مبرور", ur: "حج مبرور", hi: "हज मबरूर", ta: "ஹஜ் மப்ரூர்", te: "హజ్ మబ్రూర్", mr: "हज मबरूर", bn: "হজ মাবরুর", or: "ହଜ ମବ୍ରୁର", ml: "ഹജ്ജ് മബ്റൂർ", pa: "ਹੱਜ ਮਬਰੂਰ" },
         route: "/post-hajj",
         color: "indigo",
+      },
+      {
+        id: "free-umrah",
+        icon: Gift,
+        label: { en: "Free Umrah", ar: "عمرة مجانية", ur: "مفت عمرہ", hi: "मुफ्त उमराह", ta: "இலவச உம்ரா", te: "ఉచిత ఉమ్రా", mr: "मोफत उमराह", bn: "বিনামূল্যে উমরাহ", or: "ମାଗଣା ଉମରାହ", ml: "സൗജന്യ ഉംറ", pa: "ਮੁਫ਼ਤ ਉਮਰਾਹ" },
+        route: "/free-umrah",
+        color: "emerald",
       },
     ],
   },

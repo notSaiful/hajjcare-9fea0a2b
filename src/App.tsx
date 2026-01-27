@@ -49,6 +49,7 @@ const AdminRolesPage = lazy(() => import("./pages/AdminRolesPage"));
 const MedicalAlertsPage = lazy(() => import("./pages/MedicalAlertsPage"));
 const EmergencyMetricsPage = lazy(() => import("./pages/EmergencyMetricsPage"));
 const InspectorDashboardPage = lazy(() => import("./pages/InspectorDashboardPage"));
+const FreeUmrahApplyPage = lazy(() => import("./pages/FreeUmrahApplyPage"));
 
 // Legal & Compliance Pages
 const PrivacyPolicyPage = lazy(() => import("./pages/PrivacyPolicyPage"));
@@ -59,7 +60,6 @@ const ContactUsPage = lazy(() => import("./pages/ContactUsPage"));
 const AboutUsPage = lazy(() => import("./pages/AboutUsPage"));
 const PricingDisclosurePage = lazy(() => import("./pages/PricingDisclosurePage"));
 const GovtServicesPage = lazy(() => import("./pages/GovtServicesPage"));
-
 
 // Optimized Query Client with caching
 const queryClient = new QueryClient({
@@ -154,6 +154,7 @@ function AppContent() {
       <Route path="/admin/roles" element={<AdminRolesPage />} />
       <Route path="/admin/metrics" element={<EmergencyMetricsPage />} />
       <Route path="/inspector" element={<InspectorDashboardPage />} />
+      <Route path="/free-umrah" element={<FreeUmrahApplyPage />} />
       {/* Legal & Compliance Pages */}
       <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
       <Route path="/terms-conditions" element={<TermsConditionsPage />} />

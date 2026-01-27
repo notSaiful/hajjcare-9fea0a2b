@@ -14,6 +14,72 @@ export type Database = {
   }
   public: {
     Tables: {
+      applicants: {
+        Row: {
+          age: number
+          application_id: string
+          created_at: string
+          full_name: string
+          id: string
+          low_income: boolean
+          masjid_name: string
+          mobile: string
+          never_umrah: boolean
+          no_money_paid: boolean
+          proof_type: string | null
+          proof_url: string | null
+          role: string
+          social_harmony: boolean
+          state: string
+          status: string
+          updated_at: string
+          user_id: string | null
+          years_of_service: number
+        }
+        Insert: {
+          age: number
+          application_id?: string
+          created_at?: string
+          full_name: string
+          id?: string
+          low_income?: boolean
+          masjid_name: string
+          mobile: string
+          never_umrah?: boolean
+          no_money_paid?: boolean
+          proof_type?: string | null
+          proof_url?: string | null
+          role: string
+          social_harmony?: boolean
+          state: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+          years_of_service: number
+        }
+        Update: {
+          age?: number
+          application_id?: string
+          created_at?: string
+          full_name?: string
+          id?: string
+          low_income?: boolean
+          masjid_name?: string
+          mobile?: string
+          never_umrah?: boolean
+          no_money_paid?: boolean
+          proof_type?: string | null
+          proof_url?: string | null
+          role?: string
+          social_harmony?: boolean
+          state?: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+          years_of_service?: number
+        }
+        Relationships: []
+      }
       family_groups: {
         Row: {
           created_at: string
