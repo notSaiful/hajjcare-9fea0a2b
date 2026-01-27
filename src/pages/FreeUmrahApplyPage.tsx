@@ -12,12 +12,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeft, Loader2, CheckCircle, Search, Upload, FileText, X } from "lucide-react";
+import { ArrowLeft, Loader2, CheckCircle, Search, Upload, FileText, X, RefreshCw } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { z } from "zod";
 import { freeUmrahContent } from "@/data/freeUmrahContent";
+import { DocumentReupload } from "@/components/DocumentReupload";
 
 const applicationSchema = z.object({
   full_name: z.string().min(2, "Name must be at least 2 characters").max(100, "Name too long"),
@@ -54,7 +55,9 @@ const FreeUmrahApplyPage = () => {
   const [submittedId, setSubmittedId] = useState<string | null>(null);
   const [checkId, setCheckId] = useState("");
   const [checkResult, setCheckResult] = useState<string | null>(null);
+  const [checkedApplicationId, setCheckedApplicationId] = useState<string | null>(null);
   const [isChecking, setIsChecking] = useState(false);
+  const [showReupload, setShowReupload] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
@@ -185,19 +188,23 @@ const FreeUmrahApplyPage = () => {
     if (!checkId.trim()) return;
     setIsChecking(true);
     setCheckResult(null);
+    setCheckedApplicationId(null);
+    setShowReupload(false);
 
     // Use the secure status check view (only exposes application_id, status, created_at)
     // This protects PII while allowing public status checks
     const { data, error } = await supabase
       .from("applicants_status_check" as any)
-      .select("status")
+      .select("status, application_id")
       .eq("application_id", checkId.trim())
       .maybeSingle();
 
     if (error || !data) {
       setCheckResult("not_found");
     } else {
-      setCheckResult((data as unknown as { status: string }).status);
+      const typedData = data as unknown as { status: string; application_id: string };
+      setCheckResult(typedData.status);
+      setCheckedApplicationId(typedData.application_id);
     }
     setIsChecking(false);
   };
@@ -278,13 +285,42 @@ const FreeUmrahApplyPage = () => {
               </Button>
             </div>
             {checkResult && (
-              <div className={`p-3 rounded-lg text-center font-medium ${
-                checkResult === "Approved" ? "bg-primary/10 text-primary" :
-                checkResult === "Rejected" ? "bg-destructive/10 text-destructive" :
-                checkResult === "not_found" ? "bg-muted text-muted-foreground" :
-                "bg-accent text-accent-foreground"
-              }`}>
-                {t.status}: {getStatusLabel(checkResult)}
+              <div className="space-y-3">
+                <div className={`p-3 rounded-lg text-center font-medium ${
+                  checkResult === "Approved" ? "bg-primary/10 text-primary" :
+                  checkResult === "Rejected" ? "bg-destructive/10 text-destructive" :
+                  checkResult === "not_found" ? "bg-muted text-muted-foreground" :
+                  "bg-accent text-accent-foreground"
+                }`}>
+                  {t.status}: {getStatusLabel(checkResult)}
+                </div>
+                
+                {/* Show re-upload option for Applied or Under Review */}
+                {checkedApplicationId && (checkResult === "Applied" || checkResult === "Under Review") && (
+                  <>
+                    {!showReupload ? (
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="w-full"
+                        onClick={() => setShowReupload(true)}
+                      >
+                        <RefreshCw className="w-4 h-4 mr-2" />
+                        {t.updateDocument || "Update Document"}
+                      </Button>
+                    ) : (
+                      <DocumentReupload
+                        applicationId={checkedApplicationId}
+                        currentStatus={checkResult}
+                        language={language}
+                        onSuccess={() => {
+                          setShowReupload(false);
+                          handleCheckStatus();
+                        }}
+                      />
+                    )}
+                  </>
+                )}
               </div>
             )}
           </CardContent>

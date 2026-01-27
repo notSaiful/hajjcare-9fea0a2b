@@ -36,6 +36,7 @@ export const freeUmrahContent = {
     completed: "Completed",
     saveIdHint: "Save this ID to check your application status",
     goHome: "Go Home",
+    updateDocument: "Update Proof Document",
   },
   ur: {
     title: "مفت عمرہ – دینی خدمت",
@@ -74,6 +75,7 @@ export const freeUmrahContent = {
     completed: "مکمل",
     saveIdHint: "اپنی درخواست کی حیثیت چیک کرنے کے لیے یہ نمبر محفوظ کریں",
     goHome: "ہوم پر جائیں",
+    updateDocument: "دستاویز اپ ڈیٹ کریں",
   },
   hi: {
     title: "मुफ्त उमराह – दीनी खिदमत",
@@ -112,6 +114,7 @@ export const freeUmrahContent = {
     completed: "पूर्ण",
     saveIdHint: "अपनी आवेदन स्थिति जांचने के लिए यह नंबर सहेजें",
     goHome: "होम पर जाएं",
+    updateDocument: "दस्तावेज़ अपडेट करें",
   },
   ar: {
     title: "عمرة مجانية – خدمة دينية",
@@ -150,6 +153,7 @@ export const freeUmrahContent = {
     completed: "مكتمل",
     saveIdHint: "احفظ هذا الرقم للتحقق من حالة طلبك",
     goHome: "الصفحة الرئيسية",
+    updateDocument: "تحديث المستند",
   },
 };
 
