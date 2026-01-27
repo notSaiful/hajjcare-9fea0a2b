@@ -24,7 +24,6 @@ import {
   Plane,
   Star,
   UtensilsCrossed,
-  Heart,
   Flower2,
   Share2,
   Video,
@@ -160,7 +159,7 @@ const menuSections: MenuSection[] = [
       {
         id: "women",
         icon: Flower2,
-        label: { en: "Women", ar: "النساء", ur: "خواتین", hi: "महिलाएं", ta: "பெண்கள்", te: "మహిళలు", mr: "महिला", bn: "মহিলা", or: "ମହিଳା", ml: "സ്ത്രീകൾ", pa: "ਔਰਤਾਂ" },
+        label: { en: "Women", ar: "النساء", ur: "خواتین", hi: "महिलाएं", ta: "பெண்கள்", te: "మహిళలు", mr: "महिला", bn: "মহিলা", or: "ମହିଳା", ml: "സ്ത്രീകൾ", pa: "ਔਰਤਾਂ" },
         route: "/women",
         color: "pink",
       },
@@ -184,13 +183,6 @@ const menuSections: MenuSection[] = [
         label: { en: "Food", ar: "الطعام", ur: "کھانا", hi: "भोजन", ta: "உணவு", te: "ఆహారం", mr: "अन्न", bn: "খাবার", or: "ଖାଦ୍ୟ", ml: "ഭക്ഷണം", pa: "ਭੋਜਨ" },
         route: "/food",
         color: "amber",
-      },
-      {
-        id: "donors",
-        icon: Heart,
-        label: { en: "Donors", ar: "المتبرعون", ur: "عطیہ دہندگان", hi: "दानदाता", ta: "நன்கொடையாளர்கள்", te: "దాతలు", mr: "दाते", bn: "দাতা", or: "ଦାତା", ml: "ദാതാക്കൾ", pa: "ਦਾਨੀ" },
-        route: "/donors",
-        color: "red",
       },
       {
         id: "socials",
