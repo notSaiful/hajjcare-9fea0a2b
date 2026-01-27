@@ -100,11 +100,9 @@ const FreeUmrahApplyPage = () => {
       
       if (uploadError) throw uploadError;
       
-      const { data: { publicUrl } } = supabase.storage
-        .from('proof-documents')
-        .getPublicUrl(filePath);
-      
-      return publicUrl;
+      // Store the file path, not public URL - coordinators will use signed URLs to view
+      // The proof-documents bucket is private, so public URLs won't work
+      return filePath;
     } catch (err) {
       console.error('Upload error:', err);
       toast.error("Failed to upload document");
