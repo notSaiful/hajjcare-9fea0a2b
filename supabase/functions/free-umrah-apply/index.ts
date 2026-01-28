@@ -24,24 +24,61 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const formData = await req.formData();
+    const contentType = req.headers.get("content-type") || "";
+    
+    let full_name: string;
+    let age: number;
+    let mobile: string;
+    let state: string;
+    let city: string;
+    let pincode: string;
+    let role: string;
+    let masjid_name: string;
+    let years_of_service: number;
+    let never_umrah: boolean;
+    let low_income: boolean;
+    let social_harmony: boolean;
+    let no_money_paid: boolean;
+    let proof_type: string;
+    let document: File | null = null;
 
-    // Extract all form fields
-    const full_name = formData.get("full_name") as string;
-    const age = parseInt(formData.get("age") as string) || 0;
-    const mobile = formData.get("mobile") as string;
-    const state = formData.get("state") as string;
-    const city = formData.get("city") as string;
-    const pincode = formData.get("pincode") as string;
-    const role = formData.get("role") as string;
-    const masjid_name = formData.get("masjid_name") as string;
-    const years_of_service = parseInt(formData.get("years_of_service") as string) || 0;
-    const never_umrah = formData.get("never_umrah") === "true";
-    const low_income = formData.get("low_income") === "true";
-    const social_harmony = formData.get("social_harmony") === "true";
-    const no_money_paid = formData.get("no_money_paid") === "true";
-    const proof_type = formData.get("proof_type") as string || "Masjid Certificate";
-    const document = formData.get("document") as File | null;
+    // Handle both FormData and JSON content types
+    if (contentType.includes("multipart/form-data")) {
+      const formData = await req.formData();
+      full_name = formData.get("full_name") as string;
+      age = parseInt(formData.get("age") as string) || 0;
+      mobile = formData.get("mobile") as string;
+      state = formData.get("state") as string;
+      city = formData.get("city") as string;
+      pincode = formData.get("pincode") as string;
+      role = formData.get("role") as string;
+      masjid_name = formData.get("masjid_name") as string;
+      years_of_service = parseInt(formData.get("years_of_service") as string) || 0;
+      never_umrah = formData.get("never_umrah") === "true";
+      low_income = formData.get("low_income") === "true";
+      social_harmony = formData.get("social_harmony") === "true";
+      no_money_paid = formData.get("no_money_paid") === "true";
+      proof_type = formData.get("proof_type") as string || "Masjid Certificate";
+      document = formData.get("document") as File | null;
+    } else {
+      // Handle JSON body (fallback for testing or alternative clients)
+      const body = await req.json();
+      full_name = body.full_name;
+      age = parseInt(body.age) || 0;
+      mobile = body.mobile;
+      state = body.state;
+      city = body.city;
+      pincode = body.pincode;
+      role = body.role;
+      masjid_name = body.masjid_name;
+      years_of_service = parseInt(body.years_of_service) || 0;
+      never_umrah = body.never_umrah === true || body.never_umrah === "true";
+      low_income = body.low_income === true || body.low_income === "true";
+      social_harmony = body.social_harmony === true || body.social_harmony === "true";
+      no_money_paid = body.no_money_paid === true || body.no_money_paid === "true";
+      proof_type = body.proof_type || "Masjid Certificate";
+      // No document upload support via JSON
+    }
 
     // Validate required fields
     if (!full_name || !mobile || !city || !state || !pincode || !role || !masjid_name) {
