@@ -1,18 +1,9 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { ArrowLeft, Loader2, CheckCircle, Search, Upload, FileText, X, RefreshCw } from "lucide-react";
+import { ArrowLeft, Loader2, CheckCircle, Search, RefreshCw, ChevronLeft, ChevronRight } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -20,77 +11,55 @@ import { z } from "zod";
 import { freeUmrahContent } from "@/data/freeUmrahContent";
 import { DocumentReupload } from "@/components/DocumentReupload";
 import { compressImage, needsCompression } from "@/lib/imageCompression";
-import { StateSelector } from "@/components/StateSelector";
-import { PhoneInputWithCountry } from "@/components/PhoneInputWithCountry";
+import { WizardProgress } from "@/components/free-umrah/WizardProgress";
+import { StepPersonalInfo } from "@/components/free-umrah/StepPersonalInfo";
+import { StepLocation } from "@/components/free-umrah/StepLocation";
+import { StepServiceDetails } from "@/components/free-umrah/StepServiceDetails";
+import { StepDeclarations } from "@/components/free-umrah/StepDeclarations";
+import { FreeUmrahFormData, initialFormData } from "@/components/free-umrah/types";
 
-// Note: generateApplicationId is now handled server-side in the edge function
-
-// All Indian States and Union Territories
-const INDIAN_STATES = [
-  "Andhra Pradesh",
-  "Arunachal Pradesh",
-  "Assam",
-  "Bihar",
-  "Chhattisgarh",
-  "Goa",
-  "Gujarat",
-  "Haryana",
-  "Himachal Pradesh",
-  "Jharkhand",
-  "Karnataka",
-  "Kerala",
-  "Madhya Pradesh",
-  "Maharashtra",
-  "Manipur",
-  "Meghalaya",
-  "Mizoram",
-  "Nagaland",
-  "Odisha",
-  "Punjab",
-  "Rajasthan",
-  "Sikkim",
-  "Tamil Nadu",
-  "Telangana",
-  "Tripura",
-  "Uttar Pradesh",
-  "Uttarakhand",
-  "West Bengal",
-  // Union Territories
-  "Andaman and Nicobar Islands",
-  "Chandigarh",
-  "Dadra and Nagar Haveli and Daman and Diu",
-  "Delhi",
-  "Jammu and Kashmir",
-  "Ladakh",
-  "Lakshadweep",
-  "Puducherry",
-];
-
-const applicationSchema = z.object({
+// Step-specific validation schemas
+const step1Schema = z.object({
   full_name: z.string().min(2, "Name must be at least 2 characters").max(100, "Name too long"),
   age: z.number().min(18, "Must be at least 18").max(100, "Age must be under 100"),
   mobile: z.string().min(7, "Enter valid phone number").max(15, "Phone number too long"),
   country_code: z.string().min(1, "Country code required"),
+});
+
+const step2Schema = z.object({
   state: z.string().min(2, "State is required"),
   city: z.string().min(2, "City is required"),
   pincode: z.string().regex(/^[0-9]{6}$/, "Enter valid 6-digit pincode"),
+});
+
+const step3Schema = z.object({
   role: z.enum(["Imam", "Muazzin", "Hafiz"], { required_error: "Select your role" }),
   masjid_name: z.string().min(2, "Masjid/Madrasa name is required"),
   years_of_service: z.number().min(0, "Years must be positive").max(80, "Invalid years"),
+});
+
+const step4Schema = z.object({
   never_umrah: z.literal(true, { errorMap: () => ({ message: "Declaration required" }) }),
   low_income: z.literal(true, { errorMap: () => ({ message: "Declaration required" }) }),
   social_harmony: z.literal(true, { errorMap: () => ({ message: "Declaration required" }) }),
   no_money_paid: z.literal(true, { errorMap: () => ({ message: "Declaration required" }) }),
-  proof_type: z.enum(["Masjid Certificate"]).optional(),
 });
 
+const TOTAL_STEPS = 4;
+
+const stepLabels = {
+  en: ["Personal", "Location", "Service", "Confirm"],
+  ar: ["شخصي", "الموقع", "الخدمة", "تأكيد"],
+  ur: ["ذاتی", "مقام", "خدمت", "تصدیق"],
+  hi: ["व्यक्तिगत", "स्थान", "सेवा", "पुष्टि"],
+};
 
 const FreeUmrahApplyPage = () => {
   const { language } = useLanguage();
   const navigate = useNavigate();
   const t = freeUmrahContent[language as keyof typeof freeUmrahContent] || freeUmrahContent.en;
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittedId, setSubmittedId] = useState<string | null>(null);
   const [checkId, setCheckId] = useState("");
@@ -101,36 +70,18 @@ const FreeUmrahApplyPage = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  const [formData, setFormData] = useState({
-    full_name: "",
-    age: "",
-    mobile: "",
-    country_code: "+91",
-    state: "",
-    city: "",
-    pincode: "",
-    role: "",
-    masjid_name: "",
-    years_of_service: "",
-    never_umrah: false,
-    low_income: false,
-    social_harmony: false,
-    no_money_paid: false,
-    proof_type: "Masjid Certificate",
-  });
+  const [formData, setFormData] = useState<FreeUmrahFormData>(initialFormData);
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate file type - only PDF and images allowed
     const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/gif', 'image/webp'];
     if (!allowedTypes.includes(file.type)) {
       toast.error("Only PDF and image files (JPEG, PNG, GIF, WebP) are allowed");
       return;
     }
 
-    // For images, try to compress if too large
     if (file.type.startsWith('image/') && needsCompression(file, 2)) {
       try {
         toast.info("Compressing image...");
@@ -149,7 +100,6 @@ const FreeUmrahApplyPage = () => {
       }
     }
 
-    // For PDFs or small images, check size directly
     if (file.size > 2 * 1024 * 1024) {
       toast.error("File size must be less than 2MB");
       return;
@@ -158,45 +108,83 @@ const FreeUmrahApplyPage = () => {
     setSelectedFile(file);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const validateCurrentStep = (): boolean => {
+    setErrors({});
+    try {
+      switch (currentStep) {
+        case 1:
+          step1Schema.parse({
+            ...formData,
+            age: parseInt(formData.age) || 0,
+          });
+          break;
+        case 2:
+          step2Schema.parse(formData);
+          break;
+        case 3:
+          step3Schema.parse({
+            ...formData,
+            role: formData.role as "Imam" | "Muazzin" | "Hafiz",
+            years_of_service: parseInt(formData.years_of_service) || 0,
+          });
+          break;
+        case 4:
+          step4Schema.parse(formData);
+          break;
+      }
+      return true;
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        const fieldErrors: Record<string, string> = {};
+        err.errors.forEach((e) => {
+          if (e.path[0]) {
+            fieldErrors[e.path[0].toString()] = e.message;
+          }
+        });
+        setErrors(fieldErrors);
+      }
+      return false;
+    }
+  };
+
+  const handleNext = () => {
+    if (validateCurrentStep()) {
+      setCurrentStep((prev) => Math.min(prev + 1, TOTAL_STEPS));
+    }
+  };
+
+  const handleBack = () => {
+    setCurrentStep((prev) => Math.max(prev - 1, 1));
+    setErrors({});
+  };
+
+  const handleSubmit = async () => {
+    if (!validateCurrentStep()) return;
     setErrors({});
 
     try {
-      // Client-side validation first
-      const validated = applicationSchema.parse({
-        ...formData,
-        age: parseInt(formData.age) || 0,
-        years_of_service: parseInt(formData.years_of_service) || 0,
-        role: formData.role as "Imam" | "Muazzin" | "Hafiz",
-        proof_type: formData.proof_type as "Masjid Certificate",
-      });
-
       setIsSubmitting(true);
 
-      // Build FormData for edge function
       const submitFormData = new FormData();
-      submitFormData.append("full_name", validated.full_name);
-      submitFormData.append("age", validated.age.toString());
-      // Combine country code with mobile number
-      submitFormData.append("mobile", `${validated.country_code}${validated.mobile}`);
-      submitFormData.append("state", validated.state);
-      submitFormData.append("city", validated.city);
-      submitFormData.append("pincode", validated.pincode);
-      submitFormData.append("role", validated.role);
-      submitFormData.append("masjid_name", validated.masjid_name);
-      submitFormData.append("years_of_service", validated.years_of_service.toString());
-      submitFormData.append("never_umrah", validated.never_umrah.toString());
-      submitFormData.append("low_income", validated.low_income.toString());
-      submitFormData.append("social_harmony", validated.social_harmony.toString());
-      submitFormData.append("no_money_paid", validated.no_money_paid.toString());
-      submitFormData.append("proof_type", validated.proof_type || "Masjid Certificate");
+      submitFormData.append("full_name", formData.full_name);
+      submitFormData.append("age", formData.age);
+      submitFormData.append("mobile", `${formData.country_code}${formData.mobile}`);
+      submitFormData.append("state", formData.state);
+      submitFormData.append("city", formData.city);
+      submitFormData.append("pincode", formData.pincode);
+      submitFormData.append("role", formData.role);
+      submitFormData.append("masjid_name", formData.masjid_name);
+      submitFormData.append("years_of_service", formData.years_of_service);
+      submitFormData.append("never_umrah", formData.never_umrah.toString());
+      submitFormData.append("low_income", formData.low_income.toString());
+      submitFormData.append("social_harmony", formData.social_harmony.toString());
+      submitFormData.append("no_money_paid", formData.no_money_paid.toString());
+      submitFormData.append("proof_type", formData.proof_type);
       
       if (selectedFile) {
         submitFormData.append("document", selectedFile);
       }
 
-      // Submit via edge function
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/free-umrah-apply`,
         {
@@ -217,19 +205,9 @@ const FreeUmrahApplyPage = () => {
       setSubmittedId(result.applicationId);
       toast.success(t.success);
     } catch (err) {
-      if (err instanceof z.ZodError) {
-        const fieldErrors: Record<string, string> = {};
-        err.errors.forEach((e) => {
-          if (e.path[0]) {
-            fieldErrors[e.path[0].toString()] = e.message;
-          }
-        });
-        setErrors(fieldErrors);
-      } else {
-        const errorMessage = err instanceof Error ? err.message : "Failed to submit application";
-        toast.error(errorMessage);
-        console.error(err);
-      }
+      const errorMessage = err instanceof Error ? err.message : "Failed to submit application";
+      toast.error(errorMessage);
+      console.error(err);
     } finally {
       setIsSubmitting(false);
     }
@@ -242,8 +220,6 @@ const FreeUmrahApplyPage = () => {
     setCheckedApplicationId(null);
     setShowReupload(false);
 
-    // Use the secure status check view (only exposes application_id, status, created_at)
-    // This protects PII while allowing public status checks
     const { data, error } = await supabase
       .from("applicants_status_check" as any)
       .select("status, application_id")
@@ -272,6 +248,9 @@ const FreeUmrahApplyPage = () => {
     return statusMap[status] || status;
   };
 
+  const currentStepLabels = stepLabels[language as keyof typeof stepLabels] || stepLabels.en;
+
+  // Success screen
   if (submittedId) {
     return (
       <div className="min-h-screen bg-background">
@@ -286,7 +265,7 @@ const FreeUmrahApplyPage = () => {
         <div className="container max-w-md mx-auto px-4 py-8">
           <Card className="text-center">
             <CardContent className="pt-8 pb-6 space-y-4">
-              <CheckCircle className="w-16 h-16 text-primary mx-auto" />
+              <CheckCircle className="w-16 h-16 text-primary mx-auto animate-scale-in" />
               <h2 className="text-xl font-semibold text-foreground">{t.success}</h2>
               <div className="bg-muted p-4 rounded-lg">
                 <p className="text-sm text-muted-foreground">{t.applicationId}</p>
@@ -347,7 +326,6 @@ const FreeUmrahApplyPage = () => {
                   {t.status}: {getStatusLabel(checkResult)}
                 </div>
                 
-                {/* Show re-upload option for SUBMITTED or UNDER_REVIEW */}
                 {checkedApplicationId && (checkResult === "SUBMITTED" || checkResult === "UNDER_REVIEW") && (
                   <>
                     {!showReupload ? (
@@ -378,278 +356,100 @@ const FreeUmrahApplyPage = () => {
           </CardContent>
         </Card>
 
-        {/* Application Form */}
+        {/* Application Form Wizard */}
         <Card>
-          <CardHeader>
+          <CardHeader className="pb-4">
             <CardTitle>{t.title}</CardTitle>
             <CardDescription>{t.subtitle}</CardDescription>
           </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="full_name">{t.fullName} *</Label>
-                <Input
-                  id="full_name"
-                  value={formData.full_name}
-                  onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-                  required
+          <CardContent className="space-y-6">
+            {/* Progress indicator */}
+            <WizardProgress
+              currentStep={currentStep}
+              totalSteps={TOTAL_STEPS}
+              stepLabels={currentStepLabels}
+            />
+
+            {/* Step content */}
+            <div className="min-h-[280px]">
+              {currentStep === 1 && (
+                <StepPersonalInfo
+                  formData={formData}
+                  setFormData={setFormData}
+                  errors={errors}
+                  t={t}
                 />
-                {errors.full_name && <p className="text-sm text-destructive">{errors.full_name}</p>}
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="age">{t.age} *</Label>
-                  <Input
-                    id="age"
-                    type="number"
-                    min="18"
-                    max="100"
-                    value={formData.age}
-                    onChange={(e) => setFormData({ ...formData, age: e.target.value })}
-                    required
-                  />
-                  {errors.age && <p className="text-sm text-destructive">{errors.age}</p>}
-                </div>
-              </div>
-
-              {/* WhatsApp Number with Country Code */}
-              <div className="space-y-2">
-                <Label>{t.mobile} * <span className="text-xs text-muted-foreground">(WhatsApp)</span></Label>
-                <div className="flex gap-2">
-                  <Select
-                    value={formData.country_code}
-                    onValueChange={(value) => setFormData({ ...formData, country_code: value })}
-                  >
-                    <SelectTrigger className="w-[120px]">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="bg-popover z-50">
-                      <SelectItem value="+91">🇮🇳 +91</SelectItem>
-                      <SelectItem value="+966">🇸🇦 +966</SelectItem>
-                      <SelectItem value="+92">🇵🇰 +92</SelectItem>
-                      <SelectItem value="+880">🇧🇩 +880</SelectItem>
-                      <SelectItem value="+60">🇲🇾 +60</SelectItem>
-                      <SelectItem value="+62">🇮🇩 +62</SelectItem>
-                      <SelectItem value="+971">🇦🇪 +971</SelectItem>
-                      <SelectItem value="+974">🇶🇦 +974</SelectItem>
-                      <SelectItem value="+965">🇰🇼 +965</SelectItem>
-                      <SelectItem value="+973">🇧🇭 +973</SelectItem>
-                      <SelectItem value="+968">🇴🇲 +968</SelectItem>
-                      <SelectItem value="+20">🇪🇬 +20</SelectItem>
-                      <SelectItem value="+90">🇹🇷 +90</SelectItem>
-                      <SelectItem value="+44">🇬🇧 +44</SelectItem>
-                      <SelectItem value="+1">🇺🇸 +1</SelectItem>
-                      <SelectItem value="+61">🇦🇺 +61</SelectItem>
-                      <SelectItem value="+27">🇿🇦 +27</SelectItem>
-                      <SelectItem value="+234">🇳🇬 +234</SelectItem>
-                      <SelectItem value="+33">🇫🇷 +33</SelectItem>
-                      <SelectItem value="+49">🇩🇪 +49</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Input
-                    id="mobile"
-                    type="tel"
-                    inputMode="numeric"
-                    maxLength={15}
-                    placeholder="9876543210"
-                    value={formData.mobile}
-                    onChange={(e) => {
-                      const value = e.target.value.replace(/\D/g, '').slice(0, 15);
-                      setFormData({ ...formData, mobile: value });
-                    }}
-                    className="flex-1"
-                    required
-                  />
-                </div>
-                {errors.mobile && <p className="text-sm text-destructive">{errors.mobile}</p>}
-                {errors.country_code && <p className="text-sm text-destructive">{errors.country_code}</p>}
-              </div>
-
-              <div className="space-y-2">
-                <Label>{t.state} *</Label>
-                <StateSelector
-                  value={formData.state}
-                  onValueChange={(value) => setFormData({ ...formData, state: value })}
-                  placeholder={t.state}
+              )}
+              {currentStep === 2 && (
+                <StepLocation
+                  formData={formData}
+                  setFormData={setFormData}
+                  errors={errors}
+                  t={t}
                 />
-                {errors.state && <p className="text-sm text-destructive">{errors.state}</p>}
-              </div>
+              )}
+              {currentStep === 3 && (
+                <StepServiceDetails
+                  formData={formData}
+                  setFormData={setFormData}
+                  errors={errors}
+                  t={t}
+                />
+              )}
+              {currentStep === 4 && (
+                <StepDeclarations
+                  formData={formData}
+                  setFormData={setFormData}
+                  errors={errors}
+                  selectedFile={selectedFile}
+                  onFileSelect={handleFileSelect}
+                  onFileClear={() => setSelectedFile(null)}
+                  t={t}
+                />
+              )}
+            </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="city">{t.city} *</Label>
-                  <Input
-                    id="city"
-                    value={formData.city}
-                    onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                    required
-                  />
-                  {errors.city && <p className="text-sm text-destructive">{errors.city}</p>}
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="pincode">{t.pincode} *</Label>
-                  <Input
-                    id="pincode"
-                    value={formData.pincode}
-                    onChange={(e) => setFormData({ ...formData, pincode: e.target.value })}
-                    maxLength={6}
-                    required
-                  />
-                  {errors.pincode && <p className="text-sm text-destructive">{errors.pincode}</p>}
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label>{t.role} *</Label>
-                <Select
-                  value={formData.role}
-                  onValueChange={(value) => setFormData({ ...formData, role: value })}
+            {/* Navigation buttons */}
+            <div className="flex gap-3 pt-4 border-t">
+              {currentStep > 1 && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleBack}
+                  className="flex-1"
                 >
-                  <SelectTrigger>
-                    <SelectValue placeholder={t.role} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Imam">Imam</SelectItem>
-                    <SelectItem value="Muazzin">Muazzin</SelectItem>
-                    <SelectItem value="Hafiz">Hafiz</SelectItem>
-                  </SelectContent>
-                </Select>
-                {errors.role && <p className="text-sm text-destructive">{errors.role}</p>}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="masjid_name">{t.masjidName} *</Label>
-                <Input
-                  id="masjid_name"
-                  value={formData.masjid_name}
-                  onChange={(e) => setFormData({ ...formData, masjid_name: e.target.value })}
-                  required
-                />
-                {errors.masjid_name && <p className="text-sm text-destructive">{errors.masjid_name}</p>}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="years_of_service">{t.yearsOfService} *</Label>
-                <Input
-                  id="years_of_service"
-                  type="number"
-                  min="0"
-                  value={formData.years_of_service}
-                  onChange={(e) => setFormData({ ...formData, years_of_service: e.target.value })}
-                  required
-                />
-                {errors.years_of_service && <p className="text-sm text-destructive">{errors.years_of_service}</p>}
-              </div>
-
-              <div className="space-y-3 pt-4 border-t">
-                <Label className="text-base font-semibold">{t.declarations}</Label>
-                
-                <div className="flex items-start gap-3">
-                  <Checkbox
-                    id="never_umrah"
-                    checked={formData.never_umrah}
-                    onCheckedChange={(checked) => setFormData({ ...formData, never_umrah: !!checked })}
-                  />
-                  <Label htmlFor="never_umrah" className="text-sm leading-tight cursor-pointer">
-                    {t.neverUmrah} *
-                  </Label>
-                </div>
-                {errors.never_umrah && <p className="text-sm text-destructive">{errors.never_umrah}</p>}
-
-                <div className="flex items-start gap-3">
-                  <Checkbox
-                    id="low_income"
-                    checked={formData.low_income}
-                    onCheckedChange={(checked) => setFormData({ ...formData, low_income: !!checked })}
-                  />
-                  <Label htmlFor="low_income" className="text-sm leading-tight cursor-pointer">
-                    {t.lowIncome} *
-                  </Label>
-                </div>
-                {errors.low_income && <p className="text-sm text-destructive">{errors.low_income}</p>}
-
-                <div className="flex items-start gap-3">
-                  <Checkbox
-                    id="social_harmony"
-                    checked={formData.social_harmony}
-                    onCheckedChange={(checked) => setFormData({ ...formData, social_harmony: !!checked })}
-                  />
-                  <Label htmlFor="social_harmony" className="text-sm leading-tight cursor-pointer">
-                    {t.socialHarmony} *
-                  </Label>
-                </div>
-                {errors.social_harmony && <p className="text-sm text-destructive">{errors.social_harmony}</p>}
-
-                <div className="flex items-start gap-3">
-                  <Checkbox
-                    id="no_money_paid"
-                    checked={formData.no_money_paid}
-                    onCheckedChange={(checked) => setFormData({ ...formData, no_money_paid: !!checked })}
-                  />
-                  <Label htmlFor="no_money_paid" className="text-sm leading-tight cursor-pointer">
-                    {t.noMoneyPaid} *
-                  </Label>
-                </div>
-                {errors.no_money_paid && <p className="text-sm text-destructive">{errors.no_money_paid}</p>}
-              </div>
-
-              {/* Hidden proof type - defaulting to Masjid Certificate */}
-              <input type="hidden" value="Masjid Certificate" />
-
-              {/* File Upload */}
-              <div className="space-y-2">
-                <Label>{t.proofDocument} <span className="text-xs text-muted-foreground">(Max 2MB)</span></Label>
-                <div 
-                  className="border-2 border-dashed border-border rounded-lg p-4 text-center cursor-pointer hover:border-primary/50 transition-colors"
-                  onClick={() => fileInputRef.current?.click()}
+                  <ChevronLeft className="w-4 h-4 mr-1" />
+                  {language === "ar" || language === "ur" ? "السابق" : "Back"}
+                </Button>
+              )}
+              
+              {currentStep < TOTAL_STEPS ? (
+                <Button
+                  type="button"
+                  onClick={handleNext}
+                  className="flex-1"
                 >
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept=".pdf,.jpg,.jpeg,.png,.gif,.webp,image/jpeg,image/png,image/gif,image/webp,application/pdf"
-                    onChange={handleFileSelect}
-                    className="hidden"
-                  />
-                  {selectedFile ? (
-                    <div className="flex items-center justify-center gap-2">
-                      <FileText className="w-5 h-5 text-primary" />
-                      <span className="text-sm text-foreground truncate max-w-[200px]">
-                        {selectedFile.name}
-                      </span>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedFile(null);
-                        }}
-                      >
-                        <X className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  ) : (
+                  {language === "ar" || language === "ur" ? "التالي" : "Next"}
+                  <ChevronRight className="w-4 h-4 ml-1" />
+                </Button>
+              ) : (
+                <Button
+                  type="button"
+                  onClick={handleSubmit}
+                  disabled={isSubmitting}
+                  className="flex-1"
+                >
+                  {isSubmitting ? (
                     <>
-                      <Upload className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
-                      <p className="text-sm text-muted-foreground">{t.uploadHint}</p>
-                      <p className="text-xs text-muted-foreground mt-1">PDF, JPEG, PNG • Max 2MB</p>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      {t.submitting}
                     </>
+                  ) : (
+                    t.submit
                   )}
-                </div>
-              </div>
-
-              <Button type="submit" className="w-full" disabled={isSubmitting}>
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    {t.submitting}
-                  </>
-                ) : (
-                  t.submit
-                )}
-              </Button>
-            </form>
+                </Button>
+              )}
+            </div>
           </CardContent>
         </Card>
       </div>
