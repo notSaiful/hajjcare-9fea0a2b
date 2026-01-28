@@ -30,6 +30,7 @@ export type Database = {
           pincode: string | null
           proof_type: string | null
           proof_url: string | null
+          rejection_reason: string | null
           role: string
           social_harmony: boolean
           state: string
@@ -53,6 +54,7 @@ export type Database = {
           pincode?: string | null
           proof_type?: string | null
           proof_url?: string | null
+          rejection_reason?: string | null
           role: string
           social_harmony?: boolean
           state: string
@@ -76,6 +78,7 @@ export type Database = {
           pincode?: string | null
           proof_type?: string | null
           proof_url?: string | null
+          rejection_reason?: string | null
           role?: string
           social_harmony?: boolean
           state?: string

@@ -43,6 +43,7 @@ interface Applicant {
   proof_type: string | null;
   proof_url: string | null;
   status: string;
+  rejection_reason: string | null;
   created_at: string;
 }
 
@@ -80,6 +81,7 @@ const content = {
     applicationId: "Application ID",
     status: "Status",
     appliedOn: "Applied On",
+    rejectionReason: "Rejection Reason",
     close: "Close",
     years: "years",
     loadingDocument: "Loading document...",
@@ -111,6 +113,7 @@ const content = {
     applicationId: "رقم الطلب",
     status: "الحالة",
     appliedOn: "تاريخ التقديم",
+    rejectionReason: "سبب الرفض",
     close: "إغلاق",
     years: "سنوات",
     loadingDocument: "جاري تحميل المستند...",
@@ -142,6 +145,7 @@ const content = {
     applicationId: "درخواست نمبر",
     status: "حیثیت",
     appliedOn: "درخواست کی تاریخ",
+    rejectionReason: "مسترد کرنے کی وجہ",
     close: "بند کریں",
     years: "سال",
     loadingDocument: "دستاویز لوڈ ہو رہی ہے...",
@@ -173,6 +177,7 @@ const content = {
     applicationId: "आवेदन आईडी",
     status: "स्थिति",
     appliedOn: "आवेदन तिथि",
+    rejectionReason: "अस्वीकृति का कारण",
     close: "बंद करें",
     years: "वर्ष",
     loadingDocument: "दस्तावेज़ लोड हो रहा है...",
@@ -334,6 +339,12 @@ export const ApplicantDetailsModal = ({
                   {format(new Date(applicant.created_at), "PPP")}
                 </span>
               </div>
+              {applicant.status === "Rejected" && applicant.rejection_reason && (
+                <div className="pt-2 border-t border-border/50">
+                  <span className="text-sm text-muted-foreground block mb-1">{t.rejectionReason}</span>
+                  <p className="text-sm text-destructive">{applicant.rejection_reason}</p>
+                </div>
+              )}
             </div>
 
             <Separator />

@@ -12,6 +12,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import {
   Table,
   TableBody,
@@ -55,6 +57,7 @@ interface Applicant {
   proof_type: string | null;
   proof_url: string | null;
   status: string;
+  rejection_reason: string | null;
   created_at: string;
 }
 
@@ -74,6 +77,7 @@ const FreeUmrahAdminPage = () => {
     open: false,
     action: null,
   });
+  const [rejectionReason, setRejectionReason] = useState("");
   const [isUpdating, setIsUpdating] = useState(false);
 
   useEffect(() => {
@@ -162,9 +166,20 @@ const FreeUmrahAdminPage = () => {
     if (!selectedApplicant) return;
 
     setIsUpdating(true);
+    
+    const updateData: { status: string; rejection_reason?: string | null } = { status: newStatus };
+    
+    // Include rejection reason when rejecting
+    if (newStatus === 'Rejected' && rejectionReason.trim()) {
+      updateData.rejection_reason = rejectionReason.trim();
+    } else if (newStatus === 'Approved') {
+      // Clear rejection reason when approving
+      updateData.rejection_reason = null;
+    }
+    
     const { error } = await supabase
       .from("applicants")
-      .update({ status: newStatus })
+      .update(updateData)
       .eq("id", selectedApplicant.id);
 
     if (error) {
@@ -173,7 +188,7 @@ const FreeUmrahAdminPage = () => {
     } else {
       toast.success(t.updated);
       setApplicants((prev) =>
-        prev.map((a) => (a.id === selectedApplicant.id ? { ...a, status: newStatus } : a))
+        prev.map((a) => (a.id === selectedApplicant.id ? { ...a, status: newStatus, rejection_reason: updateData.rejection_reason ?? a.rejection_reason } : a))
       );
       
       // Send WhatsApp notification for Approved/Rejected
@@ -185,6 +200,7 @@ const FreeUmrahAdminPage = () => {
     setIsUpdating(false);
     setActionDialog({ open: false, action: null });
     setSelectedApplicant(null);
+    setRejectionReason("");
   };
 
   const getStatusBadge = (status: string) => {
@@ -389,7 +405,10 @@ const FreeUmrahAdminPage = () => {
       {/* Confirmation Dialog */}
       <Dialog
         open={actionDialog.open}
-        onOpenChange={(open) => setActionDialog({ open, action: null })}
+        onOpenChange={(open) => {
+          setActionDialog({ open, action: null });
+          if (!open) setRejectionReason("");
+        }}
       >
         <DialogContent>
           <DialogHeader>
@@ -404,10 +423,28 @@ const FreeUmrahAdminPage = () => {
               )}
             </DialogDescription>
           </DialogHeader>
+          
+          {/* Rejection reason input */}
+          {actionDialog.action === "reject" && (
+            <div className="space-y-2 py-2">
+              <Label htmlFor="rejection-reason">Rejection Reason (Optional)</Label>
+              <Textarea
+                id="rejection-reason"
+                placeholder="Enter reason for rejection..."
+                value={rejectionReason}
+                onChange={(e) => setRejectionReason(e.target.value)}
+                rows={3}
+              />
+            </div>
+          )}
+          
           <DialogFooter className="gap-2">
             <Button
               variant="outline"
-              onClick={() => setActionDialog({ open: false, action: null })}
+              onClick={() => {
+                setActionDialog({ open: false, action: null });
+                setRejectionReason("");
+              }}
             >
               Cancel
             </Button>
