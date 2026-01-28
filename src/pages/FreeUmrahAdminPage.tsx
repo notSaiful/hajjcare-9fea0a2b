@@ -390,6 +390,19 @@ const FreeUmrahAdminPage = () => {
                                 </Button>
                               </>
                             )}
+                            {applicant.status === "VERIFIED" && (
+                              <Button
+                                size="sm"
+                                className="bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                                onClick={() => {
+                                  setSelectedApplicant(applicant);
+                                  updateStatus("SELECTED");
+                                }}
+                              >
+                                <CheckCircle className="w-4 h-4 mr-1" />
+                                <span className="hidden sm:inline">{t.select}</span>
+                              </Button>
+                            )}
                           </div>
                         </TableCell>
                       </TableRow>

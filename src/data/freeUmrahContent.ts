@@ -183,6 +183,7 @@ export const adminContent = {
     masjid: "Masjid/Madrasa",
     service: "Years of Service",
     declarations: "Declarations",
+    select: "Select",
   },
   ur: {
     title: "مفت عمرہ درخواستیں",
@@ -209,6 +210,7 @@ export const adminContent = {
     masjid: "مسجد/مدرسہ",
     service: "خدمت کے سال",
     declarations: "اقرار نامے",
+    select: "منتخب کریں",
   },
   hi: {
     title: "मुफ्त उमराह आवेदन",
@@ -235,6 +237,7 @@ export const adminContent = {
     masjid: "मस्जिद/मदरसा",
     service: "सेवा के वर्ष",
     declarations: "घोषणाएं",
+    select: "चयन करें",
   },
   ar: {
     title: "طلبات العمرة المجانية",
@@ -261,5 +264,6 @@ export const adminContent = {
     masjid: "المسجد/المدرسة",
     service: "سنوات الخدمة",
     declarations: "الإقرارات",
+    select: "اختيار",
   },
 };
