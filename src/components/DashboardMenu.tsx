@@ -30,6 +30,7 @@ import {
   HeartHandshake,
   UserSearch,
   Gift,
+  ClipboardCheck,
 } from "lucide-react";
 
 interface MenuItem {
@@ -233,6 +234,13 @@ const menuSections: MenuSection[] = [
         label: { en: "Directory", ar: "الدليل", ur: "ڈائریکٹری", hi: "डायरेक्टरी", ta: "அடைவு", te: "డైరెక్టరీ", mr: "डायरेक्टरी", bn: "ডিরেক্টরি", or: "ଡିରେକ୍ଟୋରୀ", ml: "ഡയറക്ടറി", pa: "ਡਾਇਰੈਕਟਰੀ" },
         route: "/haj-directory",
         color: "emerald",
+      },
+      {
+        id: "haj-inspectors",
+        icon: ClipboardCheck,
+        label: { en: "Haj Inspectors", ar: "مفتشو الحج", ur: "حج انسپکٹرز", hi: "हज इंस्पेक्टर", ta: "ஹஜ் ஆய்வாளர்", te: "హజ్ ఇన్‌స్పెక్టర్లు", mr: "हज इन्स्पेक्टर", bn: "হজ ইন্সপেক্টর", or: "ହଜ ଇନ୍ସପେକ୍ଟର", ml: "ഹജ്ജ് ഇൻസ്‌പെക്ടർമാർ", pa: "ਹੱਜ ਇੰਸਪੈਕਟਰ" },
+        route: "/haj-inspectors",
+        color: "indigo",
       },
       {
         id: "assistant",
