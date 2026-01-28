@@ -51,8 +51,10 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Validate mobile format (10 digits)
-    if (!/^[0-9]{10}$/.test(mobile)) {
+    // Validate mobile format (international: country code + number, 7-20 digits total)
+    // Strip the + prefix if present for validation
+    const cleanMobile = mobile.replace(/^\+/, '');
+    if (!/^[0-9]{7,20}$/.test(cleanMobile)) {
       return new Response(
         JSON.stringify({ error: "Invalid mobile number format" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }

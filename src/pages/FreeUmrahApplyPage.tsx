@@ -20,6 +20,8 @@ import { z } from "zod";
 import { freeUmrahContent } from "@/data/freeUmrahContent";
 import { DocumentReupload } from "@/components/DocumentReupload";
 import { compressImage, needsCompression } from "@/lib/imageCompression";
+import { StateSelector } from "@/components/StateSelector";
+import { PhoneInputWithCountry } from "@/components/PhoneInputWithCountry";
 
 // Note: generateApplicationId is now handled server-side in the edge function
 
@@ -67,7 +69,8 @@ const INDIAN_STATES = [
 const applicationSchema = z.object({
   full_name: z.string().min(2, "Name must be at least 2 characters").max(100, "Name too long"),
   age: z.number().min(18, "Must be at least 18").max(100, "Age must be under 100"),
-  mobile: z.string().regex(/^[0-9]{10}$/, "Enter valid 10-digit mobile number"),
+  mobile: z.string().min(7, "Enter valid phone number").max(15, "Phone number too long"),
+  country_code: z.string().min(1, "Country code required"),
   state: z.string().min(2, "State is required"),
   city: z.string().min(2, "City is required"),
   pincode: z.string().regex(/^[0-9]{6}$/, "Enter valid 6-digit pincode"),
@@ -102,6 +105,7 @@ const FreeUmrahApplyPage = () => {
     full_name: "",
     age: "",
     mobile: "",
+    country_code: "+91",
     state: "",
     city: "",
     pincode: "",
@@ -174,7 +178,8 @@ const FreeUmrahApplyPage = () => {
       const submitFormData = new FormData();
       submitFormData.append("full_name", validated.full_name);
       submitFormData.append("age", validated.age.toString());
-      submitFormData.append("mobile", validated.mobile);
+      // Combine country code with mobile number
+      submitFormData.append("mobile", `${validated.country_code}${validated.mobile}`);
       submitFormData.append("state", validated.state);
       submitFormData.append("city", validated.city);
       submitFormData.append("pincode", validated.pincode);
@@ -406,43 +411,68 @@ const FreeUmrahApplyPage = () => {
                   />
                   {errors.age && <p className="text-sm text-destructive">{errors.age}</p>}
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="mobile">{t.mobile} * <span className="text-xs text-muted-foreground">(10 digits)</span></Label>
+              </div>
+
+              {/* WhatsApp Number with Country Code */}
+              <div className="space-y-2">
+                <Label>{t.mobile} * <span className="text-xs text-muted-foreground">(WhatsApp)</span></Label>
+                <div className="flex gap-2">
+                  <Select
+                    value={formData.country_code}
+                    onValueChange={(value) => setFormData({ ...formData, country_code: value })}
+                  >
+                    <SelectTrigger className="w-[120px]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-popover z-50">
+                      <SelectItem value="+91">🇮🇳 +91</SelectItem>
+                      <SelectItem value="+966">🇸🇦 +966</SelectItem>
+                      <SelectItem value="+92">🇵🇰 +92</SelectItem>
+                      <SelectItem value="+880">🇧🇩 +880</SelectItem>
+                      <SelectItem value="+60">🇲🇾 +60</SelectItem>
+                      <SelectItem value="+62">🇮🇩 +62</SelectItem>
+                      <SelectItem value="+971">🇦🇪 +971</SelectItem>
+                      <SelectItem value="+974">🇶🇦 +974</SelectItem>
+                      <SelectItem value="+965">🇰🇼 +965</SelectItem>
+                      <SelectItem value="+973">🇧🇭 +973</SelectItem>
+                      <SelectItem value="+968">🇴🇲 +968</SelectItem>
+                      <SelectItem value="+20">🇪🇬 +20</SelectItem>
+                      <SelectItem value="+90">🇹🇷 +90</SelectItem>
+                      <SelectItem value="+44">🇬🇧 +44</SelectItem>
+                      <SelectItem value="+1">🇺🇸 +1</SelectItem>
+                      <SelectItem value="+61">🇦🇺 +61</SelectItem>
+                      <SelectItem value="+27">🇿🇦 +27</SelectItem>
+                      <SelectItem value="+234">🇳🇬 +234</SelectItem>
+                      <SelectItem value="+33">🇫🇷 +33</SelectItem>
+                      <SelectItem value="+49">🇩🇪 +49</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <Input
                     id="mobile"
                     type="tel"
                     inputMode="numeric"
-                    pattern="[0-9]{10}"
-                    maxLength={10}
+                    maxLength={15}
                     placeholder="9876543210"
                     value={formData.mobile}
                     onChange={(e) => {
-                      const value = e.target.value.replace(/\D/g, '').slice(0, 10);
+                      const value = e.target.value.replace(/\D/g, '').slice(0, 15);
                       setFormData({ ...formData, mobile: value });
                     }}
+                    className="flex-1"
                     required
                   />
-                  {errors.mobile && <p className="text-sm text-destructive">{errors.mobile}</p>}
                 </div>
+                {errors.mobile && <p className="text-sm text-destructive">{errors.mobile}</p>}
+                {errors.country_code && <p className="text-sm text-destructive">{errors.country_code}</p>}
               </div>
 
               <div className="space-y-2">
                 <Label>{t.state} *</Label>
-                <Select
+                <StateSelector
                   value={formData.state}
                   onValueChange={(value) => setFormData({ ...formData, state: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder={t.state} />
-                  </SelectTrigger>
-                  <SelectContent className="max-h-[300px]">
-                    {INDIAN_STATES.map((state) => (
-                      <SelectItem key={state} value={state}>
-                        {state}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  placeholder={t.state}
+                />
                 {errors.state && <p className="text-sm text-destructive">{errors.state}</p>}
               </div>
 
