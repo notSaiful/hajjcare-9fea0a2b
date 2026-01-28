@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { freeUmrahContent } from "@/data/freeUmrahContent";
 import { DocumentReupload } from "@/components/DocumentReupload";
+import { compressImage, needsCompression } from "@/lib/imageCompression";
 
 const applicationSchema = z.object({
   full_name: z.string().min(2, "Name must be at least 2 characters").max(100, "Name too long"),
@@ -78,21 +79,43 @@ const FreeUmrahApplyPage = () => {
     proof_type: "Masjid Certificate",
   });
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      // Validate file type - only PDF and images allowed
-      const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-      if (!allowedTypes.includes(file.type)) {
-        toast.error("Only PDF and image files (JPEG, PNG, GIF, WebP) are allowed");
-        return;
-      }
-      if (file.size > 2 * 1024 * 1024) {
-        toast.error("File size must be less than 2MB");
-        return;
-      }
-      setSelectedFile(file);
+    if (!file) return;
+
+    // Validate file type - only PDF and images allowed
+    const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error("Only PDF and image files (JPEG, PNG, GIF, WebP) are allowed");
+      return;
     }
+
+    // For images, try to compress if too large
+    if (file.type.startsWith('image/') && needsCompression(file, 2)) {
+      try {
+        toast.info("Compressing image...");
+        const compressed = await compressImage(file, 2);
+        if (compressed.size / 1024 / 1024 > 2) {
+          toast.error("Image could not be compressed under 2MB. Please use a smaller image.");
+          return;
+        }
+        toast.success("Image compressed successfully");
+        setSelectedFile(compressed);
+        return;
+      } catch (err) {
+        console.error("Compression error:", err);
+        toast.error("Failed to compress image");
+        return;
+      }
+    }
+
+    // For PDFs or small images, check size directly
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error("File size must be less than 2MB");
+      return;
+    }
+    
+    setSelectedFile(file);
   };
 
   const uploadFile = async (applicationId: string): Promise<string | null> => {
