@@ -109,7 +109,7 @@ export function StepReview({ formData, selectedFile, t, language }: StepReviewPr
         <div className="space-y-1">
           <InfoRow label={t.fullName} value={formData.full_name} />
           <InfoRow label={t.age} value={formData.age} />
-          <InfoRow label={t.mobile} value={`${formData.country_code} ${formData.mobile}`} />
+          <InfoRow label={t.mobile} value={`+91 ${formData.mobile}`} />
         </div>
       </Card>
 
