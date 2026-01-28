@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,9 @@ import { StepServiceDetails } from "@/components/free-umrah/StepServiceDetails";
 import { StepDeclarations } from "@/components/free-umrah/StepDeclarations";
 import { StepReview } from "@/components/free-umrah/StepReview";
 import { FreeUmrahFormData, initialFormData } from "@/components/free-umrah/types";
+
+const STORAGE_KEY = "free-umrah-application-draft";
+const STEP_STORAGE_KEY = "free-umrah-application-step";
 
 // Step-specific validation schemas
 const step1Schema = z.object({
@@ -59,7 +62,12 @@ const FreeUmrahApplyPage = () => {
   const navigate = useNavigate();
   const t = freeUmrahContent[language as keyof typeof freeUmrahContent] || freeUmrahContent.en;
 
-  const [currentStep, setCurrentStep] = useState(1);
+  // Load saved step from localStorage
+  const [currentStep, setCurrentStep] = useState(() => {
+    const savedStep = localStorage.getItem(STEP_STORAGE_KEY);
+    return savedStep ? parseInt(savedStep, 10) : 1;
+  });
+  
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittedId, setSubmittedId] = useState<string | null>(null);
   const [checkId, setCheckId] = useState("");
@@ -70,7 +78,34 @@ const FreeUmrahApplyPage = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  const [formData, setFormData] = useState<FreeUmrahFormData>(initialFormData);
+  // Load saved form data from localStorage
+  const [formData, setFormData] = useState<FreeUmrahFormData>(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        return { ...initialFormData, ...JSON.parse(saved) };
+      } catch {
+        return initialFormData;
+      }
+    }
+    return initialFormData;
+  });
+
+  // Save form data to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
+  }, [formData]);
+
+  // Save current step to localStorage
+  useEffect(() => {
+    localStorage.setItem(STEP_STORAGE_KEY, currentStep.toString());
+  }, [currentStep]);
+
+  // Clear localStorage on successful submission
+  const clearSavedData = useCallback(() => {
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(STEP_STORAGE_KEY);
+  }, []);
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -209,6 +244,7 @@ const FreeUmrahApplyPage = () => {
       }
 
       setSubmittedId(result.applicationId);
+      clearSavedData();
       toast.success(t.success);
     } catch (err) {
       if (err instanceof Error) {
