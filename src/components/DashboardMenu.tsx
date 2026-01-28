@@ -31,6 +31,7 @@ import {
   UserSearch,
   Gift,
   ClipboardCheck,
+  GraduationCap,
 } from "lucide-react";
 
 interface MenuItem {
@@ -206,6 +207,13 @@ const menuSections: MenuSection[] = [
         label: { en: "Inspector", ar: "المفتش", ur: "انسپکٹر", hi: "इंस्पेक्टर", ta: "ஆய்வாளர்", te: "ఇన్‌స్పెక్టర్", mr: "इन्स्पेक्टर", bn: "ইন্সপেক্টর", or: "ଇନ୍ସପେକ୍ଟର", ml: "ഇൻസ്‌പെക്ടർ", pa: "ਇੰਸਪੈਕਟਰ" },
         route: "/inspector",
         color: "indigo",
+      },
+      {
+        id: "haji-attention",
+        icon: GraduationCap,
+        label: { en: "SHI Training", ar: "تدريب المفتشين", ur: "ایس ایچ آئی ٹریننگ", hi: "SHI प्रशिक्षण", ta: "SHI பயிற்சி", te: "SHI శిక్షణ", mr: "SHI प्रशिक्षण", bn: "SHI প্রশিক্ষণ", or: "SHI ତାଲିମ", ml: "SHI പരിശീലനം", pa: "SHI ਸਿਖਲਾਈ" },
+        route: "/shi-training",
+        color: "rose",
       },
     ],
   },
