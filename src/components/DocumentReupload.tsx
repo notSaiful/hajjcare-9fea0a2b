@@ -24,7 +24,7 @@ const content = {
     title: "Update Proof Document",
     description: "Upload a new document to replace your current proof",
     proofType: "Document Type",
-    uploadHint: "Upload Masjid Certificate (PDF or image, max 10MB)",
+    uploadHint: "Upload Masjid Certificate (PDF or image, max 2MB)",
     upload: "Upload New Document",
     uploading: "Uploading...",
     success: "Document updated successfully!",
@@ -37,7 +37,7 @@ const content = {
     title: "ثبوتی دستاویز اپ ڈیٹ کریں",
     description: "اپنے موجودہ ثبوت کی جگہ نئی دستاویز اپ لوڈ کریں",
     proofType: "دستاویز کی قسم",
-    uploadHint: "مسجد سرٹیفکیٹ اپ لوڈ کریں (PDF یا تصویر، زیادہ سے زیادہ 10MB)",
+    uploadHint: "مسجد سرٹیفکیٹ اپ لوڈ کریں (PDF یا تصویر، زیادہ سے زیادہ 2MB)",
     upload: "نئی دستاویز اپ لوڈ کریں",
     uploading: "اپ لوڈ ہو رہا ہے...",
     success: "دستاویز کامیابی سے اپ ڈیٹ ہو گئی!",
@@ -50,7 +50,7 @@ const content = {
     title: "प्रमाण दस्तावेज़ अपडेट करें",
     description: "अपने मौजूदा प्रमाण की जगह नया दस्तावेज़ अपलोड करें",
     proofType: "दस्तावेज़ प्रकार",
-    uploadHint: "मस्जिद प्रमाणपत्र अपलोड करें (PDF या छवि, अधिकतम 10MB)",
+    uploadHint: "मस्जिद प्रमाणपत्र अपलोड करें (PDF या छवि, अधिकतम 2MB)",
     upload: "नया दस्तावेज़ अपलोड करें",
     uploading: "अपलोड हो रहा है...",
     success: "दस्तावेज़ सफलतापूर्वक अपडेट हो गया!",
@@ -63,7 +63,7 @@ const content = {
     title: "تحديث مستند الإثبات",
     description: "قم بتحميل مستند جديد ليحل محل الإثبات الحالي",
     proofType: "نوع المستند",
-    uploadHint: "حمّل شهادة المسجد (PDF أو صورة، بحد أقصى 10 ميجابايت)",
+    uploadHint: "حمّل شهادة المسجد (PDF أو صورة، بحد أقصى 2 ميجابايت)",
     upload: "تحميل مستند جديد",
     uploading: "جاري التحميل...",
     success: "تم تحديث المستند بنجاح!",
@@ -100,8 +100,8 @@ export const DocumentReupload = ({
         toast.error("Only PDF and image files (JPEG, PNG, GIF, WebP) are allowed");
         return;
       }
-      if (file.size > 10 * 1024 * 1024) {
-        toast.error("File size must be less than 10MB");
+      if (file.size > 2 * 1024 * 1024) {
+        toast.error("File size must be less than 2MB");
         return;
       }
       setSelectedFile(file);

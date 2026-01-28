@@ -87,8 +87,8 @@ const FreeUmrahApplyPage = () => {
         toast.error("Only PDF and image files (JPEG, PNG, GIF, WebP) are allowed");
         return;
       }
-      if (file.size > 10 * 1024 * 1024) {
-        toast.error("File size must be less than 10MB");
+      if (file.size > 2 * 1024 * 1024) {
+        toast.error("File size must be less than 2MB");
         return;
       }
       setSelectedFile(file);
