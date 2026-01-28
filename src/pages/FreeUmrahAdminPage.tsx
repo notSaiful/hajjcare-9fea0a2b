@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useUserRole } from "@/hooks/useUserRole";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -31,7 +32,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { ArrowLeft, Search, Loader2, CheckCircle, XCircle, Eye, Clock } from "lucide-react";
+import { ArrowLeft, Search, Loader2, CheckCircle, XCircle, Eye, Clock, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { adminContent } from "@/data/freeUmrahContent";
@@ -73,12 +74,41 @@ const FreeUmrahAdminPage = () => {
   const [statusFilter, setStatusFilter] = useState("all");
   const [selectedApplicant, setSelectedApplicant] = useState<Applicant | null>(null);
   const [detailsApplicant, setDetailsApplicant] = useState<Applicant | null>(null);
-  const [actionDialog, setActionDialog] = useState<{ open: boolean; action: "approve" | "reject" | null }>({
+  const [actionDialog, setActionDialog] = useState<{ open: boolean; action: "approve" | "reject" | "select" | null }>({
     open: false,
     action: null,
   });
   const [rejectionReason, setRejectionReason] = useState("");
   const [isUpdating, setIsUpdating] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulkSelectDialog, setBulkSelectDialog] = useState(false);
+
+  // Get verified applicants for bulk selection
+  const verifiedApplicants = useMemo(
+    () => filteredApplicants.filter((a) => a.status === "VERIFIED"),
+    [filteredApplicants]
+  );
+
+  const allVerifiedSelected = verifiedApplicants.length > 0 && 
+    verifiedApplicants.every((a) => selectedIds.has(a.id));
+
+  const toggleSelectAll = () => {
+    if (allVerifiedSelected) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(verifiedApplicants.map((a) => a.id)));
+    }
+  };
+
+  const toggleSelect = (id: string) => {
+    const newSet = new Set(selectedIds);
+    if (newSet.has(id)) {
+      newSet.delete(id);
+    } else {
+      newSet.add(id);
+    }
+    setSelectedIds(newSet);
+  };
 
   useEffect(() => {
     fetchApplicants();
@@ -203,6 +233,38 @@ const FreeUmrahAdminPage = () => {
     setRejectionReason("");
   };
 
+  const bulkUpdateToSelected = async () => {
+    if (selectedIds.size === 0) return;
+
+    setIsUpdating(true);
+    
+    const idsArray = Array.from(selectedIds);
+    const { error } = await supabase
+      .from("applicants")
+      .update({ status: "SELECTED", rejection_reason: null })
+      .in("id", idsArray);
+
+    if (error) {
+      toast.error("Failed to update status");
+      console.error(error);
+    } else {
+      toast.success(`${idsArray.length} applicant(s) selected successfully`);
+      setApplicants((prev) =>
+        prev.map((a) => (selectedIds.has(a.id) ? { ...a, status: "SELECTED", rejection_reason: null } : a))
+      );
+      
+      // Send WhatsApp notifications for all selected
+      const selectedApplicantsList = applicants.filter((a) => selectedIds.has(a.id));
+      for (const applicant of selectedApplicantsList) {
+        await sendWhatsAppNotification(applicant, "SELECTED");
+      }
+    }
+
+    setIsUpdating(false);
+    setBulkSelectDialog(false);
+    setSelectedIds(new Set());
+  };
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "SUBMITTED":
@@ -294,6 +356,30 @@ const FreeUmrahAdminPage = () => {
               </Select>
             </div>
 
+            {/* Bulk Action Bar */}
+            {selectedIds.size > 0 && (
+              <div className="flex items-center gap-4 p-3 bg-primary/5 border border-primary/20 rounded-lg">
+                <span className="text-sm font-medium">
+                  {selectedIds.size} verified applicant(s) selected
+                </span>
+                <Button
+                  size="sm"
+                  onClick={() => setBulkSelectDialog(true)}
+                  className="bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                >
+                  <Users className="w-4 h-4 mr-1" />
+                  {t.select}
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSelectedIds(new Set())}
+                >
+                  Clear
+                </Button>
+              </div>
+            )}
+
             {/* Table */}
             {isLoading ? (
               <div className="flex items-center justify-center py-12">
@@ -307,6 +393,15 @@ const FreeUmrahAdminPage = () => {
                 <Table>
                   <TableHeader>
                     <TableRow>
+                      <TableHead className="w-12">
+                        {verifiedApplicants.length > 0 && (
+                          <Checkbox
+                            checked={allVerifiedSelected}
+                            onCheckedChange={toggleSelectAll}
+                            aria-label="Select all verified"
+                          />
+                        )}
+                      </TableHead>
                       <TableHead>{t.applicant}</TableHead>
                       <TableHead className="hidden md:table-cell">{t.details}</TableHead>
                       <TableHead>{t.status}</TableHead>
@@ -316,6 +411,15 @@ const FreeUmrahAdminPage = () => {
                   <TableBody>
                     {filteredApplicants.map((applicant) => (
                       <TableRow key={applicant.id}>
+                        <TableCell className="w-12">
+                          {applicant.status === "VERIFIED" && (
+                            <Checkbox
+                              checked={selectedIds.has(applicant.id)}
+                              onCheckedChange={() => toggleSelect(applicant.id)}
+                              aria-label={`Select ${applicant.full_name}`}
+                            />
+                          )}
+                        </TableCell>
                         <TableCell>
                           <div>
                             <p className="font-medium">{applicant.full_name}</p>
@@ -396,7 +500,7 @@ const FreeUmrahAdminPage = () => {
                                 className="bg-secondary text-secondary-foreground hover:bg-secondary/80"
                                 onClick={() => {
                                   setSelectedApplicant(applicant);
-                                  updateStatus("SELECTED");
+                                  setActionDialog({ open: true, action: "select" });
                                 }}
                               >
                                 <CheckCircle className="w-4 h-4 mr-1" />
@@ -426,7 +530,11 @@ const FreeUmrahAdminPage = () => {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {actionDialog.action === "approve" ? t.confirmApprove : t.confirmReject}
+              {actionDialog.action === "approve" 
+                ? t.confirmApprove 
+                : actionDialog.action === "select"
+                ? (t.confirmSelect || "Confirm Selection")
+                : t.confirmReject}
             </DialogTitle>
             <DialogDescription>
               {selectedApplicant && (
@@ -463,17 +571,27 @@ const FreeUmrahAdminPage = () => {
             </Button>
             <Button
               variant={actionDialog.action === "reject" ? "destructive" : "default"}
-              onClick={() => updateStatus(actionDialog.action === "approve" ? "VERIFIED" : "REJECTED")}
+              onClick={() => updateStatus(
+                actionDialog.action === "approve" 
+                  ? "VERIFIED" 
+                  : actionDialog.action === "select" 
+                  ? "SELECTED" 
+                  : "REJECTED"
+              )}
               disabled={isUpdating}
             >
               {isUpdating ? (
                 <Loader2 className="w-4 h-4 animate-spin mr-2" />
-              ) : actionDialog.action === "approve" ? (
-                <CheckCircle className="w-4 h-4 mr-2" />
-              ) : (
+              ) : actionDialog.action === "reject" ? (
                 <XCircle className="w-4 h-4 mr-2" />
+              ) : (
+                <CheckCircle className="w-4 h-4 mr-2" />
               )}
-              {actionDialog.action === "approve" ? t.approve : t.reject}
+              {actionDialog.action === "approve" 
+                ? t.approve 
+                : actionDialog.action === "select" 
+                ? t.select 
+                : t.reject}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -486,6 +604,35 @@ const FreeUmrahAdminPage = () => {
         onOpenChange={(open) => !open && setDetailsApplicant(null)}
         language={language}
       />
+
+      {/* Bulk Selection Confirmation Dialog */}
+      <Dialog open={bulkSelectDialog} onOpenChange={setBulkSelectDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t.confirmBulkSelect || "Confirm Bulk Selection"}</DialogTitle>
+            <DialogDescription>
+              {selectedIds.size} applicant(s) will be marked as SELECTED.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setBulkSelectDialog(false)}>
+              Cancel
+            </Button>
+            <Button
+              className="bg-secondary text-secondary-foreground hover:bg-secondary/80"
+              onClick={bulkUpdateToSelected}
+              disabled={isUpdating}
+            >
+              {isUpdating ? (
+                <Loader2 className="w-4 h-4 animate-spin mr-2" />
+              ) : (
+                <Users className="w-4 h-4 mr-2" />
+              )}
+              {t.select}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
