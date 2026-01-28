@@ -121,6 +121,34 @@ const FreeUmrahApplyPage = () => {
     }
   };
 
+  const checkRateLimit = async (action: string, identifier: string): Promise<boolean> => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/check-rate-limit`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+          },
+          body: JSON.stringify({ action, identifier }),
+        }
+      );
+
+      const data = await response.json();
+      
+      if (!data.allowed) {
+        toast.error(data.message || "Too many requests. Please try again later.");
+        return false;
+      }
+      return true;
+    } catch (error) {
+      console.error('Rate limit check failed:', error);
+      // Allow on error to not block legitimate users
+      return true;
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
@@ -135,6 +163,13 @@ const FreeUmrahApplyPage = () => {
       });
 
       setIsSubmitting(true);
+
+      // Check rate limit using mobile number as identifier
+      const isAllowed = await checkRateLimit('free-umrah-apply', validated.mobile);
+      if (!isAllowed) {
+        setIsSubmitting(false);
+        return;
+      }
 
       // Generate custom application ID
       const customAppId = generateApplicationId(validated.city, validated.pincode);
