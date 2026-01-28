@@ -200,6 +200,12 @@ const FreeUmrahApplyPage = () => {
       const result = await response.json();
 
       if (!response.ok) {
+        // Handle duplicate application (409 Conflict)
+        if (response.status === 409 && result.existingApplicationId) {
+          toast.error(`${result.error}. Your Application ID: ${result.existingApplicationId}`);
+          setCheckId(result.existingApplicationId);
+          return;
+        }
         throw new Error(result.error || "Failed to submit application");
       }
 
