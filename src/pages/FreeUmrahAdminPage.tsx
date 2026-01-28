@@ -170,9 +170,9 @@ const FreeUmrahAdminPage = () => {
     const updateData: { status: string; rejection_reason?: string | null } = { status: newStatus };
     
     // Include rejection reason when rejecting
-    if (newStatus === 'Rejected' && rejectionReason.trim()) {
+    if (newStatus === 'REJECTED' && rejectionReason.trim()) {
       updateData.rejection_reason = rejectionReason.trim();
-    } else if (newStatus === 'Approved') {
+    } else if (newStatus === 'VERIFIED' || newStatus === 'SELECTED') {
       // Clear rejection reason when approving
       updateData.rejection_reason = null;
     }
@@ -191,8 +191,8 @@ const FreeUmrahAdminPage = () => {
         prev.map((a) => (a.id === selectedApplicant.id ? { ...a, status: newStatus, rejection_reason: updateData.rejection_reason ?? a.rejection_reason } : a))
       );
       
-      // Send WhatsApp notification for Approved/Rejected
-      if (newStatus === 'Approved' || newStatus === 'Rejected') {
+      // Send WhatsApp notification for VERIFIED/SELECTED/REJECTED
+      if (newStatus === 'VERIFIED' || newStatus === 'SELECTED' || newStatus === 'REJECTED') {
         await sendWhatsAppNotification(selectedApplicant, newStatus);
       }
     }
@@ -205,15 +205,15 @@ const FreeUmrahAdminPage = () => {
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case "Applied":
+      case "SUBMITTED":
         return <Badge variant="secondary">{status}</Badge>;
-      case "Under Review":
+      case "UNDER_REVIEW":
         return <Badge className="bg-accent text-accent-foreground">{status}</Badge>;
-      case "Approved":
+      case "VERIFIED":
         return <Badge className="bg-primary/10 text-primary border-primary/20">{status}</Badge>;
-      case "Rejected":
+      case "REJECTED":
         return <Badge variant="destructive">{status}</Badge>;
-      case "Completed":
+      case "SELECTED":
         return <Badge className="bg-secondary text-secondary-foreground">{status}</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
@@ -285,11 +285,11 @@ const FreeUmrahAdminPage = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">{t.all}</SelectItem>
-                  <SelectItem value="Applied">Applied</SelectItem>
-                  <SelectItem value="Under Review">Under Review</SelectItem>
-                  <SelectItem value="Approved">Approved</SelectItem>
-                  <SelectItem value="Rejected">Rejected</SelectItem>
-                  <SelectItem value="Completed">Completed</SelectItem>
+                  <SelectItem value="SUBMITTED">Submitted</SelectItem>
+                  <SelectItem value="UNDER_REVIEW">Under Review</SelectItem>
+                  <SelectItem value="VERIFIED">Verified</SelectItem>
+                  <SelectItem value="REJECTED">Rejected</SelectItem>
+                  <SelectItem value="SELECTED">Selected</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -351,21 +351,21 @@ const FreeUmrahAdminPage = () => {
                               <Eye className="w-4 h-4 mr-1" />
                               <span className="hidden sm:inline">{t.viewDetails || "Details"}</span>
                             </Button>
-                            {applicant.status === "Applied" && (
+                            {applicant.status === "SUBMITTED" && (
                               <Button
                                 variant="outline"
                                 size="sm"
                                 onClick={() => {
                                   setSelectedApplicant(applicant);
-                                  updateStatus("Under Review");
+                                  updateStatus("UNDER_REVIEW");
                                 }}
                               >
                                 <Clock className="w-4 h-4 mr-1" />
                                 <span className="hidden sm:inline">{t.underReview}</span>
                               </Button>
                             )}
-                            {(applicant.status === "Applied" ||
-                              applicant.status === "Under Review") && (
+                            {(applicant.status === "SUBMITTED" ||
+                              applicant.status === "UNDER_REVIEW") && (
                               <>
                                 <Button
                                   size="sm"
@@ -450,7 +450,7 @@ const FreeUmrahAdminPage = () => {
             </Button>
             <Button
               variant={actionDialog.action === "reject" ? "destructive" : "default"}
-              onClick={() => updateStatus(actionDialog.action === "approve" ? "Approved" : "Rejected")}
+              onClick={() => updateStatus(actionDialog.action === "approve" ? "VERIFIED" : "REJECTED")}
               disabled={isUpdating}
             >
               {isUpdating ? (

@@ -224,15 +224,15 @@ const InfoRow = ({
 
 const getStatusBadge = (status: string) => {
   switch (status) {
-    case "Applied":
+    case "SUBMITTED":
       return <Badge variant="secondary">{status}</Badge>;
-    case "Under Review":
+    case "UNDER_REVIEW":
       return <Badge className="bg-accent text-accent-foreground">{status}</Badge>;
-    case "Approved":
+    case "VERIFIED":
       return <Badge className="bg-primary/10 text-primary border-primary/20">{status}</Badge>;
-    case "Rejected":
+    case "REJECTED":
       return <Badge variant="destructive">{status}</Badge>;
-    case "Completed":
+    case "SELECTED":
       return <Badge className="bg-secondary text-secondary-foreground">{status}</Badge>;
     default:
       return <Badge variant="outline">{status}</Badge>;
@@ -339,7 +339,7 @@ export const ApplicantDetailsModal = ({
                   {format(new Date(applicant.created_at), "PPP")}
                 </span>
               </div>
-              {applicant.status === "Rejected" && applicant.rejection_reason && (
+              {applicant.status === "REJECTED" && applicant.rejection_reason && (
                 <div className="pt-2 border-t border-border/50">
                   <span className="text-sm text-muted-foreground block mb-1">{t.rejectionReason}</span>
                   <p className="text-sm text-destructive">{applicant.rejection_reason}</p>

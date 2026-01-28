@@ -216,11 +216,11 @@ const FreeUmrahApplyPage = () => {
 
   const getStatusLabel = (status: string) => {
     const statusMap: Record<string, string> = {
-      Applied: t.applied,
-      "Under Review": t.underReview,
-      Approved: t.approved,
-      Rejected: t.rejected,
-      Completed: t.completed,
+      SUBMITTED: t.submitted,
+      UNDER_REVIEW: t.underReview,
+      VERIFIED: t.verified,
+      REJECTED: t.rejected,
+      SELECTED: t.selected,
       not_found: t.notFound,
     };
     return statusMap[status] || status;
@@ -292,16 +292,17 @@ const FreeUmrahApplyPage = () => {
             {checkResult && (
               <div className="space-y-3">
                 <div className={`p-3 rounded-lg text-center font-medium ${
-                  checkResult === "Approved" ? "bg-primary/10 text-primary" :
-                  checkResult === "Rejected" ? "bg-destructive/10 text-destructive" :
+                  checkResult === "VERIFIED" ? "bg-primary/10 text-primary" :
+                  checkResult === "SELECTED" ? "bg-primary/10 text-primary" :
+                  checkResult === "REJECTED" ? "bg-destructive/10 text-destructive" :
                   checkResult === "not_found" ? "bg-muted text-muted-foreground" :
                   "bg-accent text-accent-foreground"
                 }`}>
                   {t.status}: {getStatusLabel(checkResult)}
                 </div>
                 
-                {/* Show re-upload option for Applied or Under Review */}
-                {checkedApplicationId && (checkResult === "Applied" || checkResult === "Under Review") && (
+                {/* Show re-upload option for SUBMITTED or UNDER_REVIEW */}
+                {checkedApplicationId && (checkResult === "SUBMITTED" || checkResult === "UNDER_REVIEW") && (
                   <>
                     {!showReupload ? (
                       <Button 

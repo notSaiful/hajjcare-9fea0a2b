@@ -81,8 +81,8 @@ export const DocumentReupload = ({
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const proofType = "Masjid Certificate";
 
-  // Only allow re-upload for Applied or Under Review status
-  const canReupload = currentStatus === "Applied" || currentStatus === "Under Review";
+  // Only allow re-upload for SUBMITTED or UNDER_REVIEW status
+  const canReupload = currentStatus === "SUBMITTED" || currentStatus === "UNDER_REVIEW";
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
