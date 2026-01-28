@@ -521,6 +521,14 @@ export const HAJ_INSPECTORS: HajInspector[] = [
   { id: '25102721104297', name: 'FM RABIJUDDIN', fatherName: 'SIRAJUDDIN', gender: 'Male', state: 'Manipur', cbtMarks: 114, interviewMarks: 36, totalMarks: 150, result: 'Selected', quota: '25% Reserved Quota', category: 'Repeater' },
   { id: '25103121106104', name: 'AKBAR KHAN', fatherName: 'MOHAMMAD TAJUDDIN', gender: 'Male', state: 'Manipur', cbtMarks: 127, interviewMarks: 41, totalMarks: 168, result: 'Waitlisted', quota: '20% Reserved Quota', category: 'Fresher with Haj' },
   { id: '25102421105315', name: 'MOHAMMAD AMIR', fatherName: 'MOHAMMAD FAZLUR RAHMAN', gender: 'Male', state: 'Manipur', cbtMarks: 125, interviewMarks: 36, totalMarks: 161, result: 'Waitlisted', quota: '20% Reserved Quota', category: 'Fresher with Haj' },
+
+  // Odisha
+  { id: '25103122109428', name: 'MOHAMMAD SALMAN', fatherName: 'SALMAN KHAN', gender: 'Male', state: 'Odisha', cbtMarks: 136, interviewMarks: 38, totalMarks: 174, result: 'Selected', quota: '50% Open Quota', category: 'Fresher' },
+  { id: '25102722105154', name: 'RAFIQUE', fatherName: 'HELALUDDIN KHAN', gender: 'Male', state: 'Odisha', cbtMarks: 127, interviewMarks: 46, totalMarks: 173, result: 'Selected', quota: '50% Open Quota', category: 'Repeater' },
+  { id: '25101722103657', name: 'ABDUL DAYAN', fatherName: 'EKRAM KHAN', gender: 'Male', state: 'Odisha', cbtMarks: 125, interviewMarks: 48, totalMarks: 173, result: 'Waitlisted', quota: '50% Open Quota', category: 'Fresher' },
+  { id: '25110222109934', name: 'ATHAR SALIM', fatherName: 'SAYED AZHAR KARIM', gender: 'Male', state: 'Odisha', cbtMarks: 110, interviewMarks: 45, totalMarks: 155, result: 'Selected', quota: '25% Reserved Quota', category: 'Repeater' },
+  { id: '25102322104254', name: 'MOHAMMAD SHAHANSHAH', fatherName: 'MD NASIM KHAN', gender: 'Male', state: 'Odisha', cbtMarks: 131, interviewMarks: 37, totalMarks: 168, result: 'Waitlisted', quota: '50% Open Quota', category: 'Fresher' },
+  { id: '25102522106897', name: 'SHAIKH BASIR AHAMAD', fatherName: 'SK NESAR AHAMAD', gender: 'Male', state: 'Odisha', cbtMarks: 136, interviewMarks: 30, totalMarks: 166, result: 'Waitlisted', quota: '50% Open Quota', category: 'Fresher' },
 ];
 
 // Get unique states from data
