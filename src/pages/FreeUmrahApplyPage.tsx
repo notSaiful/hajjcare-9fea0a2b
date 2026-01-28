@@ -21,6 +21,8 @@ import { freeUmrahContent } from "@/data/freeUmrahContent";
 import { DocumentReupload } from "@/components/DocumentReupload";
 import { compressImage, needsCompression } from "@/lib/imageCompression";
 
+// Note: generateApplicationId is now handled server-side in the edge function
+
 const applicationSchema = z.object({
   full_name: z.string().min(2, "Name must be at least 2 characters").max(100, "Name too long"),
   age: z.number().min(18, "Must be at least 18").max(100, "Age must be under 100"),
@@ -38,12 +40,6 @@ const applicationSchema = z.object({
   proof_type: z.enum(["Masjid Certificate"]).optional(),
 });
 
-const generateApplicationId = (city: string, pincode: string): string => {
-  const cityCode = city.substring(0, 4).toUpperCase().padEnd(4, 'X');
-  const pincodeEnd = pincode.slice(-2);
-  const randomPart = Math.random().toString(36).substring(2, 6).toUpperCase();
-  return `${cityCode}-${pincodeEnd}-${randomPart}`;
-};
 
 const FreeUmrahApplyPage = () => {
   const { language } = useLanguage();
@@ -52,7 +48,6 @@ const FreeUmrahApplyPage = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
   const [submittedId, setSubmittedId] = useState<string | null>(null);
   const [checkId, setCheckId] = useState("");
   const [checkResult, setCheckResult] = useState<string | null>(null);
@@ -118,117 +113,62 @@ const FreeUmrahApplyPage = () => {
     setSelectedFile(file);
   };
 
-  const uploadFile = async (applicationId: string): Promise<string | null> => {
-    if (!selectedFile) return null;
-    
-    setIsUploading(true);
-    try {
-      const fileExt = selectedFile.name.split('.').pop();
-      const filePath = `${applicationId}/${Date.now()}.${fileExt}`;
-      
-      const { error: uploadError } = await supabase.storage
-        .from('proof-documents')
-        .upload(filePath, selectedFile);
-      
-      if (uploadError) throw uploadError;
-      
-      // Store the file path, not public URL - coordinators will use signed URLs to view
-      // The proof-documents bucket is private, so public URLs won't work
-      return filePath;
-    } catch (err) {
-      console.error('Upload error:', err);
-      toast.error("Failed to upload document");
-      return null;
-    } finally {
-      setIsUploading(false);
-    }
-  };
-
-  const checkRateLimit = async (action: string, identifier: string): Promise<boolean> => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/check-rate-limit`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-          },
-          body: JSON.stringify({ action, identifier }),
-        }
-      );
-
-      const data = await response.json();
-      
-      if (!data.allowed) {
-        toast.error(data.message || "Too many requests. Please try again later.");
-        return false;
-      }
-      return true;
-    } catch (error) {
-      console.error('Rate limit check failed:', error);
-      // Allow on error to not block legitimate users
-      return true;
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
 
     try {
+      // Client-side validation first
       const validated = applicationSchema.parse({
         ...formData,
         age: parseInt(formData.age) || 0,
         years_of_service: parseInt(formData.years_of_service) || 0,
         role: formData.role as "Imam" | "Muazzin" | "Hafiz",
-        proof_type: formData.proof_type as "Masjid Certificate" | "Self Video",
+        proof_type: formData.proof_type as "Masjid Certificate",
       });
 
       setIsSubmitting(true);
 
-      // Check rate limit using mobile number as identifier
-      const isAllowed = await checkRateLimit('free-umrah-apply', validated.mobile);
-      if (!isAllowed) {
-        setIsSubmitting(false);
-        return;
-      }
-
-      // Generate custom application ID
-      const customAppId = generateApplicationId(validated.city, validated.pincode);
-
-      // Upload file if selected
-      let proofUrl: string | null = null;
+      // Build FormData for edge function
+      const submitFormData = new FormData();
+      submitFormData.append("full_name", validated.full_name);
+      submitFormData.append("age", validated.age.toString());
+      submitFormData.append("mobile", validated.mobile);
+      submitFormData.append("state", validated.state);
+      submitFormData.append("city", validated.city);
+      submitFormData.append("pincode", validated.pincode);
+      submitFormData.append("role", validated.role);
+      submitFormData.append("masjid_name", validated.masjid_name);
+      submitFormData.append("years_of_service", validated.years_of_service.toString());
+      submitFormData.append("never_umrah", validated.never_umrah.toString());
+      submitFormData.append("low_income", validated.low_income.toString());
+      submitFormData.append("social_harmony", validated.social_harmony.toString());
+      submitFormData.append("no_money_paid", validated.no_money_paid.toString());
+      submitFormData.append("proof_type", validated.proof_type || "Masjid Certificate");
+      
       if (selectedFile) {
-        proofUrl = await uploadFile(customAppId);
+        submitFormData.append("document", selectedFile);
       }
 
-      const { data, error } = await supabase
-        .from("applicants")
-        .insert({
-          application_id: customAppId,
-          full_name: validated.full_name,
-          age: validated.age,
-          mobile: validated.mobile,
-          state: validated.state,
-          city: validated.city,
-          pincode: validated.pincode,
-          role: validated.role,
-          masjid_name: validated.masjid_name,
-          years_of_service: validated.years_of_service,
-          never_umrah: validated.never_umrah,
-          low_income: validated.low_income,
-          social_harmony: validated.social_harmony,
-          no_money_paid: validated.no_money_paid,
-          proof_type: validated.proof_type,
-          proof_url: proofUrl,
-        })
-        .select("application_id")
-        .single();
+      // Submit via edge function
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/free-umrah-apply`,
+        {
+          method: 'POST',
+          headers: {
+            'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+          },
+          body: submitFormData,
+        }
+      );
 
-      if (error) throw error;
+      const result = await response.json();
 
-      setSubmittedId(data.application_id);
+      if (!response.ok) {
+        throw new Error(result.error || "Failed to submit application");
+      }
+
+      setSubmittedId(result.applicationId);
       toast.success(t.success);
     } catch (err) {
       if (err instanceof z.ZodError) {
@@ -240,7 +180,8 @@ const FreeUmrahApplyPage = () => {
         });
         setErrors(fieldErrors);
       } else {
-        toast.error("Failed to submit application");
+        const errorMessage = err instanceof Error ? err.message : "Failed to submit application";
+        toast.error(errorMessage);
         console.error(err);
       }
     } finally {
@@ -608,13 +549,8 @@ const FreeUmrahApplyPage = () => {
                 </div>
               </div>
 
-              <Button type="submit" className="w-full" disabled={isSubmitting || isUploading}>
-                {isUploading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    {t.uploading}
-                  </>
-                ) : isSubmitting ? (
+              <Button type="submit" className="w-full" disabled={isSubmitting}>
+                {isSubmitting ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                     {t.submitting}
