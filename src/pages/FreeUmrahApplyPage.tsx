@@ -16,6 +16,7 @@ import { StepPersonalInfo } from "@/components/free-umrah/StepPersonalInfo";
 import { StepLocation } from "@/components/free-umrah/StepLocation";
 import { StepServiceDetails } from "@/components/free-umrah/StepServiceDetails";
 import { StepDeclarations } from "@/components/free-umrah/StepDeclarations";
+import { StepReview } from "@/components/free-umrah/StepReview";
 import { FreeUmrahFormData, initialFormData } from "@/components/free-umrah/types";
 
 // Step-specific validation schemas
@@ -45,13 +46,13 @@ const step4Schema = z.object({
   no_money_paid: z.literal(true, { errorMap: () => ({ message: "Declaration required" }) }),
 });
 
-const TOTAL_STEPS = 4;
+const TOTAL_STEPS = 5;
 
 const stepLabels = {
-  en: ["Personal", "Location", "Service", "Confirm"],
-  ar: ["شخصي", "الموقع", "الخدمة", "تأكيد"],
-  ur: ["ذاتی", "مقام", "خدمت", "تصدیق"],
-  hi: ["व्यक्तिगत", "स्थान", "सेवा", "पुष्टि"],
+  en: ["Personal", "Location", "Service", "Confirm", "Review"],
+  ar: ["شخصي", "الموقع", "الخدمة", "تأكيد", "مراجعة"],
+  ur: ["ذاتی", "مقام", "خدمت", "تصدیق", "جائزہ"],
+  hi: ["व्यक्तिगत", "स्थान", "सेवा", "पुष्टि", "समीक्षा"],
 };
 
 const FreeUmrahApplyPage = () => {
@@ -405,6 +406,14 @@ const FreeUmrahApplyPage = () => {
                   onFileSelect={handleFileSelect}
                   onFileClear={() => setSelectedFile(null)}
                   t={t}
+                />
+              )}
+              {currentStep === 5 && (
+                <StepReview
+                  formData={formData}
+                  selectedFile={selectedFile}
+                  t={t}
+                  language={language}
                 />
               )}
             </div>
