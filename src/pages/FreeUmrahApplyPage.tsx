@@ -5,6 +5,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ArrowLeft, Loader2, CheckCircle, Search, RefreshCw, ChevronLeft, ChevronRight } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -75,6 +85,7 @@ const FreeUmrahApplyPage = () => {
   const [checkedApplicationId, setCheckedApplicationId] = useState<string | null>(null);
   const [isChecking, setIsChecking] = useState(false);
   const [showReupload, setShowReupload] = useState(false);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
@@ -193,8 +204,13 @@ const FreeUmrahApplyPage = () => {
     setErrors({});
   };
 
-  const handleSubmit = async () => {
+  const handleConfirmSubmit = () => {
     if (!validateCurrentStep()) return;
+    setShowConfirmDialog(true);
+  };
+
+  const handleSubmit = async () => {
+    setShowConfirmDialog(false);
     setErrors({});
 
     try {
@@ -486,7 +502,7 @@ const FreeUmrahApplyPage = () => {
               ) : (
                 <Button
                   type="button"
-                  onClick={handleSubmit}
+                  onClick={handleConfirmSubmit}
                   disabled={isSubmitting}
                   className="flex-1"
                 >
@@ -504,6 +520,38 @@ const FreeUmrahApplyPage = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Confirmation Dialog */}
+      <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {language === "ar" ? "تأكيد الإرسال" : 
+               language === "ur" ? "جمع کرانے کی تصدیق کریں" : 
+               language === "hi" ? "जमा करने की पुष्टि करें" : 
+               "Confirm Submission"}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {language === "ar" ? "هل أنت متأكد أنك تريد إرسال طلبك؟ لا يمكن التراجع عن هذا الإجراء." : 
+               language === "ur" ? "کیا آپ واقعی اپنی درخواست جمع کرانا چاہتے ہیں؟ اس عمل کو واپس نہیں کیا جا سکتا۔" : 
+               language === "hi" ? "क्या आप वाकई अपना आवेदन जमा करना चाहते हैं? इस क्रिया को पूर्ववत नहीं किया जा सकता।" : 
+               "Are you sure you want to submit your application? This action cannot be undone."}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>
+              {language === "ar" || language === "ur" ? "إلغاء" : 
+               language === "hi" ? "रद्द करें" : "Cancel"}
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={handleSubmit}>
+              {language === "ar" ? "نعم، أرسل" : 
+               language === "ur" ? "ہاں، جمع کریں" : 
+               language === "hi" ? "हाँ, जमा करें" : 
+               "Yes, Submit"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
