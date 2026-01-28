@@ -259,8 +259,24 @@ const FreeUmrahApplyPage = () => {
         throw new Error(result.error || "Failed to submit application");
       }
 
+      // Form successfully saved to database
       setSubmittedId(result.applicationId);
       clearSavedData();
+      
+      // Show prominent success notification
+      toast.success(
+        language === 'ar' ? 'تم تقديم الطلب بنجاح! ✅' :
+        language === 'ur' ? 'درخواست کامیابی سے جمع ہو گئی! ✅' :
+        language === 'hi' ? 'आवेदन सफलतापूर्वक जमा हो गया! ✅' :
+        'Application submitted successfully! ✅',
+        {
+          description: language === 'ar' ? `رقم الطلب: ${result.applicationId}` :
+                      language === 'ur' ? `درخواست نمبر: ${result.applicationId}` :
+                      language === 'hi' ? `आवेदन संख्या: ${result.applicationId}` :
+                      `Application ID: ${result.applicationId}`,
+          duration: 6000,
+        }
+      );
       toast.success(t.success);
     } catch (err) {
       if (err instanceof Error) {
