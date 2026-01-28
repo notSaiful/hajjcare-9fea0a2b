@@ -32,7 +32,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { ArrowLeft, Search, Loader2, CheckCircle, XCircle, Eye, Clock, Users } from "lucide-react";
+import { ArrowLeft, Search, Loader2, CheckCircle, XCircle, Eye, Clock, Users, Download, MessageCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { adminContent } from "@/data/freeUmrahContent";
@@ -82,6 +82,9 @@ const FreeUmrahAdminPage = () => {
   const [isUpdating, setIsUpdating] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [bulkSelectDialog, setBulkSelectDialog] = useState(false);
+  const [whatsappDialog, setWhatsappDialog] = useState(false);
+  const [customMessage, setCustomMessage] = useState("");
+  const [isSendingWhatsApp, setIsSendingWhatsApp] = useState(false);
 
   // Get verified applicants for bulk selection
   const verifiedApplicants = useMemo(
@@ -265,6 +268,115 @@ const FreeUmrahAdminPage = () => {
     setSelectedIds(new Set());
   };
 
+  // CSV Export function
+  const exportToCSV = () => {
+    const headers = [
+      "Application ID",
+      "Full Name",
+      "Age",
+      "Mobile",
+      "State",
+      "City",
+      "Pincode",
+      "Role",
+      "Masjid/Madrasa",
+      "Years of Service",
+      "Status",
+      "Created At",
+      "Rejection Reason",
+    ];
+
+    const csvRows = [
+      headers.join(","),
+      ...filteredApplicants.map((a) =>
+        [
+          a.application_id,
+          `"${a.full_name.replace(/"/g, '""')}"`,
+          a.age,
+          a.mobile,
+          a.state,
+          a.city || "",
+          a.pincode || "",
+          a.role,
+          `"${a.masjid_name.replace(/"/g, '""')}"`,
+          a.years_of_service,
+          a.status,
+          new Date(a.created_at).toLocaleDateString(),
+          a.rejection_reason ? `"${a.rejection_reason.replace(/"/g, '""')}"` : "",
+        ].join(",")
+      ),
+    ];
+
+    const csvContent = csvRows.join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `free-umrah-applications-${new Date().toISOString().split("T")[0]}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+    toast.success("CSV exported successfully");
+  };
+
+  // Send custom WhatsApp message
+  const sendCustomWhatsApp = async () => {
+    if (!customMessage.trim()) {
+      toast.error("Please enter a message");
+      return;
+    }
+
+    const recipients = filteredApplicants
+      .filter((a) => selectedIds.has(a.id))
+      .map((a) => ({
+        name: a.full_name,
+        mobile: a.mobile,
+        applicationId: a.application_id,
+      }));
+
+    if (recipients.length === 0) {
+      toast.error("No applicants selected");
+      return;
+    }
+
+    setIsSendingWhatsApp(true);
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        toast.error("Authentication required");
+        return;
+      }
+
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-custom-whatsapp`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({ recipients, message: customMessage }),
+        }
+      );
+
+      const result = await response.json();
+
+      if (response.ok) {
+        toast.success(`WhatsApp sent to ${result.sent}/${result.total} recipients`);
+        setWhatsappDialog(false);
+        setCustomMessage("");
+        setSelectedIds(new Set());
+      } else {
+        toast.error(result.error || "Failed to send messages");
+      }
+    } catch (err) {
+      console.error("WhatsApp send error:", err);
+      toast.error("Failed to send WhatsApp messages");
+    } finally {
+      setIsSendingWhatsApp(false);
+    }
+  };
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "SUBMITTED":
@@ -325,9 +437,15 @@ const FreeUmrahAdminPage = () => {
         <FreeUmrahStats applicants={applicants} language={language} />
 
         <Card>
-          <CardHeader>
-            <CardTitle>{t.title}</CardTitle>
-            <CardDescription>{t.subtitle}</CardDescription>
+          <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <CardTitle>{t.title}</CardTitle>
+              <CardDescription>{t.subtitle}</CardDescription>
+            </div>
+            <Button variant="outline" size="sm" onClick={exportToCSV}>
+              <Download className="w-4 h-4 mr-2" />
+              Export CSV
+            </Button>
           </CardHeader>
           <CardContent className="space-y-4">
             {/* Filters */}
@@ -369,6 +487,14 @@ const FreeUmrahAdminPage = () => {
                 >
                   <Users className="w-4 h-4 mr-1" />
                   {t.select}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setWhatsappDialog(true)}
+                >
+                  <MessageCircle className="w-4 h-4 mr-1" />
+                  WhatsApp
                 </Button>
                 <Button
                   variant="ghost"
@@ -629,6 +755,48 @@ const FreeUmrahAdminPage = () => {
                 <Users className="w-4 h-4 mr-2" />
               )}
               {t.select}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Custom WhatsApp Dialog */}
+      <Dialog open={whatsappDialog} onOpenChange={setWhatsappDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Send WhatsApp Message</DialogTitle>
+            <DialogDescription>
+              Send a custom message to {selectedIds.size} selected applicant(s).
+              Use {"{name}"} and {"{applicationId}"} as placeholders.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <Textarea
+              placeholder="Assalamu Alaikum {name},
+
+Your application ({applicationId}) update..."
+              value={customMessage}
+              onChange={(e) => setCustomMessage(e.target.value)}
+              rows={6}
+            />
+            <p className="text-xs text-muted-foreground">
+              Tip: {"{name}"} will be replaced with the applicant's name, and {"{applicationId}"} with their ID.
+            </p>
+          </div>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setWhatsappDialog(false)}>
+              Cancel
+            </Button>
+            <Button
+              onClick={sendCustomWhatsApp}
+              disabled={isSendingWhatsApp || !customMessage.trim()}
+            >
+              {isSendingWhatsApp ? (
+                <Loader2 className="w-4 h-4 animate-spin mr-2" />
+              ) : (
+                <MessageCircle className="w-4 h-4 mr-2" />
+              )}
+              Send to {selectedIds.size}
             </Button>
           </DialogFooter>
         </DialogContent>
