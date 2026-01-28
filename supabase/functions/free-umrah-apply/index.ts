@@ -98,6 +98,23 @@ Deno.serve(async (req) => {
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
+    // Check for duplicate application by mobile number
+    const { data: existingApp } = await supabase
+      .from("applicants")
+      .select("application_id")
+      .eq("mobile", mobile)
+      .maybeSingle();
+
+    if (existingApp) {
+      return new Response(
+        JSON.stringify({ 
+          error: "Application already submitted with this mobile number",
+          existingApplicationId: existingApp.application_id 
+        }),
+        { status: 409, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     let proofUrl: string | null = null;
 
     // Handle document upload if provided
