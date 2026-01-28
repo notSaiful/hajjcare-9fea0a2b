@@ -23,8 +23,7 @@ import { FreeUmrahFormData, initialFormData } from "@/components/free-umrah/type
 const step1Schema = z.object({
   full_name: z.string().min(2, "Name must be at least 2 characters").max(100, "Name too long"),
   age: z.number().min(18, "Must be at least 18").max(100, "Age must be under 100"),
-  mobile: z.string().min(7, "Enter valid phone number").max(15, "Phone number too long"),
-  country_code: z.string().min(1, "Country code required"),
+  mobile: z.string().regex(/^[0-9]{10}$/, "Enter valid 10-digit mobile number"),
 });
 
 const step2Schema = z.object({
@@ -169,7 +168,7 @@ const FreeUmrahApplyPage = () => {
       const submitFormData = new FormData();
       submitFormData.append("full_name", formData.full_name);
       submitFormData.append("age", formData.age);
-      submitFormData.append("mobile", `${formData.country_code}${formData.mobile}`);
+      submitFormData.append("mobile", `+91${formData.mobile}`);
       submitFormData.append("state", formData.state);
       submitFormData.append("city", formData.city);
       submitFormData.append("pincode", formData.pincode);
@@ -212,8 +211,9 @@ const FreeUmrahApplyPage = () => {
       setSubmittedId(result.applicationId);
       toast.success(t.success);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to submit application";
-      toast.error(errorMessage);
+      if (err instanceof Error) {
+        toast.error(err.message);
+      }
       console.error(err);
     } finally {
       setIsSubmitting(false);

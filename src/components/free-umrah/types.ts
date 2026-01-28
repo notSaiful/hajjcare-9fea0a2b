@@ -3,7 +3,6 @@ export interface FreeUmrahFormData {
   full_name: string;
   age: string;
   mobile: string;
-  country_code: string;
   state: string;
   city: string;
   pincode: string;
@@ -21,7 +20,6 @@ export const initialFormData: FreeUmrahFormData = {
   full_name: "",
   age: "",
   mobile: "",
-  country_code: "+91",
   state: "",
   city: "",
   pincode: "",
