@@ -15,6 +15,13 @@ const ALLOWED_MIME_TYPES = [
   "image/webp",
 ];
 
+const generateApplicationId = (city: string, pincode: string): string => {
+  const cityCode = city.substring(0, 4).toUpperCase().padEnd(4, "X");
+  const pincodeEnd = pincode.slice(-2);
+  const randomPart = Math.random().toString(36).substring(2, 6).toUpperCase();
+  return `${cityCode}-${pincodeEnd}-${randomPart}`;
+};
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -23,14 +30,25 @@ Deno.serve(async (req) => {
   try {
     const formData = await req.formData();
 
-    // Extract fields
-    const name = formData.get("name") as string;
+    // Extract all form fields
+    const full_name = formData.get("full_name") as string;
+    const age = parseInt(formData.get("age") as string) || 0;
     const mobile = formData.get("mobile") as string;
+    const state = formData.get("state") as string;
     const city = formData.get("city") as string;
+    const pincode = formData.get("pincode") as string;
+    const role = formData.get("role") as string;
+    const masjid_name = formData.get("masjid_name") as string;
+    const years_of_service = parseInt(formData.get("years_of_service") as string) || 0;
+    const never_umrah = formData.get("never_umrah") === "true";
+    const low_income = formData.get("low_income") === "true";
+    const social_harmony = formData.get("social_harmony") === "true";
+    const no_money_paid = formData.get("no_money_paid") === "true";
+    const proof_type = formData.get("proof_type") as string || "Masjid Certificate";
     const document = formData.get("document") as File | null;
 
     // Validate required fields
-    if (!name || !mobile || !city) {
+    if (!full_name || !mobile || !city || !state || !pincode || !role || !masjid_name) {
       return new Response(
         JSON.stringify({ error: "Missing required fields" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -45,56 +63,118 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Validate document
-    if (!document) {
+    // Validate pincode format (6 digits)
+    if (!/^[0-9]{6}$/.test(pincode)) {
       return new Response(
-        JSON.stringify({ error: "Document upload required" }),
+        JSON.stringify({ error: "Invalid pincode format" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    // Check file size
-    if (document.size > MAX_FILE_SIZE) {
+    // Validate age
+    if (age < 18 || age > 100) {
       return new Response(
-        JSON.stringify({ error: "File size must be under 2MB" }),
-        { status: 413, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    // Check file type
-    if (!ALLOWED_MIME_TYPES.includes(document.type)) {
-      return new Response(
-        JSON.stringify({ error: "Only PDF and image files allowed" }),
+        JSON.stringify({ error: "Age must be between 18 and 100" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    // Initialize Supabase client
+    // Validate role
+    if (!["Imam", "Muazzin", "Hafiz"].includes(role)) {
+      return new Response(
+        JSON.stringify({ error: "Invalid role selected" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Validate declarations
+    if (!never_umrah || !low_income || !social_harmony || !no_money_paid) {
+      return new Response(
+        JSON.stringify({ error: "All declarations must be accepted" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Initialize Supabase client with service role key
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Generate application ID
-    const cityCode = city.substring(0, 4).toUpperCase().padEnd(4, "X");
-    const randomPart = Math.random().toString(36).substring(2, 6).toUpperCase();
-    const applicationId = `${cityCode}-${randomPart}`;
+    // Generate application ID using city + pincode format
+    const applicationId = generateApplicationId(city, pincode);
 
-    // Upload document to storage
-    const fileExt = document.name.split(".").pop();
-    const filePath = `${applicationId}/${Date.now()}.${fileExt}`;
-    const fileBuffer = await document.arrayBuffer();
+    let proofUrl: string | null = null;
 
-    const { error: uploadError } = await supabase.storage
-      .from("proof-documents")
-      .upload(filePath, fileBuffer, {
-        contentType: document.type,
-        upsert: false,
-      });
+    // Handle document upload if provided
+    if (document) {
+      // Check file size
+      if (document.size > MAX_FILE_SIZE) {
+        return new Response(
+          JSON.stringify({ error: "File size must be under 2MB" }),
+          { status: 413, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
 
-    if (uploadError) {
-      console.error("Upload error:", uploadError);
+      // Check file type
+      if (!ALLOWED_MIME_TYPES.includes(document.type)) {
+        return new Response(
+          JSON.stringify({ error: "Only PDF and image files allowed" }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      // Upload document to storage
+      const fileExt = document.name.split(".").pop();
+      const filePath = `${applicationId}/${Date.now()}.${fileExt}`;
+      const fileBuffer = await document.arrayBuffer();
+
+      const { error: uploadError } = await supabase.storage
+        .from("proof-documents")
+        .upload(filePath, fileBuffer, {
+          contentType: document.type,
+          upsert: false,
+        });
+
+      if (uploadError) {
+        console.error("Upload error:", uploadError);
+        return new Response(
+          JSON.stringify({ error: "Failed to upload document" }),
+          { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      proofUrl = filePath;
+    }
+
+    // Insert application into database
+    const { data, error: insertError } = await supabase
+      .from("applicants")
+      .insert({
+        application_id: applicationId,
+        full_name,
+        age,
+        mobile,
+        state,
+        city,
+        pincode,
+        role,
+        masjid_name,
+        years_of_service,
+        never_umrah,
+        low_income,
+        social_harmony,
+        no_money_paid,
+        proof_type,
+        proof_url: proofUrl,
+        status: "Applied",
+      })
+      .select("application_id")
+      .single();
+
+    if (insertError) {
+      console.error("Insert error:", insertError);
       return new Response(
-        JSON.stringify({ error: "Failed to upload document" }),
+        JSON.stringify({ error: "Failed to submit application" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -102,9 +182,8 @@ Deno.serve(async (req) => {
     return new Response(
       JSON.stringify({
         success: true,
-        message: "Document validated and uploaded successfully",
-        applicationId,
-        filePath,
+        message: "Application submitted successfully",
+        applicationId: data.application_id,
       }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
