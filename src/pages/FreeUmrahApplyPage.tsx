@@ -23,6 +23,47 @@ import { compressImage, needsCompression } from "@/lib/imageCompression";
 
 // Note: generateApplicationId is now handled server-side in the edge function
 
+// All Indian States and Union Territories
+const INDIAN_STATES = [
+  "Andhra Pradesh",
+  "Arunachal Pradesh",
+  "Assam",
+  "Bihar",
+  "Chhattisgarh",
+  "Goa",
+  "Gujarat",
+  "Haryana",
+  "Himachal Pradesh",
+  "Jharkhand",
+  "Karnataka",
+  "Kerala",
+  "Madhya Pradesh",
+  "Maharashtra",
+  "Manipur",
+  "Meghalaya",
+  "Mizoram",
+  "Nagaland",
+  "Odisha",
+  "Punjab",
+  "Rajasthan",
+  "Sikkim",
+  "Tamil Nadu",
+  "Telangana",
+  "Tripura",
+  "Uttar Pradesh",
+  "Uttarakhand",
+  "West Bengal",
+  // Union Territories
+  "Andaman and Nicobar Islands",
+  "Chandigarh",
+  "Dadra and Nagar Haveli and Daman and Diu",
+  "Delhi",
+  "Jammu and Kashmir",
+  "Ladakh",
+  "Lakshadweep",
+  "Puducherry",
+];
+
 const applicationSchema = z.object({
   full_name: z.string().min(2, "Name must be at least 2 characters").max(100, "Name too long"),
   age: z.number().min(18, "Must be at least 18").max(100, "Age must be under 100"),
@@ -366,11 +407,19 @@ const FreeUmrahApplyPage = () => {
                   {errors.age && <p className="text-sm text-destructive">{errors.age}</p>}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="mobile">{t.mobile} *</Label>
+                  <Label htmlFor="mobile">{t.mobile} * <span className="text-xs text-muted-foreground">(10 digits)</span></Label>
                   <Input
                     id="mobile"
+                    type="tel"
+                    inputMode="numeric"
+                    pattern="[0-9]{10}"
+                    maxLength={10}
+                    placeholder="9876543210"
                     value={formData.mobile}
-                    onChange={(e) => setFormData({ ...formData, mobile: e.target.value })}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/\D/g, '').slice(0, 10);
+                      setFormData({ ...formData, mobile: value });
+                    }}
                     required
                   />
                   {errors.mobile && <p className="text-sm text-destructive">{errors.mobile}</p>}
@@ -378,13 +427,22 @@ const FreeUmrahApplyPage = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="state">{t.state} *</Label>
-                <Input
-                  id="state"
+                <Label>{t.state} *</Label>
+                <Select
                   value={formData.state}
-                  onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-                  required
-                />
+                  onValueChange={(value) => setFormData({ ...formData, state: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={t.state} />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[300px]">
+                    {INDIAN_STATES.map((state) => (
+                      <SelectItem key={state} value={state}>
+                        {state}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 {errors.state && <p className="text-sm text-destructive">{errors.state}</p>}
               </div>
 
@@ -511,7 +569,7 @@ const FreeUmrahApplyPage = () => {
 
               {/* File Upload */}
               <div className="space-y-2">
-                <Label>{t.proofDocument}</Label>
+                <Label>{t.proofDocument} <span className="text-xs text-muted-foreground">(Max 2MB)</span></Label>
                 <div 
                   className="border-2 border-dashed border-border rounded-lg p-4 text-center cursor-pointer hover:border-primary/50 transition-colors"
                   onClick={() => fileInputRef.current?.click()}
@@ -545,6 +603,7 @@ const FreeUmrahApplyPage = () => {
                     <>
                       <Upload className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
                       <p className="text-sm text-muted-foreground">{t.uploadHint}</p>
+                      <p className="text-xs text-muted-foreground mt-1">PDF, JPEG, PNG • Max 2MB</p>
                     </>
                   )}
                 </div>
