@@ -184,6 +184,8 @@ export const adminContent = {
     service: "Years of Service",
     declarations: "Declarations",
     select: "Select",
+    confirmSelect: "Confirm Selection?",
+    confirmBulkSelect: "Confirm Bulk Selection?",
   },
   ur: {
     title: "مفت عمرہ درخواستیں",
@@ -211,6 +213,8 @@ export const adminContent = {
     service: "خدمت کے سال",
     declarations: "اقرار نامے",
     select: "منتخب کریں",
+    confirmSelect: "انتخاب کی تصدیق کریں؟",
+    confirmBulkSelect: "بڑے پیمانے پر انتخاب کی تصدیق؟",
   },
   hi: {
     title: "मुफ्त उमराह आवेदन",
@@ -238,6 +242,8 @@ export const adminContent = {
     service: "सेवा के वर्ष",
     declarations: "घोषणाएं",
     select: "चयन करें",
+    confirmSelect: "चयन की पुष्टि करें?",
+    confirmBulkSelect: "सामूहिक चयन की पुष्टि करें?",
   },
   ar: {
     title: "طلبات العمرة المجانية",
@@ -265,5 +271,7 @@ export const adminContent = {
     service: "سنوات الخدمة",
     declarations: "الإقرارات",
     select: "اختيار",
+    confirmSelect: "تأكيد الاختيار؟",
+    confirmBulkSelect: "تأكيد الاختيار الجماعي؟",
   },
 };
