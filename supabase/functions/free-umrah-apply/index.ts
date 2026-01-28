@@ -160,7 +160,7 @@ Deno.serve(async (req) => {
         no_money_paid,
         proof_type,
         proof_url: proofUrl,
-        status: "Applied",
+        status: "SUBMITTED",
       })
       .select("application_id")
       .single();
