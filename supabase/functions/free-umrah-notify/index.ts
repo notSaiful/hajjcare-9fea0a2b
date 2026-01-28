@@ -10,7 +10,8 @@ interface NotifyRequest {
   applicationId: string;
   applicantName: string;
   mobile: string;
-  status: 'Approved' | 'Rejected';
+  status: 'SUBMITTED' | 'UNDER_REVIEW' | 'VERIFIED' | 'REJECTED' | 'SELECTED';
+  rejectionReason?: string;
 }
 
 serve(async (req) => {
@@ -72,7 +73,7 @@ serve(async (req) => {
       throw new Error('WHATSAPP_PHONE_ID is not configured');
     }
 
-    const { applicationId, applicantName, mobile, status }: NotifyRequest = await req.json();
+    const { applicationId, applicantName, mobile, status, rejectionReason }: NotifyRequest = await req.json();
 
     if (!applicationId || !mobile || !status) {
       return new Response(
@@ -82,9 +83,10 @@ serve(async (req) => {
     }
 
     // Validate status
-    if (!['Approved', 'Rejected'].includes(status)) {
+    const validStatuses = ['SUBMITTED', 'UNDER_REVIEW', 'VERIFIED', 'REJECTED', 'SELECTED'];
+    if (!validStatuses.includes(status)) {
       return new Response(
-        JSON.stringify({ error: 'Invalid status. Must be Approved or Rejected' }),
+        JSON.stringify({ error: 'Invalid status. Must be one of: ' + validStatuses.join(', ') }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -104,27 +106,79 @@ serve(async (req) => {
     }
 
     // Construct message based on status
-    const statusEmoji = status === 'Approved' ? '✅🎉' : '❌';
-    const statusMessage = status === 'Approved' 
-      ? `Alhamdulillah! Your application has been APPROVED! 
+    const getStatusDetails = (status: string, rejectionReason?: string) => {
+      switch (status) {
+        case 'SUBMITTED':
+          return {
+            emoji: '📝',
+            title: 'APPLICATION RECEIVED',
+            message: `Your application has been successfully submitted. 
 
-🕋 You have been selected for the Free Umrah program. Our team will contact you soon with further details about your blessed journey.
+🔍 Our team will review your application shortly. Please keep this Application ID safe for future reference.
+
+JazakAllahu Khair for your patience.`
+          };
+        case 'UNDER_REVIEW':
+          return {
+            emoji: '🔍',
+            title: 'UNDER REVIEW',
+            message: `Great news! Your application is now under review by our team.
+
+📋 We are verifying your documents and eligibility. You will be notified once the review is complete.
+
+Please continue to make dua. May Allah make this journey possible for you.`
+          };
+        case 'VERIFIED':
+          return {
+            emoji: '✅',
+            title: 'VERIFIED',
+            message: `Alhamdulillah! Your application has been VERIFIED.
+
+📋 Your documents and eligibility have been confirmed. You are now in the selection pool for the Free Umrah program.
+
+Final selection will be announced soon. InshaAllah!`
+          };
+        case 'REJECTED':
+          return {
+            emoji: '❌',
+            title: 'NOT SELECTED',
+            message: `We regret to inform you that your application could not be approved at this time.
+
+${rejectionReason ? `📝 Reason: ${rejectionReason}\n\n` : ''}This may be due to high volume of applications or eligibility criteria. You may re-apply in the next cycle.
+
+May Allah grant you the opportunity for Umrah soon. Ameen.`
+          };
+        case 'SELECTED':
+          return {
+            emoji: '🎉🕋',
+            title: 'SELECTED - CONGRATULATIONS!',
+            message: `Alhamdulillah! MUBARAK HO! 🎊
+
+🕋 You have been SELECTED for the Free Umrah program! Our team will contact you very soon with further details about your blessed journey.
+
+Please keep your phone reachable and documents ready.
 
 May Allah accept your Umrah and make it a source of barakah for you and your family. Ameen.`
-      : `We regret to inform you that your application has been REJECTED at this time.
+          };
+        default:
+          return {
+            emoji: '📢',
+            title: 'STATUS UPDATE',
+            message: `Your application status has been updated to: ${status}`
+          };
+      }
+    };
 
-This may be due to high volume of applications or eligibility criteria. You may re-apply in the next cycle.
+    const statusDetails = getStatusDetails(status, rejectionReason);
 
-May Allah grant you the opportunity for Umrah soon. Ameen.`;
-
-    const message = `${statusEmoji} *FREE UMRAH APPLICATION UPDATE*
+    const message = `${statusDetails.emoji} *FREE UMRAH ${statusDetails.title}*
 
 Assalamu Alaikum ${applicantName},
 
 🆔 Application ID: *${applicationId}*
-📋 Status: *${status.toUpperCase()}*
+📋 Status: *${status}*
 
-${statusMessage}
+${statusDetails.message}
 
 ---
 Haj Care AI - Deeni Khidmat Program
