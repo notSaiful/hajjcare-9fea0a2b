@@ -336,6 +336,27 @@ export type Database = {
         }
         Relationships: []
       }
+      rate_limits: {
+        Row: {
+          action: string
+          created_at: string
+          id: string
+          identifier: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          id?: string
+          identifier: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          id?: string
+          identifier?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string | null
@@ -382,6 +403,7 @@ export type Database = {
       }
     }
     Functions: {
+      cleanup_old_rate_limits: { Args: never; Returns: undefined }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
