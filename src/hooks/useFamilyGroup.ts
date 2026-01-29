@@ -1,7 +1,8 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
+import { useSukoonNotify } from "@/hooks/useSukoonNotify";
 
 export interface FamilyGroup {
   id: string;
@@ -43,6 +44,8 @@ export const useFamilyGroup = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { user } = useAuth();
   const { toast } = useToast();
+  const { notifyFamilyOfStageChange } = useSukoonNotify();
+  const lastStageRef = useRef<string | null>(null);
 
   const memberId = user?.id || "";
   const memberName = user?.user_metadata?.full_name || user?.email?.split("@")[0] || "";
@@ -283,10 +286,16 @@ export const useFamilyGroup = () => {
         p_longitude: longitude,
         p_current_stage: currentStage,
       });
+
+      // Trigger WhatsApp notification if stage changed (Sukoon Tracking)
+      if (currentStage && currentStage !== lastStageRef.current) {
+        lastStageRef.current = currentStage;
+        await notifyFamilyOfStageChange(currentStage, memberName);
+      }
     } catch (error) {
       console.error("Error updating location:", error);
     }
-  }, [user]);
+  }, [user, memberName, notifyFamilyOfStageChange]);
 
   return {
     group,
