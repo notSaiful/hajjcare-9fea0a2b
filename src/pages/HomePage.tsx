@@ -3,6 +3,7 @@ import { SimpleHeader } from "@/components/SimpleHeader";
 import { AmbientBackground } from "@/components/AmbientBackground";
 import { Footer } from "@/components/Footer";
 import { DashboardMenu } from "@/components/DashboardMenu";
+import SukoonFamilyFeature from "@/components/SukoonFamilyFeature";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
 import { Loader2 } from "lucide-react";
@@ -71,11 +72,18 @@ const HomePage = () => {
         }}>
             {/* Bismillah header */}
             <div className="text-center mb-4 sm:mb-5">
-              <p className="text-lg sm:text-xl font-semibold text-emerald-700 dark:text-emerald-400" dir="rtl">
+              <p className="text-lg sm:text-xl font-semibold text-primary" dir="rtl">
                 بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ
               </p>
             </div>
             <DashboardMenu />
+          </section>
+
+          {/* Sukoon Family Tracking Feature */}
+          <section className="animate-fade-up" style={{
+          animationDelay: "160ms"
+        }}>
+            <SukoonFamilyFeature />
           </section>
 
 
