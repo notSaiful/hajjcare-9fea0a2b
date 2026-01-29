@@ -1,8 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { SimpleHeader } from "@/components/SimpleHeader";
 import { AmbientBackground } from "@/components/AmbientBackground";
-
-
+import { Footer } from "@/components/Footer";
 import { DashboardMenu } from "@/components/DashboardMenu";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
@@ -95,6 +94,9 @@ const HomePage = () => {
         {/* Bottom spacing for iOS safe area */}
         
       </main>
+
+      {/* Footer */}
+      <Footer />
     </div>;
 };
 export default HomePage;
