@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { IconCircle } from "@/components/IconCircle";
 import { PRE_HAJJ_SECTIONS } from "@/data/preHajjIndiaContent";
 import { PreHajjNotifications } from "@/components/PreHajjNotifications";
+import { BeforeHajjGuides } from "@/components/BeforeHajjGuides";
 import { ChevronLeft, ChevronRight, Building2, Landmark, GraduationCap, UserCheck, Plane, ClipboardList, LucideIcon } from "lucide-react";
 
 const iconMap: Record<string, LucideIcon> = {
@@ -54,6 +55,9 @@ const PreHajjIndiaPage = () => {
 
         {/* Notifications Section */}
         <PreHajjNotifications />
+
+        {/* Visual Guides Section */}
+        <BeforeHajjGuides />
 
         <div className="space-y-4">
           {PRE_HAJJ_SECTIONS.map((section) => {
