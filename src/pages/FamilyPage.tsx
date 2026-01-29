@@ -1,14 +1,19 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useFamilyGroup } from "@/hooks/useFamilyGroup";
-import { useHajjLocation, HAJJ_STAGES } from "@/hooks/useHajjLocation";
+import { useHajjLocation, HAJJ_STAGES, HajjStage } from "@/hooks/useHajjLocation";
 import { FamilyGroupPanel } from "@/components/FamilyGroupPanel";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Users, MapPin, Loader2, Navigation, Map, Radio, Eye } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ArrowLeft, Users, MapPin, Loader2, Navigation, Map, Radio, Eye, TestTube2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 import logo from "@/assets/logo.jpeg";
+
+// Available stages for manual selection (excluding 'unknown')
+const SELECTABLE_STAGES: HajjStage[] = ["kaaba", "safa_marwa", "mina", "arafat", "muzdalifah", "jamarat", "outside"];
 
 const FamilyPage = () => {
   const { isAuthenticated, loading: authLoading } = useAuth();
@@ -16,6 +21,15 @@ const FamilyPage = () => {
   const { group, memberLocations, memberId, updateLocation } = useFamilyGroup();
   const { lat, lng, stage, stageInfo, isLoading: locationLoading } = useHajjLocation();
   const navigate = useNavigate();
+  const { toast } = useToast();
+  
+  // Manual stage override for testing
+  const [manualStage, setManualStage] = useState<HajjStage | null>(null);
+  const [isTestMode, setIsTestMode] = useState(false);
+
+  // Determine active stage (manual override or GPS-detected)
+  const activeStage = isTestMode && manualStage ? manualStage : stage;
+  const activeStageInfo = HAJJ_STAGES[activeStage];
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
@@ -23,12 +37,32 @@ const FamilyPage = () => {
     }
   }, [isAuthenticated, authLoading, navigate]);
 
-  // Update location for family group
+  // Update location for family group (uses active stage)
   useEffect(() => {
     if (group && lat && lng) {
-      updateLocation(lat, lng, stage);
+      updateLocation(lat, lng, activeStage);
     }
-  }, [group, lat, lng, stage, updateLocation]);
+  }, [group, lat, lng, activeStage, updateLocation]);
+
+  // Handle manual stage change
+  const handleManualStageChange = async (newStage: HajjStage) => {
+    setManualStage(newStage);
+    
+    if (group) {
+      // Use default coordinates if GPS not available
+      const testLat = lat || 21.4225;
+      const testLng = lng || 39.8262;
+      
+      await updateLocation(testLat, testLng, newStage);
+      
+      toast({
+        title: isRTL ? "تم تحديث المرحلة" : "Stage Updated",
+        description: isRTL 
+          ? `تم تغيير مرحلتك إلى: ${HAJJ_STAGES[newStage].nameAr}`
+          : `Your stage changed to: ${HAJJ_STAGES[newStage].nameEn}`,
+      });
+    }
+  };
 
   if (authLoading) {
     return (
@@ -80,6 +114,73 @@ const FamilyPage = () => {
 
       <main className="container max-w-2xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
         
+        {/* Manual Stage Selector for Testing */}
+        {group && (
+          <Card className="bg-gradient-to-br from-orange-500/10 to-amber-500/5 border-orange-500/20">
+            <CardHeader className="pb-2 sm:pb-3 px-4 sm:px-6">
+              <CardTitle className="flex items-center justify-between text-base sm:text-lg">
+                <div className="flex items-center gap-2">
+                  <TestTube2 className="h-4 w-4 sm:h-5 sm:w-5 text-orange-500" />
+                  {isRTL ? "اختبار تتبع سكون" : "Sukoon Tracking Test"}
+                </div>
+                <Button
+                  variant={isTestMode ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setIsTestMode(!isTestMode)}
+                  className={isTestMode ? "bg-orange-500 hover:bg-orange-600" : ""}
+                >
+                  {isTestMode 
+                    ? (isRTL ? "تفعيل" : "Active") 
+                    : (isRTL ? "تفعيل الاختبار" : "Enable Test")
+                  }
+                </Button>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="px-4 sm:px-6">
+              <p className="text-xs text-muted-foreground mb-3">
+                {isRTL 
+                  ? "اختر مرحلة الحج يدوياً لاختبار إشعارات واتساب لعائلتك"
+                  : "Manually select a Hajj stage to test WhatsApp notifications to your family"
+                }
+              </p>
+              <Select
+                value={manualStage || ""}
+                onValueChange={(value) => handleManualStageChange(value as HajjStage)}
+                disabled={!isTestMode}
+              >
+                <SelectTrigger className={`w-full ${!isTestMode ? "opacity-50" : ""}`}>
+                  <SelectValue placeholder={isRTL ? "اختر المرحلة..." : "Select stage..."} />
+                </SelectTrigger>
+                <SelectContent>
+                  {SELECTABLE_STAGES.map((stageKey) => {
+                    const stageData = HAJJ_STAGES[stageKey];
+                    return (
+                      <SelectItem key={stageKey} value={stageKey}>
+                        <div className="flex items-center gap-2">
+                          <div 
+                            className="w-3 h-3 rounded-full"
+                            style={{ backgroundColor: stageData.color }}
+                          />
+                          <span>{language === "ar" ? stageData.nameAr : stageData.nameEn}</span>
+                        </div>
+                      </SelectItem>
+                    );
+                  })}
+                </SelectContent>
+              </Select>
+              {isTestMode && manualStage && (
+                <p className="text-xs text-orange-600 mt-2 flex items-center gap-1">
+                  <Radio className="w-3 h-3 animate-pulse" />
+                  {isRTL 
+                    ? "وضع الاختبار نشط - سيتم إرسال إشعار عند تغيير المرحلة"
+                    : "Test mode active - Notification will be sent on stage change"
+                  }
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        )}
+        
         {/* Your Live Location Card */}
         <Card className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
           <CardHeader className="pb-2 sm:pb-3 px-4 sm:px-6">
@@ -89,10 +190,15 @@ const FamilyPage = () => {
                 <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-green-500 rounded-full animate-pulse" />
               </div>
               {isRTL ? "موقعك المباشر" : "Your Live Location"}
+              {isTestMode && (
+                <span className="ml-2 text-xs bg-orange-500/20 text-orange-600 px-2 py-0.5 rounded-full">
+                  {isRTL ? "وضع الاختبار" : "Test Mode"}
+                </span>
+              )}
             </CardTitle>
           </CardHeader>
           <CardContent className="px-4 sm:px-6">
-            {locationLoading ? (
+            {locationLoading && !isTestMode ? (
               <div className="flex items-center gap-3 p-4">
                 <Loader2 className="w-5 h-5 animate-spin text-primary" />
                 <span className="text-sm text-muted-foreground">
@@ -104,21 +210,21 @@ const FamilyPage = () => {
                 {/* Current Stage */}
                 <div 
                   className="flex items-center gap-3 p-3 rounded-xl"
-                  style={{ backgroundColor: `${stageInfo.color}15` }}
+                  style={{ backgroundColor: `${activeStageInfo.color}15` }}
                 >
                   <div 
                     className="w-4 h-4 rounded-full animate-pulse"
-                    style={{ backgroundColor: stageInfo.color }}
+                    style={{ backgroundColor: activeStageInfo.color }}
                   />
                   <div className="flex-1">
-                    <p className="font-semibold" style={{ color: stageInfo.color }}>
-                      {language === "ar" ? stageInfo.nameAr : stageInfo.nameEn}
+                    <p className="font-semibold" style={{ color: activeStageInfo.color }}>
+                      {language === "ar" ? activeStageInfo.nameAr : activeStageInfo.nameEn}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {language === "ar" ? stageInfo.descriptionAr : stageInfo.descriptionEn}
+                      {language === "ar" ? activeStageInfo.descriptionAr : activeStageInfo.descriptionEn}
                     </p>
                   </div>
-                  <MapPin className="w-5 h-5" style={{ color: stageInfo.color }} />
+                  <MapPin className="w-5 h-5" style={{ color: activeStageInfo.color }} />
                 </div>
 
                 {/* Coordinates */}
