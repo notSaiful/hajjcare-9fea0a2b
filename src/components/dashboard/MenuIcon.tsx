@@ -6,6 +6,7 @@ interface MenuIconProps {
   icon: LucideIcon;
   colorClass: string;
   className?: string;
+  isSacred?: boolean;
 }
 
 // Spiritual color mapping using soft, calm colors
@@ -22,22 +23,29 @@ const colorStyles: Record<string, string> = {
   "icon-emerald": "bg-[hsl(155_35%_92%)] text-[hsl(155_45%_32%)] dark:bg-[hsl(155_25%_14%)] dark:text-[hsl(155_40%_55%)]",
 };
 
+// Sacred gold styling for important items
+const sacredStyles = "bg-gradient-to-br from-[hsl(42_60%_90%)] to-[hsl(38_55%_85%)] text-[hsl(42_70%_30%)] dark:from-[hsl(42_40%_18%)] dark:to-[hsl(38_35%_14%)] dark:text-[hsl(42_65%_60%)] ring-2 ring-[hsl(42_55%_70%)]/40 dark:ring-[hsl(42_50%_45%)]/30";
+
 export const MenuIcon = memo(function MenuIcon({ 
   icon: Icon, 
   colorClass,
-  className 
+  className,
+  isSacred = false
 }: MenuIconProps) {
   return (
     <div 
       className={cn(
         "w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center",
-        "transition-all duration-200",
+        "transition-all duration-300",
         "border border-border/30",
-        colorStyles[colorClass] || colorStyles["icon-teal"],
+        isSacred ? sacredStyles : colorStyles[colorClass] || colorStyles["icon-teal"],
         className
       )}
     >
-      <Icon className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={1.5} />
+      <Icon className={cn(
+        "w-5 h-5 sm:w-6 sm:h-6 transition-transform duration-300",
+        isSacred && "drop-shadow-sm"
+      )} strokeWidth={1.5} />
     </div>
   );
 });
