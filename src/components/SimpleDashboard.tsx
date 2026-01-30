@@ -159,35 +159,24 @@ export const SimpleDashboard = memo(function SimpleDashboard() {
   );
 
   return (
-    <div className="grid grid-cols-2 gap-4">
+    <div className="grid grid-cols-2 gap-3.5 p-4">
       {dashboardItems.map((item) => (
         <button
           key={item.id}
           onClick={() => handleNavigate(item.route)}
           className={cn(
-            "flex flex-col items-center justify-center gap-3 p-6 rounded-xl",
-            "border-2 transition-all duration-200 ease-out",
-            "active:scale-[0.97] touch-manipulation select-none",
-            "min-h-[120px]",
-            item.variant === "primary" && [
-              "bg-card border-border",
-              "hover:border-primary/50 hover:shadow-md",
-            ],
-            item.variant === "danger" && [
-              "bg-[hsl(var(--status-emergency-bg))] border-[hsl(var(--status-emergency))]",
-              "hover:shadow-md",
-            ]
+            "h-[70px] rounded-lg",
+            "flex items-center justify-center gap-2.5",
+            "text-lg font-bold",
+            "border-0 cursor-pointer",
+            "active:opacity-85 touch-manipulation select-none",
+            "transition-opacity duration-150",
+            item.variant === "primary" && "bg-[#0033CC] text-white",
+            item.variant === "danger" && "bg-[#D32F2F] text-white"
           )}
         >
-          <span className="text-4xl">{item.emoji}</span>
-          <span
-            className={cn(
-              "text-base font-semibold text-center leading-tight",
-              item.variant === "danger" 
-                ? "text-[hsl(var(--status-emergency))]" 
-                : "text-foreground"
-            )}
-          >
+          <span className="text-lg">{item.emoji}</span>
+          <span className="text-lg">
             {item.label[language] || item.label.en}
           </span>
         </button>
