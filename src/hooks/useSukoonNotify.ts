@@ -37,14 +37,15 @@ export const useSukoonNotify = (): UseSukoonNotifyReturn => {
       return false;
     }
 
-    // Get member_id for the current user in the group
-    const { data: memberData } = await supabase
+    // Get member_id for the current user in the group (use .limit(1) to handle duplicates gracefully)
+    const { data: memberDataArr } = await supabase
       .from("group_members")
       .select("member_id, member_name")
       .eq("group_id", groupId)
       .eq("user_id", user.id)
-      .maybeSingle();
+      .limit(1);
 
+    const memberData = memberDataArr?.[0];
     if (!memberData) {
       console.log("User not found in group, skipping notification");
       return false;
