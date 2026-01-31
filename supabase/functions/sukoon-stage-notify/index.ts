@@ -85,22 +85,24 @@ serve(async (req) => {
       throw new Error('Supabase credentials not configured');
     }
 
-    // Validate caller
-    const supabaseClient = createClient(
-      SUPABASE_URL,
-      Deno.env.get("SUPABASE_ANON_KEY")!,
-      { global: { headers: { Authorization: authHeader } } }
-    );
-
-    const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
+    // Validate caller using the service role client to verify the token
+    const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+    
+    // Extract and verify the JWT token
+    const token = authHeader.replace("Bearer ", "");
+    const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token);
+    
     if (authError || !user) {
+      console.error('Auth validation failed:', authError?.message || 'No user found');
       return new Response(
-        JSON.stringify({ error: "Unauthorized" }),
+        JSON.stringify({ error: "Unauthorized", details: authError?.message }),
         { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
+    
+    console.log('Authenticated user:', user.id, user.email);
 
-    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+    const supabase = supabaseAdmin; // Use the admin client for data operations
 
     const { memberId, groupId, newStage, memberName }: NotifyRequest = await req.json();
 
