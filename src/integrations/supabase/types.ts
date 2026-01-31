@@ -424,36 +424,16 @@ export type Database = {
         }[]
       }
       shares_group_with: { Args: { target_user_id: string }; Returns: boolean }
-      upsert_member_location:
-        | {
-            Args: {
-              p_current_stage: string
-              p_group_id: string
-              p_latitude: number
-              p_longitude: number
-            }
-            Returns: undefined
-          }
-        | {
-            Args: {
-              p_current_stage: string
-              p_group_id: string
-              p_latitude: number
-              p_longitude: number
-              p_pilgrim_status?: string
-            }
-            Returns: undefined
-          }
-        | {
-            Args: {
-              p_current_stage: string
-              p_group_id: string
-              p_latitude: number
-              p_longitude: number
-              p_member_id: string
-            }
-            Returns: undefined
-          }
+      upsert_member_location: {
+        Args: {
+          p_current_stage: string
+          p_group_id: string
+          p_latitude: number
+          p_longitude: number
+          p_pilgrim_status?: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       app_role: "admin" | "coordinator" | "medical_staff" | "user"
