@@ -26,6 +26,7 @@ import {
   Star,
   Gift,
   Headphones,
+  Route,
   LucideIcon,
 } from "lucide-react";
 
@@ -460,6 +461,25 @@ export const menuSections: MenuSection[] = [
         },
         route: "/family",
         colorClass: "icon-sky",
+      },
+      {
+        id: "family-progress",
+        icon: Route,
+        label: {
+          en: "Hajj Progress",
+          ar: "تقدم الحج",
+          ur: "حج پیشرفت",
+          hi: "हज प्रगति",
+          ta: "ஹஜ் முன்னேற்றம்",
+          te: "హజ్ ప్రగతి",
+          mr: "हज प्रगती",
+          bn: "হজ অগ্রগতি",
+          or: "ହଜ୍ଜ ପ୍ରଗତି",
+          ml: "ഹജ്ജ് പുരോഗതി",
+          pa: "ਹੱਜ ਪ੍ਰਗਤੀ",
+        },
+        route: "/hajj-progress",
+        colorClass: "icon-emerald",
       },
       {
         id: "socials",
