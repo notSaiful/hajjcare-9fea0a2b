@@ -26,6 +26,7 @@ import {
   AlertTriangle,
   BarChart3,
   Gift,
+  Route,
 } from "lucide-react";
 import {
   Sidebar,
@@ -127,6 +128,14 @@ const labels = {
     hi: "परिवार",
     tr: "Aile",
     ru: "Семья",
+  },
+  hajjProgress: {
+    en: "Hajj Progress",
+    ar: "تقدم الحج",
+    ur: "حج پیشرفت",
+    hi: "हज प्रगति",
+    tr: "Hac İlerlemesi",
+    ru: "Прогресс хаджа",
   },
   grievances: {
     en: "Grievances",
@@ -253,6 +262,7 @@ export function AppSidebar() {
     "/money",
     "/telecom",
     "/family",
+    "/hajj-progress",
     "/grievances",
     "/contacts",
     "/makkah-guide",
@@ -345,6 +355,11 @@ export function AppSidebar() {
       title: labels.familyGuide[language] || labels.familyGuide.en,
       url: "/family",
       icon: Users,
+    },
+    {
+      title: labels.hajjProgress[language] || labels.hajjProgress.en,
+      url: "/hajj-progress",
+      icon: Route,
     },
     {
       title: labels.grievances[language] || labels.grievances.en,
