@@ -286,7 +286,7 @@ const SukoonFamilyFeature = () => {
               </Link>
             </Button>
             <Button asChild variant="outline" className="flex-1 gap-2" size="sm">
-              <Link to="/family-view">
+              <Link to="/hajj-progress">
                 <Heart className="w-4 h-4" />
                 {getText(content.ctaView)}
               </Link>
