@@ -6,6 +6,28 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 
+// Handle dynamic import failures (stale cache, network issues)
+// This prevents blank screens by reloading once
+if (typeof window !== "undefined") {
+  window.addEventListener("unhandledrejection", (event) => {
+    if (
+      event.reason?.message?.includes("Failed to fetch dynamically imported module") ||
+      event.reason?.message?.includes("Loading chunk")
+    ) {
+      const reloadKey = "dynamic-import-reload";
+      const hasReloaded = sessionStorage.getItem(reloadKey);
+      if (!hasReloaded) {
+        sessionStorage.setItem(reloadKey, "true");
+        window.location.reload();
+      } else {
+        sessionStorage.removeItem(reloadKey);
+        console.error("Dynamic import failed after reload:", event.reason);
+      }
+      event.preventDefault();
+    }
+  });
+}
+
 // Eager load the home page for fast initial render
 import HomePage from "./pages/HomePage";
 
