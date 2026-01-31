@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { SimpleHeader } from "@/components/SimpleHeader";
 import { HajjProgressTimeline } from "@/components/HajjProgressTimeline";
@@ -8,7 +8,7 @@ import { useFamilyGroup } from "@/hooks/useFamilyGroup";
 import { PROGRESS_LABELS } from "@/data/hajjStagesContent";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ArrowRight, Users, Shield, Loader2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Users, Shield, Loader2, Radio } from "lucide-react";
 
 /**
  * Family Progress Dashboard
@@ -21,12 +21,14 @@ import { ArrowLeft, ArrowRight, Users, Shield, Loader2 } from "lucide-react";
  * - NO timestamps (creates refresh obsession)
  * - ONE calm view, automatic updates via realtime
  * - "No news is good news" messaging
+ * - Subtle "Live" indicator shows realtime connection
  */
 const FamilyProgressPage = () => {
   const { language, isRTL } = useLanguage();
   const { isAuthenticated, loading: authLoading } = useAuth();
-  const { group, members, memberLocations, memberId, refreshGroup, isLoading } = useFamilyGroup();
+  const { group, members, memberLocations, memberId, isLoading } = useFamilyGroup();
   const navigate = useNavigate();
+  const [isLive, setIsLive] = useState(true);
   
   const labels = PROGRESS_LABELS[language] || PROGRESS_LABELS.en;
 
@@ -36,13 +38,8 @@ const FamilyProgressPage = () => {
     }
   }, [isAuthenticated, authLoading, navigate]);
 
-  // Silent background refresh - no loading indicators
-  useEffect(() => {
-    const interval = setInterval(() => {
-      refreshGroup();
-    }, 30000); // Every 30 seconds
-    return () => clearInterval(interval);
-  }, [refreshGroup]);
+  // Realtime is handled by useFamilyGroup hook - no polling needed
+  // The hook subscribes to member_locations changes and updates memberLocations state
 
   if (authLoading || isLoading) {
     return (
@@ -61,12 +58,22 @@ const FamilyProgressPage = () => {
 
       <main className="container max-w-2xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
         {/* Back Button */}
-        <Link to="/">
-          <Button variant="ghost" size="sm" className="gap-2 -ml-2 h-10 sm:h-9 text-sm">
-            {isRTL ? <ArrowRight className="w-4 h-4" /> : <ArrowLeft className="w-4 h-4" />}
-            Home
-          </Button>
-        </Link>
+        <div className="flex items-center justify-between">
+          <Link to="/">
+            <Button variant="ghost" size="sm" className="gap-2 -ml-2 h-10 sm:h-9 text-sm">
+              {isRTL ? <ArrowRight className="w-4 h-4" /> : <ArrowLeft className="w-4 h-4" />}
+              Home
+            </Button>
+          </Link>
+          
+          {/* Subtle Live Indicator */}
+          {group && (
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              <Radio className="w-3 h-3 text-primary animate-pulse" />
+              <span>Live</span>
+            </div>
+          )}
+        </div>
 
         {/* Page Title */}
         <div className="text-center space-y-1">
