@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -7,6 +8,20 @@ const corsHeaders = {
 };
 
 const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+
+// Zod schema for validating AI triage response
+const TriageSchema = z.object({
+  summary: z.string().min(1).max(1000).default("Health concern reported. Awaiting medical review."),
+  arabic_translation: z.string().min(1).max(1000).default("تم الإبلاغ عن مشكلة صحية. في انتظار المراجعة الطبية."),
+  urgency_level: z.enum(['low', 'medium', 'high', 'critical']).default('medium'),
+  category: z.string().min(1).max(100).default('other'),
+  recommendations: z.array(z.string().max(500)).min(1).max(10).default([
+    "Rest and stay hydrated",
+    "Seek nearby medical tent if symptoms worsen",
+    "Keep your phone accessible"
+  ]),
+  suggested_zone: z.string().min(1).max(100).default('general')
+});
 
 serve(async (req) => {
   // Handle CORS preflight
@@ -122,31 +137,22 @@ Respond in this exact JSON format:
     const aiResult = await response.json();
     const content = aiResult.choices?.[0]?.message?.content || '';
     
-    // Parse JSON from response
+    // Parse and validate JSON from response using zod
     let triageResult;
     try {
       // Try to extract JSON from the response
       const jsonMatch = content.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
-        triageResult = JSON.parse(jsonMatch[0]);
+        const parsed = JSON.parse(jsonMatch[0]);
+        // Validate with zod schema - uses defaults for missing/invalid fields
+        triageResult = TriageSchema.parse(parsed);
       } else {
         throw new Error('No JSON found in response');
       }
     } catch (parseError) {
-      console.error('Parse error:', parseError, 'Content:', content);
-      // Fallback triage
-      triageResult = {
-        summary: "Health concern reported. Awaiting medical review.",
-        arabic_translation: "تم الإبلاغ عن مشكلة صحية. في انتظار المراجعة الطبية.",
-        urgency_level: "medium",
-        category: "other",
-        recommendations: [
-          "Rest and stay hydrated",
-          "Seek nearby medical tent if symptoms worsen",
-          "Keep your phone accessible"
-        ],
-        suggested_zone: "general"
-      };
+      console.error('Parse/validation error:', parseError, 'Content:', content);
+      // Fallback triage with safe defaults
+      triageResult = TriageSchema.parse({});
     }
 
     console.log(`Health triage completed for user ${user.id}:`, triageResult.urgency_level);
