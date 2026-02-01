@@ -416,6 +416,14 @@ export type Database = {
       }
       is_coordinator_or_admin: { Args: { _user_id: string }; Returns: boolean }
       is_member_of_group: { Args: { p_group_id: string }; Returns: boolean }
+      lookup_group_by_invite_code: {
+        Args: { p_invite_code: string }
+        Returns: {
+          id: string
+          invite_code: string
+          name: string
+        }[]
+      }
       lookup_user_id_by_phone: {
         Args: { target_phone: string }
         Returns: {

@@ -199,13 +199,22 @@ export const useFamilyGroup = () => {
 
     setIsLoading(true);
     try {
-      const { data: groupData, error: groupError } = await supabase
-        .from("family_groups")
-        .select("*")
-        .eq("invite_code", inviteCode.toLowerCase())
-        .maybeSingle();
+      // Use secure RPC function that doesn't expose user_id or created_by
+      const { data: lookupResult, error: lookupError } = await supabase
+        .rpc("lookup_group_by_invite_code", { p_invite_code: inviteCode.toLowerCase() });
 
-      if (groupError || !groupData) {
+      if (lookupError) {
+        console.error("Lookup error:", lookupError);
+        toast({ title: "Error", description: "Failed to find group", variant: "destructive" });
+        return null;
+      }
+
+      // RPC returns an array, get first result
+      const groupData = Array.isArray(lookupResult) && lookupResult.length > 0 
+        ? lookupResult[0] 
+        : null;
+
+      if (!groupData) {
         toast({ title: "Error", description: "Invalid invite code", variant: "destructive" });
         return null;
       }
@@ -232,7 +241,6 @@ export const useFamilyGroup = () => {
       }
 
       localStorage.setItem(GROUP_ID_KEY, groupData.id);
-      setGroup(groupData);
       await loadGroup();
       
       toast({ title: "Success", description: "Joined family group!" });
