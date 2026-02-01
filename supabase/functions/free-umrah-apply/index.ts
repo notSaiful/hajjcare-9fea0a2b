@@ -24,6 +24,40 @@ Deno.serve(async (req) => {
   }
 
   try {
+    // Rate limiting - prevent spam submissions
+    const clientIp = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 
+                     req.headers.get('x-real-ip') || 
+                     'unknown';
+
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+
+    // Call rate limit check function
+    const rateLimitResponse = await fetch(
+      `${supabaseUrl}/functions/v1/check-rate-limit`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${supabaseServiceKey}`,
+        },
+        body: JSON.stringify({
+          action: 'free-umrah-apply',
+          identifier: clientIp,
+        }),
+      }
+    );
+
+    const rateLimitResult = await rateLimitResponse.json();
+    if (!rateLimitResult.allowed) {
+      return new Response(
+        JSON.stringify({ 
+          error: 'Too many applications. Please try again later.',
+          resetIn: rateLimitResult.resetIn 
+        }),
+        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
     const contentType = req.headers.get("content-type") || "";
     
     let full_name: string;
@@ -130,9 +164,7 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Initialize Supabase client with service role key
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    // Initialize Supabase client with service role key (using variables from rate limit check)
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     // Check for duplicate application by mobile number
