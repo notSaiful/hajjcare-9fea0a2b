@@ -1,11 +1,33 @@
+import { Link } from "react-router-dom";
 import { MainLayout } from "@/components/MainLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { IndianRupee, Gift, Check, Info } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { IndianRupee, Gift, Check, Info, ArrowLeft, ArrowRight, CreditCard, Shield } from "lucide-react";
 
 export default function PricingDisclosurePage() {
-  const { language } = useLanguage();
+  const { language, isRTL } = useLanguage();
+
+  const labels = {
+    title: {
+      en: "Pricing & Service Fees",
+      ar: "الأسعار ورسوم الخدمة",
+      ur: "قیمتیں اور سروس فیس",
+      hi: "मूल्य निर्धारण और सेवा शुल्क",
+    },
+    subtitle: {
+      en: "Transparency is important to us",
+      ar: "الشفافية مهمة بالنسبة لنا",
+      ur: "شفافیت ہمارے لیے اہم ہے",
+      hi: "पारदर्शिता हमारे लिए महत्वपूर्ण है",
+    },
+    back: {
+      en: "Back",
+      ar: "رجوع",
+      ur: "واپس",
+      hi: "वापस",
+    },
+  };
 
   const freeFeatures = [
     "Step-by-step Hajj and Umrah guidance",
@@ -22,137 +44,145 @@ export default function PricingDisclosurePage() {
 
   return (
     <MainLayout>
-      <ScrollArea className="h-[calc(100vh-3.5rem)]">
-        <div className="container max-w-4xl mx-auto px-4 py-8 pb-24">
-          <div className="flex items-center gap-3 mb-6">
-            <IndianRupee className="h-8 w-8 text-primary" />
-            <h1 className="text-2xl md:text-3xl font-bold text-foreground">Pricing & Donations</h1>
-          </div>
+      <div className="container max-w-2xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
+        {/* Back Button */}
+        <Link to="/">
+          <Button variant="ghost" size="sm" className="gap-2 -ml-2 h-10 sm:h-9 text-sm">
+            {isRTL ? <ArrowRight className="w-4 h-4" /> : <ArrowLeft className="w-4 h-4" />}
+            {labels.back[language] || labels.back.en}
+          </Button>
+        </Link>
 
-          <p className="text-muted-foreground mb-8 text-lg">
-            Transparency is important to us. Here's everything you need to know about HajjCare's pricing and how we handle donations.
-          </p>
-
-          <div className="space-y-6">
-            <Card className="border-primary/30 bg-primary/5">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Gift className="h-6 w-6" />
-                  Free for Everyone
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground mb-4">
-                  HajjCare's core features are <strong>completely free</strong>. We believe every pilgrim deserves access to quality guidance and support, regardless of their financial situation.
-                </p>
-                <div className="grid gap-2 md:grid-cols-2">
-                  {freeFeatures.map((feature, index) => (
-                    <div key={index} className="flex items-center gap-2 text-muted-foreground">
-                      <Check className="h-4 w-4 text-green-500 flex-shrink-0" />
-                      <span className="text-sm">{feature}</span>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border-border/50">
-              <CardHeader>
-                <CardTitle>Donations (Voluntary)</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <p className="text-muted-foreground">
-                  If you find HajjCare helpful and wish to support our mission, you can make a voluntary donation. These contributions help us:
-                </p>
-                <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
-                  <li>Maintain and improve the platform</li>
-                  <li>Add new languages and features</li>
-                  <li>Keep the app running smoothly during peak Hajj season</li>
-                  <li>Provide better support to pilgrims</li>
-                </ul>
-                
-                <div className="bg-muted/50 p-4 rounded-lg border border-border mt-4">
-                  <h4 className="font-semibold mb-2 flex items-center gap-2">
-                    <Info className="h-4 w-4" />
-                    Important Information About Donations
-                  </h4>
-                  <ul className="list-disc pl-6 space-y-2 text-sm text-muted-foreground">
-                    <li>Donations are <strong>completely voluntary</strong> and not required to use the app</li>
-                    <li>All features remain free regardless of donation status</li>
-                    <li>Donations are processed securely through Razorpay</li>
-                    <li>You will receive an email receipt for your records</li>
-                    <li>Donations are generally non-refundable (see Refund Policy for details)</li>
-                    <li>We do not store your payment card details</li>
-                  </ul>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border-border/50">
-              <CardHeader>
-                <CardTitle>Premium Services (Future Plans)</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground mb-4">
-                  Currently, all HajjCare services are free. In the future, we may introduce optional premium features. If we do:
-                </p>
-                <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
-                  <li>Core features will always remain free</li>
-                  <li>Premium features will be clearly marked with their prices</li>
-                  <li>All prices will be displayed in Indian Rupees (₹)</li>
-                  <li>Prices will include all applicable taxes</li>
-                  <li>No hidden fees or charges</li>
-                  <li>Clear refund terms for any paid services</li>
-                </ul>
-              </CardContent>
-            </Card>
-
-            <Card className="border-border/50">
-              <CardHeader>
-                <CardTitle>Payment Processing</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground mb-4">
-                  All payments and donations are processed through <strong>Razorpay</strong>, a trusted and RBI-compliant payment gateway. When you make a payment:
-                </p>
-                <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
-                  <li>Your payment is processed securely using bank-grade encryption</li>
-                  <li>We accept UPI, debit cards, credit cards, and net banking</li>
-                  <li>Your card details are never stored on our servers</li>
-                  <li>Razorpay is PCI-DSS compliant for maximum security</li>
-                  <li>You'll receive an instant confirmation and receipt via email</li>
-                </ul>
-              </CardContent>
-            </Card>
-
-            <Card className="border-border/50">
-              <CardHeader>
-                <CardTitle>Currency</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  All prices and donations on HajjCare are displayed and processed in <strong>Indian Rupees (₹ / INR)</strong>.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="border-border/50">
-              <CardHeader>
-                <CardTitle>Questions About Payments?</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground mb-2">
-                  If you have any questions about pricing, donations, or payments, please contact us:
-                </p>
-                <p className="text-muted-foreground">
-                  <strong>Email:</strong> billing@hajjcare.app<br />
-                  <strong>Support:</strong> support@hajjcare.app
-                </p>
-              </CardContent>
-            </Card>
+        {/* Header */}
+        <div className="space-y-1.5 sm:space-y-2">
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-primary/10 flex items-center justify-center shadow-soft border-2 border-primary/20">
+              <IndianRupee className="w-8 h-8 sm:w-10 sm:h-10 text-primary" />
+            </div>
+            <div>
+              <h1 className="text-xl sm:text-2xl font-bold">{labels.title[language] || labels.title.en}</h1>
+              <p className="text-sm text-muted-foreground">{labels.subtitle[language] || labels.subtitle.en}</p>
+            </div>
           </div>
         </div>
-      </ScrollArea>
+
+        <div className="space-y-4">
+          {/* Free Features Card */}
+          <Card className="border-2 border-primary/30 bg-primary/5">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Gift className="h-5 w-5" />
+                Free for Everyone
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground mb-4">
+                HajjCare's core features are <strong>completely free</strong>. We believe every pilgrim deserves access to quality guidance and support, regardless of their financial situation.
+              </p>
+              <div className="grid gap-2 md:grid-cols-2">
+                {freeFeatures.map((feature, index) => (
+                  <div key={index} className="flex items-center gap-2 text-muted-foreground">
+                    <Check className="h-4 w-4 text-primary flex-shrink-0" />
+                    <span className="text-sm">{feature}</span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Service Fee Card */}
+          <Card className="border-2">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <CreditCard className="h-5 w-5" />
+                Optional Service Fee
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-muted-foreground">
+                If you find HajjCare helpful and wish to support app maintenance, you can pay an optional service fee. These contributions help us:
+              </p>
+              <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
+                <li>Maintain and improve the platform</li>
+                <li>Add new languages and features</li>
+                <li>Keep the app running smoothly during peak Hajj season</li>
+                <li>Provide better support to pilgrims</li>
+              </ul>
+              
+              <div className="bg-muted/50 p-4 rounded-lg border-2 border-border mt-4">
+                <h4 className="font-semibold mb-2 flex items-center gap-2">
+                  <Info className="h-4 w-4" />
+                  Important Information
+                </h4>
+                <ul className="list-disc pl-6 space-y-2 text-sm text-muted-foreground">
+                  <li>Service fees are <strong>completely optional</strong> and not required to use the app</li>
+                  <li>All features remain free regardless of payment</li>
+                  <li>Payments are processed securely through Razorpay</li>
+                  <li>You will receive an email receipt for your records</li>
+                  <li>Service fees are <strong>non-refundable</strong> (see Refund Policy for details)</li>
+                  <li>We do not store your payment card details</li>
+                  <li>This is NOT a donation, charity, zakat, or religious contribution</li>
+                </ul>
+              </div>
+
+              <Link to="/payment">
+                <Button className="w-full mt-4">
+                  Pay Optional Service Fee
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          {/* Payment Processing Card */}
+          <Card className="border-2">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Shield className="h-5 w-5" />
+                Payment Processing
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground mb-4">
+                All payments are processed through <strong>Razorpay</strong>, a trusted and RBI-compliant payment gateway. When you make a payment:
+              </p>
+              <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
+                <li>Your payment is processed securely using bank-grade encryption</li>
+                <li>We accept UPI, debit cards, credit cards, and net banking</li>
+                <li>Your card details are never stored on our servers</li>
+                <li>Razorpay is PCI-DSS compliant for maximum security</li>
+                <li>You'll receive an instant confirmation and receipt via email</li>
+              </ul>
+            </CardContent>
+          </Card>
+
+          {/* Currency Card */}
+          <Card className="border-2">
+            <CardHeader>
+              <CardTitle>Currency</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground">
+                All prices and service fees on HajjCare are displayed and processed in <strong>Indian Rupees (₹ / INR)</strong>.
+              </p>
+            </CardContent>
+          </Card>
+
+          {/* Contact Card */}
+          <Card className="border-2">
+            <CardHeader>
+              <CardTitle>Questions About Payments?</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground mb-2">
+                If you have any questions about pricing or payments, please contact us:
+              </p>
+              <p className="text-muted-foreground">
+                <strong>Email:</strong> info@hajjcare.in
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </MainLayout>
   );
 }
