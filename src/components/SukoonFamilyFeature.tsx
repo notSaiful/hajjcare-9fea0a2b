@@ -223,7 +223,7 @@ const SukoonFamilyFeature = () => {
   const getText = (textObj: LocalizedText) => textObj[lang] || textObj.en;
 
   return (
-    <Card className="overflow-hidden border-primary/20 bg-gradient-to-br from-card via-card to-primary/5">
+    <Card className="overflow-hidden border-primary/15 bg-gradient-to-br from-card via-card to-primary/3">
       <CardContent className="p-0">
         {/* Poster Image */}
         <div className="relative">
@@ -232,20 +232,20 @@ const SukoonFamilyFeature = () => {
             alt="Sukoon Tracking System - Family Peace Feature"
             className="w-full h-auto object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-card via-card/20 to-transparent" />
         </div>
 
         {/* Content */}
-        <div className="p-4 sm:p-6 space-y-4" dir={isRTL ? "rtl" : "ltr"}>
+        <div className="p-5 sm:p-6 space-y-5" dir={isRTL ? "rtl" : "ltr"}>
           {/* Title & Subtitle */}
-          <div className="text-center space-y-1">
-            <div className="flex items-center justify-center gap-2">
-              <Heart className="w-5 h-5 text-primary fill-primary/20" />
-              <h3 className="text-lg sm:text-xl font-bold text-foreground">
+          <div className="text-center space-y-1.5">
+            <div className="flex items-center justify-center gap-2.5">
+              <Heart className="w-5 h-5 text-primary" />
+              <h3 className="text-lg sm:text-xl font-semibold text-foreground">
                 {getText(content.title)}
               </h3>
             </div>
-            <p className="text-sm text-muted-foreground font-medium">
+            <p className="text-sm text-muted-foreground">
               {getText(content.subtitle)}
             </p>
           </div>
@@ -255,16 +255,16 @@ const SukoonFamilyFeature = () => {
             {content.features.map((feature, index) => (
               <div
                 key={index}
-                className="flex items-start gap-2 p-2.5 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
+                className="flex items-start gap-3 p-3.5 rounded-xl bg-secondary/50 hover:bg-secondary transition-colors"
               >
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 text-primary">
+                <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0 text-primary">
                   {feature.icon}
                 </div>
                 <div className="min-w-0">
-                  <p className="text-xs font-semibold text-foreground leading-tight">
+                  <p className="text-sm font-semibold text-foreground leading-tight">
                     {getText(feature.title)}
                   </p>
-                  <p className="text-[10px] text-muted-foreground leading-tight mt-0.5">
+                  <p className="text-xs text-muted-foreground leading-snug mt-0.5">
                     {getText(feature.description)}
                   </p>
                 </div>
@@ -273,19 +273,19 @@ const SukoonFamilyFeature = () => {
           </div>
 
           {/* Tagline */}
-          <p className="text-xs text-center text-muted-foreground italic">
+          <p className="text-sm text-center text-muted-foreground italic">
             "{getText(content.tagline)}"
           </p>
 
           {/* CTAs */}
-          <div className="flex flex-col sm:flex-row gap-2">
-            <Button asChild className="flex-1 gap-2" size="sm">
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Button asChild className="flex-1 gap-2.5 h-12">
               <Link to="/family">
                 <Users className="w-4 h-4" />
                 {getText(content.ctaFamily)}
               </Link>
             </Button>
-            <Button asChild variant="outline" className="flex-1 gap-2" size="sm">
+            <Button asChild variant="outline" className="flex-1 gap-2.5 h-12">
               <Link to="/hajj-progress">
                 <Heart className="w-4 h-4" />
                 {getText(content.ctaView)}

@@ -1,6 +1,5 @@
 import { memo, useCallback } from "react";
 import { MenuItem } from "./menuData";
-import { MenuIcon } from "./MenuIcon";
 import { getPrefetchProps } from "@/hooks/useRoutePrefetch";
 import { cn } from "@/lib/utils";
 
@@ -29,42 +28,40 @@ export const DashboardMenuItem = memo(function DashboardMenuItem({
       onClick={handleClick}
       {...prefetchProps}
       className={cn(
-        "flex flex-col items-center justify-center gap-2 p-3 sm:p-4 rounded-2xl",
-        "bg-card border transition-all duration-200 touch-manipulation",
-        "hover:shadow-md active:scale-[0.98]",
-        "min-h-[100px] sm:min-h-[110px]", // Larger touch targets for elderly
-        isPriority
-          ? "border-[hsl(42,60%,50%)]/30 bg-gradient-to-br from-[hsl(42,60%,97%)] to-[hsl(38,55%,94%)] dark:from-[hsl(42,30%,12%)] dark:to-[hsl(38,25%,10%)] hover:shadow-[0_4px_12px_hsl(42,60%,50%,0.15)]"
-          : "border-border/50 hover:border-border"
+        "flex flex-col items-center justify-center gap-3 p-4 sm:p-5 rounded-2xl",
+        "bg-card border border-border/60 transition-all duration-300 touch-manipulation",
+        "hover:shadow-elevated hover:border-border active:scale-[0.98]",
+        "min-h-[120px] sm:min-h-[130px]", // Large touch targets for elderly
+        isPriority && [
+          "border-[hsl(var(--sacred-gold))]/25",
+          "bg-gradient-to-br from-[hsl(var(--sacred-gold-soft))] to-card",
+          "hover:border-[hsl(var(--sacred-gold))]/40",
+          "hover:shadow-[0_8px_24px_-6px_hsl(var(--sacred-gold)/0.15)]"
+        ]
       )}
       aria-label={label}
     >
-      {/* Icon Container */}
+      {/* Icon Container - Larger, cleaner */}
       <div
         className={cn(
-          "w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center",
-          "transition-transform duration-200",
+          "w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center",
+          "transition-all duration-300",
           isPriority
-            ? "bg-[hsl(42,60%,50%)]/15 ring-2 ring-[hsl(42,60%,50%)]/20"
-            : "bg-primary/10"
+            ? "bg-[hsl(var(--sacred-gold))]/12 ring-1 ring-[hsl(var(--sacred-gold))]/20"
+            : "bg-primary/8"
         )}
       >
         <Icon
           className={cn(
-            "w-6 h-6 sm:w-7 sm:h-7",
-            isPriority ? "text-[hsl(42,60%,45%)]" : "text-primary"
+            "w-7 h-7 sm:w-8 sm:h-8",
+            isPriority ? "text-[hsl(var(--sacred-gold))]" : "text-primary"
           )}
-          strokeWidth={1.75}
+          strokeWidth={1.5}
         />
       </div>
 
-      {/* Label */}
-      <span
-        className={cn(
-          "text-sm sm:text-base font-medium text-center leading-tight",
-          isPriority ? "text-foreground" : "text-foreground/90"
-        )}
-      >
+      {/* Label - Larger, more readable */}
+      <span className="text-sm sm:text-base font-medium text-center leading-snug text-foreground">
         {label}
       </span>
     </button>

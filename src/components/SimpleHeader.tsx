@@ -20,7 +20,7 @@ export const SimpleHeader = () => {
   const currentLang = LANGUAGES.find((l) => l.code === language);
 
   return (
-    <header className="sticky top-0 z-50 bg-card/95 backdrop-blur-md border-b border-border/50">
+    <header className="sticky top-0 z-50 bg-card/98 backdrop-blur-xl border-b border-border/40 shadow-soft">
       <div className="container max-w-3xl mx-auto px-4 sm:px-6 h-16 sm:h-18 flex items-center justify-between">
         {/* Logo & Title */}
         <Link to="/" className="flex items-center gap-3 min-w-0 group">
@@ -28,10 +28,10 @@ export const SimpleHeader = () => {
             <img 
               src={logo} 
               alt="Hajj Guide" 
-              className="w-10 h-10 sm:w-11 sm:h-11 rounded-full flex-shrink-0 shadow-soft transition-transform duration-300 group-hover:scale-105"
+              className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex-shrink-0 shadow-sm transition-transform duration-300 group-hover:scale-105"
             />
             {/* Subtle glow */}
-            <div className="absolute inset-0 rounded-full bg-primary/10 blur-md -z-10" />
+            <div className="absolute inset-0 rounded-xl bg-primary/8 blur-lg -z-10" />
           </div>
           <span className="text-lg sm:text-xl font-semibold text-foreground truncate tracking-tight">
             {t("hajjGuide")}

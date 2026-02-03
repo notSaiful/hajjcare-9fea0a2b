@@ -183,35 +183,35 @@ export const TrustSection = memo(function TrustSection() {
 
   return (
     <section
-      className="bg-muted/30 border border-border/50 rounded-2xl p-4 sm:p-5 space-y-4"
+      className="bg-card border border-border/60 rounded-2xl shadow-card overflow-hidden"
       dir={isRTL ? "rtl" : "ltr"}
     >
       {/* Header */}
-      <div className="text-center space-y-1">
-        <h3 className="text-base sm:text-lg font-bold text-foreground">
+      <div className="text-center p-5 sm:p-6 pb-4 space-y-1.5">
+        <h3 className="text-lg sm:text-xl font-semibold text-foreground">
           {getText(content.title)}
         </h3>
-        <p className="text-xs sm:text-sm text-muted-foreground">
+        <p className="text-sm text-muted-foreground">
           {getText(content.subtitle)}
         </p>
       </div>
 
       {/* Features Grid */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="px-5 sm:px-6 pb-4 grid grid-cols-2 gap-3">
         {content.features.map((feature, idx) => {
           const Icon = feature.icon;
           return (
             <div
               key={idx}
-              className="flex flex-col items-center text-center p-3 rounded-xl bg-card hover:shadow-sm transition-shadow"
+              className="flex flex-col items-center text-center p-4 rounded-xl bg-secondary/50 hover:bg-secondary transition-colors"
             >
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mb-2">
-                <Icon className="w-5 h-5 text-primary" />
+              <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center mb-2.5">
+                <Icon className="w-5 h-5 text-primary" strokeWidth={1.75} />
               </div>
-              <p className="text-xs font-semibold text-foreground leading-tight">
+              <p className="text-sm font-semibold text-foreground leading-tight">
                 {getText(feature.title)}
               </p>
-              <p className="text-[10px] text-muted-foreground leading-tight mt-0.5">
+              <p className="text-xs text-muted-foreground leading-snug mt-1">
                 {getText(feature.desc)}
               </p>
             </div>
@@ -220,11 +220,11 @@ export const TrustSection = memo(function TrustSection() {
       </div>
 
       {/* Not Donation Notice */}
-      <div className="bg-primary/5 border border-primary/20 rounded-xl p-3 text-center">
-        <p className="text-xs font-semibold text-primary mb-1">
+      <div className="mx-5 sm:mx-6 mb-5 bg-[hsl(var(--sacred-gold-soft))] border border-[hsl(var(--sacred-gold))]/20 rounded-xl p-4">
+        <p className="text-sm font-semibold text-foreground mb-1.5">
           {getText(content.notDonation)}
         </p>
-        <p className="text-[10px] text-muted-foreground leading-relaxed">
+        <p className="text-xs text-muted-foreground leading-relaxed">
           {getText(content.notDonationDesc)}
         </p>
       </div>

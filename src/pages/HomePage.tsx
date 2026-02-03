@@ -42,7 +42,7 @@ const HomePage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-20" dir={isRTL ? "rtl" : "ltr"}>
+    <div className="min-h-screen bg-background pb-24" dir={isRTL ? "rtl" : "ltr"}>
       {/* Ambient Background - subtle, calming */}
       <AmbientBackground />
 
@@ -51,26 +51,27 @@ const HomePage = () => {
 
       {/* Main Content - Dashboard */}
       <main className="relative z-10 container max-w-2xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
-        <div className="space-y-6 sm:space-y-8">
-          {/* Kaaba & Green Dome Image + Welcome Title */}
-          <section className="text-center animate-fade-up" style={{ animationDelay: "0ms" }}>
-            <div className="h-20 sm:h-28 overflow-hidden mx-auto mb-3 flex items-start justify-center">
-              <img
-                src={kaabaGreenDome}
-                alt="Kaaba & Green Dome"
-                className="h-24 sm:h-32 w-auto object-cover object-top"
-              />
-            </div>
-            <h1 className="text-xl sm:text-2xl font-bold text-foreground">
-              {welcomeLabels[language as keyof typeof welcomeLabels] || welcomeLabels.en}
-            </h1>
-          </section>
-
-          {/* Bismillah header */}
-          <section className="text-center animate-fade-up" style={{ animationDelay: "50ms" }}>
+        <div className="space-y-8 sm:space-y-10">
+          {/* Hero Section - Kaaba Image + Welcome */}
+          <section className="text-center animate-fade-up space-y-4" style={{ animationDelay: "0ms" }}>
+            {/* Bismillah */}
             <p className="text-lg sm:text-xl font-semibold text-primary" dir="rtl">
               بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ
             </p>
+            
+            {/* Sacred Image */}
+            <div className="h-24 sm:h-32 overflow-hidden mx-auto flex items-start justify-center">
+              <img
+                src={kaabaGreenDome}
+                alt="Kaaba & Green Dome"
+                className="h-28 sm:h-36 w-auto object-cover object-top opacity-95"
+              />
+            </div>
+            
+            {/* Welcome Text */}
+            <h1 className="text-xl sm:text-2xl font-bold text-foreground leading-snug">
+              {welcomeLabels[language as keyof typeof welcomeLabels] || welcomeLabels.en}
+            </h1>
           </section>
 
           {/* Dashboard Menu - Simplified 2-column grid */}
@@ -91,12 +92,12 @@ const HomePage = () => {
           {/* Auth prompt if not logged in */}
           {!isAuthenticated && (
             <section
-              className="text-center pt-2 animate-fade-up"
+              className="text-center pt-4 animate-fade-up"
               style={{ animationDelay: "250ms" }}
             >
               <button
                 onClick={() => navigate("/auth")}
-                className="text-sm text-primary hover:text-primary/80 underline underline-offset-4 transition-colors duration-300"
+                className="text-sm font-medium text-primary hover:text-primary/80 underline underline-offset-4 transition-colors duration-300"
               >
                 {t("signIn")}
               </button>
