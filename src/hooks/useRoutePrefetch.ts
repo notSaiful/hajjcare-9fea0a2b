@@ -26,7 +26,6 @@ const ROUTE_MAP: Record<string, () => Promise<unknown>> = {
   "/post-hajj": () => import("@/pages/PostHajjGuidePage"),
   "/women": () => import("@/pages/WomenSolutionsPage"),
   "/govt-services": () => import("@/pages/GovtServicesPage"),
-  "/donors": () => import("@/pages/DonorsPage"),
   "/auth": () => import("@/pages/AuthPage"),
 };
 
