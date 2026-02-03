@@ -89,7 +89,7 @@ serve(async (req) => {
       body: JSON.stringify({
         amount: amount,
         currency: currency,
-        receipt: `donation_${user.id}_${Date.now()}`,
+        receipt: `hc_${user.id.slice(0, 8)}_${Date.now().toString(36)}`,
         notes: {
           purpose: "HajjCare App Maintenance Donation",
           user_id: user.id,
