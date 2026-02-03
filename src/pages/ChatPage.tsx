@@ -10,7 +10,6 @@ import ChatMessage from "@/components/ChatMessage";
 import ChatInput from "@/components/ChatInput";
 import { VoiceAssistant } from "@/components/VoiceAssistant";
 import WelcomeScreen from "@/components/WelcomeScreen";
-import { BottomNavigation } from "@/components/BottomNavigation";
 
 const CHAT_LABELS = {
   en: {
@@ -220,7 +219,7 @@ const ChatPage = () => {
   const hasMessages = messages.length > 0;
 
   return (
-    <div className="min-h-screen bg-background flex flex-col pb-16" dir={isRTL ? "rtl" : "ltr"}>
+    <div className="min-h-screen bg-background flex flex-col" dir={isRTL ? "rtl" : "ltr"}>
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
         <div className="container max-w-3xl mx-auto px-4">
@@ -360,9 +359,6 @@ const ChatPage = () => {
           </Tabs>
         </div>
       </main>
-
-      {/* Bottom Navigation */}
-      <BottomNavigation />
     </div>
   );
 };

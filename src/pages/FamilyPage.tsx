@@ -5,7 +5,6 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useFamilyGroup } from "@/hooks/useFamilyGroup";
 import { useHajjLocation, HAJJ_STAGES, HajjStage } from "@/hooks/useHajjLocation";
 import { FamilyGroupPanel } from "@/components/FamilyGroupPanel";
-import { BottomNavigation } from "@/components/BottomNavigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -91,7 +90,7 @@ const FamilyPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-20" dir={isRTL ? "rtl" : "ltr"}>
+    <div className="min-h-screen bg-background" dir={isRTL ? "rtl" : "ltr"}>
       <div className="absolute inset-0 islamic-pattern opacity-20 pointer-events-none" />
       
       {/* Header */}
@@ -343,9 +342,6 @@ const FamilyPage = () => {
           </Card>
         )}
       </main>
-
-      {/* Bottom Navigation */}
-      <BottomNavigation />
     </div>
   );
 };

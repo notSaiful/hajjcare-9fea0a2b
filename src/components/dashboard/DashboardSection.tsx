@@ -20,8 +20,8 @@ export const DashboardSection = memo(function DashboardSection({
         {section.title[language] || section.title.en}
       </h3>
 
-      {/* Section Grid - 2 columns for larger, elderly-friendly icons */}
-      <div className="grid grid-cols-2 gap-3 sm:gap-4">
+      {/* Section Grid */}
+      <div className="grid grid-cols-3 gap-3 sm:gap-4">
         {section.items.map((item) => (
           <DashboardMenuItem
             key={item.id}

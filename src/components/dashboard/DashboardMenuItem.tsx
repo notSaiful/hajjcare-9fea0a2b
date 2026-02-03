@@ -10,15 +10,16 @@ interface DashboardMenuItemProps {
   onNavigate: (route: string) => void;
 }
 
+// Sacred items that receive gold accent treatment
+const SACRED_ITEMS = new Set(["hajj", "makkah", "madinah"]);
+
 export const DashboardMenuItem = memo(function DashboardMenuItem({
   item,
   language,
   onNavigate,
 }: DashboardMenuItemProps) {
   const prefetchProps = getPrefetchProps(item.route);
-  const isPriority = item.priority;
-  const Icon = item.icon;
-  const label = item.label[language] || item.label.en;
+  const isSacred = SACRED_ITEMS.has(item.id);
 
   const handleClick = useCallback(() => {
     onNavigate(item.route);
@@ -29,43 +30,39 @@ export const DashboardMenuItem = memo(function DashboardMenuItem({
       onClick={handleClick}
       {...prefetchProps}
       className={cn(
-        "flex flex-col items-center justify-center gap-2 p-3 sm:p-4 rounded-2xl",
-        "bg-card border transition-all duration-200 touch-manipulation",
-        "hover:shadow-md active:scale-[0.98]",
-        "min-h-[100px] sm:min-h-[110px]", // Larger touch targets for elderly
-        isPriority
-          ? "border-[hsl(42,60%,50%)]/30 bg-gradient-to-br from-[hsl(42,60%,97%)] to-[hsl(38,55%,94%)] dark:from-[hsl(42,30%,12%)] dark:to-[hsl(38,25%,10%)] hover:shadow-[0_4px_12px_hsl(42,60%,50%,0.15)]"
-          : "border-border/50 hover:border-border"
+        "flex flex-col items-center gap-2 p-2 sm:p-3 rounded-xl",
+        "bg-card/60 border border-border/30",
+        "transition-all duration-300 ease-out",
+        "group active:scale-[0.97] touch-manipulation select-none",
+        // Hover states
+        "hover:bg-card hover:border-border/60 hover:shadow-soft",
+        "hover:-translate-y-0.5",
+        // Sacred items get enhanced styling
+        isSacred && [
+          "ring-1 ring-[hsl(42_50%_70%)]/20 dark:ring-[hsl(42_45%_50%)]/15",
+          "hover:ring-[hsl(42_55%_65%)]/40 dark:hover:ring-[hsl(42_50%_55%)]/30",
+          "hover:shadow-[0_4px_20px_-4px_hsl(42_60%_50%/0.15)]",
+          "dark:hover:shadow-[0_4px_20px_-4px_hsl(42_50%_40%/0.2)]"
+        ]
       )}
-      aria-label={label}
     >
-      {/* Icon Container */}
-      <div
+      <MenuIcon
+        icon={item.icon}
+        colorClass={item.colorClass}
+        isSacred={isSacred}
         className={cn(
-          "w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center",
-          "transition-transform duration-200",
-          isPriority
-            ? "bg-[hsl(42,60%,50%)]/15 ring-2 ring-[hsl(42,60%,50%)]/20"
-            : "bg-primary/10"
+          "transition-all duration-300 ease-out",
+          "group-hover:scale-105",
+          isSacred && "group-hover:scale-110 group-hover:rotate-1"
         )}
-      >
-        <Icon
-          className={cn(
-            "w-6 h-6 sm:w-7 sm:h-7",
-            isPriority ? "text-[hsl(42,60%,45%)]" : "text-primary"
-          )}
-          strokeWidth={1.75}
-        />
-      </div>
-
-      {/* Label */}
-      <span
-        className={cn(
-          "text-sm sm:text-base font-medium text-center leading-tight",
-          isPriority ? "text-foreground" : "text-foreground/90"
-        )}
-      >
-        {label}
+      />
+      <span className={cn(
+        "text-xs sm:text-sm font-medium text-foreground/90",
+        "text-center leading-tight line-clamp-2 min-h-[2.5rem]",
+        "flex items-center transition-colors duration-200",
+        isSacred && "group-hover:text-[hsl(42_65%_35%)] dark:group-hover:text-[hsl(42_55%_65%)]"
+      )}>
+        {item.label[language] || item.label.en}
       </span>
     </button>
   );

@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { MainLayout } from "@/components/MainLayout";
-import { BottomNavigation } from "@/components/BottomNavigation";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -41,8 +40,8 @@ const PreparePage = () => {
   };
 
   return (
-    <MainLayout showFooter={false}>
-      <div className="container max-w-2xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 pb-24 space-y-4 sm:space-y-6">
+    <MainLayout>
+      <div className="container max-w-2xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
         {/* Back Button */}
         <Link to="/">
           <Button variant="ghost" size="sm" className="gap-2 -ml-2 h-10 sm:h-9 text-sm">
@@ -126,7 +125,6 @@ const PreparePage = () => {
           })}
         </div>
       </div>
-      <BottomNavigation />
     </MainLayout>
   );
 };
