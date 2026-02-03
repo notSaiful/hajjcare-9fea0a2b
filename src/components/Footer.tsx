@@ -9,8 +9,7 @@ import {
   Info, 
   IndianRupee,
   Mail,
-  Home,
-  Heart
+  Home
 } from "lucide-react";
 
 export function Footer() {
@@ -27,7 +26,6 @@ export function Footer() {
     { label: "About Us", href: "/about-us", icon: Info },
     { label: "Contact Us", href: "/contact-us", icon: Phone },
     { label: "Pricing", href: "/pricing", icon: IndianRupee },
-    { label: "Support Us", href: "/donors", icon: Heart },
   ];
 
   const quickLinks = [
