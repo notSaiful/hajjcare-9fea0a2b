@@ -1,14 +1,14 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import { MainLayout } from "@/components/MainLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft, ArrowRight, BookOpen, ChevronDown, ChevronUp } from "lucide-react";
+import { BookOpen, ChevronDown, ChevronUp } from "lucide-react";
 import { TextToSpeechButton } from "@/components/TextToSpeechButton";
+import { PageHeader } from "@/components/PageHeader";
+import { IconCircle } from "@/components/IconCircle";
 
 const DuaGuidePage = () => {
-  const { language, isRTL } = useLanguage();
+  const { language } = useLanguage();
   const [expandedDua, setExpandedDua] = useState<number | null>(null);
 
   const labels = {
@@ -37,19 +37,6 @@ const DuaGuidePage = () => {
       or: "ହଜ ଏବଂ ଉମରାହ ପାଇଁ ଆବଶ୍ୟକ ପ୍ରାର୍ଥନା",
       ml: "ഹജ്ജ് & ഉംറയ്ക്കുള്ള അത്യാവശ്യ പ്രാർത്ഥനകൾ",
       pa: "ਹੱਜ ਅਤੇ ਉਮਰਾਹ ਲਈ ਜ਼ਰੂਰੀ ਦੁਆਵਾਂ",
-    },
-    back: {
-      en: "Back",
-      ar: "رجوع",
-      ur: "واپس",
-      hi: "वापस",
-      ta: "பின்செல்",
-      te: "వెనక్కు",
-      mr: "मागे",
-      bn: "ফিরে যান",
-      or: "ପଛକୁ",
-      ml: "തിരികെ",
-      pa: "ਪਿੱਛੇ",
     },
     translation: {
       en: "Translation",
@@ -102,30 +89,24 @@ const DuaGuidePage = () => {
   return (
     <MainLayout>
       <div className="container max-w-2xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
-        <Link to="/">
-          <Button variant="ghost" size="sm" className="gap-2 -ml-2 h-10 sm:h-9 text-sm">
-            {isRTL ? <ArrowRight className="w-4 h-4" /> : <ArrowLeft className="w-4 h-4" />}
-            {labels.back[language] || labels.back.en}
-          </Button>
-        </Link>
-
-        <div className="space-y-1.5 sm:space-y-2">
-          <h1 className="text-xl sm:text-2xl font-bold">{labels.title[language] || labels.title.en}</h1>
-          <p className="text-sm sm:text-base text-muted-foreground">{labels.subtitle[language] || labels.subtitle.en}</p>
-        </div>
+        {/* Consistent Page Header */}
+        <PageHeader
+          title={labels.title}
+          subtitle={labels.subtitle}
+          icon={BookOpen}
+          iconVariant="violet"
+        />
 
         <div className="space-y-3">
           {duas.map((dua, idx) => (
-            <Card key={idx} className="border-2 overflow-hidden">
+            <Card key={idx} className="border-2 shadow-sm overflow-hidden">
               <CardContent className="p-0">
                 <button
                   className="w-full p-4 flex items-center justify-between text-left hover:bg-muted/30 transition-colors"
                   onClick={() => setExpandedDua(expandedDua === idx ? null : idx)}
                 >
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-primary/10 flex items-center justify-center shadow-soft border-2 border-primary/20">
-                      <BookOpen className="w-6 h-6 sm:w-7 sm:h-7 text-primary" />
-                    </div>
+                    <IconCircle icon={BookOpen} variant="violet" size="sm" />
                     <span className="font-semibold">{dua.title[language] || dua.title.en}</span>
                   </div>
                   {expandedDua === idx ? (
