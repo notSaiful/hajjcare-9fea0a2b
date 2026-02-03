@@ -1,15 +1,15 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import { MainLayout } from "@/components/MainLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { IndianRupee, Shield, Check, Info, CreditCard, ArrowLeft, ArrowRight } from "lucide-react";
+import { IndianRupee, Shield, Check, Info, CreditCard } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { PageHeader } from "@/components/PageHeader";
 
 declare global {
   interface Window {
@@ -20,7 +20,7 @@ declare global {
 const PRESET_AMOUNTS = [99, 199, 499, 999];
 
 export default function PaymentPage() {
-  const { language, isRTL } = useLanguage();
+  const { language } = useLanguage();
   const { toast } = useToast();
   const { user, loading: authLoading } = useAuth();
   const [selectedAmount, setSelectedAmount] = useState<number>(199);
@@ -39,12 +39,6 @@ export default function PaymentPage() {
       ar: "رسوم اختيارية لدعم صيانة التطبيق",
       ur: "ایپ کی دیکھ بھال کے لیے اختیاری فیس",
       hi: "ऐप रखरखाव के लिए वैकल्पिक शुल्क",
-    },
-    back: {
-      en: "Back",
-      ar: "رجوع",
-      ur: "واپس",
-      hi: "वापस",
     },
   };
 
@@ -157,29 +151,16 @@ export default function PaymentPage() {
   return (
     <MainLayout>
       <div className="container max-w-2xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
-        {/* Back Button */}
-        <Link to="/">
-          <Button variant="ghost" size="sm" className="gap-2 -ml-2 h-10 sm:h-9 text-sm">
-            {isRTL ? <ArrowRight className="w-4 h-4" /> : <ArrowLeft className="w-4 h-4" />}
-            {labels.back[language] || labels.back.en}
-          </Button>
-        </Link>
-
-        {/* Header */}
-        <div className="space-y-1.5 sm:space-y-2">
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-primary/10 flex items-center justify-center shadow-soft border-2 border-primary/20">
-              <CreditCard className="w-8 h-8 sm:w-10 sm:h-10 text-primary" />
-            </div>
-            <div>
-              <h1 className="text-xl sm:text-2xl font-bold">{labels.title[language] || labels.title.en}</h1>
-              <p className="text-sm text-muted-foreground">{labels.subtitle[language] || labels.subtitle.en}</p>
-            </div>
-          </div>
-        </div>
+        {/* Consistent Page Header */}
+        <PageHeader
+          title={labels.title}
+          subtitle={labels.subtitle}
+          icon={CreditCard}
+          iconVariant="primary"
+        />
 
         {/* Amount Selection Card */}
-        <Card className="border-2 border-primary/20">
+        <Card className="border-2 shadow-sm">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <IndianRupee className="h-5 w-5" />

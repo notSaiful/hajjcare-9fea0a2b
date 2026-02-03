@@ -1,13 +1,13 @@
-import { Link } from "react-router-dom";
 import { MainLayout } from "@/components/MainLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft, ArrowRight, Phone, Ambulance, Shield, Building, Plane, HeartPulse, Car } from "lucide-react";
+import { Phone, Ambulance, Shield, Building, Plane, HeartPulse, Car } from "lucide-react";
 import { TextToSpeechButton } from "@/components/TextToSpeechButton";
+import { PageHeader } from "@/components/PageHeader";
+import { IconCircle } from "@/components/IconCircle";
 
 const ContactNumbersPage = () => {
-  const { language, isRTL } = useLanguage();
+  const { language } = useLanguage();
 
   const labels = {
     title: {
@@ -26,14 +26,6 @@ const ContactNumbersPage = () => {
       tr: "Suudi Arabistan'da acil ve temel hizmetler",
       ru: "Экстренные и основные службы в Саудовской Аравии",
     },
-    back: {
-      en: "Back",
-      ar: "رجوع",
-      ur: "واپس",
-      hi: "वापस",
-      tr: "Geri",
-      ru: "Назад",
-    },
     tapToCall: {
       en: "Tap to call",
       ar: "اضغط للاتصال",
@@ -49,32 +41,28 @@ const ContactNumbersPage = () => {
       icon: Phone,
       title: { en: "Unified Emergency Number", ar: "رقم الطوارئ الموحد", ur: "یونیفائیڈ ایمرجنسی نمبر", hi: "एकीकृत आपातकालीन नंबर", tr: "Birleşik Acil Durum Numarası", ru: "Единый номер экстренной помощи" },
       number: "911",
-      color: "text-red-600",
-      bgColor: "bg-red-500/10",
+      variant: "red" as const,
       description: { en: "Police, Ambulance, Fire", ar: "الشرطة، الإسعاف، الإطفاء", ur: "پولیس، ایمبولینس، فائر", hi: "पुलिस, एम्बुलेंस, फायर", tr: "Polis, Ambulans, İtfaiye", ru: "Полиция, скорая, пожарные" },
     },
     {
       icon: Ambulance,
       title: { en: "Red Crescent (Ambulance)", ar: "الهلال الأحمر (الإسعاف)", ur: "ریڈ کریسنٹ (ایمبولینس)", hi: "रेड क्रीसेंट (एम्बुलेंस)", tr: "Kızılhaç (Ambulans)", ru: "Красный Полумесяц (Скорая)" },
       number: "997",
-      color: "text-red-500",
-      bgColor: "bg-red-500/10",
+      variant: "rose" as const,
       description: { en: "Medical emergencies", ar: "حالات الطوارئ الطبية", ur: "طبی ایمرجنسی", hi: "चिकित्सा आपात स्थिति", tr: "Tıbbi acil durumlar", ru: "Медицинские экстренные случаи" },
     },
     {
       icon: Shield,
       title: { en: "Police", ar: "الشرطة", ur: "پولیس", hi: "पुलिस", tr: "Polis", ru: "Полиция" },
       number: "999",
-      color: "text-blue-600",
-      bgColor: "bg-blue-500/10",
+      variant: "sky" as const,
       description: { en: "Security and crime reports", ar: "الأمن وتقارير الجرائم", ur: "سیکورٹی اور جرائم کی رپورٹس", hi: "सुरक्षा और अपराध रिपोर्ट", tr: "Güvenlik ve suç raporları", ru: "Безопасность и сообщения о преступлениях" },
     },
     {
       icon: Car,
       title: { en: "Traffic Accidents", ar: "الحوادث المرورية", ur: "ٹریفک حادثات", hi: "यातायात दुर्घटनाएं", tr: "Trafik Kazaları", ru: "ДТП" },
       number: "993",
-      color: "text-orange-600",
-      bgColor: "bg-orange-500/10",
+      variant: "orange" as const,
       description: { en: "Road accidents and traffic", ar: "حوادث الطرق والمرور", ur: "سڑک حادثات اور ٹریفک", hi: "सड़क दुर्घटनाएं और यातायात", tr: "Yol kazaları ve trafik", ru: "Дорожные аварии и движение" },
     },
   ];
@@ -115,29 +103,18 @@ const ContactNumbersPage = () => {
   return (
     <MainLayout>
       <div className="container max-w-2xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
-        <Link to="/">
-          <Button variant="ghost" size="sm" className="gap-2 -ml-2 h-10 sm:h-9 text-sm">
-            {isRTL ? <ArrowRight className="w-4 h-4" /> : <ArrowLeft className="w-4 h-4" />}
-            {labels.back[language] || labels.back.en}
-          </Button>
-        </Link>
-
-        <div className="space-y-1.5 sm:space-y-2">
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-primary/10 flex items-center justify-center shadow-soft border-2 border-primary/20">
-              <Phone className="w-8 h-8 sm:w-10 sm:h-10 text-primary" />
-            </div>
-            <div>
-              <h1 className="text-xl sm:text-2xl font-bold">{labels.title[language] || labels.title.en}</h1>
-              <p className="text-sm text-muted-foreground">{labels.subtitle[language] || labels.subtitle.en}</p>
-            </div>
-          </div>
-        </div>
+        {/* Consistent Page Header */}
+        <PageHeader
+          title={labels.title}
+          subtitle={labels.subtitle}
+          icon={Phone}
+          iconVariant="teal"
+        />
 
         {/* Emergency Numbers */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-red-600">
+            <h2 className="text-lg font-semibold text-destructive">
               {language === "ar" ? "أرقام الطوارئ" : language === "ur" ? "ایمرجنسی نمبرز" : language === "hi" ? "आपातकालीन नंबर" : language === "tr" ? "Acil Numaralar" : language === "ru" ? "Экстренные номера" : "Emergency Numbers"}
             </h2>
             <TextToSpeechButton
@@ -150,11 +127,9 @@ const ContactNumbersPage = () => {
           <div className="grid grid-cols-2 gap-3">
             {emergencyNumbers.map((item, idx) => (
               <a key={idx} href={`tel:${item.number}`} className="block">
-                <Card className="border-2 hover:border-primary/50 transition-colors h-full">
+                <Card className="border-2 shadow-sm hover:border-primary/50 transition-colors h-full">
                   <CardContent className="p-4 text-center">
-                    <div className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full ${item.bgColor} flex items-center justify-center mx-auto mb-3 shadow-soft border-2 ${item.color.replace('text-', 'border-')}/20`}>
-                      <item.icon className={`w-7 h-7 sm:w-8 sm:h-8 ${item.color}`} />
-                    </div>
+                    <IconCircle icon={item.icon} variant={item.variant} size="md" className="mx-auto mb-3" />
                     <p className="text-2xl font-bold text-primary mb-1">{item.number}</p>
                     <p className="text-sm font-medium">{item.title[language] || item.title.en}</p>
                     <p className="text-xs text-muted-foreground">{item.description[language] || item.description.en}</p>
@@ -181,11 +156,9 @@ const ContactNumbersPage = () => {
           <div className="space-y-2">
             {hajjServices.map((item, idx) => (
               <a key={idx} href={`tel:${item.number}`} className="block">
-                <Card className="border hover:border-primary/50 transition-colors">
+                <Card className="border-2 shadow-sm hover:border-primary/50 transition-colors">
                   <CardContent className="p-4 flex items-center gap-4">
-                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 shadow-soft border-2 border-primary/20">
-                      <item.icon className="w-6 h-6 sm:w-7 sm:h-7 text-primary" />
-                    </div>
+                    <IconCircle icon={item.icon} variant="teal" size="sm" />
                     <div className="flex-1 min-w-0">
                       <p className="font-medium">{item.title[language] || item.title.en}</p>
                       <p className="text-xs text-muted-foreground">{item.description[language] || item.description.en}</p>
@@ -214,7 +187,7 @@ const ContactNumbersPage = () => {
               showLabel={false}
             />
           </div>
-          <Card className="border-2">
+          <Card className="border-2 shadow-sm">
             <CardContent className="p-4">
               <div className="space-y-3">
                 {embassies.map((embassy, idx) => (

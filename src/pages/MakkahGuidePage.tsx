@@ -4,8 +4,10 @@ import { MainLayout } from "@/components/MainLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Check, ChevronRight } from "lucide-react";
+import { Check, ChevronRight, Landmark } from "lucide-react";
 import { MAKKAH_GUIDE_TOPICS } from "@/data/makkahGuideContent";
+import { PageHeader } from "@/components/PageHeader";
+import { IconCircle } from "@/components/IconCircle";
 
 const MakkahGuidePage = () => {
   const { language } = useLanguage();
@@ -60,15 +62,13 @@ const MakkahGuidePage = () => {
   return (
     <MainLayout>
       <div className="container max-w-2xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
-        {/* Header */}
-        <div className="space-y-1.5 sm:space-y-2">
-          <h1 className="text-xl sm:text-2xl font-bold">
-            {labels.title[language] || labels.title.en}
-          </h1>
-          <p className="text-sm sm:text-base text-muted-foreground">
-            {labels.subtitle[language] || labels.subtitle.en}
-          </p>
-        </div>
+        {/* Consistent Page Header */}
+        <PageHeader
+          title={labels.title}
+          subtitle={labels.subtitle}
+          icon={Landmark}
+          iconVariant="amber"
+        />
 
         {/* Progress */}
         <div className="space-y-2">
