@@ -27,6 +27,7 @@ import {
   Gift,
   Headphones,
   Route,
+  CreditCard,
   LucideIcon,
 } from "lucide-react";
 
@@ -498,6 +499,25 @@ export const menuSections: MenuSection[] = [
           pa: "ਸੋਸ਼ਲ",
         },
         route: "/socials",
+        colorClass: "icon-plum",
+      },
+      {
+        id: "payment",
+        icon: CreditCard,
+        label: {
+          en: "Payment",
+          ar: "الدفع",
+          ur: "ادائیگی",
+          hi: "भुगतान",
+          ta: "கட்டணம்",
+          te: "చెల్లింపు",
+          mr: "पेमेंट",
+          bn: "পেমেন্ট",
+          or: "ପେମେଣ୍ଟ",
+          ml: "പേയ്മെന്റ്",
+          pa: "ਭੁਗਤਾਨ",
+        },
+        route: "/payment",
         colorClass: "icon-olive",
       },
       {
