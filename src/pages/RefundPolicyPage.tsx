@@ -121,7 +121,7 @@ export default function RefundPolicyPage() {
                 For exceptional circumstances as described in Section 5, please submit a refund request by:
               </p>
               <ol className="list-decimal pl-6 space-y-2 text-muted-foreground">
-                <li>Emailing <strong>refunds@hajjcare.app</strong> with subject line "Refund Request - [Transaction ID]"</li>
+                <li>Emailing <strong>info@hajjcare.in</strong> with subject line "Refund Request - [Transaction ID]"</li>
                 <li>Providing your registered email address and phone number</li>
                 <li>Including the transaction ID or Razorpay payment reference number</li>
                 <li>Clearly explaining the reason for your refund request</li>
@@ -146,7 +146,7 @@ export default function RefundPolicyPage() {
             <section>
               <h2 className="text-xl font-semibold mb-3">10. Payment Disputes</h2>
               <p className="text-muted-foreground leading-relaxed">
-                If you have a dispute regarding a payment, please contact us at <strong>refunds@hajjcare.app</strong> before initiating a chargeback with your bank or credit card company. We are committed to resolving genuine disputes fairly and promptly. Fraudulent chargebacks may result in permanent account suspension and legal action.
+                If you have a dispute regarding a payment, please contact us at <strong>info@hajjcare.in</strong> before initiating a chargeback with your bank or credit card company. We are committed to resolving genuine disputes fairly and promptly. Fraudulent chargebacks may result in permanent account suspension and legal action.
               </p>
             </section>
 
@@ -165,8 +165,7 @@ export default function RefundPolicyPage() {
               <div className="bg-muted/50 p-4 rounded-lg border border-border mt-3">
                 <p className="text-muted-foreground">
                   <strong>Sazo Management Private Limited</strong><br />
-                  <strong>Refunds:</strong> refunds@hajjcare.app<br />
-                  <strong>Support:</strong> support@hajjcare.app
+                  <strong>Email:</strong> info@hajjcare.in
                 </p>
               </div>
             </section>
