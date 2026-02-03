@@ -1,12 +1,11 @@
 import { useState } from "react";
 import { MainLayout } from "@/components/MainLayout";
-import { useLanguage } from "@/contexts/LanguageContext";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Heart, IndianRupee, Shield, Check, Info } from "lucide-react";
+import { IndianRupee, Shield, Check, Info, CreditCard } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -19,8 +18,7 @@ declare global {
 
 const PRESET_AMOUNTS = [99, 199, 499, 999];
 
-export default function SupportAppPage() {
-  const { language } = useLanguage();
+export default function PaymentPage() {
   const { toast } = useToast();
   const { user, loading: authLoading } = useAuth();
   const [selectedAmount, setSelectedAmount] = useState<number>(199);
@@ -52,7 +50,7 @@ export default function SupportAppPage() {
     if (!user) {
       toast({
         title: "Login Required",
-        description: "Please login to support the app.",
+        description: "Please login to proceed with payment.",
         variant: "destructive",
       });
       return;
@@ -62,7 +60,7 @@ export default function SupportAppPage() {
     if (amount < 10) {
       toast({
         title: "Minimum Amount",
-        description: "Minimum service fee is ₹10",
+        description: "Minimum amount is ₹10",
         variant: "destructive",
       });
       return;
@@ -74,13 +72,6 @@ export default function SupportAppPage() {
       const loaded = await loadRazorpayScript();
       if (!loaded) {
         throw new Error("Failed to load payment gateway");
-      }
-
-      const { data: sessionData } = await supabase.auth.getSession();
-      const token = sessionData?.session?.access_token;
-
-      if (!token) {
-        throw new Error("Authentication required");
       }
 
       const response = await supabase.functions.invoke("create-razorpay-order", {
@@ -98,7 +89,7 @@ export default function SupportAppPage() {
         amount: orderAmount,
         currency: currency,
         name: "Hajj Care",
-        description: "App Maintenance Service Fee",
+        description: "Service Fee",
         order_id: order_id,
         prefill: {
           email: user.email || "",
@@ -106,10 +97,10 @@ export default function SupportAppPage() {
         theme: {
           color: "#16a34a",
         },
-        handler: function (response: any) {
+        handler: function () {
           toast({
-            title: "Thank You! 🎉",
-            description: "Your support helps us maintain and improve Hajj Care for all pilgrims.",
+            title: "Payment Successful! 🎉",
+            description: "Thank you for supporting Hajj Care.",
           });
         },
         modal: {
@@ -143,16 +134,16 @@ export default function SupportAppPage() {
   return (
     <MainLayout>
       <ScrollArea className="h-[calc(100vh-3.5rem)]">
-        <div className="container max-w-2xl mx-auto px-4 py-8 pb-24">
+        <div className="container max-w-lg mx-auto px-4 py-8 pb-24">
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
-              <Heart className="h-8 w-8 text-primary" />
+              <CreditCard className="h-8 w-8 text-primary" />
             </div>
             <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
-              Support Hajj Care
+              Service Fee Payment
             </h1>
             <p className="text-muted-foreground">
-              Help us maintain and improve the app for all pilgrims
+              Optional fee to support app maintenance
             </p>
           </div>
 
@@ -160,14 +151,14 @@ export default function SupportAppPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <IndianRupee className="h-5 w-5" />
-                Optional Service Fee
+                Select Amount
               </CardTitle>
               <CardDescription>
-                Choose an amount to support app maintenance and development
+                Choose a preset or enter a custom amount
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 gap-3">
                 {PRESET_AMOUNTS.map((amount) => (
                   <Button
                     key={amount}
@@ -184,7 +175,7 @@ export default function SupportAppPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="custom-amount">Or enter custom amount (min ₹10)</Label>
+                <Label htmlFor="custom-amount">Custom amount (min ₹10)</Label>
                 <div className="relative">
                   <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -220,7 +211,7 @@ export default function SupportAppPage() {
                   <a href="/auth" className="text-primary underline">
                     login
                   </a>{" "}
-                  to proceed with payment
+                  to proceed
                 </p>
               )}
             </CardContent>
@@ -228,19 +219,18 @@ export default function SupportAppPage() {
 
           <Card className="mb-6">
             <CardHeader>
-              <CardTitle className="text-lg">How Your Support Helps</CardTitle>
+              <CardTitle className="text-lg">Your Support Helps</CardTitle>
             </CardHeader>
             <CardContent>
-              <ul className="space-y-3">
+              <ul className="space-y-2">
                 {[
-                  "Keep the app running smoothly during peak Hajj season",
-                  "Add new languages and accessibility features",
-                  "Maintain AI-powered chat assistance",
-                  "Improve maps and real-time family tracking",
-                  "Provide 24/7 emergency support coordination",
+                  "Keep servers running during Hajj season",
+                  "Add new features and languages",
+                  "Maintain AI chat assistance",
+                  "Improve family tracking features",
                 ].map((item, index) => (
-                  <li key={index} className="flex items-start gap-3">
-                    <Check className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                  <li key={index} className="flex items-start gap-2 text-sm">
+                    <Check className="h-4 w-4 text-green-500 flex-shrink-0 mt-0.5" />
                     <span className="text-muted-foreground">{item}</span>
                   </li>
                 ))}
@@ -248,32 +238,15 @@ export default function SupportAppPage() {
             </CardContent>
           </Card>
 
-          <Card className="bg-muted/50 border-border/50">
-            <CardContent className="pt-6">
-              <div className="flex items-start gap-3">
-                <Info className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
-                <div className="text-sm text-muted-foreground space-y-2">
-                  <p>
-                    <strong>Important:</strong> This is an optional service fee, not a donation or
-                    charity. All core app features remain free.
-                  </p>
-                  <p>
-                    Service fees are non-refundable. See our{" "}
-                    <a href="/refund-policy" className="text-primary underline">
-                      Refund Policy
-                    </a>{" "}
-                    for details.
-                  </p>
-                  <p>
-                    Payments processed securely via Razorpay. Questions? Contact{" "}
-                    <a href="mailto:info@hajjcare.in" className="text-primary underline">
-                      info@hajjcare.in
-                    </a>
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <div className="flex items-start gap-3 p-4 bg-muted/50 rounded-lg text-sm text-muted-foreground">
+            <Info className="h-4 w-4 flex-shrink-0 mt-0.5" />
+            <div>
+              <p>This is an optional service fee, not a donation. Fees are non-refundable.</p>
+              <p className="mt-1">
+                Contact: <a href="mailto:info@hajjcare.in" className="text-primary underline">info@hajjcare.in</a>
+              </p>
+            </div>
+          </div>
         </div>
       </ScrollArea>
     </MainLayout>
