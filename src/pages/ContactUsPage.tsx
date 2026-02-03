@@ -2,7 +2,7 @@ import { MainLayout } from "@/components/MainLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent } from "@/components/ui/card";
-import { Mail, Phone, MapPin, Clock, MessageSquare, Headphones } from "lucide-react";
+import { Mail, Phone, MapPin, Clock, MessageSquare, Headphones, Building2, Shield } from "lucide-react";
 
 export default function ContactUsPage() {
   const { language } = useLanguage();
@@ -10,8 +10,8 @@ export default function ContactUsPage() {
   const contactMethods = [
     {
       icon: Mail,
-      title: "Email Support",
-      description: "For general inquiries and support",
+      title: "General Support",
+      description: "For general inquiries and assistance",
       value: "support@hajjcare.app",
       link: "mailto:support@hajjcare.app",
     },
@@ -41,7 +41,7 @@ export default function ContactUsPage() {
           </div>
 
           <p className="text-muted-foreground mb-8 text-lg">
-            We're here to help you with any questions about HajjCare. Reach out to us through any of the channels below.
+            We're here to help you with any questions about Hajj Care. Reach out to us through any of the channels below.
           </p>
 
           <div className="grid gap-4 md:grid-cols-3 mb-8">
@@ -66,15 +66,33 @@ export default function ContactUsPage() {
             <Card className="border-border/50">
               <CardContent className="p-6">
                 <div className="flex items-start gap-4">
-                  <MapPin className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
+                  <Building2 className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
                   <div>
-                    <h3 className="font-semibold text-foreground mb-2">Business Address</h3>
+                    <h3 className="font-semibold text-foreground mb-2">Company Information</h3>
                     <p className="text-muted-foreground">
-                      HajjCare Digital Services<br />
-                      India<br />
+                      <strong>Sazo Management Private Limited</strong><br />
+                      India
                     </p>
                     <p className="text-sm text-muted-foreground mt-2">
-                      (We are a digital-only platform and do not have a physical walk-in office)
+                      Hajj Care is a digital services platform. We are a technology company providing digital guidance and support for pilgrims. We are <strong>not</strong> a travel agency, tour operator, or religious organization.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-border/50">
+              <CardContent className="p-6">
+                <div className="flex items-start gap-4">
+                  <MapPin className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
+                  <div>
+                    <h3 className="font-semibold text-foreground mb-2">Registered Office</h3>
+                    <p className="text-muted-foreground">
+                      Sazo Management Private Limited<br />
+                      India
+                    </p>
+                    <p className="text-sm text-muted-foreground mt-2 italic">
+                      Note: We are a digital-only platform and do not have a physical walk-in office for customer visits. All support is provided remotely via email.
                     </p>
                   </div>
                 </div>
@@ -88,9 +106,9 @@ export default function ContactUsPage() {
                   <div>
                     <h3 className="font-semibold text-foreground mb-2">Support Hours</h3>
                     <ul className="text-muted-foreground space-y-1">
-                      <li><strong>General Support:</strong> Monday - Saturday, 9:00 AM - 6:00 PM IST</li>
-                      <li><strong>During Hajj Season:</strong> 24/7 emergency support available</li>
-                      <li><strong>Response Time:</strong> We aim to respond within 24-48 hours</li>
+                      <li><strong>General Support:</strong> Monday – Saturday, 9:00 AM – 6:00 PM IST</li>
+                      <li><strong>During Hajj Season:</strong> 24/7 enhanced support available</li>
+                      <li><strong>Response Time:</strong> We aim to respond within 24-48 business hours</li>
                     </ul>
                   </div>
                 </div>
@@ -99,23 +117,46 @@ export default function ContactUsPage() {
 
             <Card className="border-border/50 bg-muted/30">
               <CardContent className="p-6">
-                <h3 className="font-semibold text-foreground mb-4">Specific Inquiries</h3>
+                <h3 className="font-semibold text-foreground mb-4">Department-Specific Inquiries</h3>
                 <div className="grid gap-3 text-sm">
                   <div className="flex justify-between items-center py-2 border-b border-border/50">
-                    <span className="text-muted-foreground">Privacy concerns</span>
+                    <span className="text-muted-foreground">Privacy & Data Concerns</span>
                     <a href="mailto:privacy@hajjcare.app" className="text-primary hover:underline">privacy@hajjcare.app</a>
                   </div>
                   <div className="flex justify-between items-center py-2 border-b border-border/50">
-                    <span className="text-muted-foreground">Refund requests</span>
+                    <span className="text-muted-foreground">Refund & Payment Inquiries</span>
                     <a href="mailto:refunds@hajjcare.app" className="text-primary hover:underline">refunds@hajjcare.app</a>
                   </div>
                   <div className="flex justify-between items-center py-2 border-b border-border/50">
-                    <span className="text-muted-foreground">Legal matters</span>
+                    <span className="text-muted-foreground">Legal Matters</span>
                     <a href="mailto:legal@hajjcare.app" className="text-primary hover:underline">legal@hajjcare.app</a>
+                  </div>
+                  <div className="flex justify-between items-center py-2 border-b border-border/50">
+                    <span className="text-muted-foreground">Grievance Officer</span>
+                    <a href="mailto:grievance@hajjcare.app" className="text-primary hover:underline">grievance@hajjcare.app</a>
                   </div>
                   <div className="flex justify-between items-center py-2">
                     <span className="text-muted-foreground">Partnerships & Media</span>
                     <a href="mailto:partnerships@hajjcare.app" className="text-primary hover:underline">partnerships@hajjcare.app</a>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-border/50">
+              <CardContent className="p-6">
+                <div className="flex items-start gap-4">
+                  <Shield className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
+                  <div>
+                    <h3 className="font-semibold text-foreground mb-2">Grievance Officer</h3>
+                    <p className="text-muted-foreground mb-3">
+                      In accordance with the Information Technology Act, 2000 and rules made thereunder, the details of the Grievance Officer are:
+                    </p>
+                    <p className="text-muted-foreground">
+                      <strong>Grievance Officer:</strong> Sazo Management Private Limited<br />
+                      <strong>Email:</strong> grievance@hajjcare.app<br />
+                      <strong>Response Time:</strong> Within 30 days of receiving the complaint
+                    </p>
                   </div>
                 </div>
               </CardContent>
@@ -129,9 +170,21 @@ export default function ContactUsPage() {
                 </p>
                 <ul className="text-muted-foreground space-y-2">
                   <li><strong>Indian Hajj Mission:</strong> Available in the app under "Contact Numbers"</li>
-                  <li><strong>Saudi Emergency:</strong> 911</li>
-                  <li><strong>In-App Chat:</strong> Use our AI assistant for immediate guidance</li>
+                  <li><strong>Saudi Emergency Services:</strong> 911</li>
+                  <li><strong>In-App AI Assistant:</strong> Available 24/7 for immediate guidance</li>
                 </ul>
+                <p className="text-sm text-muted-foreground mt-4 italic">
+                  Note: Hajj Care provides digital guidance only. For medical emergencies, contact local emergency services immediately.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-border/50 bg-muted/30">
+              <CardContent className="p-6">
+                <h3 className="font-semibold text-foreground mb-3">Important Notice</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  Hajj Care is a digital guidance platform operated by Sazo Management Private Limited. We provide informational content and digital assistance services only. We are <strong>not</strong> affiliated with any government body, religious authority, or travel agency. We do not provide religious rulings (fatwas), medical advice, legal advice, or travel/visa services. All payments made on this platform are service fees for digital services, not donations or charitable contributions.
+                </p>
               </CardContent>
             </Card>
           </div>
