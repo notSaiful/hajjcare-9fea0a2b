@@ -1,11 +1,12 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { MainLayout } from "@/components/MainLayout";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { IndianRupee, Shield, Check, Info, CreditCard } from "lucide-react";
+import { IndianRupee, Shield, Check, Info, CreditCard, ArrowLeft, ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -19,11 +20,33 @@ declare global {
 const PRESET_AMOUNTS = [99, 199, 499, 999];
 
 export default function PaymentPage() {
+  const { language, isRTL } = useLanguage();
   const { toast } = useToast();
   const { user, loading: authLoading } = useAuth();
   const [selectedAmount, setSelectedAmount] = useState<number>(199);
   const [customAmount, setCustomAmount] = useState<string>("");
   const [isProcessing, setIsProcessing] = useState(false);
+
+  const labels = {
+    title: {
+      en: "Service Fee Payment",
+      ar: "دفع رسوم الخدمة",
+      ur: "سروس فیس ادائیگی",
+      hi: "सेवा शुल्क भुगतान",
+    },
+    subtitle: {
+      en: "Optional fee to support app maintenance",
+      ar: "رسوم اختيارية لدعم صيانة التطبيق",
+      ur: "ایپ کی دیکھ بھال کے لیے اختیاری فیس",
+      hi: "ऐप रखरखाव के लिए वैकल्पिक शुल्क",
+    },
+    back: {
+      en: "Back",
+      ar: "رجوع",
+      ur: "واپس",
+      hi: "वापस",
+    },
+  };
 
   const getFinalAmount = () => {
     if (customAmount && parseInt(customAmount) >= 10) {
@@ -133,30 +156,39 @@ export default function PaymentPage() {
 
   return (
     <MainLayout>
-      <ScrollArea className="h-[calc(100vh-3.5rem)]">
-        <div className="container max-w-lg mx-auto px-4 py-8 pb-24">
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
-              <CreditCard className="h-8 w-8 text-primary" />
-            </div>
-            <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
-              Service Fee Payment
-            </h1>
-            <p className="text-muted-foreground">
-              Optional fee to support app maintenance
-            </p>
-          </div>
+      <div className="container max-w-2xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
+        {/* Back Button */}
+        <Link to="/">
+          <Button variant="ghost" size="sm" className="gap-2 -ml-2 h-10 sm:h-9 text-sm">
+            {isRTL ? <ArrowRight className="w-4 h-4" /> : <ArrowLeft className="w-4 h-4" />}
+            {labels.back[language] || labels.back.en}
+          </Button>
+        </Link>
 
-          <Card className="mb-6 border-primary/20">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <IndianRupee className="h-5 w-5" />
-                Select Amount
-              </CardTitle>
-              <CardDescription>
-                Choose a preset or enter a custom amount
-              </CardDescription>
-            </CardHeader>
+        {/* Header */}
+        <div className="space-y-1.5 sm:space-y-2">
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-primary/10 flex items-center justify-center shadow-soft border-2 border-primary/20">
+              <CreditCard className="w-8 h-8 sm:w-10 sm:h-10 text-primary" />
+            </div>
+            <div>
+              <h1 className="text-xl sm:text-2xl font-bold">{labels.title[language] || labels.title.en}</h1>
+              <p className="text-sm text-muted-foreground">{labels.subtitle[language] || labels.subtitle.en}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Amount Selection Card */}
+        <Card className="border-2 border-primary/20">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <IndianRupee className="h-5 w-5" />
+              Select Amount
+            </CardTitle>
+            <CardDescription>
+              Choose a preset or enter a custom amount
+            </CardDescription>
+          </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid grid-cols-2 gap-3">
                 {PRESET_AMOUNTS.map((amount) => (
@@ -217,10 +249,11 @@ export default function PaymentPage() {
             </CardContent>
           </Card>
 
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle className="text-lg">Your Support Helps</CardTitle>
-            </CardHeader>
+        {/* Benefits Card */}
+        <Card className="border-2">
+          <CardHeader>
+            <CardTitle className="text-lg">Your Support Helps</CardTitle>
+          </CardHeader>
             <CardContent>
               <ul className="space-y-2">
                 {[
@@ -238,17 +271,21 @@ export default function PaymentPage() {
             </CardContent>
           </Card>
 
-          <div className="flex items-start gap-3 p-4 bg-muted/50 rounded-lg text-sm text-muted-foreground">
-            <Info className="h-4 w-4 flex-shrink-0 mt-0.5" />
-            <div>
-              <p>This is an optional service fee, not a donation. Fees are non-refundable.</p>
-              <p className="mt-1">
-                Contact: <a href="mailto:info@hajjcare.in" className="text-primary underline">info@hajjcare.in</a>
-              </p>
+        {/* Disclaimer */}
+        <Card className="border-2 bg-muted/30">
+          <CardContent className="p-4">
+            <div className="flex items-start gap-3 text-sm text-muted-foreground">
+              <Info className="h-5 w-5 flex-shrink-0 mt-0.5 text-primary" />
+              <div>
+                <p>This is an optional service fee, not a donation. Fees are non-refundable.</p>
+                <p className="mt-1">
+                  Contact: <a href="mailto:info@hajjcare.in" className="text-primary underline">info@hajjcare.in</a>
+                </p>
+              </div>
             </div>
-          </div>
-        </div>
-      </ScrollArea>
+          </CardContent>
+        </Card>
+      </div>
     </MainLayout>
   );
 }
