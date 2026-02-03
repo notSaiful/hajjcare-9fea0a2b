@@ -74,188 +74,195 @@
 
 @layer base {
   :root {
-    /* === PRIMARY PALETTE === */
-    /* Deep Calm Teal - Trust, Safety, Islam-aligned */
-    --background: 0 0% 100%;
-    --foreground: 0 0% 0%;
+    /* ═══════════════════════════════════════════════════
+       HAJJ CARE DESIGN SYSTEM - Premium Calm Aesthetic
+       ═══════════════════════════════════════════════════ */
+    
+    /* === CORE PALETTE: Calm & Trustworthy === */
+    --background: 40 20% 98%;         /* Warm off-white (cream) */
+    --foreground: 160 20% 15%;        /* Deep forest (not pure black) */
 
-    /* Card surfaces - Soft off-white */
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 0%;
+    /* Card surfaces - Soft white with warmth */
+    --card: 40 30% 99%;
+    --card-foreground: 160 20% 15%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 0%;
+    --popover: 40 30% 99%;
+    --popover-foreground: 160 20% 15%;
 
-    /* Primary - Deep calming teal */
-    --primary: 0 0% 0%;
-    --primary-foreground: 0 0% 100%;
+    /* Primary - Deep calming teal-green (Islamic green) */
+    --primary: 160 45% 30%;
+    --primary-foreground: 40 30% 98%;
 
-    /* Secondary - Muted sand/beige (Hajj environment) */
-    --secondary: 0 0% 96%;
-    --secondary-foreground: 0 0% 0%;
+    /* Secondary - Soft sand/beige */
+    --secondary: 38 25% 93%;
+    --secondary-foreground: 160 20% 20%;
 
-    /* Muted - Subtle teal-gray */
-    --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 45%;
+    /* Muted - Subtle warm gray */
+    --muted: 38 15% 94%;
+    --muted-foreground: 160 10% 45%;
 
-    /* Accent - Warm sand accent */
-    --accent: 0 0% 90%;
-    --accent-foreground: 0 0% 0%;
+    /* Accent - Warm gold-sand accent */
+    --accent: 38 35% 90%;
+    --accent-foreground: 160 20% 18%;
 
     /* Destructive - Reserved, serious red */
-    --destructive: 0 84% 60%;
+    --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 98%;
 
-    /* Borders - Soft, unobtrusive */
-    --border: 0 0% 0%;
-    --input: 0 0% 0%;
-    --ring: 0 0% 0%;
+    /* Borders - Soft, warm, unobtrusive */
+    --border: 38 20% 88%;
+    --input: 38 20% 88%;
+    --ring: 160 45% 35%;
 
-    --radius: 0rem;
+    /* Generous radius for premium feel */
+    --radius: 0.875rem;
 
-    /* === STATUS COLORS - STRICT USAGE === */
-    /* Green = Normal (calm, reassuring) */
+    /* === STATUS COLORS === */
     --status-safe: 155 55% 35%;
     --status-safe-bg: 155 40% 95%;
-
-    /* Amber = Assisted (attention, not alarm) */
     --status-assistance: 40 85% 48%;
     --status-assistance-bg: 40 60% 94%;
-
-    /* Red = Emergency (extremely rare, serious) */
     --status-emergency: 0 70% 50%;
     --status-emergency-bg: 0 50% 96%;
 
     /* === CALM SEMANTIC TOKENS === */
-    --calm-teal: 168 42% 28%;
-    --calm-teal-light: 168 35% 42%;
-    --calm-sand: 38 25% 93%;
-    --calm-cream: 40 30% 97%;
+    --calm-teal: 160 42% 32%;
+    --calm-teal-light: 160 35% 45%;
+    --calm-sand: 38 30% 92%;
+    --calm-cream: 40 35% 97%;
     --calm-stone: 35 15% 88%;
 
-    /* Sacred gold - SPARINGLY for sacred moments */
+    /* Sacred gold - for sacred moments */
     --sacred-gold: 42 65% 50%;
-    --sacred-gold-soft: 42 45% 92%;
+    --sacred-gold-soft: 42 50% 94%;
 
-    /* === SHADOWS - Soft, calming elevation === */
-    --shadow-soft: 0 1px 3px 0 hsl(160 25% 12% / 0.04), 0 1px 2px -1px hsl(160 25% 12% / 0.04);
-    --shadow-card: 0 4px 6px -1px hsl(160 25% 12% / 0.05), 0 2px 4px -2px hsl(160 25% 12% / 0.04);
-    --shadow-elevated: 0 10px 15px -3px hsl(160 25% 12% / 0.06), 0 4px 6px -4px hsl(160 25% 12% / 0.04);
-    --shadow-glow: 0 0 40px -8px hsl(168 42% 28% / 0.15);
+    /* === PREMIUM SHADOWS - Soft, layered, calming === */
+    --shadow-soft: 0 1px 2px 0 hsl(160 20% 20% / 0.03), 0 1px 3px 0 hsl(160 20% 20% / 0.04);
+    --shadow-card: 0 2px 8px -2px hsl(160 20% 20% / 0.06), 0 4px 12px -4px hsl(160 20% 20% / 0.05);
+    --shadow-elevated: 0 8px 24px -6px hsl(160 20% 20% / 0.08), 0 12px 32px -8px hsl(160 20% 20% / 0.06);
+    --shadow-glow: 0 0 40px -8px hsl(160 42% 35% / 0.15);
 
-    /* === AMBIENT GRADIENT TOKENS === */
-    --gradient-ambient-1: hsl(168 25% 92%);
-    --gradient-ambient-2: hsl(38 20% 94%);
-    --gradient-ambient-3: hsl(155 20% 93%);
+    /* === GRADIENT TOKENS === */
+    --gradient-ambient-1: hsl(160 20% 96%);
+    --gradient-ambient-2: hsl(38 25% 96%);
+    --gradient-ambient-3: hsl(155 20% 95%);
 
     /* Sidebar */
-    --sidebar-background: 40 20% 98%;
-    --sidebar-foreground: 0 0% 0%;
-    --sidebar-primary: 0 0% 0%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 0 0% 90%;
-    --sidebar-accent-foreground: 0 0% 0%;
-    --sidebar-border: 0 0% 0%;
-    --sidebar-ring: 0 0% 0%;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-    --sidebar: 0 0% 98%;
-    --font-sans: 'Space Grotesk', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
-    --font-serif: ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
-    --font-mono: 'Space Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
-    --shadow-2xs: 1px 1px 0px 0px #000000;
-    --shadow-xs: 2px 2px 0px 0px #000000;
-    --shadow-sm: 3px 3px 0px 0px #000000;
-    --shadow: 5px 5px 0px 0px #000000;
-    --shadow-md: 8px 8px 0px 0px #000000;
-    --shadow-lg: 12px 12px 0px 0px #000000;
-    --shadow-xl: 16px 16px 0px 0px #000000;
-    --shadow-2xl: 24px 24px 0px 0px #000000;
+    --sidebar-background: 40 25% 97%;
+    --sidebar-foreground: 160 20% 15%;
+    --sidebar-primary: 160 45% 30%;
+    --sidebar-primary-foreground: 40 30% 98%;
+    --sidebar-accent: 38 25% 92%;
+    --sidebar-accent-foreground: 160 20% 18%;
+    --sidebar-border: 38 20% 88%;
+    --sidebar-ring: 160 45% 35%;
+    
+    /* Charts */
+    --chart-1: 160 55% 40%;
+    --chart-2: 42 70% 55%;
+    --chart-3: 200 50% 45%;
+    --chart-4: 280 45% 55%;
+    --chart-5: 340 55% 55%;
+    --sidebar: 40 25% 97%;
+    
+    /* Typography */
+    --font-sans: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+    --font-serif: 'Lora', ui-serif, Georgia, serif;
+    --font-mono: 'Space Mono', ui-monospace, monospace;
+    
+    /* Soft shadows (light mode) */
+    --shadow-2xs: 0 1px 2px 0 hsl(160 20% 20% / 0.04);
+    --shadow-xs: 0 1px 3px 0 hsl(160 20% 20% / 0.06);
+    --shadow-sm: 0 2px 6px -1px hsl(160 20% 20% / 0.08);
+    --shadow: 0 4px 12px -2px hsl(160 20% 20% / 0.08);
+    --shadow-md: 0 6px 16px -3px hsl(160 20% 20% / 0.10);
+    --shadow-lg: 0 12px 32px -6px hsl(160 20% 20% / 0.12);
+    --shadow-xl: 0 20px 48px -10px hsl(160 20% 20% / 0.14);
+    --shadow-2xl: 0 32px 64px -16px hsl(160 20% 20% / 0.16);
+    
     --tracking-normal: 0em;
     --spacing: 0.25rem;
   }
 
-  /* === DARK MODE - Ultra-calm, low contrast === */
+  /* === DARK MODE - Calm, warm-tinted dark === */
   .dark {
-    --background: 0 0% 0%;
-    --foreground: 0 0% 100%;
+    --background: 160 15% 7%;
+    --foreground: 40 20% 95%;
 
-    --card: 0 0% 0%;
-    --card-foreground: 0 0% 100%;
+    --card: 160 12% 10%;
+    --card-foreground: 40 20% 95%;
 
-    --popover: 0 0% 0%;
-    --popover-foreground: 0 0% 100%;
+    --popover: 160 12% 10%;
+    --popover-foreground: 40 20% 95%;
 
-    --primary: 0 0% 100%;
-    --primary-foreground: 0 0% 0%;
+    --primary: 160 40% 50%;
+    --primary-foreground: 160 20% 8%;
 
-    --secondary: 0 0% 15%;
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 160 10% 18%;
+    --secondary-foreground: 40 20% 92%;
 
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 65%;
+    --muted: 160 10% 16%;
+    --muted-foreground: 40 10% 60%;
 
-    --accent: 0 0% 15%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 160 12% 18%;
+    --accent-foreground: 40 20% 92%;
 
-    --destructive: 0 62% 30%;
+    --destructive: 0 62% 45%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 100%;
-    --input: 0 0% 100%;
-    --ring: 0 0% 100%;
+    --border: 160 12% 20%;
+    --input: 160 12% 20%;
+    --ring: 160 40% 45%;
 
     --status-safe: 155 45% 45%;
-    --status-safe-bg: 155 30% 12%;
+    --status-safe-bg: 155 30% 14%;
     --status-assistance: 40 70% 52%;
-    --status-assistance-bg: 40 45% 12%;
+    --status-assistance-bg: 40 45% 14%;
     --status-emergency: 0 60% 52%;
-    --status-emergency-bg: 0 40% 12%;
+    --status-emergency-bg: 0 40% 14%;
 
-    --calm-teal: 168 35% 42%;
-    --calm-teal-light: 168 28% 52%;
-    --calm-sand: 160 10% 16%;
-    --calm-cream: 160 12% 11%;
-    --calm-stone: 160 8% 20%;
+    --calm-teal: 160 35% 45%;
+    --calm-teal-light: 160 28% 55%;
+    --calm-sand: 160 10% 18%;
+    --calm-cream: 160 12% 12%;
+    --calm-stone: 160 8% 22%;
 
     --sacred-gold: 42 55% 55%;
     --sacred-gold-soft: 42 35% 18%;
 
-    --shadow-soft: 0 1px 3px 0 hsl(0 0% 0% / 0.2);
-    --shadow-card: 0 4px 6px -1px hsl(0 0% 0% / 0.25);
-    --shadow-elevated: 0 10px 15px -3px hsl(0 0% 0% / 0.3);
-    --shadow-glow: 0 0 40px -8px hsl(168 35% 42% / 0.2);
+    --shadow-soft: 0 1px 3px 0 hsl(0 0% 0% / 0.3);
+    --shadow-card: 0 4px 12px -2px hsl(0 0% 0% / 0.4);
+    --shadow-elevated: 0 12px 32px -6px hsl(0 0% 0% / 0.5);
+    --shadow-glow: 0 0 40px -8px hsl(160 35% 45% / 0.25);
 
-    --gradient-ambient-1: hsl(168 15% 10%);
+    --gradient-ambient-1: hsl(160 15% 10%);
     --gradient-ambient-2: hsl(38 10% 9%);
     --gradient-ambient-3: hsl(155 12% 9%);
 
-    --sidebar-background: 160 15% 8%;
-    --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 0 0% 100%;
-    --sidebar-primary-foreground: 0 0% 0%;
-    --sidebar-accent: 0 0% 15%;
-    --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 0 0% 100%;
-    --sidebar-ring: 0 0% 100%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-    --sidebar: 0 0% 5%;
-    --radius: 0rem;
-    --shadow-2xs: 1px 1px 0px 0px #ffffff;
-    --shadow-xs: 2px 2px 0px 0px #ffffff;
-    --shadow-sm: 3px 3px 0px 0px #ffffff;
-    --shadow: 5px 5px 0px 0px #ffffff;
-    --shadow-md: 8px 8px 0px 0px #ffffff;
-    --shadow-lg: 12px 12px 0px 0px #ffffff;
-    --shadow-xl: 16px 16px 0px 0px #ffffff;
-    --shadow-2xl: 24px 24px 0px 0px #ffffff;
+    --sidebar-background: 160 15% 9%;
+    --sidebar-foreground: 40 20% 95%;
+    --sidebar-primary: 160 40% 50%;
+    --sidebar-primary-foreground: 160 20% 8%;
+    --sidebar-accent: 160 12% 18%;
+    --sidebar-accent-foreground: 40 20% 92%;
+    --sidebar-border: 160 12% 20%;
+    --sidebar-ring: 160 40% 45%;
+    --chart-1: 160 50% 50%;
+    --chart-2: 42 60% 55%;
+    --chart-3: 200 45% 55%;
+    --chart-4: 280 50% 60%;
+    --chart-5: 340 55% 60%;
+    --sidebar: 160 15% 9%;
+    --radius: 0.875rem;
+    
+    --shadow-2xs: 0 1px 2px 0 hsl(0 0% 0% / 0.2);
+    --shadow-xs: 0 1px 3px 0 hsl(0 0% 0% / 0.25);
+    --shadow-sm: 0 2px 6px -1px hsl(0 0% 0% / 0.3);
+    --shadow: 0 4px 12px -2px hsl(0 0% 0% / 0.35);
+    --shadow-md: 0 6px 16px -3px hsl(0 0% 0% / 0.4);
+    --shadow-lg: 0 12px 32px -6px hsl(0 0% 0% / 0.45);
+    --shadow-xl: 0 20px 48px -10px hsl(0 0% 0% / 0.5);
+    --shadow-2xl: 0 32px 64px -16px hsl(0 0% 0% / 0.55);
   }
 }
 

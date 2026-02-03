@@ -228,24 +228,26 @@ const MoreSheet = memo(function MoreSheet({ language, isRTL }: { language: strin
     <Sheet>
       <SheetTrigger asChild>
         <button
-          className="flex flex-col items-center justify-center gap-0.5 w-full min-h-[56px] text-muted-foreground hover:text-foreground transition-colors touch-manipulation"
+          className="flex flex-col items-center justify-center gap-1 w-full min-h-[60px] text-muted-foreground hover:text-foreground transition-all duration-200 touch-manipulation"
           aria-label={getText(labels.more)}
         >
-          <Menu className="w-5 h-5" />
-          <span className="text-[10px] font-medium">{getText(labels.more)}</span>
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center hover:bg-muted/50 transition-colors">
+            <Menu className="w-5 h-5" />
+          </div>
+          <span className="text-[11px] font-medium">{getText(labels.more)}</span>
         </button>
       </SheetTrigger>
-      <SheetContent side={isRTL ? "left" : "right"} className="w-[85vw] max-w-sm p-0">
-        <SheetHeader className="p-4 pb-2 border-b border-border/50">
-          <SheetTitle className="text-lg font-semibold">
+      <SheetContent side={isRTL ? "left" : "right"} className="w-[85vw] max-w-sm p-0 border-l border-border/40">
+        <SheetHeader className="p-5 pb-3 border-b border-border/40">
+          <SheetTitle className="text-lg font-semibold text-foreground">
             {getText(labels.moreTitle)}
           </SheetTitle>
         </SheetHeader>
         <ScrollArea className="h-[calc(100vh-80px)]">
-          <div className="p-4 space-y-5" dir={isRTL ? "rtl" : "ltr"}>
+          <div className="p-5 space-y-6" dir={isRTL ? "rtl" : "ltr"}>
             {Object.values(moreMenuSections).map((section, idx) => (
               <div key={idx}>
-                <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 px-1">
                   {getText(section.title)}
                 </h3>
                 <div className="space-y-1">
@@ -253,7 +255,7 @@ const MoreSheet = memo(function MoreSheet({ language, isRTL }: { language: strin
                     <NavLink
                       key={item.route}
                       to={item.route}
-                      className="flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium text-foreground hover:bg-muted/60 transition-colors touch-manipulation"
+                      className="flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-medium text-foreground hover:bg-secondary/60 transition-colors touch-manipulation"
                       activeClassName="bg-primary/10 text-primary"
                     >
                       {getText(item.label)}
@@ -261,7 +263,7 @@ const MoreSheet = memo(function MoreSheet({ language, isRTL }: { language: strin
                   ))}
                 </div>
                 {idx < Object.values(moreMenuSections).length - 1 && (
-                  <Separator className="mt-4" />
+                  <div className="mt-5 h-px bg-border/40" />
                 )}
               </div>
             ))}
@@ -298,7 +300,7 @@ export const BottomNavigation = memo(function BottomNavigation() {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-md border-t border-border/50 safe-area-bottom"
+      className="fixed bottom-0 left-0 right-0 z-50 bg-card/98 backdrop-blur-xl border-t border-border/40 shadow-[0_-2px_12px_-4px_hsl(var(--foreground)/0.06)] safe-area-bottom"
       dir={isRTL ? "rtl" : "ltr"}
     >
       <div className="flex items-stretch justify-around max-w-lg mx-auto">
@@ -319,7 +321,7 @@ export const BottomNavigation = memo(function BottomNavigation() {
               key={item.route}
               onClick={() => handleNavigation(item.route)}
               className={cn(
-                "flex-1 flex flex-col items-center justify-center gap-0.5 min-h-[56px] transition-colors touch-manipulation",
+                "flex-1 flex flex-col items-center justify-center gap-1 min-h-[60px] transition-all duration-200 touch-manipulation",
                 active
                   ? "text-primary"
                   : "text-muted-foreground hover:text-foreground"
@@ -327,8 +329,13 @@ export const BottomNavigation = memo(function BottomNavigation() {
               aria-label={getText(item.label)}
               aria-current={active ? "page" : undefined}
             >
-              <Icon className={cn("w-5 h-5", active && "stroke-[2.5px]")} />
-              <span className={cn("text-[10px]", active ? "font-semibold" : "font-medium")}>
+              <div className={cn(
+                "w-10 h-10 rounded-xl flex items-center justify-center transition-colors",
+                active ? "bg-primary/10" : "hover:bg-muted/50"
+              )}>
+                <Icon className={cn("w-5 h-5", active && "stroke-[2.25px]")} />
+              </div>
+              <span className={cn("text-[11px]", active ? "font-semibold" : "font-medium")}>
                 {getText(item.label)}
               </span>
             </button>
