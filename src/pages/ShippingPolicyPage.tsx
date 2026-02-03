@@ -116,7 +116,7 @@ export default function ShippingPolicyPage() {
             <section>
               <h2 className="text-xl font-semibold mb-3">8. Delivery Failures</h2>
               <p className="text-muted-foreground leading-relaxed">
-                Since all services are digital, there are no physical delivery failures. However, if you experience issues accessing premium features after payment, please contact us immediately at <strong>support@hajjcare.app</strong> with your transaction details, and we will resolve the issue promptly.
+                Since all services are digital, there are no physical delivery failures. However, if you experience issues accessing premium features after payment, please contact us immediately at <strong>info@hajjcare.in</strong> with your transaction details, and we will resolve the issue promptly.
               </p>
             </section>
 
@@ -128,8 +128,7 @@ export default function ShippingPolicyPage() {
               <div className="bg-muted/50 p-4 rounded-lg border border-border mt-3">
                 <p className="text-muted-foreground">
                   <strong>Sazo Management Private Limited</strong><br />
-                  <strong>Email:</strong> support@hajjcare.app<br />
-                  <strong>Technical Support:</strong> tech@hajjcare.app
+                  <strong>Email:</strong> info@hajjcare.in
                 </p>
               </div>
             </section>

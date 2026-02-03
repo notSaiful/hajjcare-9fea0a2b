@@ -46,11 +46,11 @@ export function Footer() {
               A digital guidance and support platform for Hajj and Umrah pilgrims.
             </p>
             <a 
-              href="mailto:support@hajjcare.app" 
+              href="mailto:info@hajjcare.in" 
               className="inline-flex items-center gap-2 text-sm text-primary hover:underline"
             >
               <Mail className="h-4 w-4" />
-              support@hajjcare.app
+              info@hajjcare.in
             </a>
           </div>
 

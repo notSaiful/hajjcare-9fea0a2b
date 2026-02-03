@@ -171,7 +171,7 @@ export default function PrivacyPolicyPage() {
               <div className="bg-muted/50 p-4 rounded-lg border border-border mt-3">
                 <p className="text-muted-foreground">
                   <strong>Grievance Officer:</strong> Sazo Management Private Limited<br />
-                  <strong>Email:</strong> grievance@hajjcare.app<br />
+                  <strong>Email:</strong> info@hajjcare.in<br />
                   <strong>Response Time:</strong> Within 30 days of receiving the complaint
                 </p>
               </div>
@@ -184,8 +184,7 @@ export default function PrivacyPolicyPage() {
               </p>
               <p className="text-muted-foreground mt-2">
                 <strong>Sazo Management Private Limited</strong><br />
-                <strong>Email:</strong> privacy@hajjcare.app<br />
-                <strong>Support:</strong> support@hajjcare.app
+                <strong>Email:</strong> info@hajjcare.in
               </p>
             </section>
           </div>

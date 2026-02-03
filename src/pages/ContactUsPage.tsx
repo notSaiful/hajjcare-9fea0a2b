@@ -2,34 +2,10 @@ import { MainLayout } from "@/components/MainLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent } from "@/components/ui/card";
-import { Mail, Phone, MapPin, Clock, MessageSquare, Headphones, Building2, Shield } from "lucide-react";
+import { Mail, Phone, MapPin, Clock, Building2, Shield } from "lucide-react";
 
 export default function ContactUsPage() {
   const { language } = useLanguage();
-
-  const contactMethods = [
-    {
-      icon: Mail,
-      title: "General Support",
-      description: "For general inquiries and assistance",
-      value: "support@hajjcare.app",
-      link: "mailto:support@hajjcare.app",
-    },
-    {
-      icon: Headphones,
-      title: "Technical Support",
-      description: "For app issues and technical help",
-      value: "tech@hajjcare.app",
-      link: "mailto:tech@hajjcare.app",
-    },
-    {
-      icon: MessageSquare,
-      title: "Feedback",
-      description: "Share your suggestions and feedback",
-      value: "feedback@hajjcare.app",
-      link: "mailto:feedback@hajjcare.app",
-    },
-  ];
 
   return (
     <MainLayout>
@@ -41,26 +17,22 @@ export default function ContactUsPage() {
           </div>
 
           <p className="text-muted-foreground mb-8 text-lg">
-            We're here to help you with any questions about Hajj Care. Reach out to us through any of the channels below.
+            We're here to help you with any questions about Hajj Care. Reach out to us at the email below.
           </p>
 
-          <div className="grid gap-4 md:grid-cols-3 mb-8">
-            {contactMethods.map((method, index) => (
-              <Card key={index} className="border-border/50 hover:border-primary/50 transition-colors">
-                <CardContent className="p-6 text-center">
-                  <method.icon className="h-10 w-10 text-primary mx-auto mb-4" />
-                  <h3 className="font-semibold text-foreground mb-2">{method.title}</h3>
-                  <p className="text-sm text-muted-foreground mb-3">{method.description}</p>
-                  <a
-                    href={method.link}
-                    className="text-primary hover:underline font-medium text-sm"
-                  >
-                    {method.value}
-                  </a>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          <Card className="border-primary/30 bg-primary/5 mb-8">
+            <CardContent className="p-6 text-center">
+              <Mail className="h-12 w-12 text-primary mx-auto mb-4" />
+              <h3 className="font-semibold text-foreground text-lg mb-2">Email Us</h3>
+              <p className="text-sm text-muted-foreground mb-4">For all inquiries, support, feedback, refunds, and assistance</p>
+              <a
+                href="mailto:info@hajjcare.in"
+                className="text-primary hover:underline font-semibold text-lg"
+              >
+                info@hajjcare.in
+              </a>
+            </CardContent>
+          </Card>
 
           <div className="space-y-6">
             <Card className="border-border/50">
@@ -115,34 +87,6 @@ export default function ContactUsPage() {
               </CardContent>
             </Card>
 
-            <Card className="border-border/50 bg-muted/30">
-              <CardContent className="p-6">
-                <h3 className="font-semibold text-foreground mb-4">Department-Specific Inquiries</h3>
-                <div className="grid gap-3 text-sm">
-                  <div className="flex justify-between items-center py-2 border-b border-border/50">
-                    <span className="text-muted-foreground">Privacy & Data Concerns</span>
-                    <a href="mailto:privacy@hajjcare.app" className="text-primary hover:underline">privacy@hajjcare.app</a>
-                  </div>
-                  <div className="flex justify-between items-center py-2 border-b border-border/50">
-                    <span className="text-muted-foreground">Refund & Payment Inquiries</span>
-                    <a href="mailto:refunds@hajjcare.app" className="text-primary hover:underline">refunds@hajjcare.app</a>
-                  </div>
-                  <div className="flex justify-between items-center py-2 border-b border-border/50">
-                    <span className="text-muted-foreground">Legal Matters</span>
-                    <a href="mailto:legal@hajjcare.app" className="text-primary hover:underline">legal@hajjcare.app</a>
-                  </div>
-                  <div className="flex justify-between items-center py-2 border-b border-border/50">
-                    <span className="text-muted-foreground">Grievance Officer</span>
-                    <a href="mailto:grievance@hajjcare.app" className="text-primary hover:underline">grievance@hajjcare.app</a>
-                  </div>
-                  <div className="flex justify-between items-center py-2">
-                    <span className="text-muted-foreground">Partnerships & Media</span>
-                    <a href="mailto:partnerships@hajjcare.app" className="text-primary hover:underline">partnerships@hajjcare.app</a>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
             <Card className="border-border/50">
               <CardContent className="p-6">
                 <div className="flex items-start gap-4">
@@ -154,7 +98,7 @@ export default function ContactUsPage() {
                     </p>
                     <p className="text-muted-foreground">
                       <strong>Grievance Officer:</strong> Sazo Management Private Limited<br />
-                      <strong>Email:</strong> grievance@hajjcare.app<br />
+                      <strong>Email:</strong> info@hajjcare.in<br />
                       <strong>Response Time:</strong> Within 30 days of receiving the complaint
                     </p>
                   </div>

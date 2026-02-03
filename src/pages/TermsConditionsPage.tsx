@@ -222,8 +222,7 @@ export default function TermsConditionsPage() {
               <div className="bg-muted/50 p-4 rounded-lg border border-border mt-3">
                 <p className="text-muted-foreground">
                   <strong>Sazo Management Private Limited</strong><br />
-                  <strong>Email:</strong> legal@hajjcare.app<br />
-                  <strong>Support:</strong> support@hajjcare.app<br />
+                  <strong>Email:</strong> info@hajjcare.in<br />
                   <strong>Jurisdiction:</strong> India
                 </p>
               </div>
