@@ -15,137 +15,218 @@ export default function TermsConditionsPage() {
             <h1 className="text-2xl md:text-3xl font-bold text-foreground">Terms & Conditions</h1>
           </div>
 
-          <p className="text-muted-foreground mb-6">Last Updated: January 15, 2025</p>
+          <p className="text-muted-foreground mb-6">Last Updated: February 3, 2026</p>
 
           <div className="prose prose-lg max-w-none space-y-6 text-foreground">
-            <section>
-              <h2 className="text-xl font-semibold mb-3">1. Acceptance of Terms</h2>
+            <section className="bg-muted/50 p-4 rounded-lg border border-border">
               <p className="text-muted-foreground leading-relaxed">
-                By accessing or using HajjCare ("the App"), you agree to be bound by these Terms and Conditions. If you do not agree with any part of these terms, please do not use our services.
+                These Terms and Conditions constitute a legally binding agreement between you ("User", "you", "your") and <strong>Sazo Management Private Limited</strong> ("Company", "we", "us", "our"), governing your use of the Hajj Care platform.
               </p>
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold mb-3">2. About Our Services</h2>
+              <h2 className="text-xl font-semibold mb-3">1. Acceptance of Terms</h2>
               <p className="text-muted-foreground leading-relaxed">
-                HajjCare is a digital guidance and support platform that provides informational content and assistance tools for Hajj and Umrah pilgrims. Our services include:
+                By accessing, downloading, installing, or using Hajj Care ("the App", "the Platform"), you acknowledge that you have read, understood, and agree to be bound by these Terms and Conditions. If you do not agree with any provision of these terms, you must immediately discontinue use of our services.
               </p>
-              <ul className="list-disc pl-6 space-y-2 text-muted-foreground mt-3">
-                <li>Step-by-step guidance for Hajj and Umrah rituals</li>
-                <li>Maps and navigation assistance</li>
-                <li>Family location sharing features</li>
-                <li>Dua and prayer guidance</li>
-                <li>Health and preparation tips</li>
-                <li>Emergency contact information</li>
+            </section>
+
+            <section>
+              <h2 className="text-xl font-semibold mb-3">2. Definitions</h2>
+              <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
+                <li><strong>"Platform"</strong> refers to the Hajj Care mobile application and website</li>
+                <li><strong>"Services"</strong> refers to all digital services, features, and content provided through the Platform</li>
+                <li><strong>"Service Fee"</strong> refers to the optional, non-refundable fee charged for premium features and services</li>
+                <li><strong>"User"</strong> refers to any individual who accesses or uses the Platform</li>
               </ul>
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold mb-3">3. Important Disclaimers</h2>
+              <h2 className="text-xl font-semibold mb-3">3. Nature of Services</h2>
+              <p className="text-muted-foreground leading-relaxed mb-3">
+                Hajj Care is a digital guidance and support platform that provides:
+              </p>
+              <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
+                <li>Step-by-step guidance for Hajj and Umrah rituals</li>
+                <li>Interactive maps and navigation assistance</li>
+                <li>Family location sharing features</li>
+                <li>Dua and prayer guides</li>
+                <li>Health and preparation tips</li>
+                <li>Emergency contact directories</li>
+                <li>Document checklists and logistics assistance</li>
+                <li>AI-powered chat support</li>
+              </ul>
+            </section>
+
+            <section>
+              <h2 className="text-xl font-semibold mb-3">4. Service Fee and Payment Terms</h2>
+              <div className="bg-primary/10 p-4 rounded-lg border border-primary/30 mb-4">
+                <p className="text-foreground font-semibold mb-2">IMPORTANT CLARIFICATION:</p>
+                <p className="text-muted-foreground leading-relaxed">
+                  Hajj Care is a <strong>paid digital service platform</strong>. We do NOT accept donations, charity, zakat, or religious contributions. Any payment made on this platform is a <strong>service fee for digital services</strong>, not a charitable contribution.
+                </p>
+              </div>
+              <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
+                <li>Service fees are charged for accessing premium features and assistance services</li>
+                <li>All payments are processed securely through Razorpay payment gateway</li>
+                <li>Service fees are <strong>optional and non-refundable</strong> once paid</li>
+                <li>Prices are displayed in Indian Rupees (INR) and are inclusive of applicable taxes</li>
+                <li>We reserve the right to modify pricing with prior notice</li>
+                <li>Payment confirmation will be sent via email</li>
+              </ul>
+            </section>
+
+            <section>
+              <h2 className="text-xl font-semibold mb-3">5. Important Disclaimers</h2>
               <div className="bg-muted/50 p-4 rounded-lg border border-border">
                 <p className="text-muted-foreground leading-relaxed mb-3">
-                  <strong>Please understand that HajjCare:</strong>
+                  <strong>Please understand that Hajj Care:</strong>
                 </p>
                 <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
-                  <li><strong>Does NOT provide religious rulings (fatwas).</strong> For religious guidance, please consult qualified Islamic scholars or your local religious authority.</li>
-                  <li><strong>Does NOT provide medical advice.</strong> For health concerns, please consult qualified medical professionals.</li>
-                  <li><strong>Does NOT provide legal advice.</strong> For legal matters, please consult qualified legal professionals.</li>
-                  <li><strong>All content is informational and for assistance purposes only.</strong></li>
+                  <li><strong>Does NOT provide religious rulings (fatwas).</strong> For religious guidance, consult qualified Islamic scholars.</li>
+                  <li><strong>Does NOT provide medical advice.</strong> For health concerns, consult qualified medical professionals.</li>
+                  <li><strong>Does NOT provide legal advice.</strong> For legal matters, consult qualified legal professionals.</li>
+                  <li><strong>Does NOT arrange Hajj/Umrah packages, visas, or travel.</strong> We provide digital guidance only.</li>
+                  <li><strong>Is NOT a charity, crowdfunding, or religious fund collection platform.</strong></li>
+                  <li><strong>All content is informational and for digital assistance purposes only.</strong></li>
                 </ul>
               </div>
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold mb-3">4. User Responsibilities</h2>
-              <p className="text-muted-foreground leading-relaxed mb-3">As a user of HajjCare, you agree to:</p>
+              <h2 className="text-xl font-semibold mb-3">6. User Eligibility</h2>
+              <p className="text-muted-foreground leading-relaxed mb-3">To use Hajj Care, you must:</p>
               <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
-                <li>Provide accurate and truthful information when creating your account</li>
-                <li>Keep your login credentials secure and confidential</li>
-                <li>Use the app only for its intended purpose</li>
-                <li>Respect other users and not engage in harassment or abuse</li>
-                <li>Not attempt to hack, disrupt, or misuse the app</li>
+                <li>Be at least 18 years of age (or use under parental supervision if a minor)</li>
+                <li>Have the legal capacity to enter into a binding agreement</li>
+                <li>Provide accurate and complete registration information</li>
+                <li>Comply with all applicable Indian laws and regulations</li>
+              </ul>
+            </section>
+
+            <section>
+              <h2 className="text-xl font-semibold mb-3">7. User Responsibilities</h2>
+              <p className="text-muted-foreground leading-relaxed mb-3">As a user, you agree to:</p>
+              <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
+                <li>Provide accurate and truthful information during registration</li>
+                <li>Maintain the confidentiality of your login credentials</li>
+                <li>Use the Platform only for its intended purpose</li>
+                <li>Respect other users and refrain from harassment or abuse</li>
+                <li>Not attempt to hack, disrupt, or misuse the Platform</li>
+                <li>Not share your account with unauthorized persons</li>
+                <li>Promptly notify us of any unauthorized account access</li>
                 <li>Comply with all applicable laws and regulations</li>
-                <li>Not share your account with others</li>
               </ul>
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold mb-3">5. Acceptable Use</h2>
-              <p className="text-muted-foreground leading-relaxed mb-3">You must NOT use HajjCare to:</p>
+              <h2 className="text-xl font-semibold mb-3">8. Prohibited Activities</h2>
+              <p className="text-muted-foreground leading-relaxed mb-3">You must NOT use Hajj Care to:</p>
               <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
-                <li>Spread misinformation or false content</li>
-                <li>Engage in any illegal activities</li>
-                <li>Harass, threaten, or harm other users</li>
+                <li>Spread misinformation, false content, or propaganda</li>
+                <li>Engage in any illegal, fraudulent, or unauthorized activities</li>
+                <li>Harass, threaten, defame, or harm other users</li>
                 <li>Attempt to access other users' accounts or data</li>
-                <li>Upload malicious software or content</li>
-                <li>Use automated systems to access the app without permission</li>
+                <li>Upload malicious software, viruses, or harmful content</li>
+                <li>Use automated bots or scrapers without permission</li>
+                <li>Circumvent security measures or access controls</li>
+                <li>Infringe upon intellectual property rights</li>
               </ul>
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold mb-3">6. Account Termination</h2>
+              <h2 className="text-xl font-semibold mb-3">9. Intellectual Property Rights</h2>
               <p className="text-muted-foreground leading-relaxed">
-                We reserve the right to suspend or terminate your account if you violate these terms, engage in abusive behavior, or use the app in ways that harm other users or our services. You may also delete your account at any time through the app settings.
+                All content, features, functionality, trademarks, logos, graphics, software, and intellectual property on Hajj Care are owned by Sazo Management Private Limited or its licensors and are protected under Indian intellectual property laws. You are granted a limited, non-exclusive, non-transferable license to use the Platform for personal, non-commercial purposes. Any unauthorized reproduction, distribution, or modification is strictly prohibited.
               </p>
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold mb-3">7. Limitation of Liability</h2>
+              <h2 className="text-xl font-semibold mb-3">10. Account Suspension and Termination</h2>
               <p className="text-muted-foreground leading-relaxed">
-                HajjCare is provided "as is" without warranties of any kind. We strive to provide accurate and helpful information, but we cannot guarantee that all content is error-free or complete. To the maximum extent permitted by law:
+                We reserve the right to suspend, restrict, or terminate your account without prior notice if you:
               </p>
               <ul className="list-disc pl-6 space-y-2 text-muted-foreground mt-3">
-                <li>We are not liable for any direct, indirect, or consequential damages arising from your use of the app</li>
-                <li>We are not responsible for actions you take based on information provided in the app</li>
-                <li>We are not liable for technical issues, service interruptions, or data loss</li>
-                <li>Our total liability shall not exceed the amount you paid for our services, if any</li>
+                <li>Violate these Terms and Conditions</li>
+                <li>Engage in fraudulent or abusive behavior</li>
+                <li>Cause harm to other users or the Platform</li>
+                <li>Fail to pay applicable service fees</li>
+              </ul>
+              <p className="text-muted-foreground leading-relaxed mt-3">
+                You may delete your account at any time through the app settings. Upon termination, your right to use the Platform ceases immediately.
+              </p>
+            </section>
+
+            <section>
+              <h2 className="text-xl font-semibold mb-3">11. Limitation of Liability</h2>
+              <p className="text-muted-foreground leading-relaxed mb-3">
+                To the maximum extent permitted by applicable Indian law:
+              </p>
+              <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
+                <li>Hajj Care is provided on an "AS IS" and "AS AVAILABLE" basis without warranties of any kind, express or implied</li>
+                <li>We do not warrant that the Platform will be uninterrupted, error-free, or completely secure</li>
+                <li>We are not liable for any direct, indirect, incidental, special, consequential, or punitive damages arising from your use of the Platform</li>
+                <li>We are not responsible for actions you take based on information provided on the Platform</li>
+                <li>We are not liable for technical failures, service interruptions, or data loss</li>
+                <li>Our maximum aggregate liability shall not exceed the total service fees paid by you in the preceding 12 months, or INR 1,000, whichever is higher</li>
               </ul>
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold mb-3">8. Intellectual Property</h2>
+              <h2 className="text-xl font-semibold mb-3">12. Indemnification</h2>
               <p className="text-muted-foreground leading-relaxed">
-                All content, features, and functionality of HajjCare, including but not limited to text, graphics, logos, and software, are owned by HajjCare or its licensors and are protected by intellectual property laws. You may not copy, modify, distribute, or reproduce our content without permission.
+                You agree to indemnify, defend, and hold harmless Sazo Management Private Limited, its directors, officers, employees, and agents from and against any claims, liabilities, damages, losses, costs, or expenses (including legal fees) arising from your use of the Platform, violation of these Terms, or infringement of any third-party rights.
               </p>
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold mb-3">9. Third-Party Services</h2>
+              <h2 className="text-xl font-semibold mb-3">13. Third-Party Services</h2>
               <p className="text-muted-foreground leading-relaxed">
-                HajjCare may integrate with third-party services (such as payment processors, map providers). These services have their own terms and privacy policies, and we are not responsible for their content or practices.
+                Hajj Care may integrate with third-party services including payment processors (Razorpay), map providers, and cloud services. These services operate under their own terms and privacy policies. We are not responsible for the content, practices, or availability of third-party services.
               </p>
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold mb-3">10. Changes to Terms</h2>
+              <h2 className="text-xl font-semibold mb-3">14. Modifications to Terms</h2>
               <p className="text-muted-foreground leading-relaxed">
-                We may update these Terms and Conditions from time to time. We will notify you of significant changes through the app or by email. Continued use of the app after changes means you accept the updated terms.
+                We reserve the right to modify these Terms and Conditions at any time. Significant changes will be notified through the Platform or via email at least 15 days before they take effect. Your continued use of Hajj Care after such changes constitutes acceptance of the modified terms.
               </p>
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold mb-3">11. Governing Law</h2>
+              <h2 className="text-xl font-semibold mb-3">15. Governing Law and Jurisdiction</h2>
               <p className="text-muted-foreground leading-relaxed">
-                These Terms and Conditions are governed by and construed in accordance with the laws of India. Any disputes arising from these terms or your use of HajjCare shall be subject to the exclusive jurisdiction of the courts in India.
+                These Terms and Conditions are governed by and construed in accordance with the laws of India. Any disputes arising from these terms or your use of Hajj Care shall be subject to the exclusive jurisdiction of the courts in [City], India. Before initiating legal proceedings, parties agree to attempt resolution through good-faith negotiation.
               </p>
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold mb-3">12. Severability</h2>
+              <h2 className="text-xl font-semibold mb-3">16. Severability</h2>
               <p className="text-muted-foreground leading-relaxed">
-                If any provision of these terms is found to be invalid or unenforceable, the remaining provisions shall continue in full force and effect.
+                If any provision of these Terms is found to be invalid, illegal, or unenforceable by a court of competent jurisdiction, such invalidity shall not affect the validity of the remaining provisions, which shall continue in full force and effect.
               </p>
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold mb-3">13. Contact Us</h2>
+              <h2 className="text-xl font-semibold mb-3">17. Entire Agreement</h2>
               <p className="text-muted-foreground leading-relaxed">
-                If you have questions about these Terms and Conditions, please contact us at:
+                These Terms and Conditions, together with our Privacy Policy and Refund Policy, constitute the entire agreement between you and Sazo Management Private Limited regarding your use of Hajj Care, superseding any prior agreements or understandings.
               </p>
-              <p className="text-muted-foreground mt-2">
-                <strong>Email:</strong> legal@hajjcare.app<br />
-                <strong>Support:</strong> support@hajjcare.app
+            </section>
+
+            <section>
+              <h2 className="text-xl font-semibold mb-3">18. Contact Information</h2>
+              <p className="text-muted-foreground leading-relaxed">
+                For questions about these Terms and Conditions, please contact:
               </p>
+              <div className="bg-muted/50 p-4 rounded-lg border border-border mt-3">
+                <p className="text-muted-foreground">
+                  <strong>Sazo Management Private Limited</strong><br />
+                  <strong>Email:</strong> legal@hajjcare.app<br />
+                  <strong>Support:</strong> support@hajjcare.app<br />
+                  <strong>Jurisdiction:</strong> India
+                </p>
+              </div>
             </section>
           </div>
         </div>

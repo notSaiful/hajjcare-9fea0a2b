@@ -15,116 +15,160 @@ export default function RefundPolicyPage() {
             <h1 className="text-2xl md:text-3xl font-bold text-foreground">Refund & Cancellation Policy</h1>
           </div>
 
-          <p className="text-muted-foreground mb-6">Last Updated: January 15, 2025</p>
+          <p className="text-muted-foreground mb-6">Last Updated: February 3, 2026</p>
 
           <div className="prose prose-lg max-w-none space-y-6 text-foreground">
-            <section>
-              <h2 className="text-xl font-semibold mb-3">1. Overview</h2>
+            <section className="bg-primary/10 p-4 rounded-lg border border-primary/30">
+              <h2 className="text-xl font-semibold mb-3 text-foreground">Important Notice</h2>
               <p className="text-muted-foreground leading-relaxed">
-                HajjCare is committed to ensuring your satisfaction with our digital guidance and support services. This policy explains our refund and cancellation procedures for any paid services or donations made through our platform.
+                All service fees paid on Hajj Care are <strong>optional and non-refundable</strong>. By making a payment, you acknowledge and agree to this non-refundable policy. Please read this policy carefully before making any payment.
               </p>
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold mb-3">2. Free Services</h2>
+              <h2 className="text-xl font-semibold mb-3">1. About This Policy</h2>
               <p className="text-muted-foreground leading-relaxed">
-                The core features of HajjCare, including Hajj and Umrah guidance, ritual instructions, maps, duas, and family location sharing, are provided free of charge. No refund applies to free services.
+                This Refund and Cancellation Policy is published by <strong>Sazo Management Private Limited</strong> for the Hajj Care platform. This policy governs all payments made through our platform for digital services and premium features.
               </p>
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold mb-3">3. Donations</h2>
+              <h2 className="text-xl font-semibold mb-3">2. Nature of Payments</h2>
+              <div className="bg-muted/50 p-4 rounded-lg border border-border mb-4">
+                <p className="text-muted-foreground leading-relaxed mb-3">
+                  <strong>CLARIFICATION:</strong> Hajj Care is a paid digital service platform.
+                </p>
+                <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
+                  <li>Payments are <strong>service fees</strong> for accessing premium app features and assistance services</li>
+                  <li>We do NOT accept donations, charity, zakat, or religious contributions</li>
+                  <li>All payments are processed through Razorpay as digital service fees</li>
+                  <li>This is NOT a charity, crowdfunding, or religious fund collection platform</li>
+                </ul>
+              </div>
+            </section>
+
+            <section>
+              <h2 className="text-xl font-semibold mb-3">3. Non-Refundable Service Fee Policy</h2>
               <p className="text-muted-foreground leading-relaxed mb-3">
-                Donations made to HajjCare are voluntary contributions to support the development and maintenance of our platform. Regarding donations:
+                All service fees paid on Hajj Care are <strong>non-refundable</strong>. This includes:
               </p>
               <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
-                <li><strong>Donations are generally non-refundable</strong> as they are considered gifts to support our mission</li>
-                <li>If a donation was made in error (wrong amount, duplicate payment), please contact us within 7 days</li>
-                <li>We will review error cases on an individual basis and process refunds where appropriate</li>
-                <li>Refund requests for donations made more than 7 days ago will not be considered</li>
+                <li>Premium feature access fees</li>
+                <li>Subscription fees for premium services</li>
+                <li>One-time service fees</li>
+                <li>Any other payments made for digital services</li>
               </ul>
+              <p className="text-muted-foreground leading-relaxed mt-3">
+                By making a payment, you acknowledge that you have read and understood this non-refundable policy and agree to proceed without expectation of a refund.
+              </p>
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold mb-3">4. Premium Services (If Applicable)</h2>
+              <h2 className="text-xl font-semibold mb-3">4. Free Services</h2>
+              <p className="text-muted-foreground leading-relaxed">
+                Many core features of Hajj Care are provided free of charge, including basic Hajj and Umrah guidance, ritual instructions, dua guides, and emergency contact information. No payment or refund applies to free services.
+              </p>
+            </section>
+
+            <section>
+              <h2 className="text-xl font-semibold mb-3">5. Exceptional Circumstances</h2>
               <p className="text-muted-foreground leading-relaxed mb-3">
-                If HajjCare offers any premium or paid services in the future, the following refund conditions will apply:
+                Refunds may be considered <strong>only</strong> in the following exceptional circumstances, at our sole discretion:
               </p>
               <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
-                <li><strong>Within 7 days of purchase:</strong> Full refund available if you have not substantially used the service</li>
-                <li><strong>7-14 days after purchase:</strong> 50% refund may be considered on a case-by-case basis</li>
-                <li><strong>After 14 days:</strong> No refund will be provided</li>
-                <li>Subscription services can be cancelled at any time, but no refund will be provided for the current billing period</li>
+                <li><strong>Duplicate Payment:</strong> If the same transaction was charged multiple times due to a technical error</li>
+                <li><strong>Incorrect Amount:</strong> If an amount different from the displayed price was charged due to a system error</li>
+                <li><strong>Unauthorized Transaction:</strong> If payment was made without your authorization (subject to verification and fraud investigation)</li>
               </ul>
+              <p className="text-muted-foreground leading-relaxed mt-3">
+                Refund requests for exceptional circumstances must be submitted within <strong>7 days</strong> of the transaction date with supporting documentation.
+              </p>
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold mb-3">5. Conditions for Refund</h2>
-              <p className="text-muted-foreground leading-relaxed mb-3">Refunds may be granted in the following circumstances:</p>
-              <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
-                <li>Technical error resulting in duplicate payment</li>
-                <li>Incorrect amount charged due to system error</li>
-                <li>Unauthorized transaction (with proper verification)</li>
-                <li>Service not provided as described (with valid documentation)</li>
-              </ul>
-            </section>
-
-            <section>
-              <h2 className="text-xl font-semibold mb-3">6. Non-Refundable Cases</h2>
+              <h2 className="text-xl font-semibold mb-3">6. Refunds Will NOT Be Provided For</h2>
               <p className="text-muted-foreground leading-relaxed mb-3">Refunds will NOT be provided in the following cases:</p>
               <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
-                <li>Change of mind after making a donation</li>
-                <li>Failure to use the app or services</li>
-                <li>Dissatisfaction with free features</li>
-                <li>Issues caused by user's device or internet connection</li>
-                <li>Violation of our Terms and Conditions leading to account suspension</li>
+                <li>Change of mind after making payment</li>
+                <li>Failure to use the app or services after payment</li>
+                <li>Dissatisfaction with free or paid features</li>
+                <li>Issues caused by your device, internet connection, or user error</li>
+                <li>Account suspension or termination due to violation of Terms and Conditions</li>
+                <li>Requests made after 7 days of the transaction date</li>
+                <li>Inability to perform Hajj or Umrah for personal reasons</li>
+                <li>Travel cancellations or visa issues (we are not a travel agency)</li>
               </ul>
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold mb-3">7. How to Request a Refund</h2>
-              <p className="text-muted-foreground leading-relaxed mb-3">To request a refund, please:</p>
+              <h2 className="text-xl font-semibold mb-3">7. Cancellation of Subscriptions</h2>
+              <p className="text-muted-foreground leading-relaxed mb-3">
+                If you have subscribed to a recurring premium service:
+              </p>
+              <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
+                <li>You may cancel your subscription at any time through the app settings or by contacting support</li>
+                <li>Cancellation will take effect at the end of the current billing period</li>
+                <li>You will continue to have access to premium features until the end of the paid period</li>
+                <li><strong>No refunds</strong> will be provided for the current or any previous billing period</li>
+                <li>No partial refunds will be provided for unused days within a billing cycle</li>
+                <li>You may resubscribe at any time</li>
+              </ul>
+            </section>
+
+            <section>
+              <h2 className="text-xl font-semibold mb-3">8. How to Request a Refund (Exceptional Cases Only)</h2>
+              <p className="text-muted-foreground leading-relaxed mb-3">
+                For exceptional circumstances as described in Section 5, please submit a refund request by:
+              </p>
               <ol className="list-decimal pl-6 space-y-2 text-muted-foreground">
-                <li>Email us at <strong>refunds@hajjcare.app</strong> with the subject line "Refund Request"</li>
-                <li>Include your registered email address and phone number</li>
-                <li>Provide the transaction ID or payment reference number</li>
-                <li>Explain the reason for your refund request</li>
-                <li>Attach any relevant screenshots or documentation</li>
+                <li>Emailing <strong>refunds@hajjcare.app</strong> with subject line "Refund Request - [Transaction ID]"</li>
+                <li>Providing your registered email address and phone number</li>
+                <li>Including the transaction ID or Razorpay payment reference number</li>
+                <li>Clearly explaining the reason for your refund request</li>
+                <li>Attaching relevant screenshots or documentation as evidence</li>
               </ol>
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold mb-3">8. Refund Processing Time</h2>
+              <h2 className="text-xl font-semibold mb-3">9. Refund Processing (If Approved)</h2>
+              <p className="text-muted-foreground leading-relaxed mb-3">
+                If your refund request is approved under exceptional circumstances:
+              </p>
               <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
-                <li>We will review your refund request within 3-5 business days</li>
-                <li>If approved, refunds will be processed within 5-7 business days</li>
-                <li>Refunds will be credited to the original payment method used</li>
-                <li>Bank processing times may vary; please allow up to 10 business days for the amount to reflect in your account</li>
+                <li>Refund requests will be reviewed within 5-7 business days</li>
+                <li>If approved, refunds will be processed within 7-10 business days</li>
+                <li>Refunds will be credited to the original payment method (bank account or card used)</li>
+                <li>Bank processing times may vary; please allow up to 10 additional business days for the amount to reflect in your account</li>
+                <li>We reserve the right to reject refund requests that do not meet the exceptional circumstances criteria</li>
               </ul>
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold mb-3">9. Cancellation of Subscriptions</h2>
+              <h2 className="text-xl font-semibold mb-3">10. Payment Disputes</h2>
               <p className="text-muted-foreground leading-relaxed">
-                If you wish to cancel any subscription service:
+                If you have a dispute regarding a payment, please contact us at <strong>refunds@hajjcare.app</strong> before initiating a chargeback with your bank or credit card company. We are committed to resolving genuine disputes fairly and promptly. Fraudulent chargebacks may result in permanent account suspension and legal action.
               </p>
-              <ul className="list-disc pl-6 space-y-2 text-muted-foreground mt-3">
-                <li>You can cancel at any time through the app settings or by contacting support</li>
-                <li>Access will continue until the end of the current billing period</li>
-                <li>No partial refunds will be provided for unused days</li>
-                <li>You can resubscribe at any time</li>
-              </ul>
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold mb-3">10. Contact Us</h2>
+              <h2 className="text-xl font-semibold mb-3">11. Governing Law</h2>
               <p className="text-muted-foreground leading-relaxed">
-                For refund-related inquiries, please contact us at:
+                This Refund and Cancellation Policy is governed by the laws of India. Any disputes arising from this policy shall be subject to the exclusive jurisdiction of the courts in India.
               </p>
-              <p className="text-muted-foreground mt-2">
-                <strong>Refunds:</strong> refunds@hajjcare.app<br />
-                <strong>Support:</strong> support@hajjcare.app
+            </section>
+
+            <section>
+              <h2 className="text-xl font-semibold mb-3">12. Contact Us</h2>
+              <p className="text-muted-foreground leading-relaxed">
+                For refund-related inquiries, please contact:
               </p>
+              <div className="bg-muted/50 p-4 rounded-lg border border-border mt-3">
+                <p className="text-muted-foreground">
+                  <strong>Sazo Management Private Limited</strong><br />
+                  <strong>Refunds:</strong> refunds@hajjcare.app<br />
+                  <strong>Support:</strong> support@hajjcare.app
+                </p>
+              </div>
             </section>
           </div>
         </div>
