@@ -25,7 +25,6 @@ export function Footer() {
   const companyLinks = [
     { label: "About Us", href: "/about-us", icon: Info },
     { label: "Contact Us", href: "/contact-us", icon: Phone },
-    { label: "Pricing", href: "/pricing", icon: IndianRupee },
   ];
 
   const quickLinks = [
