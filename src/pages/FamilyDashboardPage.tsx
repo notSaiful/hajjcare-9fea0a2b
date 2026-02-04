@@ -55,16 +55,17 @@ const FamilyDashboardPage = () => {
       for (const member of members) {
         const location = memberLocations.find(l => l.member_id === member.member_id);
         
-        // Check if member has sharing enabled (via their profile)
+        // Check if member has sharing enabled (via limited profile view)
+        // Using profiles_limited view which excludes phone/emergency_contact for privacy
         let sharingEnabled = false;
         if (member.user_id) {
           const { data: profileData } = await supabase
-            .from("profiles")
+            .from("profiles_limited" as "profiles")
             .select("family_sharing_enabled")
             .eq("user_id", member.user_id)
             .maybeSingle();
           
-          sharingEnabled = profileData?.family_sharing_enabled ?? false;
+          sharingEnabled = (profileData as { family_sharing_enabled: boolean } | null)?.family_sharing_enabled ?? false;
         }
         
         // FAIL-SAFE: Default to "normal" if no data - per silence protocol
