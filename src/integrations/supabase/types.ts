@@ -404,9 +404,49 @@ export type Database = {
         }
         Relationships: []
       }
+      profiles_limited: {
+        Row: {
+          created_at: string | null
+          embarkation_point: string | null
+          family_sharing_enabled: boolean | null
+          full_name: string | null
+          id: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          embarkation_point?: string | null
+          family_sharing_enabled?: boolean | null
+          full_name?: string | null
+          id?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          embarkation_point?: string | null
+          family_sharing_enabled?: boolean | null
+          full_name?: string | null
+          id?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       cleanup_old_rate_limits: { Args: never; Returns: undefined }
+      get_group_member_profile: {
+        Args: { target_user_id: string }
+        Returns: {
+          embarkation_point: string
+          family_sharing_enabled: boolean
+          full_name: string
+          id: string
+          user_id: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
