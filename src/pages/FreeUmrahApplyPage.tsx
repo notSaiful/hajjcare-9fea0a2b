@@ -138,6 +138,8 @@ const FreeUmrahApplyPage = () => {
   const [checkId, setCheckId] = useState("");
   const [checkResult, setCheckResult] = useState<string | null>(null);
   const [checkedApplicationId, setCheckedApplicationId] = useState<string | null>(null);
+  const [checkedState, setCheckedState] = useState<string | null>(null);
+  const [checkedCity, setCheckedCity] = useState<string | null>(null);
   const [submittedFormData, setSubmittedFormData] = useState<FreeUmrahFormData | null>(null);
   const [isChecking, setIsChecking] = useState(false);
   const [showReupload, setShowReupload] = useState(false);
@@ -380,22 +382,34 @@ const FreeUmrahApplyPage = () => {
     setIsChecking(true);
     setCheckResult(null);
     setCheckedApplicationId(null);
+    setCheckedState(null);
+    setCheckedCity(null);
     setShowReupload(false);
 
     const { data, error } = await supabase
       .from("applicants_status_check" as any)
-      .select("status, application_id")
+      .select("status, application_id, state, city")
       .eq("application_id", checkId.trim())
       .maybeSingle();
 
     if (error || !data) {
       setCheckResult("not_found");
     } else {
-      const typedData = data as unknown as { status: string; application_id: string };
+      const typedData = data as unknown as { status: string; application_id: string; state: string; city: string };
       setCheckResult(typedData.status);
       setCheckedApplicationId(typedData.application_id);
+      setCheckedState(typedData.state);
+      setCheckedCity(typedData.city);
     }
     setIsChecking(false);
+  };
+
+  // Format checked application identifier
+  const getCheckedFormattedIdentifier = () => {
+    if (!checkedApplicationId || !checkedState || !checkedCity) return checkedApplicationId;
+    const stateCode = getStateCode(checkedState);
+    const cityName = toTitleCase(checkedCity);
+    return `${stateCode} – ${cityName} – ${checkedApplicationId}`;
   };
 
   const getStatusLabel = (status: string) => {
@@ -488,6 +502,14 @@ const FreeUmrahApplyPage = () => {
             </div>
             {checkResult && (
               <div className="space-y-3">
+                {checkedApplicationId && checkResult !== "not_found" && (
+                  <div className="bg-muted/50 p-3 rounded-lg text-center">
+                    <p className="text-xs text-muted-foreground mb-1">{t.applicationId}</p>
+                    <p className="text-sm font-mono font-semibold text-foreground break-all">
+                      {getCheckedFormattedIdentifier()}
+                    </p>
+                  </div>
+                )}
                 <div className={`p-3 rounded-lg text-center font-medium ${
                   checkResult === "VERIFIED" ? "bg-primary/10 text-primary" :
                   checkResult === "SELECTED" ? "bg-primary/10 text-primary" :
