@@ -39,6 +39,65 @@ import { adminContent } from "@/data/freeUmrahContent";
 import { ApplicantDetailsModal } from "@/components/ApplicantDetailsModal";
 import { FreeUmrahStats } from "@/components/FreeUmrahStats";
 
+// State code mapping for formatted identifier display
+const stateCodeMap: Record<string, string> = {
+  "Andhra Pradesh": "AP",
+  "Arunachal Pradesh": "AR",
+  "Assam": "AS",
+  "Bihar": "BR",
+  "Chhattisgarh": "CG",
+  "Goa": "GA",
+  "Gujarat": "GJ",
+  "Haryana": "HR",
+  "Himachal Pradesh": "HP",
+  "Jharkhand": "JH",
+  "Karnataka": "KA",
+  "Kerala": "KL",
+  "Madhya Pradesh": "MP",
+  "Maharashtra": "MH",
+  "Manipur": "MN",
+  "Meghalaya": "ML",
+  "Mizoram": "MZ",
+  "Nagaland": "NL",
+  "Odisha": "OD",
+  "Punjab": "PB",
+  "Rajasthan": "RJ",
+  "Sikkim": "SK",
+  "Tamil Nadu": "TN",
+  "Telangana": "TS",
+  "Tripura": "TR",
+  "Uttar Pradesh": "UP",
+  "Uttarakhand": "UK",
+  "West Bengal": "WB",
+  "Delhi": "DL",
+  "Jammu and Kashmir": "JK",
+  "Ladakh": "LA",
+  "Puducherry": "PY",
+  "Chandigarh": "CH",
+  "Andaman and Nicobar Islands": "AN",
+  "Dadra and Nagar Haveli and Daman and Diu": "DD",
+  "Lakshadweep": "LD",
+};
+
+const getStateCode = (state: string): string => {
+  return stateCodeMap[state] || state.substring(0, 2).toUpperCase();
+};
+
+const toTitleCase = (str: string): string => {
+  return str
+    .toLowerCase()
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+};
+
+const getFormattedIdentifier = (applicant: Applicant): string => {
+  const stateCode = getStateCode(applicant.state);
+  const cityName = applicant.city ? toTitleCase(applicant.city) : "";
+  if (!cityName) return applicant.application_id;
+  return `${stateCode} – ${cityName} – ${applicant.application_id}`;
+};
+
 interface Applicant {
   id: string;
   application_id: string;
@@ -549,8 +608,8 @@ const FreeUmrahAdminPage = () => {
                         <TableCell>
                           <div>
                             <p className="font-medium">{applicant.full_name}</p>
-                            <p className="text-xs text-muted-foreground font-mono">
-                              {applicant.application_id}
+                            <p className="text-xs text-muted-foreground font-mono break-all">
+                              {getFormattedIdentifier(applicant)}
                             </p>
                             <p className="text-xs text-muted-foreground">{applicant.mobile}</p>
                           </div>
