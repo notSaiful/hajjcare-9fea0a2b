@@ -8,6 +8,7 @@ export interface FreeUmrahFormData {
   pincode: string;
   role: string;
   masjid_name: string;
+  masjid_registration_number: string;
   years_of_service: string;
   never_umrah: boolean;
   low_income: boolean;
@@ -25,6 +26,7 @@ export const initialFormData: FreeUmrahFormData = {
   pincode: "",
   role: "",
   masjid_name: "",
+  masjid_registration_number: "",
   years_of_service: "",
   never_umrah: false,
   low_income: false,

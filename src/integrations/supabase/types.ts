@@ -24,6 +24,7 @@ export type Database = {
           id: string
           low_income: boolean
           masjid_name: string
+          masjid_registration_number: string | null
           mobile: string
           never_umrah: boolean
           no_money_paid: boolean
@@ -48,6 +49,7 @@ export type Database = {
           id?: string
           low_income?: boolean
           masjid_name: string
+          masjid_registration_number?: string | null
           mobile: string
           never_umrah?: boolean
           no_money_paid?: boolean
@@ -72,6 +74,7 @@ export type Database = {
           id?: string
           low_income?: boolean
           masjid_name?: string
+          masjid_registration_number?: string | null
           mobile?: string
           never_umrah?: boolean
           no_money_paid?: boolean

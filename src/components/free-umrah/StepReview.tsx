@@ -5,7 +5,8 @@ import { FreeUmrahFormData } from "./types";
 
 interface StepReviewProps {
   formData: FreeUmrahFormData;
-  selectedFile: File | null;
+  masjidCertificate: File | null;
+  passportPhoto: File | null;
   t: {
     fullName: string;
     age: string;
@@ -15,17 +16,19 @@ interface StepReviewProps {
     pincode: string;
     role: string;
     masjidName: string;
+    masjidRegistrationNumber: string;
     yearsOfService: string;
     neverUmrah: string;
     lowIncome: string;
     socialHarmony: string;
     noMoneyPaid: string;
-    proofType: string;
+    masjidCertificate: string;
+    passportPhoto: string;
   };
   language: string;
 }
 
-export function StepReview({ formData, selectedFile, t, language }: StepReviewProps) {
+export function StepReview({ formData, masjidCertificate, passportPhoto, t, language }: StepReviewProps) {
   const isRTL = language === "ar" || language === "ur";
   
   const reviewLabels = {
@@ -36,7 +39,7 @@ export function StepReview({ formData, selectedFile, t, language }: StepReviewPr
       location: "Location Details",
       service: "Service Details",
       declarations: "Declarations",
-      document: "Document",
+      documents: "Documents",
       attached: "Attached",
       notAttached: "Not Attached",
     },
@@ -47,7 +50,7 @@ export function StepReview({ formData, selectedFile, t, language }: StepReviewPr
       location: "تفاصيل الموقع",
       service: "تفاصيل الخدمة",
       declarations: "الإقرارات",
-      document: "المستند",
+      documents: "المستندات",
       attached: "مرفق",
       notAttached: "غير مرفق",
     },
@@ -58,7 +61,7 @@ export function StepReview({ formData, selectedFile, t, language }: StepReviewPr
       location: "مقام کی تفصیلات",
       service: "خدمت کی تفصیلات",
       declarations: "اعلانات",
-      document: "دستاویز",
+      documents: "دستاویزات",
       attached: "منسلک",
       notAttached: "منسلک نہیں",
     },
@@ -69,7 +72,7 @@ export function StepReview({ formData, selectedFile, t, language }: StepReviewPr
       location: "स्थान विवरण",
       service: "सेवा विवरण",
       declarations: "घोषणाएं",
-      document: "दस्तावेज़",
+      documents: "दस्तावेज़",
       attached: "संलग्न",
       notAttached: "संलग्न नहीं",
     },
@@ -90,6 +93,15 @@ export function StepReview({ formData, selectedFile, t, language }: StepReviewPr
       <span className={`text-sm ${checked ? 'text-foreground' : 'text-muted-foreground line-through'}`}>
         {label}
       </span>
+    </div>
+  );
+
+  const DocumentRow = ({ label, file }: { label: string; file: File | null }) => (
+    <div className={`flex items-center justify-between py-2 border-b border-border/50 last:border-0 ${isRTL ? 'flex-row-reverse' : ''}`}>
+      <span className="text-muted-foreground text-sm">{label}</span>
+      <Badge variant={file ? "default" : "secondary"} className="text-xs">
+        {file ? labels.attached : labels.notAttached}
+      </Badge>
     </div>
   );
 
@@ -135,6 +147,7 @@ export function StepReview({ formData, selectedFile, t, language }: StepReviewPr
         <div className="space-y-1">
           <InfoRow label={t.role} value={formData.role} />
           <InfoRow label={t.masjidName} value={formData.masjid_name} />
+          <InfoRow label={t.masjidRegistrationNumber} value={formData.masjid_registration_number} />
           <InfoRow label={t.yearsOfService} value={formData.years_of_service} />
         </div>
       </Card>
@@ -153,16 +166,15 @@ export function StepReview({ formData, selectedFile, t, language }: StepReviewPr
         </div>
       </Card>
 
-      {/* Document */}
+      {/* Documents */}
       <Card className="p-4">
-        <div className={`flex items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
-          <div className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
-            <FileCheck className="w-4 h-4 text-primary" />
-            <h4 className="font-medium text-foreground">{labels.document}</h4>
-          </div>
-          <Badge variant={selectedFile ? "default" : "secondary"}>
-            {selectedFile ? `${labels.attached}: ${selectedFile.name}` : labels.notAttached}
-          </Badge>
+        <div className={`flex items-center gap-2 mb-3 ${isRTL ? 'flex-row-reverse' : ''}`}>
+          <FileCheck className="w-4 h-4 text-primary" />
+          <h4 className="font-medium text-foreground">{labels.documents}</h4>
+        </div>
+        <div className="space-y-1">
+          <DocumentRow label={t.masjidCertificate} file={masjidCertificate} />
+          <DocumentRow label={t.passportPhoto} file={passportPhoto} />
         </div>
       </Card>
     </div>

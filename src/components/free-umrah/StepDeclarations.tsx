@@ -2,24 +2,28 @@ import { useRef } from "react";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { Upload, FileText, X } from "lucide-react";
+import { Upload, FileText, X, CheckCircle } from "lucide-react";
 import { FreeUmrahFormData } from "./types";
 
 interface StepDeclarationsProps {
   formData: FreeUmrahFormData;
   setFormData: (data: FreeUmrahFormData) => void;
   errors: Record<string, string>;
-  selectedFile: File | null;
-  onFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onFileClear: () => void;
+  masjidCertificate: File | null;
+  passportPhoto: File | null;
+  onMasjidCertSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onPassportPhotoSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onMasjidCertClear: () => void;
+  onPassportPhotoClear: () => void;
   t: {
     declarations: string;
     neverUmrah: string;
     lowIncome: string;
     socialHarmony: string;
     noMoneyPaid: string;
-    proofDocument: string;
-    uploadHint: string;
+    masjidCertificate: string;
+    passportPhoto: string;
+    requiredDocuments: string;
   };
 }
 
@@ -27,12 +31,16 @@ export function StepDeclarations({
   formData,
   setFormData,
   errors,
-  selectedFile,
-  onFileSelect,
-  onFileClear,
+  masjidCertificate,
+  passportPhoto,
+  onMasjidCertSelect,
+  onPassportPhotoSelect,
+  onMasjidCertClear,
+  onPassportPhotoClear,
   t,
 }: StepDeclarationsProps) {
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const masjidCertRef = useRef<HTMLInputElement>(null);
+  const passportPhotoRef = useRef<HTMLInputElement>(null);
 
   return (
     <div className="space-y-5 animate-fade-in">
@@ -94,46 +102,101 @@ export function StepDeclarations({
         </div>
       </div>
 
-      {/* File Upload */}
-      <div className="space-y-2">
-        <Label className="text-base">{t.proofDocument} <span className="text-xs text-muted-foreground">(Max 2MB)</span></Label>
-        <div 
-          className="border-2 border-dashed border-border rounded-lg p-6 text-center cursor-pointer hover:border-primary/50 transition-colors"
-          onClick={() => fileInputRef.current?.click()}
-        >
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".pdf,.jpg,.jpeg,.png,.gif,.webp,image/jpeg,image/png,image/gif,image/webp,application/pdf"
-            onChange={onFileSelect}
-            className="hidden"
-          />
-          {selectedFile ? (
-            <div className="flex items-center justify-center gap-2">
-              <FileText className="w-5 h-5 text-primary" />
-              <span className="text-sm text-foreground truncate max-w-[200px]">
-                {selectedFile.name}
-              </span>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onFileClear();
-                }}
-              >
-                <X className="w-4 h-4" />
-              </Button>
-            </div>
-          ) : (
-            <>
-              <Upload className="w-10 h-10 mx-auto text-muted-foreground mb-3" />
-              <p className="text-sm text-muted-foreground">{t.uploadHint}</p>
-              <p className="text-xs text-muted-foreground mt-1">PDF, JPEG, PNG • Max 2MB</p>
-            </>
-          )}
+      {/* Required Documents */}
+      <div className="space-y-4">
+        <Label className="text-base font-semibold">{t.requiredDocuments} * <span className="text-xs text-muted-foreground">(Both required, Max 2MB each)</span></Label>
+        
+        {/* Document 1: Masjid Registration Certificate */}
+        <div className="space-y-2">
+          <Label className="text-sm text-muted-foreground">{t.masjidCertificate}</Label>
+          <div 
+            className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors ${
+              masjidCertificate ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'
+            }`}
+            onClick={() => masjidCertRef.current?.click()}
+          >
+            <input
+              ref={masjidCertRef}
+              type="file"
+              accept=".pdf,.jpg,.jpeg,.png,.gif,.webp,image/jpeg,image/png,image/gif,image/webp,application/pdf"
+              onChange={onMasjidCertSelect}
+              className="hidden"
+            />
+            {masjidCertificate ? (
+              <div className="flex items-center justify-center gap-2">
+                <CheckCircle className="w-5 h-5 text-primary" />
+                <span className="text-sm text-foreground truncate max-w-[180px]">
+                  {masjidCertificate.name}
+                </span>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onMasjidCertClear();
+                  }}
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+            ) : (
+              <div className="flex items-center justify-center gap-2">
+                <Upload className="w-5 h-5 text-muted-foreground" />
+                <span className="text-sm text-muted-foreground">Upload Masjid Registration Certificate</span>
+              </div>
+            )}
+          </div>
+          {errors.masjid_certificate && <p className="text-sm text-destructive">{errors.masjid_certificate}</p>}
         </div>
+
+        {/* Document 2: Passport Photo */}
+        <div className="space-y-2">
+          <Label className="text-sm text-muted-foreground">{t.passportPhoto}</Label>
+          <div 
+            className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors ${
+              passportPhoto ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'
+            }`}
+            onClick={() => passportPhotoRef.current?.click()}
+          >
+            <input
+              ref={passportPhotoRef}
+              type="file"
+              accept=".jpg,.jpeg,.png,.gif,.webp,image/jpeg,image/png,image/gif,image/webp"
+              onChange={onPassportPhotoSelect}
+              className="hidden"
+            />
+            {passportPhoto ? (
+              <div className="flex items-center justify-center gap-2">
+                <CheckCircle className="w-5 h-5 text-primary" />
+                <span className="text-sm text-foreground truncate max-w-[180px]">
+                  {passportPhoto.name}
+                </span>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onPassportPhotoClear();
+                  }}
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+            ) : (
+              <div className="flex items-center justify-center gap-2">
+                <Upload className="w-5 h-5 text-muted-foreground" />
+                <span className="text-sm text-muted-foreground">Upload Passport-size Photograph</span>
+              </div>
+            )}
+          </div>
+          {errors.passport_photo && <p className="text-sm text-destructive">{errors.passport_photo}</p>}
+        </div>
+
+        <p className="text-xs text-muted-foreground">
+          PDF or Images (JPEG, PNG) • Max 2MB each
+        </p>
       </div>
     </div>
   );
