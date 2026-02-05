@@ -32,6 +32,60 @@ import { FreeUmrahFormData, initialFormData } from "@/components/free-umrah/type
 const STORAGE_KEY = "free-umrah-application-draft";
 const STEP_STORAGE_KEY = "free-umrah-application-step";
 
+// State code mapping for Indian states
+const stateCodeMap: Record<string, string> = {
+  "Andhra Pradesh": "AP",
+  "Arunachal Pradesh": "AR",
+  "Assam": "AS",
+  "Bihar": "BR",
+  "Chhattisgarh": "CG",
+  "Goa": "GA",
+  "Gujarat": "GJ",
+  "Haryana": "HR",
+  "Himachal Pradesh": "HP",
+  "Jharkhand": "JH",
+  "Karnataka": "KA",
+  "Kerala": "KL",
+  "Madhya Pradesh": "MP",
+  "Maharashtra": "MH",
+  "Manipur": "MN",
+  "Meghalaya": "ML",
+  "Mizoram": "MZ",
+  "Nagaland": "NL",
+  "Odisha": "OD",
+  "Punjab": "PB",
+  "Rajasthan": "RJ",
+  "Sikkim": "SK",
+  "Tamil Nadu": "TN",
+  "Telangana": "TS",
+  "Tripura": "TR",
+  "Uttar Pradesh": "UP",
+  "Uttarakhand": "UK",
+  "West Bengal": "WB",
+  "Delhi": "DL",
+  "Jammu and Kashmir": "JK",
+  "Ladakh": "LA",
+  "Puducherry": "PY",
+  "Chandigarh": "CH",
+  "Andaman and Nicobar Islands": "AN",
+  "Dadra and Nagar Haveli and Daman and Diu": "DD",
+  "Lakshadweep": "LD",
+};
+
+// Helper to get state code
+const getStateCode = (stateName: string): string => {
+  return stateCodeMap[stateName] || stateName.substring(0, 2).toUpperCase();
+};
+
+// Helper to format city name in Title Case
+const toTitleCase = (str: string): string => {
+  return str
+    .toLowerCase()
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+};
+
 // Step-specific validation schemas
 const step1Schema = z.object({
   full_name: z.string().min(2, "Name must be at least 2 characters").max(100, "Name too long"),
@@ -84,6 +138,7 @@ const FreeUmrahApplyPage = () => {
   const [checkId, setCheckId] = useState("");
   const [checkResult, setCheckResult] = useState<string | null>(null);
   const [checkedApplicationId, setCheckedApplicationId] = useState<string | null>(null);
+  const [submittedFormData, setSubmittedFormData] = useState<FreeUmrahFormData | null>(null);
   const [isChecking, setIsChecking] = useState(false);
   const [showReupload, setShowReupload] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
@@ -307,6 +362,7 @@ const FreeUmrahApplyPage = () => {
       }
 
       setSubmittedId(result.applicationId);
+      setSubmittedFormData({ ...formData });
       clearSavedData();
       toast.success(t.success);
     } catch (err) {
@@ -356,6 +412,14 @@ const FreeUmrahApplyPage = () => {
 
   const currentStepLabels = stepLabels[language as keyof typeof stepLabels] || stepLabels.en;
 
+  // Format the display identifier
+  const getFormattedIdentifier = () => {
+    if (!submittedFormData) return submittedId;
+    const stateCode = getStateCode(submittedFormData.state);
+    const cityName = toTitleCase(submittedFormData.city);
+    return `${stateCode} – ${cityName} – ${submittedId}`;
+  };
+
   // Success screen
   if (submittedId) {
     return (
@@ -375,7 +439,9 @@ const FreeUmrahApplyPage = () => {
               <h2 className="text-xl font-semibold text-foreground">{t.success}</h2>
               <div className="bg-muted p-4 rounded-lg">
                 <p className="text-sm text-muted-foreground">{t.applicationId}</p>
-                <p className="text-2xl font-mono font-bold text-primary mt-1">{submittedId}</p>
+                <p className="text-lg sm:text-xl font-mono font-bold text-primary mt-1 break-all">
+                  {getFormattedIdentifier()}
+                </p>
               </div>
               <p className="text-sm text-muted-foreground">
                 {t.saveIdHint}
