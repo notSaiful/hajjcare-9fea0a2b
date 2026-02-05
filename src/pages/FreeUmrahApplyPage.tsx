@@ -96,7 +96,14 @@ const FreeUmrahApplyPage = () => {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       try {
-        return { ...initialFormData, ...JSON.parse(saved) };
+        const parsed = JSON.parse(saved);
+        // Ensure all fields from initialFormData exist (handles schema evolution)
+        return { 
+          ...initialFormData, 
+          ...parsed,
+          // Explicitly reset fields that might have invalid values from old schema
+          masjid_registration_number: parsed.masjid_registration_number || "",
+        };
       } catch {
         return initialFormData;
       }

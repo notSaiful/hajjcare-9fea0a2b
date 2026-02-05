@@ -87,6 +87,12 @@ Deno.serve(async (req) => {
     // Handle both FormData and JSON content types
     if (contentType.includes("multipart/form-data")) {
       const formData = await req.formData();
+      
+      // Debug logging
+      console.log("Form data entries:", Array.from(formData.entries()).map(([k, v]) => 
+        `${k}=${v instanceof File ? `[File: ${v.name}]` : v}`
+      ));
+      
       full_name = formData.get("full_name") as string;
       age = parseInt(formData.get("age") as string) || 0;
       mobile = formData.get("mobile") as string;
@@ -124,9 +130,20 @@ Deno.serve(async (req) => {
     }
 
     // Validate required fields
-    if (!full_name || !mobile || !city || !state || !pincode || !role || !masjid_name || !masjid_registration_number) {
+    const missingFields = [];
+    if (!full_name) missingFields.push("full_name");
+    if (!mobile) missingFields.push("mobile");
+    if (!city) missingFields.push("city");
+    if (!state) missingFields.push("state");
+    if (!pincode) missingFields.push("pincode");
+    if (!role) missingFields.push("role");
+    if (!masjid_name) missingFields.push("masjid_name");
+    if (!masjid_registration_number) missingFields.push("masjid_registration_number");
+    
+    if (missingFields.length > 0) {
+      console.error("Missing fields:", missingFields);
       return new Response(
-        JSON.stringify({ error: "Missing required fields" }),
+        JSON.stringify({ error: `Missing required fields: ${missingFields.join(", ")}` }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
