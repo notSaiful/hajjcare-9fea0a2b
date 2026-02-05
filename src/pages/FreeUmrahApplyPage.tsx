@@ -35,7 +35,7 @@ const STEP_STORAGE_KEY = "free-umrah-application-step";
 // Step-specific validation schemas
 const step1Schema = z.object({
   full_name: z.string().min(2, "Name must be at least 2 characters").max(100, "Name too long"),
-  age: z.number().min(18, "Must be at least 18").max(100, "Age must be under 100"),
+  age: z.number().min(18, "Must be at least 18 years").max(60, "Must be 60 years or younger"),
   mobile: z.string().regex(/^[0-9]{10}$/, "Enter valid 10-digit mobile number"),
 });
 
@@ -47,7 +47,8 @@ const step2Schema = z.object({
 
 const step3Schema = z.object({
   role: z.enum(["Imam", "Muazzin", "Hafiz"], { required_error: "Select your role" }),
-  masjid_name: z.string().min(2, "Masjid/Madrasa name is required"),
+  masjid_name: z.string().min(2, "Masjid name is required"),
+  masjid_registration_number: z.string().min(2, "Masjid registration number is required"),
   years_of_service: z.number().min(0, "Years must be positive").max(80, "Invalid years"),
 });
 
@@ -87,7 +88,8 @@ const FreeUmrahApplyPage = () => {
   const [showReupload, setShowReupload] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [masjidCertificate, setMasjidCertificate] = useState<File | null>(null);
+  const [passportPhoto, setPassportPhoto] = useState<File | null>(null);
 
   // Load saved form data from localStorage
   const [formData, setFormData] = useState<FreeUmrahFormData>(() => {
@@ -118,14 +120,16 @@ const FreeUmrahApplyPage = () => {
     localStorage.removeItem(STEP_STORAGE_KEY);
   }, []);
 
-  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+  const processFile = async (file: File, allowPdf: boolean = true): Promise<File | null> => {
+    const imageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    const allowedTypes = allowPdf ? [...imageTypes, 'application/pdf'] : imageTypes;
+    
     if (!allowedTypes.includes(file.type)) {
-      toast.error("Only PDF and image files (JPEG, PNG, GIF, WebP) are allowed");
-      return;
+      toast.error(allowPdf 
+        ? "Only PDF and image files (JPEG, PNG, GIF, WebP) are allowed"
+        : "Only image files (JPEG, PNG, GIF, WebP) are allowed for passport photo"
+      );
+      return null;
     }
 
     if (file.type.startsWith('image/') && needsCompression(file, 2)) {
@@ -134,24 +138,43 @@ const FreeUmrahApplyPage = () => {
         const compressed = await compressImage(file, 2);
         if (compressed.size / 1024 / 1024 > 2) {
           toast.error("Image could not be compressed under 2MB. Please use a smaller image.");
-          return;
+          return null;
         }
         toast.success("Image compressed successfully");
-        setSelectedFile(compressed);
-        return;
+        return compressed;
       } catch (err) {
         console.error("Compression error:", err);
         toast.error("Failed to compress image");
-        return;
+        return null;
       }
     }
 
     if (file.size > 2 * 1024 * 1024) {
       toast.error("File size must be less than 2MB");
-      return;
+      return null;
     }
     
-    setSelectedFile(file);
+    return file;
+  };
+
+  const handleMasjidCertSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const processed = await processFile(file, true);
+    if (processed) {
+      setMasjidCertificate(processed);
+      setErrors(prev => ({ ...prev, masjid_certificate: "" }));
+    }
+  };
+
+  const handlePassportPhotoSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const processed = await processFile(file, false); // Only images for passport photo
+    if (processed) {
+      setPassportPhoto(processed);
+      setErrors(prev => ({ ...prev, passport_photo: "" }));
+    }
   };
 
   const validateCurrentStep = (): boolean => {
@@ -176,6 +199,15 @@ const FreeUmrahApplyPage = () => {
           break;
         case 4:
           step4Schema.parse(formData);
+          // Also validate that both documents are uploaded
+          if (!masjidCertificate) {
+            setErrors(prev => ({ ...prev, masjid_certificate: "Masjid Registration Certificate is required" }));
+            return false;
+          }
+          if (!passportPhoto) {
+            setErrors(prev => ({ ...prev, passport_photo: "Passport-size photograph is required" }));
+            return false;
+          }
           break;
       }
       return true;
@@ -206,6 +238,11 @@ const FreeUmrahApplyPage = () => {
 
   const handleConfirmSubmit = () => {
     if (!validateCurrentStep()) return;
+    // Final validation for documents before submission
+    if (!masjidCertificate || !passportPhoto) {
+      toast.error("Both documents are required to submit the application");
+      return;
+    }
     setShowConfirmDialog(true);
   };
 
@@ -225,15 +262,18 @@ const FreeUmrahApplyPage = () => {
       submitFormData.append("pincode", formData.pincode);
       submitFormData.append("role", formData.role);
       submitFormData.append("masjid_name", formData.masjid_name);
+      submitFormData.append("masjid_registration_number", formData.masjid_registration_number);
       submitFormData.append("years_of_service", formData.years_of_service);
       submitFormData.append("never_umrah", formData.never_umrah.toString());
       submitFormData.append("low_income", formData.low_income.toString());
       submitFormData.append("social_harmony", formData.social_harmony.toString());
       submitFormData.append("no_money_paid", formData.no_money_paid.toString());
-      submitFormData.append("proof_type", formData.proof_type);
       
-      if (selectedFile) {
-        submitFormData.append("document", selectedFile);
+      if (masjidCertificate) {
+        submitFormData.append("masjid_certificate", masjidCertificate);
+      }
+      if (passportPhoto) {
+        submitFormData.append("passport_photo", passportPhoto);
       }
 
       const response = await fetch(
@@ -460,16 +500,20 @@ const FreeUmrahApplyPage = () => {
                   formData={formData}
                   setFormData={setFormData}
                   errors={errors}
-                  selectedFile={selectedFile}
-                  onFileSelect={handleFileSelect}
-                  onFileClear={() => setSelectedFile(null)}
+                  masjidCertificate={masjidCertificate}
+                  passportPhoto={passportPhoto}
+                  onMasjidCertSelect={handleMasjidCertSelect}
+                  onPassportPhotoSelect={handlePassportPhotoSelect}
+                  onMasjidCertClear={() => setMasjidCertificate(null)}
+                  onPassportPhotoClear={() => setPassportPhoto(null)}
                   t={t}
                 />
               )}
               {currentStep === 5 && (
                 <StepReview
                   formData={formData}
-                  selectedFile={selectedFile}
+                  masjidCertificate={masjidCertificate}
+                  passportPhoto={passportPhoto}
                   t={t}
                   language={language}
                 />

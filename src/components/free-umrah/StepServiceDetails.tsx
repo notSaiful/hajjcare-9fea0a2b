@@ -16,6 +16,7 @@ interface StepServiceDetailsProps {
   t: {
     role: string;
     masjidName: string;
+    masjidRegistrationNumber: string;
     yearsOfService: string;
   };
 }
@@ -47,10 +48,22 @@ export function StepServiceDetails({ formData, setFormData, errors, t }: StepSer
           id="masjid_name"
           value={formData.masjid_name}
           onChange={(e) => setFormData({ ...formData, masjid_name: e.target.value })}
-          placeholder="Enter masjid/madrasa name"
+          placeholder="Enter masjid name"
           className="h-12 text-base"
         />
         {errors.masjid_name && <p className="text-sm text-destructive">{errors.masjid_name}</p>}
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="masjid_registration_number" className="text-base">{t.masjidRegistrationNumber} *</Label>
+        <Input
+          id="masjid_registration_number"
+          value={formData.masjid_registration_number}
+          onChange={(e) => setFormData({ ...formData, masjid_registration_number: e.target.value })}
+          placeholder="Enter masjid registration number"
+          className="h-12 text-base"
+        />
+        {errors.masjid_registration_number && <p className="text-sm text-destructive">{errors.masjid_registration_number}</p>}
       </div>
 
       <div className="space-y-2">

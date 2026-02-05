@@ -29,15 +29,15 @@ export function StepPersonalInfo({ formData, setFormData, errors, t }: StepPerso
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="age" className="text-base">{t.age} *</Label>
+        <Label htmlFor="age" className="text-base">{t.age} * <span className="text-xs text-muted-foreground">(18-60 years)</span></Label>
         <Input
           id="age"
           type="number"
           min="18"
-          max="100"
+          max="60"
           value={formData.age}
           onChange={(e) => setFormData({ ...formData, age: e.target.value })}
-          placeholder="18-100"
+          placeholder="18-60"
           className="h-12 text-base"
         />
         {errors.age && <p className="text-sm text-destructive">{errors.age}</p>}
