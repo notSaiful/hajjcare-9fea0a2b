@@ -3,8 +3,9 @@ import { useNavigate, Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Loader2, CheckCircle, Search, RefreshCw, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowLeft, Loader2, CheckCircle, Search, RefreshCw, ChevronLeft, ChevronRight, Clock } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -147,6 +148,26 @@ const FreeUmrahApplyPage = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [masjidCertificate, setMasjidCertificate] = useState<File | null>(null);
   const [passportPhoto, setPassportPhoto] = useState<File | null>(null);
+  const [rateLimitState, setRateLimitState] = useState<{ isLimited: boolean; resetTime: number; message: string } | null>(null);
+  const [countdown, setCountdown] = useState(0);
+
+  // Countdown timer effect for rate limiting
+  useEffect(() => {
+    if (!rateLimitState?.isLimited) return;
+    
+    const updateCountdown = () => {
+      const remaining = Math.max(0, Math.ceil((rateLimitState.resetTime - Date.now()) / 1000));
+      setCountdown(remaining);
+      
+      if (remaining <= 0) {
+        setRateLimitState(null);
+      }
+    };
+    
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 1000);
+    return () => clearInterval(interval);
+  }, [rateLimitState]);
 
   // Load saved form data from localStorage
   const [formData, setFormData] = useState<FreeUmrahFormData>(() => {
@@ -360,6 +381,18 @@ const FreeUmrahApplyPage = () => {
           setCheckId(result.existingApplicationId);
           return;
         }
+        
+        // Handle rate limiting (429 Too Many Requests)
+        if (response.status === 429) {
+          const resetIn = result.resetIn || 60;
+          setRateLimitState({
+            isLimited: true,
+            resetTime: Date.now() + (resetIn * 1000),
+            message: result.error || "Too many applications. Please try again later.",
+          });
+          return;
+        }
+        
         throw new Error(result.error || "Failed to submit application");
       }
 
@@ -425,6 +458,71 @@ const FreeUmrahApplyPage = () => {
   };
 
   const currentStepLabels = stepLabels[language as keyof typeof stepLabels] || stepLabels.en;
+
+  // Rate limit screen
+  if (rateLimitState?.isLimited) {
+    return (
+      <div className="min-h-screen bg-background">
+        <header className="sticky top-0 z-50 bg-card/95 backdrop-blur-md border-b border-border/50">
+          <div className="container max-w-3xl mx-auto px-4 h-14 flex items-center gap-3">
+            <Link to="/" className="p-2 -ml-2 rounded-lg hover:bg-muted transition-colors">
+              <ArrowLeft className="w-5 h-5" />
+            </Link>
+            <h1 className="text-lg font-semibold truncate">{t.title}</h1>
+          </div>
+        </header>
+        <div className="container max-w-md mx-auto px-4 py-8">
+          <Card className="text-center">
+            <CardContent className="pt-8 pb-8 space-y-6">
+              <div className="w-16 h-16 bg-accent rounded-full flex items-center justify-center mx-auto">
+                <Clock className="w-8 h-8 text-accent-foreground" />
+              </div>
+              <div className="space-y-2">
+                <h2 className="text-xl font-bold text-foreground">
+                  {language === "hi" ? "कृपया प्रतीक्षा करें" : "Please Wait"}
+                </h2>
+                <p className="text-muted-foreground text-sm">
+                  {rateLimitState.message}
+                </p>
+              </div>
+              
+              {countdown > 0 && (
+                <div className="space-y-3">
+                  <div className="text-4xl font-bold text-primary font-mono">
+                    {Math.floor(countdown / 60)}:{(countdown % 60).toString().padStart(2, '0')}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {language === "hi" ? "पुनः प्रयास तक शेष समय" : "Time remaining before you can try again"}
+                  </p>
+                  <Progress value={((60 - countdown) / 60) * 100} className="h-2" />
+                </div>
+              )}
+              
+              <div className="pt-4 space-y-3">
+                <Button
+                  onClick={() => setRateLimitState(null)}
+                  disabled={countdown > 0}
+                  className="w-full"
+                >
+                  {countdown > 0 
+                    ? (language === "hi" ? "प्रतीक्षा करें..." : "Please wait...") 
+                    : (language === "hi" ? "पुनः प्रयास करें" : "Try Again")}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => navigate("/")}
+                  className="w-full"
+                >
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  {language === "hi" ? "होम पर वापस जाएं" : "Go Back Home"}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   // Format the display identifier
   const getFormattedIdentifier = () => {
