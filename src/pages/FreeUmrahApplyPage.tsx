@@ -28,6 +28,7 @@ import { StepLocation } from "@/components/free-umrah/StepLocation";
 import { StepServiceDetails } from "@/components/free-umrah/StepServiceDetails";
 import { StepDeclarations } from "@/components/free-umrah/StepDeclarations";
 import { StepReview } from "@/components/free-umrah/StepReview";
+import { SuccessConfirmation } from "@/components/free-umrah/SuccessConfirmation";
 import { FreeUmrahFormData, initialFormData } from "@/components/free-umrah/types";
 
 const STORAGE_KEY = "free-umrah-application-draft";
@@ -533,7 +534,7 @@ const FreeUmrahApplyPage = () => {
   };
 
   // Success screen
-  if (submittedId) {
+  if (submittedId && submittedFormData) {
     return (
       <div className="min-h-screen bg-background">
         <header className="sticky top-0 z-50 bg-card/95 backdrop-blur-md border-b border-border/50">
@@ -544,25 +545,14 @@ const FreeUmrahApplyPage = () => {
             <h1 className="text-lg font-semibold truncate">{t.title}</h1>
           </div>
         </header>
-        <div className="container max-w-md mx-auto px-4 py-8">
-          <Card className="text-center">
-            <CardContent className="pt-8 pb-6 space-y-4">
-              <CheckCircle className="w-16 h-16 text-primary mx-auto animate-scale-in" />
-              <h2 className="text-xl font-semibold text-foreground">{t.success}</h2>
-              <div className="bg-muted p-4 rounded-lg">
-                <p className="text-sm text-muted-foreground">{t.applicationId}</p>
-                <p className="text-lg sm:text-xl font-mono font-bold text-primary mt-1 break-all">
-                  {getFormattedIdentifier()}
-                </p>
-              </div>
-              <p className="text-sm text-muted-foreground">
-                {t.saveIdHint}
-              </p>
-              <Button onClick={() => navigate("/")} className="w-full mt-4">
-                {t.goHome}
-              </Button>
-            </CardContent>
-          </Card>
+        <div className="container max-w-md mx-auto px-4 py-6">
+          <SuccessConfirmation
+            applicationId={submittedId}
+            formData={submittedFormData}
+            language={language}
+            onGoHome={() => navigate("/")}
+            getFormattedIdentifier={getFormattedIdentifier}
+          />
         </div>
       </div>
     );
