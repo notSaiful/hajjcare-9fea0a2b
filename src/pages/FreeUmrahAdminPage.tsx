@@ -216,8 +216,10 @@ const FreeUmrahAdminPage = () => {
     setFilteredApplicants(filtered);
   };
 
-  const sendWhatsAppNotification = async (applicant: Applicant, newStatus: string) => {
-    if (newStatus !== 'Approved' && newStatus !== 'Rejected') return;
+  const sendWhatsAppNotification = async (applicant: Applicant, newStatus: string, rejectionReason?: string) => {
+    // Only send notifications for meaningful status changes
+    const notifiableStatuses = ['UNDER_REVIEW', 'VERIFIED', 'REJECTED', 'SELECTED'];
+    if (!notifiableStatuses.includes(newStatus)) return;
     
     try {
       // Get session for authenticated API calls
@@ -240,14 +242,17 @@ const FreeUmrahAdminPage = () => {
             applicantName: applicant.full_name,
             mobile: applicant.mobile,
             status: newStatus,
+            rejectionReason: newStatus === 'REJECTED' ? rejectionReason : undefined,
           }),
         }
       );
 
       if (response.ok) {
-        toast.success("WhatsApp notification sent");
+        toast.success("📱 WhatsApp notification sent");
       } else {
-        console.error("WhatsApp notification failed");
+        const errorData = await response.json();
+        console.error("WhatsApp notification failed:", errorData);
+        toast.error("WhatsApp notification failed");
       }
     } catch (err) {
       console.error("Error sending WhatsApp notification:", err);
@@ -283,9 +288,9 @@ const FreeUmrahAdminPage = () => {
         prev.map((a) => (a.id === selectedApplicant.id ? { ...a, status: newStatus, rejection_reason: updateData.rejection_reason ?? a.rejection_reason } : a))
       );
       
-      // Send WhatsApp notification for VERIFIED/SELECTED/REJECTED
-      if (newStatus === 'VERIFIED' || newStatus === 'SELECTED' || newStatus === 'REJECTED') {
-        await sendWhatsAppNotification(selectedApplicant, newStatus);
+      // Send WhatsApp notification for status changes
+      if (['UNDER_REVIEW', 'VERIFIED', 'SELECTED', 'REJECTED'].includes(newStatus)) {
+        await sendWhatsAppNotification(selectedApplicant, newStatus, updateData.rejection_reason || undefined);
       }
     }
 
