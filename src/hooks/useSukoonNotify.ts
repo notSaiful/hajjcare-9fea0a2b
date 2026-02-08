@@ -58,12 +58,13 @@ export const useSukoonNotify = (): UseSukoonNotifyReturn => {
         return false;
       }
 
-      const response = await supabase.functions.invoke("sukoon-stage-notify", {
+      const response = await supabase.functions.invoke("notification-cascade", {
         body: {
           memberId: memberData.member_id,
           groupId,
           newStage,
           memberName: memberName || memberData.member_name,
+          alertType: "stage_change",
         },
       });
 
@@ -74,11 +75,12 @@ export const useSukoonNotify = (): UseSukoonNotifyReturn => {
 
       lastNotifiedStage.current = newStage;
 
-      const { alertsSent = 0 } = response.data || {};
-      if (alertsSent > 0) {
+      const { channels = [] } = response.data || {};
+      const delivered = channels.find((c: { status: string }) => c.status === "sent");
+      if (delivered) {
         toast({
           title: "Family Notified",
-          description: `${alertsSent} family member(s) received your Hajj status update`,
+          description: `Update sent via ${delivered.channel} to your family`,
         });
       }
 
