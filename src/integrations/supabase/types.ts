@@ -737,23 +737,17 @@ export type Database = {
       applicants_status_check: {
         Row: {
           application_id: string | null
-          city: string | null
           created_at: string | null
-          state: string | null
           status: string | null
         }
         Insert: {
           application_id?: string | null
-          city?: string | null
           created_at?: string | null
-          state?: string | null
           status?: string | null
         }
         Update: {
           application_id?: string | null
-          city?: string | null
           created_at?: string | null
-          state?: string | null
           status?: string | null
         }
         Relationships: []
