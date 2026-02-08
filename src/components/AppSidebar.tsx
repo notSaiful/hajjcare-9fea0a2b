@@ -250,7 +250,7 @@ export function AppSidebar() {
   const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
 
-  const adminRoutes = ["/coordinator", "/admin/roles", "/medical-alerts", "/admin/metrics", "/admin/free-umrah"];
+  const adminRoutes = ["/coordinator", "/admin/roles", "/medical-alerts", "/admin/metrics", "/admin/free-umrah", "/admin/sukoon-metrics"];
   
   const guideRoutes = [
     "/prepare",
@@ -306,6 +306,11 @@ export function AppSidebar() {
         title: labels.emergencyMetrics[language] || labels.emergencyMetrics.en,
         url: "/admin/metrics",
         icon: BarChart3,
+      },
+      {
+        title: language === "hi" ? "सुकून मेट्रिक्स" : "Sukoon Metrics",
+        url: "/admin/sukoon-metrics",
+        icon: Route,
       },
     ] : []),
   ];
