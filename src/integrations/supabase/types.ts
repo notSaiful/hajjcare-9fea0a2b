@@ -119,6 +119,42 @@ export type Database = {
         }
         Relationships: []
       }
+      fraud_alerts: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string
+          id: string
+          is_active: boolean
+          location: string | null
+          severity: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description: string
+          id?: string
+          is_active?: boolean
+          location?: string | null
+          severity?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          id?: string
+          is_active?: boolean
+          location?: string | null
+          severity?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       group_members: {
         Row: {
           group_id: string
@@ -272,6 +308,47 @@ export type Database = {
             columns: ["group_id"]
             isOneToOne: false
             referencedRelation: "family_groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      operator_reviews: {
+        Row: {
+          created_at: string
+          id: string
+          is_fraud_report: boolean | null
+          operator_id: string
+          rating: number
+          review_text: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_fraud_report?: boolean | null
+          operator_id: string
+          rating: number
+          review_text?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_fraud_report?: boolean | null
+          operator_id?: string
+          rating?: number
+          review_text?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "operator_reviews_operator_id_fkey"
+            columns: ["operator_id"]
+            isOneToOne: false
+            referencedRelation: "verified_operators"
             referencedColumns: ["id"]
           },
         ]
@@ -524,6 +601,66 @@ export type Database = {
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
           zone?: string | null
+        }
+        Relationships: []
+      }
+      verified_operators: {
+        Row: {
+          avg_rating: number | null
+          blacklist_reason: string | null
+          city: string | null
+          company_name: string
+          created_at: string
+          email: string | null
+          id: string
+          is_blacklisted: boolean
+          is_verified: boolean
+          license_number: string | null
+          name: string
+          phone: string | null
+          state: string
+          total_reviews: number | null
+          updated_at: string
+          verification_date: string | null
+          website: string | null
+        }
+        Insert: {
+          avg_rating?: number | null
+          blacklist_reason?: string | null
+          city?: string | null
+          company_name: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_blacklisted?: boolean
+          is_verified?: boolean
+          license_number?: string | null
+          name: string
+          phone?: string | null
+          state: string
+          total_reviews?: number | null
+          updated_at?: string
+          verification_date?: string | null
+          website?: string | null
+        }
+        Update: {
+          avg_rating?: number | null
+          blacklist_reason?: string | null
+          city?: string | null
+          company_name?: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_blacklisted?: boolean
+          is_verified?: boolean
+          license_number?: string | null
+          name?: string
+          phone?: string | null
+          state?: string
+          total_reviews?: number | null
+          updated_at?: string
+          verification_date?: string | null
+          website?: string | null
         }
         Relationships: []
       }
