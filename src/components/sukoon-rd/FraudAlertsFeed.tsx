@@ -1,13 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { AlertTriangle, MapPin, Clock } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { AlertTriangle, MapPin, Clock, Bell, BellOff, Loader2 } from "lucide-react";
 
 export default function FraudAlertsFeed() {
   const { language } = useLanguage();
-
+  const { isSupported, isSubscribed, isLoading: pushLoading, subscribe, unsubscribe } = usePushNotifications();
   const { data: alerts = [], isLoading } = useQuery({
     queryKey: ["fraud-alerts"],
     queryFn: async () => {
@@ -33,6 +35,32 @@ export default function FraudAlertsFeed() {
 
   return (
     <div className="space-y-3">
+      {isSupported && (
+        <Card className="p-3 flex items-center justify-between border border-primary/20 bg-primary/5">
+          <div className="flex items-center gap-2">
+            <Bell className="w-4 h-4 text-primary" />
+            <span className="text-sm font-medium">
+              {isSubscribed
+                ? (language === "hi" ? "सूचनाएं सक्रिय" : "Notifications active")
+                : (language === "hi" ? "फ्रॉड अलर्ट की सूचनाएं प्राप्त करें" : "Get notified on new fraud alerts")}
+            </span>
+          </div>
+          <Button
+            size="sm"
+            variant={isSubscribed ? "outline" : "default"}
+            disabled={pushLoading}
+            onClick={() => isSubscribed ? unsubscribe() : subscribe()}
+          >
+            {pushLoading ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : isSubscribed ? (
+              <><BellOff className="w-4 h-4 mr-1" /> {language === "hi" ? "बंद करें" : "Turn Off"}</>
+            ) : (
+              <><Bell className="w-4 h-4 mr-1" /> {language === "hi" ? "सक्रिय करें" : "Enable"}</>
+            )}
+          </Button>
+        </Card>
+      )}
       {alerts.map((alert) => (
         <Card
           key={alert.id}

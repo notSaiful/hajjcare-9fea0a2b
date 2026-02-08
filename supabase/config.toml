@@ -55,3 +55,9 @@ verify_jwt = false
 
 [functions.free-umrah-apply]
 verify_jwt = false
+
+[functions.fraud-alert-notify]
+verify_jwt = false
+
+[functions.get-vapid-key]
+verify_jwt = false
