@@ -29,7 +29,10 @@ export const FamilyGroupPanel = () => {
   };
 
   const handleJoin = async () => {
-    if (!inviteCode.trim()) return;
+    if (!/^\d{6}$/.test(inviteCode)) {
+      toast({ title: "Invalid Code", description: "Invite code must be 6 digits", variant: "destructive" });
+      return;
+    }
     await joinGroup(inviteCode);
     setShowJoinForm(false);
     setInviteCode("");
@@ -131,11 +134,17 @@ export const FamilyGroupPanel = () => {
           ) : (
             <div className="space-y-2.5 sm:space-y-3">
               <Input
-                placeholder={t("inviteCode")}
+                placeholder={isRTL ? "أدخل 6 أرقام" : "Enter 6-digit code"}
                 value={inviteCode}
-                onChange={(e) => setInviteCode(e.target.value)}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/\D/g, "").slice(0, 6);
+                  setInviteCode(val);
+                }}
+                inputMode="numeric"
+                pattern="[0-9]*"
+                maxLength={6}
                 dir="ltr"
-                className="h-10 sm:h-11"
+                className="h-10 sm:h-11 text-center tracking-widest font-mono text-lg"
               />
               <div className="flex gap-2">
                 <Button onClick={handleJoin} disabled={isLoading} className="flex-1 h-10 sm:h-11">
