@@ -76,3 +76,6 @@ verify_jwt = false
 
 [functions.admin-ai-dashboard]
 verify_jwt = false
+
+[functions.central-ai-brain]
+verify_jwt = false
