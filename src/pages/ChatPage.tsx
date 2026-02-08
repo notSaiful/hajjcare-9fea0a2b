@@ -2,7 +2,7 @@ import { useRef, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, MessageSquare, Phone, RotateCcw, Wifi, WifiOff } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useHajjChat } from "@/hooks/useHajjChat";
+import { useAIOrchestrator } from "@/hooks/useAIOrchestrator";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -173,7 +173,7 @@ const CHAT_LABELS = {
 const ChatPage = () => {
   const navigate = useNavigate();
   const { language, isRTL } = useLanguage();
-  const { messages, isLoading, sendMessage, clearChat } = useHajjChat();
+  const { messages, isLoading, sendMessage, clearChat, currentModule } = useAIOrchestrator();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [activeTab, setActiveTab] = useState<"chat" | "voice">("chat");
   const [connectionStrength, setConnectionStrength] = useState<"weak" | "strong">("strong");
