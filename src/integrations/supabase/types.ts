@@ -14,6 +14,127 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_feedback: {
+        Row: {
+          created_at: string
+          feedback_text: string | null
+          id: string
+          intent_log_id: string | null
+          rating: number | null
+          user_id: string
+          was_helpful: boolean | null
+        }
+        Insert: {
+          created_at?: string
+          feedback_text?: string | null
+          id?: string
+          intent_log_id?: string | null
+          rating?: number | null
+          user_id: string
+          was_helpful?: boolean | null
+        }
+        Update: {
+          created_at?: string
+          feedback_text?: string | null
+          id?: string
+          intent_log_id?: string | null
+          rating?: number | null
+          user_id?: string
+          was_helpful?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_feedback_intent_log_id_fkey"
+            columns: ["intent_log_id"]
+            isOneToOne: false
+            referencedRelation: "ai_intent_logs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_intent_logs: {
+        Row: {
+          confidence: number
+          created_at: string
+          detected_intent: string
+          id: string
+          language: string
+          processing_time_ms: number | null
+          raw_input: string
+          response_summary: string | null
+          routed_module: string
+          session_id: string | null
+          user_id: string
+        }
+        Insert: {
+          confidence?: number
+          created_at?: string
+          detected_intent: string
+          id?: string
+          language?: string
+          processing_time_ms?: number | null
+          raw_input: string
+          response_summary?: string | null
+          routed_module: string
+          session_id?: string | null
+          user_id: string
+        }
+        Update: {
+          confidence?: number
+          created_at?: string
+          detected_intent?: string
+          id?: string
+          language?: string
+          processing_time_ms?: number | null
+          raw_input?: string
+          response_summary?: string | null
+          routed_module?: string
+          session_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_intent_logs_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "ai_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_sessions: {
+        Row: {
+          created_at: string
+          id: string
+          language: string
+          metadata: Json | null
+          module: string
+          session_type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          language?: string
+          metadata?: Json | null
+          module?: string
+          session_type?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          language?: string
+          metadata?: Json | null
+          module?: string
+          session_type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       applicants: {
         Row: {
           age: number
@@ -92,6 +213,50 @@ export type Database = {
         }
         Relationships: []
       }
+      emotional_support_logs: {
+        Row: {
+          confidence: number
+          created_at: string
+          detected_emotion: string
+          id: string
+          language: string
+          response_given: string | null
+          session_id: string | null
+          support_type: string
+          user_id: string
+        }
+        Insert: {
+          confidence?: number
+          created_at?: string
+          detected_emotion: string
+          id?: string
+          language?: string
+          response_given?: string | null
+          session_id?: string | null
+          support_type: string
+          user_id: string
+        }
+        Update: {
+          confidence?: number
+          created_at?: string
+          detected_emotion?: string
+          id?: string
+          language?: string
+          response_given?: string | null
+          session_id?: string | null
+          support_type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "emotional_support_logs_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "ai_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       family_groups: {
         Row: {
           created_at: string
@@ -154,6 +319,56 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      fraud_scores: {
+        Row: {
+          auto_blacklist_suggested: boolean
+          complaint_count: number
+          created_at: string
+          fraud_probability: number
+          id: string
+          last_analyzed_at: string
+          operator_id: string
+          payment_anomaly_count: number
+          recommendation: string | null
+          risk_factors: Json | null
+          updated_at: string
+        }
+        Insert: {
+          auto_blacklist_suggested?: boolean
+          complaint_count?: number
+          created_at?: string
+          fraud_probability?: number
+          id?: string
+          last_analyzed_at?: string
+          operator_id: string
+          payment_anomaly_count?: number
+          recommendation?: string | null
+          risk_factors?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          auto_blacklist_suggested?: boolean
+          complaint_count?: number
+          created_at?: string
+          fraud_probability?: number
+          id?: string
+          last_analyzed_at?: string
+          operator_id?: string
+          payment_anomaly_count?: number
+          recommendation?: string | null
+          risk_factors?: Json | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fraud_scores_operator_id_fkey"
+            columns: ["operator_id"]
+            isOneToOne: true
+            referencedRelation: "verified_operators"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       group_members: {
         Row: {
@@ -579,6 +794,62 @@ export type Database = {
           status?: string
         }
         Relationships: []
+      }
+      tracking_alerts: {
+        Row: {
+          alert_type: string
+          created_at: string
+          details: Json | null
+          group_id: string | null
+          id: string
+          location_lat: number | null
+          location_lng: number | null
+          member_id: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          severity: string
+          status: string
+          user_id: string | null
+        }
+        Insert: {
+          alert_type: string
+          created_at?: string
+          details?: Json | null
+          group_id?: string | null
+          id?: string
+          location_lat?: number | null
+          location_lng?: number | null
+          member_id?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+          status?: string
+          user_id?: string | null
+        }
+        Update: {
+          alert_type?: string
+          created_at?: string
+          details?: Json | null
+          group_id?: string | null
+          id?: string
+          location_lat?: number | null
+          location_lng?: number | null
+          member_id?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+          status?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tracking_alerts_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "family_groups"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
