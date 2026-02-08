@@ -295,7 +295,11 @@ const ChatPage = () => {
                   {/* Module indicator + Clear button */}
                   <div className="flex items-center justify-between">
                     {currentModule !== "general" && (
-                      <Badge variant="secondary" className="text-[10px] uppercase tracking-wider animate-fade-up">
+                      <Badge
+                        key={currentModule}
+                        variant="secondary"
+                        className="text-[10px] uppercase tracking-wider animate-scale-in"
+                      >
                         {currentModule === "ilm" ? "📖 Knowledge" : 
                          currentModule === "fraud" ? "🛡️ Fraud Guard" :
                          currentModule === "tracking" ? "📍 Tracking" :
