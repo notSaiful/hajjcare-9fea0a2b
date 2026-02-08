@@ -6,7 +6,25 @@ import { sukoonRdContent } from "@/data/sukoonRdContent";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, Star, ShieldCheck, ShieldX, MapPin, Phone } from "lucide-react";
+import { Search, Star, ShieldCheck, ShieldX, MapPin } from "lucide-react";
+
+interface PublicOperator {
+  id: string;
+  company_name: string;
+  name: string;
+  license_number: string | null;
+  city: string | null;
+  state: string;
+  website: string | null;
+  is_verified: boolean;
+  is_blacklisted: boolean;
+  blacklist_reason: string | null;
+  verification_date: string | null;
+  avg_rating: number | null;
+  total_reviews: number | null;
+  created_at: string;
+  updated_at: string;
+}
 
 export default function OperatorDirectory() {
   const { language } = useLanguage();
@@ -17,12 +35,12 @@ export default function OperatorDirectory() {
     queryKey: ["verified-operators"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("verified_operators")
+        .from("verified_operators_public" as any)
         .select("*")
         .order("is_blacklisted", { ascending: true })
         .order("avg_rating", { ascending: false });
       if (error) throw error;
-      return data;
+      return (data || []) as unknown as PublicOperator[];
     },
   });
 
@@ -33,8 +51,6 @@ export default function OperatorDirectory() {
       op.state.toLowerCase().includes(search.toLowerCase()) ||
       (op.city && op.city.toLowerCase().includes(search.toLowerCase()))
   );
-
-  const getLabel = (obj: Record<string, string>) => obj[language] || obj.en;
 
   return (
     <div className="space-y-4">
@@ -100,15 +116,6 @@ export default function OperatorDirectory() {
                       <MapPin className="w-3 h-3" />
                       {op.city}, {op.state}
                     </span>
-                    {op.phone && (
-                      <a
-                        href={`tel:${op.phone}`}
-                        className="flex items-center gap-1 text-primary"
-                      >
-                        <Phone className="w-3 h-3" />
-                        {language === "hi" ? "कॉल" : "Call"}
-                      </a>
-                    )}
                   </div>
                   {op.is_blacklisted && op.blacklist_reason && (
                     <p className="text-xs text-destructive mt-2 bg-destructive/10 rounded p-2">
@@ -116,7 +123,7 @@ export default function OperatorDirectory() {
                     </p>
                   )}
                 </div>
-                {!op.is_blacklisted && op.avg_rating > 0 && (
+                {!op.is_blacklisted && (op.avg_rating ?? 0) > 0 && (
                   <div className="flex flex-col items-center shrink-0">
                     <div className="flex items-center gap-1">
                       <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
