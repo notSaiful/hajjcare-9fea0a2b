@@ -368,6 +368,13 @@ export type Database = {
             referencedRelation: "verified_operators"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "fraud_scores_operator_id_fkey"
+            columns: ["operator_id"]
+            isOneToOne: true
+            referencedRelation: "verified_operators_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       group_members: {
@@ -564,6 +571,13 @@ export type Database = {
             columns: ["operator_id"]
             isOneToOne: false
             referencedRelation: "verified_operators"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "operator_reviews_operator_id_fkey"
+            columns: ["operator_id"]
+            isOneToOne: false
+            referencedRelation: "verified_operators_public"
             referencedColumns: ["id"]
           },
         ]
@@ -1050,6 +1064,60 @@ export type Database = {
           id?: string | null
           updated_at?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      verified_operators_public: {
+        Row: {
+          avg_rating: number | null
+          blacklist_reason: string | null
+          city: string | null
+          company_name: string | null
+          created_at: string | null
+          id: string | null
+          is_blacklisted: boolean | null
+          is_verified: boolean | null
+          license_number: string | null
+          name: string | null
+          state: string | null
+          total_reviews: number | null
+          updated_at: string | null
+          verification_date: string | null
+          website: string | null
+        }
+        Insert: {
+          avg_rating?: number | null
+          blacklist_reason?: string | null
+          city?: string | null
+          company_name?: string | null
+          created_at?: string | null
+          id?: string | null
+          is_blacklisted?: boolean | null
+          is_verified?: boolean | null
+          license_number?: string | null
+          name?: string | null
+          state?: string | null
+          total_reviews?: number | null
+          updated_at?: string | null
+          verification_date?: string | null
+          website?: string | null
+        }
+        Update: {
+          avg_rating?: number | null
+          blacklist_reason?: string | null
+          city?: string | null
+          company_name?: string | null
+          created_at?: string | null
+          id?: string | null
+          is_blacklisted?: boolean | null
+          is_verified?: boolean | null
+          license_number?: string | null
+          name?: string | null
+          state?: string | null
+          total_reviews?: number | null
+          updated_at?: string | null
+          verification_date?: string | null
+          website?: string | null
         }
         Relationships: []
       }
