@@ -12,6 +12,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useFamilyGroup } from "@/hooks/useFamilyGroup";
 import { useHajjLocation } from "@/hooks/useHajjLocation";
 import { useSmartSensor } from "@/hooks/useSmartSensor";
+import { useEventDetection } from "@/hooks/useEventDetection";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -23,18 +24,26 @@ const Index = () => {
   const { group, updateLocation } = useFamilyGroup();
   const { lat, lng, accuracy, stage } = useHajjLocation();
   const { evaluate } = useSmartSensor();
+  const { detect } = useEventDetection();
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Smart Sensor Engine: only send location when meaningful change detected
+  // Pipeline: GPS → Event Detection → Smart Sensor → Database
   useEffect(() => {
     if (group && lat && lng && isAuthenticated) {
-      const result = evaluate(lat, lng, accuracy, stage);
-      if (result.decision === "send") {
-        console.log(`[SmartSensor] Sending: ${result.reason} (${result.distanceMoved?.toFixed(0)}m moved)`);
-        updateLocation(lat, lng, stage);
+      // Step 1: AI Event Detection — get confirmed stage with dwell-time validation
+      const event = detect(lat, lng);
+
+      // Step 2: Smart Sensor — only send if meaningful change
+      const sensor = evaluate(lat, lng, accuracy, event.confirmedStage);
+
+      if (sensor.decision === "send") {
+        console.log(
+          `[Pipeline] Sending: sensor=${sensor.reason}, stage=${event.confirmedStage}, confidence=${(event.confidence * 100).toFixed(0)}%`
+        );
+        updateLocation(lat, lng, event.confirmedStage);
       }
     }
-  }, [group, lat, lng, accuracy, stage, updateLocation, isAuthenticated, evaluate]);
+  }, [group, lat, lng, accuracy, stage, updateLocation, isAuthenticated, evaluate, detect]);
 
   useEffect(() => {
     if (scrollRef.current) {
