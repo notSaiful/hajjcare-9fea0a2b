@@ -28,6 +28,7 @@ import {
   Headphones,
   Route,
   CreditCard,
+  Wallet,
   LucideIcon,
 } from "lucide-react";
 
@@ -519,6 +520,25 @@ export const menuSections: MenuSection[] = [
         },
         route: "/payment",
         colorClass: "icon-olive",
+      },
+      {
+        id: "rewards",
+        icon: Wallet,
+        label: {
+          en: "Rewards & Wallet",
+          ar: "المكافآت والمحفظة",
+          ur: "انعامات اور والیٹ",
+          hi: "रिवॉर्ड्स और वॉलेट",
+          ta: "வெகுமதிகள்",
+          te: "రివార్డ్స్",
+          mr: "बक्षीस व वॉलेट",
+          bn: "পুরস্কার ও ওয়ালেট",
+          or: "ପୁରସ୍କାର ଓ ୱାଲେଟ",
+          ml: "റിവാർഡ്സ് & വാലറ്റ്",
+          pa: "ਇਨਾਮ ਅਤੇ ਵਾਲਿਟ",
+        },
+        route: "/rewards",
+        colorClass: "icon-gold",
       },
       {
         id: "video-call",
