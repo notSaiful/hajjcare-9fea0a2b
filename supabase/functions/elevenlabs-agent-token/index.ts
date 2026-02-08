@@ -52,7 +52,26 @@ serve(async (req) => {
 
     console.log("Fetching ElevenLabs conversation token for user:", authData.claims.sub);
 
-    const response = await fetch(
+    // Try the conversation token endpoint first (preferred for WebRTC)
+    let response = await fetch(
+      `https://api.elevenlabs.io/v1/convai/conversation/token?agent_id=${ELEVENLABS_AGENT_ID}`,
+      {
+        headers: {
+          "xi-api-key": ELEVENLABS_API_KEY,
+        },
+      }
+    );
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log("Successfully got conversation token");
+      return new Response(JSON.stringify({ signed_url: data.token }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Fallback: try signed-url endpoint
+    response = await fetch(
       `https://api.elevenlabs.io/v1/convai/conversation/get-signed-url?agent_id=${ELEVENLABS_AGENT_ID}`,
       {
         headers: {
