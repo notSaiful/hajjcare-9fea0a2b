@@ -4,6 +4,7 @@ import { ArrowLeft, MessageSquare, Phone, RotateCcw, Wifi, WifiOff } from "lucid
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAIOrchestrator } from "@/hooks/useAIOrchestrator";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ChatMessage from "@/components/ChatMessage";
@@ -291,13 +292,21 @@ const ChatPage = () => {
 
               {hasMessages ? (
                 <div className="space-y-4">
-                  {/* Clear button */}
-                  <div className="flex justify-center">
+                  {/* Module indicator + Clear button */}
+                  <div className="flex items-center justify-between">
+                    {currentModule !== "general" && (
+                      <Badge variant="secondary" className="text-[10px] uppercase tracking-wider animate-fade-up">
+                        {currentModule === "ilm" ? "📖 Knowledge" : 
+                         currentModule === "fraud" ? "🛡️ Fraud Guard" :
+                         currentModule === "tracking" ? "📍 Tracking" :
+                         currentModule === "emotional" ? "💚 Spiritual" : currentModule}
+                      </Badge>
+                    )}
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={clearChat}
-                      className="text-xs text-muted-foreground hover:text-foreground"
+                      className="text-xs text-muted-foreground hover:text-foreground ml-auto"
                     >
                       <RotateCcw className="w-3 h-3 mr-1" />
                       {labels.newChat}
