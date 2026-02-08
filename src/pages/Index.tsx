@@ -11,6 +11,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
 import { useFamilyGroup } from "@/hooks/useFamilyGroup";
 import { useHajjLocation } from "@/hooks/useHajjLocation";
+import { useSmartSensor } from "@/hooks/useSmartSensor";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -20,15 +21,20 @@ const Index = () => {
   const { t, isRTL } = useLanguage();
   const { isAuthenticated } = useAuth();
   const { group, updateLocation } = useFamilyGroup();
-  const { lat, lng, stage } = useHajjLocation();
+  const { lat, lng, accuracy, stage } = useHajjLocation();
+  const { evaluate } = useSmartSensor();
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Update family group with location
+  // Smart Sensor Engine: only send location when meaningful change detected
   useEffect(() => {
     if (group && lat && lng && isAuthenticated) {
-      updateLocation(lat, lng, stage);
+      const result = evaluate(lat, lng, accuracy, stage);
+      if (result.decision === "send") {
+        console.log(`[SmartSensor] Sending: ${result.reason} (${result.distanceMoved?.toFixed(0)}m moved)`);
+        updateLocation(lat, lng, stage);
+      }
     }
-  }, [group, lat, lng, stage, updateLocation, isAuthenticated]);
+  }, [group, lat, lng, accuracy, stage, updateLocation, isAuthenticated, evaluate]);
 
   useEffect(() => {
     if (scrollRef.current) {
