@@ -47,14 +47,28 @@ export default function AdminFraudAlertsPage() {
 
   const createMutation = useMutation({
     mutationFn: async (data: AlertForm) => {
-      const { error } = await supabase.from("fraud_alerts").insert(data);
+      const { data: inserted, error } = await supabase
+        .from("fraud_alerts")
+        .insert(data)
+        .select("id")
+        .single();
       if (error) throw error;
+
+      // Send push notifications
+      try {
+        await supabase.functions.invoke("fraud-alert-notify", {
+          body: { title: data.title, severity: data.severity, alertId: inserted.id },
+        });
+      } catch (pushErr) {
+        console.error("Push notification failed:", pushErr);
+        // Don't fail the alert creation if push fails
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-fraud-alerts"] });
       setForm(emptyForm);
       setDialogOpen(false);
-      toast({ title: "Alert published" });
+      toast({ title: "Alert published & notifications sent" });
     },
     onError: (err: Error) => toast({ title: "Error", description: err.message, variant: "destructive" }),
   });
