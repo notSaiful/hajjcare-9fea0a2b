@@ -89,6 +89,9 @@ const GovtServicesPage = lazy(() => import("./pages/GovtServicesPage"));
 const PaymentPage = lazy(() => import("./pages/PaymentPage"));
 const RewardsPage = lazy(() => import("./pages/RewardsPage"));
 const AdminPromoPage = lazy(() => import("./pages/AdminPromoPage"));
+const SukoonRdPage = lazy(() => import("./pages/SukoonRdPage"));
+const AdminOperatorsPage = lazy(() => import("./pages/AdminOperatorsPage"));
+const AdminFraudAlertsPage = lazy(() => import("./pages/AdminFraudAlertsPage"));
 
 // Optimized Query Client with caching
 const queryClient = new QueryClient({
@@ -200,6 +203,9 @@ function AppContent() {
       <Route path="/payment" element={<PaymentPage />} />
       <Route path="/rewards" element={<RewardsPage />} />
       <Route path="/admin/promo" element={<AdminPromoPage />} />
+      <Route path="/sukoon-rd" element={<SukoonRdPage />} />
+      <Route path="/admin/operators" element={<AdminOperatorsPage />} />
+      <Route path="/admin/fraud-alerts" element={<AdminFraudAlertsPage />} />
       
       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
       <Route path="*" element={<NotFound />} />
