@@ -61,3 +61,18 @@ verify_jwt = false
 
 [functions.get-vapid-key]
 verify_jwt = false
+
+[functions.ai-orchestrator]
+verify_jwt = false
+
+[functions.fraud-intelligence]
+verify_jwt = false
+
+[functions.tracking-intelligence]
+verify_jwt = false
+
+[functions.emotional-support]
+verify_jwt = false
+
+[functions.admin-ai-dashboard]
+verify_jwt = false
