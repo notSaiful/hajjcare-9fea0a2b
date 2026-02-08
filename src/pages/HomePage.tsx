@@ -4,6 +4,7 @@ import { AmbientBackground } from "@/components/AmbientBackground";
 import { Footer } from "@/components/Footer";
 import { DashboardMenu } from "@/components/DashboardMenu";
 import SukoonFamilyFeature from "@/components/SukoonFamilyFeature";
+import { WelcomePromoDialog } from "@/components/WelcomePromoDialog";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
 import { Loader2 } from "lucide-react";
@@ -105,6 +106,9 @@ const HomePage = () => {
 
       {/* Footer */}
       <Footer />
+
+      {/* Welcome Promo Dialog - shows once on first visit */}
+      <WelcomePromoDialog />
     </div>;
 };
 export default HomePage;
