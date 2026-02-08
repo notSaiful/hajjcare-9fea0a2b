@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, Copy, MapPin, LogOut, UserPlus, Plus, Lock } from "lucide-react";
+import { PhoneInvite } from "@/components/family/PhoneInvite";
 import { useToast } from "@/hooks/use-toast";
 
 export const FamilyGroupPanel = () => {
@@ -215,6 +216,7 @@ export const FamilyGroupPanel = () => {
             })}
           </div>
         </div>
+        <PhoneInvite />
       </CardContent>
     </Card>
   );
