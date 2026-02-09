@@ -9,10 +9,6 @@ import { EmergencySOS } from "@/components/EmergencySOS";
 import { useHajjChat } from "@/hooks/useHajjChat";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
-import { useFamilyGroup } from "@/hooks/useFamilyGroup";
-import { useHajjLocation } from "@/hooks/useHajjLocation";
-import { useSmartSensor } from "@/hooks/useSmartSensor";
-import { useEventDetection } from "@/hooks/useEventDetection";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -21,29 +17,7 @@ const Index = () => {
   const { messages, isLoading, sendMessage, clearChat } = useHajjChat();
   const { t, isRTL } = useLanguage();
   const { isAuthenticated } = useAuth();
-  const { group, updateLocation } = useFamilyGroup();
-  const { lat, lng, accuracy, stage } = useHajjLocation();
-  const { evaluate } = useSmartSensor();
-  const { detect } = useEventDetection();
   const scrollRef = useRef<HTMLDivElement>(null);
-
-  // Pipeline: GPS → Event Detection → Smart Sensor → Database
-  useEffect(() => {
-    if (group && lat && lng && isAuthenticated) {
-      // Step 1: AI Event Detection — get confirmed stage with dwell-time validation
-      const event = detect(lat, lng);
-
-      // Step 2: Smart Sensor — only send if meaningful change
-      const sensor = evaluate(lat, lng, accuracy, event.confirmedStage);
-
-      if (sensor.decision === "send") {
-        console.log(
-          `[Pipeline] Sending: sensor=${sensor.reason}, stage=${event.confirmedStage}, confidence=${(event.confidence * 100).toFixed(0)}%`
-        );
-        updateLocation(lat, lng, event.confirmedStage);
-      }
-    }
-  }, [group, lat, lng, accuracy, stage, updateLocation, isAuthenticated, evaluate, detect]);
 
   useEffect(() => {
     if (scrollRef.current) {

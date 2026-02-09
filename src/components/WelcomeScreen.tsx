@@ -1,6 +1,5 @@
 import QuickActions from "./QuickActions";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { FamilyGroupPanel } from "./FamilyGroupPanel";
 import { VoiceAssistant } from "./VoiceAssistant";
 import logo from "@/assets/logo.jpeg";
 
@@ -47,11 +46,6 @@ const WelcomeScreen = ({ onQuickAction }: WelcomeScreenProps) => {
         <div className="w-10 sm:w-12 h-px bg-border" />
         <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rotate-45 bg-islamic-gold" />
         <div className="w-10 sm:w-12 h-px bg-border" />
-      </div>
-
-      {/* Family Group Panel */}
-      <div className="w-full max-w-sm mb-3 sm:mb-4 animate-fade-up" style={{ animationDelay: "275ms" }}>
-        <FamilyGroupPanel />
       </div>
 
       {/* Quick Actions */}
