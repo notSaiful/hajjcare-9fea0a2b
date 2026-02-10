@@ -1,5 +1,7 @@
 import { cn } from "@/lib/utils";
 import { User, Sparkles } from "lucide-react";
+import { TextToSpeechButton } from "@/components/TextToSpeechButton";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface ChatMessageProps {
   role: "user" | "assistant";
@@ -7,8 +9,25 @@ interface ChatMessageProps {
   isStreaming?: boolean;
 }
 
+const GREETING: Record<string, string> = {
+  en: "Assalamu Alaikum. ",
+  ar: "السلام عليكم. ",
+  ur: "السلام علیکم۔ ",
+  hi: "अस्सलामु अलैकुम। ",
+  ta: "அஸ்ஸலாமு அலைக்கும். ",
+  te: "అస్సలాము అలైకుం. ",
+  mr: "अस्सलामु अलैकुम. ",
+  bn: "আসসালামু আলাইকুম। ",
+  or: "ଅସ୍ସଲାମୁ ଅଲାଇକୁମ। ",
+  ml: "അസ്സലാമു അലൈക്കും. ",
+  pa: "ਅੱਸਲਾਮੁ ਅਲੈਕੁਮ। ",
+  tr: "Esselamu Aleykum. ",
+  ru: "Ассаламу Алейкум. ",
+};
+
 const ChatMessage = ({ role, content, isStreaming }: ChatMessageProps) => {
   const isUser = role === "user";
+  const { language } = useLanguage();
 
   return (
     <div
@@ -45,6 +64,16 @@ const ChatMessage = ({ role, content, isStreaming }: ChatMessageProps) => {
             <span className="inline-block w-2 h-4 ml-1 bg-current animate-pulse-soft rounded-sm" />
           )}
         </p>
+        {!isUser && !isStreaming && content && (
+          <div className="mt-2 flex justify-end">
+            <TextToSpeechButton
+              text={`${GREETING[language] || GREETING.en}${content}`}
+              size="icon"
+              variant="ghost"
+              showLabel={false}
+            />
+          </div>
+        )}
       </div>
     </div>
   );
