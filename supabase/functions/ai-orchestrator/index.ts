@@ -137,12 +137,11 @@ serve(async (req) => {
       { global: { headers: { Authorization: authHeader } } }
     );
 
-    const { data: { user }, error: authError } = await supabaseClient.auth.getUser(token);
-    if (authError || !user) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    // Try to get user, but allow anonymous access
+    let userId = "anonymous";
+    const { data: { user } } = await supabaseClient.auth.getUser(token);
+    if (user) {
+      userId = user.id;
     }
 
     const { message, messages = [], language = "en", session_id } = await req.json();
@@ -204,7 +203,7 @@ serve(async (req) => {
       classification = { module: "general", intent: "unknown", confidence: 0.5 };
     }
 
-    console.log(`Intent: ${classification.module}/${classification.intent} (${classification.confidence}) for user ${user.id}`);
+    console.log(`Intent: ${classification.module}/${classification.intent} (${classification.confidence}) for user ${userId}`);
 
     // Step 2: Create/use session
     let currentSessionId = session_id;
@@ -215,7 +214,7 @@ serve(async (req) => {
       );
       const { data: sessionData } = await serviceClient
         .from("ai_sessions")
-        .insert({ user_id: user.id, module: classification.module, language, session_type: classification.intent })
+        .insert({ user_id: userId, module: classification.module, language, session_type: classification.intent })
         .select("id")
         .single();
       currentSessionId = sessionData?.id;
@@ -273,7 +272,7 @@ serve(async (req) => {
 
     serviceClient.from("ai_intent_logs").insert({
       session_id: currentSessionId,
-      user_id: user.id,
+      user_id: userId,
       raw_input: message.substring(0, 500),
       detected_intent: classification.intent,
       confidence: classification.confidence,

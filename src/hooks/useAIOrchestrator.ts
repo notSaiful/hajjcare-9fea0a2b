@@ -50,11 +50,7 @@ export const useAIOrchestrator = () => {
     try {
       // Get auth session
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.access_token) {
-        toast({ title: "Sign In Required", description: "Please sign in to use the AI Assistant.", variant: "destructive" });
-        throw new Error("Not authenticated");
-      }
-      const token = session.access_token;
+      const token = session?.access_token || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
       const response = await fetch(ORCHESTRATOR_URL, {
         method: "POST",
