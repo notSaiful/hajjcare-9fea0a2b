@@ -99,7 +99,7 @@ const DuaGuidePage = () => {
 
         <div className="space-y-3">
           {duas.map((dua, idx) => (
-            <Card key={idx} className="border-2 shadow-sm overflow-hidden">
+            <Card key={idx} className="border-2 shadow-sm overflow-hidden sacred-glow-card">
               <CardContent className="p-0">
                 <button
                   className="w-full p-4 flex items-center justify-between text-left hover:bg-muted/30 transition-colors"

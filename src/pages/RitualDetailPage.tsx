@@ -109,7 +109,7 @@ const RitualDetailPage = () => {
         </div>
 
         {/* What This Ritual Is */}
-        <Card className="border-primary/20 bg-primary/5">
+        <Card className={`border-primary/20 bg-primary/5 ${ritualId?.includes('tawaf') ? 'sacred-glow-card' : ''}`}>
           <CardContent className="p-4 space-y-2">
             <h2 className="font-semibold text-lg flex items-center gap-2">
               <BookOpen className="w-5 h-5 text-primary" />

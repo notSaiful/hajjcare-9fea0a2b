@@ -94,7 +94,7 @@ const MakkahGuideDetailPage = () => {
         </div>
 
         {/* What This Is */}
-        <Card className="border-primary/20">
+        <Card className={`border-primary/20 ${topic.id.includes('tawaf') ? 'sacred-glow-card' : ''}`}>
           <CardHeader className="pb-2">
             <CardTitle className="text-base sm:text-lg flex items-center gap-2">
               <BookOpen className="w-5 h-5 text-primary" />
