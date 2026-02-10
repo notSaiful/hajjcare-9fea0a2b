@@ -6,6 +6,7 @@ import { IconCircle } from "@/components/IconCircle";
 import { PRE_HAJJ_SECTIONS } from "@/data/preHajjIndiaContent";
 import { PreHajjNotifications } from "@/components/PreHajjNotifications";
 import { ChevronLeft, ChevronRight, Building2, Landmark, GraduationCap, UserCheck, Plane, ClipboardList, LucideIcon } from "lucide-react";
+import { TextToSpeechButton } from "@/components/TextToSpeechButton";
 
 const iconMap: Record<string, LucideIcon> = {
   Building2,
@@ -19,6 +20,20 @@ const iconMap: Record<string, LucideIcon> = {
 const PreHajjIndiaPage = () => {
   const { language, isRTL } = useLanguage();
   const navigate = useNavigate();
+
+  const greeting: Record<string, string> = {
+    en: "Assalamu Alaikum. ",
+    ar: "السلام عليكم. ",
+    ur: "السلام علیکم۔ ",
+    hi: "अस्सलामु अलैकुम। ",
+    ta: "அஸ்ஸலாமு அலைக்கும். ",
+    te: "అస్సలాము అలైకుం. ",
+    mr: "अस्सलामु अलैकुम. ",
+    bn: "আসসালামু আলাইকুম। ",
+    or: "ଅସ୍ସଲାମୁ ଅଲାଇକୁମ। ",
+    ml: "അസ്സലാമു അലൈക്കും. ",
+    pa: "ਅੱਸਲਾਮੁ ਅਲੈਕੁਮ। ",
+  };
 
   const labels = {
     en: { title: "Pre-Hajj India", subtitle: "Essential information before your journey" },
@@ -50,6 +65,13 @@ const PreHajjIndiaPage = () => {
         <div className="text-center mb-6">
           <h1 className="text-2xl font-bold text-foreground">{l.title}</h1>
           <p className="text-muted-foreground mt-2">{l.subtitle}</p>
+          <div className="mt-3 flex justify-center">
+            <TextToSpeechButton
+              text={`${greeting[language as string] || greeting.en}${l.title}. ${l.subtitle}`}
+              variant="outline"
+              size="sm"
+            />
+          </div>
         </div>
 
         {/* Notifications Section */}
@@ -74,6 +96,12 @@ const PreHajjIndiaPage = () => {
                       {section.description[language as keyof typeof section.description] || section.description.en}
                     </p>
                   </div>
+                  <TextToSpeechButton
+                    text={`${greeting[language as string] || greeting.en}${section.title[language as keyof typeof section.title] || section.title.en}. ${section.description[language as keyof typeof section.description] || section.description.en}`}
+                    size="icon"
+                    variant="ghost"
+                    showLabel={false}
+                  />
                   {isRTL ? (
                     <ChevronLeft className="w-5 h-5 text-muted-foreground" />
                   ) : (
