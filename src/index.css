@@ -295,11 +295,25 @@
     font-size: 16px;
     line-height: 1.7;
     font-weight: 400;
+  }
+
+  /* Large Text Mode for elderly pilgrims */
+  .large-text body {
+    font-size: 19px;
+    line-height: 1.8;
+    font-weight: 450;
     letter-spacing: 0.01em;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    /* Performance optimizations */
     text-rendering: optimizeSpeed;
+  }
+
+  .large-text h1, .large-text h2, .large-text h3 {
+    font-weight: 700;
+  }
+  .large-text button, .large-text [role="button"] {
+    font-size: 1.05em;
+    font-weight: 600;
   }
 
   /* Typography - Confident, not loud */
