@@ -387,6 +387,42 @@
 @layer utilities {
   /* === SACRED CALM ANIMATIONS === */
 
+  /* Sacred Glow — Soft golden aura for holy content */
+  .sacred-glow {
+    position: relative;
+  }
+  .sacred-glow::after {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: inherit;
+    background: radial-gradient(
+      ellipse at center,
+      hsl(var(--sacred-gold) / 0.12) 0%,
+      hsl(var(--sacred-gold) / 0.06) 40%,
+      transparent 70%
+    );
+    pointer-events: none;
+    z-index: -1;
+    animation: sacredPulse 6s ease-in-out infinite;
+  }
+  @keyframes sacredPulse {
+    0%, 100% { opacity: 0.7; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.02); }
+  }
+
+  /* Sacred Glow variant for cards */
+  .sacred-glow-card {
+    box-shadow: 0 0 20px -4px hsl(var(--sacred-gold) / 0.15),
+                0 0 40px -8px hsl(var(--sacred-gold) / 0.08);
+    border-color: hsl(var(--sacred-gold) / 0.25);
+    transition: box-shadow 0.4s ease;
+  }
+  .sacred-glow-card:hover {
+    box-shadow: 0 0 28px -4px hsl(var(--sacred-gold) / 0.22),
+                0 0 50px -8px hsl(var(--sacred-gold) / 0.12);
+  }
+
   /* Gentle fade-in - Primary entrance */
   .animate-fade-in {
     animation: fadeIn 0.5s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;

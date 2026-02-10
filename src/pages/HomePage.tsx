@@ -58,7 +58,7 @@ const HomePage = () => {
           <section className="text-center animate-fade-up" style={{
           animationDelay: "0ms"
         }}>
-            <div className="h-20 sm:h-28 overflow-hidden mx-auto mb-3 flex items-start justify-center">
+            <div className="h-20 sm:h-28 overflow-hidden mx-auto mb-3 flex items-start justify-center relative sacred-glow rounded-2xl">
               <img src={kaabaGreenDome} alt="Kaaba & Green Dome" className="h-24 sm:h-32 w-auto object-cover object-top" />
             </div>
             <h1 className="text-xl sm:text-2xl font-bold text-foreground">
