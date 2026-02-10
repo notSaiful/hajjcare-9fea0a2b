@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useLanguage, LANGUAGES } from "@/contexts/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { Menu, LogOut, User, Globe, Check } from "lucide-react";
+import { Menu, LogOut, User, Globe, Check, Sun, SunDim } from "lucide-react";
 import { SunlightModeToggle } from "@/components/SunlightModeToggle";
 import { LargeTextToggle } from "@/components/LargeTextToggle";
 import {
@@ -97,6 +97,20 @@ export const SimpleHeader = () => {
               align={isRTL ? "start" : "end"} 
               className="w-60 bg-popover/95 backdrop-blur-md border border-border/50 shadow-elevated rounded-xl z-[100] p-1"
             >
+              {/* Sunlight Mode - visible on mobile */}
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.preventDefault();
+                  const root = document.documentElement;
+                  root.classList.toggle("sunlight");
+                  if (root.classList.contains("sunlight")) root.classList.remove("dark");
+                }}
+                className="h-12 text-sm sm:text-base rounded-lg px-3 sm:hidden cursor-pointer"
+              >
+                <Sun className="w-4 h-4 mr-2 text-accent" />
+                ☀️ Sunlight Mode
+              </DropdownMenuItem>
+              <DropdownMenuSeparator className="my-1 sm:hidden" />
               <DropdownMenuItem asChild className="h-12 text-sm sm:text-base rounded-lg px-3">
                 <Link to="/prepare" className="cursor-pointer">
                   {t("preparation")}
