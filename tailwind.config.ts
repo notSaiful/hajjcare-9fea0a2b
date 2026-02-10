@@ -112,14 +112,16 @@ export default {
   				DEFAULT: 'hsl(var(--card))',
   				foreground: 'hsl(var(--card-foreground))'
   			},
-  			status: {
-  				safe: 'hsl(var(--status-safe))',
-  				'safe-bg': 'hsl(var(--status-safe-bg))',
-  				assistance: 'hsl(var(--status-assistance))',
-  				'assistance-bg': 'hsl(var(--status-assistance-bg))',
-  				emergency: 'hsl(var(--status-emergency))',
-  				'emergency-bg': 'hsl(var(--status-emergency-bg))'
-  			},
+			status: {
+				safe: 'hsl(var(--status-safe))',
+				'safe-bg': 'hsl(var(--status-safe-bg))',
+				assistance: 'hsl(var(--status-assistance))',
+				'assistance-bg': 'hsl(var(--status-assistance-bg))',
+				emergency: 'hsl(var(--status-emergency))',
+				'emergency-bg': 'hsl(var(--status-emergency-bg))',
+				info: 'hsl(var(--status-info))',
+				'info-bg': 'hsl(var(--status-info-bg))'
+			},
   			calm: {
   				teal: 'hsl(var(--calm-teal))',
   				'teal-light': 'hsl(var(--calm-teal-light))',

@@ -3,6 +3,7 @@ import { useLanguage, LANGUAGES } from "@/contexts/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Menu, LogOut, User, Globe, Check } from "lucide-react";
+import { SunlightModeToggle } from "@/components/SunlightModeToggle";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -39,6 +40,8 @@ export const SimpleHeader = () => {
         </Link>
 
         <div className="flex items-center gap-1 sm:gap-2">
+          {/* Sunlight Mode Toggle */}
+          <SunlightModeToggle className="hidden sm:flex" />
           {/* Language Selector */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
