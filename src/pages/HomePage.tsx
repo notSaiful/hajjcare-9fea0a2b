@@ -7,12 +7,16 @@ import { WelcomePromoDialog } from "@/components/WelcomePromoDialog";
 import { HeroSection } from "@/components/HeroSection";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { Loader2 } from "lucide-react";
 
 const HomePage = () => {
   const { t, isRTL, language } = useLanguage();
   const { isAuthenticated, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+  const dashRef = useScrollReveal();
+  const sukoonRef = useScrollReveal(0.1, "0px 0px -60px 0px");
+  const authRef = useScrollReveal(0.1);
 
   if (authLoading) {
     return (
@@ -37,21 +41,18 @@ const HomePage = () => {
           <HeroSection />
 
           {/* Dashboard Menu with Bismillah */}
-          <section className="animate-fade-up" style={{ animationDelay: "80ms" }}>
+          <section ref={dashRef}>
             <DashboardMenu />
           </section>
 
           {/* Sukoon Family Tracking */}
-          <section className="animate-fade-up" style={{ animationDelay: "160ms" }}>
+          <section ref={sukoonRef}>
             <SukoonFamilyFeature />
           </section>
 
           {/* Auth prompt */}
           {!isAuthenticated && (
-            <section
-              className="text-center pt-2 animate-fade-up"
-              style={{ animationDelay: "240ms" }}
-            >
+            <section ref={authRef} className="text-center pt-2">
               <button
                 onClick={() => navigate("/auth")}
                 className="text-sm text-primary hover:text-primary/80 underline underline-offset-4 transition-colors duration-300"
