@@ -73,6 +73,33 @@ serve(async (req) => {
       );
     }
 
+    // Prompt injection protection - detect manipulation attempts
+    const suspiciousPatterns = [
+      /ignore\s+(all\s+)?previous\s+instructions/i,
+      /disregard\s+(all\s+)?previous/i,
+      /system\s*prompt/i,
+      /pretend\s+(that\s+)?you\s+are/i,
+      /act\s+as\s+(if|though)\s+you/i,
+      /forget\s+(all\s+)?(your|previous)\s+(instructions|rules)/i,
+      /override\s+(your|the)\s+(instructions|rules|system)/i,
+      /you\s+are\s+now\s+a/i,
+      /new\s+instructions?\s*:/i,
+      /\[SYSTEM\]/i,
+      /\[INST\]/i,
+    ];
+    if (suspiciousPatterns.some(p => p.test(description))) {
+      console.warn(`Prompt injection attempt detected from user ${user.id}`);
+      return new Response(
+        JSON.stringify({ error: 'Invalid content detected in description' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Sanitize symptoms strings
+    const sanitizedSymptoms = symptoms?.map((s: unknown) => 
+      typeof s === 'string' ? s.slice(0, 200).replace(/[<>]/g, '') : ''
+    ).filter(Boolean);
+
     // Validate symptoms if provided
     if (symptoms && (!Array.isArray(symptoms) || symptoms.length > 20)) {
       return new Response(
@@ -92,9 +119,9 @@ serve(async (req) => {
 6. Suggested zone alert: "makkah_medical", "madinah_medical", "mina_medical", "arafat_medical", "general"
 
 Patient's description (in ${language || 'unknown language'}):
-"${description}"
+"${description.slice(0, 2000)}"
 
-${symptoms?.length ? `Reported symptoms: ${symptoms.join(', ')}` : ''}
+${sanitizedSymptoms?.length ? `Reported symptoms: ${sanitizedSymptoms.join(', ')}` : ''}
 
 Respond in this exact JSON format:
 {
@@ -169,8 +196,7 @@ Respond in this exact JSON format:
     console.error('Error in health-triage:', error);
     return new Response(
       JSON.stringify({ 
-        error: 'Failed to process health triage',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        error: 'Failed to process health triage'
       }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
