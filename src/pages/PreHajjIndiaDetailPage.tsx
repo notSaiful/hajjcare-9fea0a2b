@@ -4,6 +4,7 @@ import { MainLayout } from "@/components/MainLayout";
 import { Card } from "@/components/ui/card";
 import { PRE_HAJJ_SECTIONS } from "@/data/preHajjIndiaContent";
 import { SHCDirectory } from "@/components/SHCDirectory";
+import { TextToSpeechButton } from "@/components/TextToSpeechButton";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const PreHajjIndiaDetailPage = () => {
@@ -14,6 +15,20 @@ const PreHajjIndiaDetailPage = () => {
   const section = PRE_HAJJ_SECTIONS.find((s) => s.id === sectionId);
 
   const backLabel = language === "ar" || language === "ur" ? "الرجوع" : "Back";
+
+  const greeting: Record<string, string> = {
+    en: "Assalamu Alaikum. ",
+    ar: "السلام عليكم. ",
+    ur: "السلام علیکم۔ ",
+    hi: "अस्सलामु अलैकुम। ",
+    ta: "அஸ்ஸலாமு அலைக்கும். ",
+    te: "అస్సలాము అలైకుం. ",
+    mr: "अस्सलामु अलैकुम. ",
+    bn: "আসসালামু আলাইকুম। ",
+    or: "ଅସ୍ସଲାମୁ ଅଲାଇକୁମ। ",
+    ml: "അസ്സലാമു അലൈക്കും. ",
+    pa: "ਅੱਸਲਾਮੁ ਅਲੈਕੁਮ। ",
+  };
 
   if (!section) {
     return (
@@ -48,6 +63,13 @@ const PreHajjIndiaDetailPage = () => {
         <div className="text-center mb-6">
           <h1 className="text-2xl font-bold text-foreground">{title}</h1>
           <p className="text-muted-foreground mt-2">{description}</p>
+          <div className="mt-3 flex justify-center">
+            <TextToSpeechButton
+              text={`${greeting[language as string] || greeting.en}${title}. ${description}`}
+              variant="outline"
+              size="sm"
+            />
+          </div>
         </div>
 
         {/* Content Items */}
@@ -58,7 +80,15 @@ const PreHajjIndiaDetailPage = () => {
 
             return (
               <Card key={index} className="p-4">
-                <h3 className="font-semibold text-foreground mb-2">{itemTitle}</h3>
+                <div className="flex items-start justify-between gap-2">
+                  <h3 className="font-semibold text-foreground mb-2">{itemTitle}</h3>
+                  <TextToSpeechButton
+                    text={`${greeting[language as string] || greeting.en}${itemTitle}. ${itemDetails}`}
+                    size="icon"
+                    variant="ghost"
+                    showLabel={false}
+                  />
+                </div>
                 <p className="text-sm text-muted-foreground whitespace-pre-line">{itemDetails}</p>
               </Card>
             );
