@@ -707,3 +707,27 @@
     }
   }
 }
+
+/* ============================================
+   AUTH PAGE STYLES
+   ============================================ */
+
+.auth-page-bg {
+  background: linear-gradient(165deg, hsl(160 55% 8%) 0%, hsl(170 45% 11%) 30%, hsl(38 25% 12%) 100%);
+}
+
+.auth-gradient-btn {
+  background: linear-gradient(135deg, hsl(160 50% 35%) 0%, hsl(170 60% 28%) 50%, hsl(38 45% 35%) 100%);
+  color: hsl(0 0% 100%);
+  box-shadow: 0 6px 20px -4px hsl(160 50% 25% / 0.4);
+  border: 1px solid hsl(160 40% 40% / 0.3);
+}
+
+.auth-gradient-btn:hover {
+  box-shadow: 0 8px 24px -4px hsl(160 50% 25% / 0.5);
+  filter: brightness(1.05);
+}
+
+.font-arabic {
+  font-family: 'Amiri', 'Noto Naskh Arabic', serif;
+}
