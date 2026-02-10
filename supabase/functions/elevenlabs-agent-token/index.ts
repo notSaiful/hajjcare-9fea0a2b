@@ -29,9 +29,9 @@ serve(async (req) => {
     );
 
     const token = authHeader.replace("Bearer ", "");
-    const { data: authData, error: authError } = await supabaseClient.auth.getClaims(token);
+    const { data: { user }, error: authError } = await supabaseClient.auth.getUser(token);
     
-    if (authError || !authData?.claims) {
+    if (authError || !user) {
       console.error("Authentication failed:", authError?.message);
       return new Response(
         JSON.stringify({ error: "Unauthorized" }),
@@ -50,7 +50,7 @@ serve(async (req) => {
       throw new Error("ELEVENLABS_AGENT_ID is not configured");
     }
 
-    console.log("Fetching ElevenLabs conversation token for user:", authData.claims.sub);
+    console.log("Fetching ElevenLabs conversation token for user:", user.id);
 
     // Try the conversation token endpoint first (preferred for WebRTC)
     let response = await fetch(
