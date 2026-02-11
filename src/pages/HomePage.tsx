@@ -10,6 +10,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
 import { Loader2 } from "lucide-react";
 import { LocationPermissionFlow } from "@/components/LocationPermissionFlow";
+import { LocationReminderBanner } from "@/components/LocationReminderBanner";
 
 const HomePage = () => {
   const { t, isRTL, language } = useLanguage();
@@ -70,6 +71,7 @@ const HomePage = () => {
 
       {/* Location Permission Flow */}
       <LocationPermissionFlow />
+      <LocationReminderBanner />
 
       {/* Welcome Promo Dialog - lazy loaded to avoid critical chain */}
       <Suspense fallback={null}>
