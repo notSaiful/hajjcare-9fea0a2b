@@ -9,6 +9,7 @@ import { HeroSection } from "@/components/HeroSection";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
 import { Loader2 } from "lucide-react";
+import { LocationPermissionFlow } from "@/components/LocationPermissionFlow";
 
 const HomePage = () => {
   const { t, isRTL, language } = useLanguage();
@@ -66,6 +67,9 @@ const HomePage = () => {
 
       {/* Footer */}
       <Footer />
+
+      {/* Location Permission Flow */}
+      <LocationPermissionFlow />
 
       {/* Welcome Promo Dialog - lazy loaded to avoid critical chain */}
       <Suspense fallback={null}>
