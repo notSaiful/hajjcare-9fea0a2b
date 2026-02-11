@@ -390,11 +390,13 @@ const MapPage = () => {
             </div>
             <div className="space-y-2">
               <h2 className="text-lg font-semibold text-foreground">
-                {language === "ar" ? "يحتاج إلى إذن الموقع" : "Location Permission Needed"}
+                {language === "ar" ? "يحتاج إلى إذن الموقع" : language === "ur" ? "لوکیشن کی اجازت درکار ہے" : "Location Permission Needed"}
               </h2>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 {language === "ar"
                   ? "السماح بالوصول إلى موقعك لعرض موقعك على الخريطة وتتبع مراحل الحج"
+                  : language === "ur"
+                  ? "نقشے پر اپنا مقام دکھانے اور حج کے مراحل کی نگرانی کے لیے لوکیشن تک رسائی کی اجازت دیں"
                   : "Allow location access to show your position on the map and track your Hajj stages"}
               </p>
             </div>
@@ -408,6 +410,8 @@ const MapPage = () => {
                       setMapError(
                         language === "ar"
                           ? "يرجى السماح بالوصول إلى الموقع من إعدادات المتصفح"
+                          : language === "ur"
+                          ? "براہ کرم براؤزر سیٹنگز سے لوکیشن تک رسائی کی اجازت دیں"
                           : "Please allow location access in your browser settings"
                       );
                     },
@@ -417,12 +421,12 @@ const MapPage = () => {
               }}
             >
               <MapPin className="w-5 h-5" />
-              {language === "ar" ? "السماح بالوصول إلى الموقع" : "Allow Location Access"}
+              {language === "ar" ? "السماح بالوصول إلى الموقع" : language === "ur" ? "لوکیشن تک رسائی کی اجازت دیں" : "Allow Location Access"}
             </Button>
             <Link to="/">
               <Button variant="ghost" size="sm" className="gap-2">
                 <Home className="w-4 h-4" />
-                {language === "ar" ? "العودة للرئيسية" : "Go Home"}
+                {language === "ar" ? "العودة للرئيسية" : language === "ur" ? "ہوم پیج پر جائیں" : "Go Home"}
               </Button>
             </Link>
           </div>
@@ -438,7 +442,7 @@ const MapPage = () => {
             </div>
             <div className="space-y-2">
               <h2 className="text-lg font-semibold text-foreground">
-                {language === "ar" ? "تعذر الوصول للموقع" : "Location Access Denied"}
+                {language === "ar" ? "تعذر الوصول للموقع" : language === "ur" ? "لوکیشن تک رسائی مسترد" : "Location Access Denied"}
               </h2>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 {error}
@@ -446,6 +450,8 @@ const MapPage = () => {
               <p className="text-xs text-muted-foreground">
                 {language === "ar"
                   ? "يرجى السماح بالوصول إلى الموقع من إعدادات المتصفح ثم إعادة المحاولة"
+                  : language === "ur"
+                  ? "براہ کرم براؤزر سیٹنگز سے لوکیشن تک رسائی کی اجازت دیں اور دوبارہ کوشش کریں"
                   : "Please allow location access in your browser settings and try again"}
               </p>
             </div>
@@ -456,12 +462,12 @@ const MapPage = () => {
               }}
             >
               <RefreshCw className="w-4 h-4" />
-              {language === "ar" ? "إعادة المحاولة" : "Try Again"}
+              {language === "ar" ? "إعادة المحاولة" : language === "ur" ? "دوبارہ کوشش کریں" : "Try Again"}
             </Button>
             <Link to="/">
               <Button variant="ghost" size="sm" className="gap-2">
                 <Home className="w-4 h-4" />
-                {language === "ar" ? "العودة للرئيسية" : "Go Home"}
+                {language === "ar" ? "العودة للرئيسية" : language === "ur" ? "ہوم پیج پر جائیں" : "Go Home"}
               </Button>
             </Link>
           </div>
