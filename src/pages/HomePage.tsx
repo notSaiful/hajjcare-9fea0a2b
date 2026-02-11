@@ -1,9 +1,10 @@
+import { lazy, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
 import { SimpleHeader } from "@/components/SimpleHeader";
 import { Footer } from "@/components/Footer";
 import { DashboardMenu } from "@/components/DashboardMenu";
 import SukoonFamilyFeature from "@/components/SukoonFamilyFeature";
-import { WelcomePromoDialog } from "@/components/WelcomePromoDialog";
+const WelcomePromoDialog = lazy(() => import("@/components/WelcomePromoDialog").then(m => ({ default: m.WelcomePromoDialog })));
 import { HeroSection } from "@/components/HeroSection";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
@@ -66,8 +67,10 @@ const HomePage = () => {
       {/* Footer */}
       <Footer />
 
-      {/* Welcome Promo Dialog */}
-      <WelcomePromoDialog />
+      {/* Welcome Promo Dialog - lazy loaded to avoid critical chain */}
+      <Suspense fallback={null}>
+        <WelcomePromoDialog />
+      </Suspense>
     </div>
   );
 };
