@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { LocationPermissionFlow } from "@/components/LocationPermissionFlow";
+import { LocationReminderBanner } from "@/components/LocationReminderBanner";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -449,6 +450,7 @@ const FamilyPage = () => {
         )}
       </main>
       <LocationPermissionFlow />
+      <LocationReminderBanner />
     </div>
   );
 };
