@@ -207,51 +207,136 @@ const MapPage = () => {
     });
   }, [lat, lng]);
 
-  // Update family member markers
+  // Status color mapping for family members
+  const getStatusColor = (status: string) => {
+    switch (status?.toLowerCase()) {
+      case "emergency": return "#ef4444";
+      case "help": case "missing": return "#f59e0b";
+      case "hospital": return "#3b82f6";
+      default: return "#22c55e"; // normal
+    }
+  };
+
+  const getStatusLabel = (status: string) => {
+    switch (status?.toLowerCase()) {
+      case "emergency": return language === "ar" ? "طوارئ" : "Emergency";
+      case "help": return language === "ar" ? "يحتاج مساعدة" : "Needs Help";
+      case "missing": return language === "ar" ? "مفقود" : "Missing";
+      case "hospital": return language === "ar" ? "مستشفى" : "Hospital";
+      default: return language === "ar" ? "طبيعي" : "Normal";
+    }
+  };
+
+  const getTimeSinceUpdate = (updatedAt: string) => {
+    const diff = Math.floor((Date.now() - new Date(updatedAt).getTime()) / 60000);
+    if (diff < 1) return language === "ar" ? "الآن" : "Just now";
+    if (diff < 60) return language === "ar" ? `${diff} دقيقة` : `${diff}m ago`;
+    const hrs = Math.floor(diff / 60);
+    return language === "ar" ? `${hrs} ساعة` : `${hrs}h ago`;
+  };
+
+  // Update family member markers with status colors + popups
   useEffect(() => {
     if (!map.current || !showFamily) return;
 
     memberLocations.forEach((loc) => {
-      // Skip self
       if (loc.member_id === memberId) return;
+
+      const statusColor = getStatusColor(loc.pilgrim_status);
+      const statusLabel = getStatusLabel(loc.pilgrim_status);
+      const stageLabel = loc.current_stage 
+        ? (HAJJ_STAGES[loc.current_stage as keyof typeof HAJJ_STAGES]
+            ? (language === "ar" 
+                ? HAJJ_STAGES[loc.current_stage as keyof typeof HAJJ_STAGES].nameAr 
+                : HAJJ_STAGES[loc.current_stage as keyof typeof HAJJ_STAGES].nameEn)
+            : loc.current_stage)
+        : (language === "ar" ? "غير محدد" : "Unknown");
+      const timeAgo = getTimeSinceUpdate(loc.updated_at);
+      const isEmergency = ["emergency", "help", "missing"].includes(loc.pilgrim_status?.toLowerCase());
 
       const existingMarker = familyMarkers.current.get(loc.member_id);
       
       if (existingMarker) {
         existingMarker.setLngLat([loc.longitude, loc.latitude]);
+        // Update marker element colors
+        const markerEl = existingMarker.getElement();
+        const container = markerEl.querySelector(".family-marker-container") as HTMLElement;
+        if (container) {
+          container.style.background = statusColor;
+          container.style.boxShadow = isEmergency 
+            ? `0 0 16px ${statusColor}80, 0 4px 12px rgba(0,0,0,0.3)` 
+            : `0 4px 12px rgba(0,0,0,0.3)`;
+        }
       } else {
         const el = document.createElement("div");
         
-        // Create marker using DOM manipulation to prevent XSS
         const container = document.createElement("div");
+        container.className = "family-marker-container";
         container.style.cssText = `
-          background: #3b82f6;
+          background: ${statusColor};
           color: white;
-          padding: 4px 8px;
-          border-radius: 12px;
-          font-size: 10px;
+          padding: 6px 10px;
+          border-radius: 14px;
+          font-size: 11px;
           font-weight: bold;
           white-space: nowrap;
-          box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+          box-shadow: ${isEmergency ? `0 0 16px ${statusColor}80,` : ""} 0 4px 12px rgba(0,0,0,0.3);
           display: flex;
           align-items: center;
-          gap: 4px;
+          gap: 5px;
           border: 2px solid white;
+          cursor: pointer;
+          transition: transform 0.15s;
+          ${isEmergency ? "animation: pulse 2s infinite;" : ""}
         `;
         
         const dot = document.createElement("div");
-        dot.style.cssText = "width: 6px; height: 6px; background: white; border-radius: 50%;";
+        dot.style.cssText = `width: 7px; height: 7px; background: white; border-radius: 50%; ${isEmergency ? "animation: ping 1.5s infinite;" : ""}`;
         
         const nameSpan = document.createElement("span");
-        // Use textContent to safely render member name (prevents XSS)
         nameSpan.textContent = loc.member_name || "Member";
         
         container.appendChild(dot);
         container.appendChild(nameSpan);
         el.appendChild(container);
 
+        // Create popup with member details
+        const popupContent = document.createElement("div");
+        popupContent.style.cssText = "padding: 4px 0; min-width: 160px;";
+        
+        const nameRow = document.createElement("div");
+        nameRow.style.cssText = "font-weight: 700; font-size: 14px; margin-bottom: 8px;";
+        nameRow.textContent = loc.member_name || "Member";
+        
+        const statusRow = document.createElement("div");
+        statusRow.style.cssText = `display: flex; align-items: center; gap: 6px; margin-bottom: 4px;`;
+        const statusDot = document.createElement("span");
+        statusDot.style.cssText = `width: 8px; height: 8px; border-radius: 50%; background: ${statusColor}; display: inline-block;`;
+        const statusText = document.createElement("span");
+        statusText.style.cssText = "font-size: 12px;";
+        statusText.textContent = statusLabel;
+        statusRow.appendChild(statusDot);
+        statusRow.appendChild(statusText);
+        
+        const stageRow = document.createElement("div");
+        stageRow.style.cssText = "font-size: 12px; color: #666; margin-bottom: 4px;";
+        stageRow.textContent = `📍 ${stageLabel}`;
+        
+        const timeRow = document.createElement("div");
+        timeRow.style.cssText = "font-size: 11px; color: #999;";
+        timeRow.textContent = `🕐 ${timeAgo}`;
+
+        popupContent.appendChild(nameRow);
+        popupContent.appendChild(statusRow);
+        popupContent.appendChild(stageRow);
+        popupContent.appendChild(timeRow);
+
+        const popup = new mapboxgl.Popup({ offset: 25, closeButton: false })
+          .setDOMContent(popupContent);
+
         const marker = new mapboxgl.Marker({ element: el })
           .setLngLat([loc.longitude, loc.latitude])
+          .setPopup(popup)
           .addTo(map.current!);
         
         familyMarkers.current.set(loc.member_id, marker);
@@ -265,7 +350,7 @@ const MapPage = () => {
         familyMarkers.current.delete(id);
       }
     });
-  }, [memberLocations, memberId, showFamily]);
+  }, [memberLocations, memberId, showFamily, language]);
 
   const flyToUser = () => {
     if (lat && lng && map.current) {
@@ -721,22 +806,73 @@ const MapPage = () => {
 
           {/* Family Members in Group */}
           {group && otherMembers.length > 0 && (
-            <div className="mb-4 p-4 bg-blue-500/10 rounded-2xl border border-blue-500/20">
-              <div className="flex items-center gap-2 mb-3">
-                <Users className="w-4 h-4 text-blue-500" />
-                <p className="text-sm font-medium text-blue-500">{t("familyGroup")}: {group.name}</p>
+            <div className="mb-4 p-4 bg-card/80 rounded-2xl border border-border/40">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <Users className="w-4 h-4 text-primary" />
+                  <p className="text-sm font-semibold">{language === "ar" ? "سكون كونكت" : "Sukoon CONNECT"}</p>
+                </div>
+                <span className="text-[10px] bg-primary/15 text-primary px-2 py-0.5 rounded-full font-medium">
+                  {otherMembers.length} {language === "ar" ? "أعضاء" : "members"}
+                </span>
               </div>
-              <div className="flex flex-wrap gap-2">
-                {otherMembers.map((loc) => (
-                  <button
-                    key={loc.member_id}
-                    onClick={() => flyToLocation(loc.longitude, loc.latitude)}
-                    className="flex items-center gap-2 bg-blue-500/20 hover:bg-blue-500/30 px-3 py-2 rounded-full text-xs font-medium transition-all hover:scale-105 active:scale-95 min-h-[36px]"
-                  >
-                    <div className="w-2.5 h-2.5 bg-blue-500 rounded-full" />
-                    {loc.member_name}
-                  </button>
+              
+              {/* Status Legend */}
+              <div className="flex flex-wrap gap-2 mb-3 pb-3 border-b border-border/30">
+                {[
+                  { color: "#22c55e", label: language === "ar" ? "طبيعي" : "Normal" },
+                  { color: "#ef4444", label: language === "ar" ? "طوارئ" : "Emergency" },
+                  { color: "#f59e0b", label: language === "ar" ? "تنبيه" : "Alert" },
+                  { color: "#3b82f6", label: language === "ar" ? "مستشفى" : "Hospital" },
+                ].map(({ color, label }) => (
+                  <div key={color} className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: color }} />
+                    {label}
+                  </div>
                 ))}
+              </div>
+
+              {/* Member Cards */}
+              <div className="space-y-2">
+                {otherMembers.map((loc) => {
+                  const statusColor = getStatusColor(loc.pilgrim_status);
+                  const statusLabel = getStatusLabel(loc.pilgrim_status);
+                  const stageLabel = loc.current_stage 
+                    ? (HAJJ_STAGES[loc.current_stage as keyof typeof HAJJ_STAGES]
+                        ? (language === "ar" 
+                            ? HAJJ_STAGES[loc.current_stage as keyof typeof HAJJ_STAGES].nameAr 
+                            : HAJJ_STAGES[loc.current_stage as keyof typeof HAJJ_STAGES].nameEn)
+                        : loc.current_stage)
+                    : "-";
+                  const timeAgo = getTimeSinceUpdate(loc.updated_at);
+                  
+                  return (
+                    <button
+                      key={loc.member_id}
+                      onClick={() => flyToLocation(loc.longitude, loc.latitude)}
+                      className="w-full flex items-center gap-3 p-2.5 rounded-xl bg-muted/40 hover:bg-muted/70 transition-all active:scale-[0.98] min-h-[48px]"
+                    >
+                      <div 
+                        className="w-9 h-9 rounded-full flex items-center justify-center border-2 flex-shrink-0"
+                        style={{ borderColor: statusColor, backgroundColor: `${statusColor}15` }}
+                      >
+                        <Users className="w-4 h-4" style={{ color: statusColor }} />
+                      </div>
+                      <div className="flex-1 text-left min-w-0">
+                        <p className="text-sm font-medium truncate">{loc.member_name}</p>
+                        <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
+                          <span className="flex items-center gap-1">
+                            <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: statusColor }} />
+                            {statusLabel}
+                          </span>
+                          <span>•</span>
+                          <span>{stageLabel}</span>
+                        </div>
+                      </div>
+                      <span className="text-[10px] text-muted-foreground flex-shrink-0">{timeAgo}</span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
           )}
