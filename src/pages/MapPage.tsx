@@ -6,6 +6,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useFamilyGroup } from "@/hooks/useFamilyGroup";
 import { useGeofencedTracking } from "@/hooks/useGeofencedTracking";
+import { useGeofenceMonitor } from "@/hooks/useGeofenceMonitor";
 import { Link, useNavigate } from "react-router-dom";
 import { 
   MapPin, 
@@ -45,6 +46,7 @@ const MapPage = () => {
   const { t, language, isRTL } = useLanguage();
   const { group, memberLocations, memberId, updateLocation } = useFamilyGroup();
   const { processLocation, geofenceStatus, lastSensorResult } = useGeofencedTracking(group?.id ?? null);
+  const { zones: geofenceZones, loadZones } = useGeofenceMonitor();
   const [mapToken, setMapToken] = useState<string | null>(null);
   const [mapError, setMapError] = useState<string | null>(null);
   const [mapLoading, setMapLoading] = useState(true);
@@ -135,6 +137,8 @@ const MapPage = () => {
     map.current.on('load', () => {
       setMapLoading(false);
       map.current?.resize();
+      // Load geofence zones for circle overlays
+      loadZones();
     });
 
     // Handle map errors
@@ -187,7 +191,88 @@ const MapPage = () => {
     return () => {
       map.current?.remove();
     };
-  }, [mapToken, language]);
+  }, [mapToken, language, loadZones]);
+
+  // Draw geofence zone circles on the map
+  useEffect(() => {
+    if (!map.current || geofenceZones.length === 0) return;
+    const m = map.current;
+
+    // Wait for map style to be loaded
+    const addCircles = () => {
+      // Remove old layers/sources if they exist
+      geofenceZones.forEach((zone) => {
+        const layerId = `geofence-fill-${zone.id}`;
+        const outlineId = `geofence-outline-${zone.id}`;
+        const sourceId = `geofence-${zone.id}`;
+        if (m.getLayer(layerId)) m.removeLayer(layerId);
+        if (m.getLayer(outlineId)) m.removeLayer(outlineId);
+        if (m.getSource(sourceId)) m.removeSource(sourceId);
+      });
+
+      geofenceZones.forEach((zone) => {
+        const sourceId = `geofence-${zone.id}`;
+        const fillLayerId = `geofence-fill-${zone.id}`;
+        const outlineLayerId = `geofence-outline-${zone.id}`;
+
+        // Generate circle polygon (64 points)
+        const center = [zone.center_lng, zone.center_lat];
+        const radiusKm = zone.radius_meters / 1000;
+        const points = 64;
+        const coords: [number, number][] = [];
+
+        for (let i = 0; i <= points; i++) {
+          const angle = (i / points) * 2 * Math.PI;
+          const dx = radiusKm * Math.cos(angle);
+          const dy = radiusKm * Math.sin(angle);
+          const lat = center[1] + (dy / 111.32);
+          const lng = center[0] + (dx / (111.32 * Math.cos((center[1] * Math.PI) / 180)));
+          coords.push([lng, lat]);
+        }
+
+        const isCity = zone.zone_type === "city_zone";
+        const fillColor = isCity ? "#3b82f6" : "#22c55e";
+        const outlineColor = isCity ? "#2563eb" : "#16a34a";
+
+        m.addSource(sourceId, {
+          type: "geojson",
+          data: {
+            type: "Feature",
+            properties: { name: zone.name, name_ar: zone.name_ar, zone_type: zone.zone_type },
+            geometry: { type: "Polygon", coordinates: [coords] },
+          },
+        });
+
+        m.addLayer({
+          id: fillLayerId,
+          type: "fill",
+          source: sourceId,
+          paint: {
+            "fill-color": fillColor,
+            "fill-opacity": isCity ? 0.06 : 0.1,
+          },
+        });
+
+        m.addLayer({
+          id: outlineLayerId,
+          type: "line",
+          source: sourceId,
+          paint: {
+            "line-color": outlineColor,
+            "line-width": isCity ? 1.5 : 2,
+            "line-dasharray": isCity ? [4, 3] : [1],
+            "line-opacity": 0.6,
+          },
+        });
+      });
+    };
+
+    if (m.isStyleLoaded()) {
+      addCircles();
+    } else {
+      m.once("style.load", addCircles);
+    }
+  }, [geofenceZones]);
 
   // Update user marker
   useEffect(() => {
