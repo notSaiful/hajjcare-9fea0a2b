@@ -215,6 +215,8 @@ const FamilyPage = () => {
                     ? "يحتاج نظام سكون إلى إذن الموقع لتتبع مراحل الحج وإرسال إشعارات لعائلتك"
                     : language === "ur"
                     ? "سکون ٹریکنگ کو آپ کے حج کے مراحل کی نگرانی اور خاندان کو اطلاعات بھیجنے کے لیے لوکیشن کی اجازت درکار ہے"
+                    : language === "hi"
+                    ? "सुकून ट्रैकिंग को आपके हज चरणों की निगरानी और परिवार को सूचित करने के लिए लोकेशन की अनुमति चाहिए"
                     : "Sukoon tracking needs location permission to track your Hajj stages and notify your family"
                   }
                 </p>
@@ -226,19 +228,21 @@ const FamilyPage = () => {
                         () => {
                           // Permission granted - the useHajjLocation hook will pick it up
                           toast({
-                            title: language === "ar" ? "تم تفعيل الموقع" : language === "ur" ? "لوکیشن فعال ہو گئی" : "Location Enabled",
-                            description: language === "ar" ? "تم السماح بالوصول إلى موقعك بنجاح" : language === "ur" ? "لوکیشن تک رسائی کامیابی سے دی گئی" : "Location access granted successfully",
+                            title: language === "ar" ? "تم تفعيل الموقع" : language === "ur" ? "لوکیشن فعال ہو گئی" : language === "hi" ? "लोकेशन सक्रिय हुई" : "Location Enabled",
+                            description: language === "ar" ? "تم السماح بالوصول إلى موقعك بنجاح" : language === "ur" ? "لوکیشن تک رسائی کامیابی سے دی گئی" : language === "hi" ? "लोकेशन एक्सेस सफलतापूर्वक दी गई" : "Location access granted successfully",
                           });
                           // Force refresh by reloading - the hook's watchPosition will take over
                           window.location.reload();
                         },
                         (err) => {
                           toast({
-                            title: language === "ar" ? "تعذر الوصول للموقع" : language === "ur" ? "لوکیشن تک رسائی مسترد" : "Location Access Denied",
+                            title: language === "ar" ? "تعذر الوصول للموقع" : language === "ur" ? "لوکیشن تک رسائی مسترد" : language === "hi" ? "लोकेशन एक्सेस अस्वीकृत" : "Location Access Denied",
                             description: language === "ar" 
                               ? "يرجى السماح بالوصول إلى الموقع من إعدادات المتصفح"
                               : language === "ur"
                               ? "براہ کرم براؤزر سیٹنگز سے لوکیشن تک رسائی کی اجازت دیں"
+                              : language === "hi"
+                              ? "कृपया ब्राउज़र सेटिंग्स से लोकेशन एक्सेस की अनुमति दें"
                               : "Please allow location access in your browser settings",
                             variant: "destructive",
                           });
@@ -247,15 +251,15 @@ const FamilyPage = () => {
                       );
                     } else {
                       toast({
-                        title: language === "ar" ? "غير مدعوم" : language === "ur" ? "تعاون نہیں ہے" : "Not Supported",
-                        description: language === "ar" ? "خدمة الموقع غير مدعومة في هذا المتصفح" : language === "ur" ? "اس براؤزر میں لوکیشن سروس دستیاب نہیں ہے" : "Geolocation is not supported by this browser",
+                        title: language === "ar" ? "غير مدعوم" : language === "ur" ? "تعاون نہیں ہے" : language === "hi" ? "समर्थित नहीं" : "Not Supported",
+                        description: language === "ar" ? "خدمة الموقع غير مدعومة في هذا المتصفح" : language === "ur" ? "اس براؤزر میں لوکیشن سروس دستیاب نہیں ہے" : language === "hi" ? "इस ब्राउज़र में लोकेशन सेवा उपलब्ध नहीं है" : "Geolocation is not supported by this browser",
                         variant: "destructive",
                       });
                     }
                   }}
                 >
                   <MapPin className="w-5 h-5" />
-                  {language === "ar" ? "السماح بالوصول إلى الموقع" : language === "ur" ? "لوکیشن تک رسائی کی اجازت دیں" : "Allow Location Access"}
+                  {language === "ar" ? "السماح بالوصول إلى الموقع" : language === "ur" ? "لوکیشن تک رسائی کی اجازت دیں" : language === "hi" ? "लोकेशन एक्सेस की अनुमति दें" : "Allow Location Access"}
                 </Button>
               </div>
             ) : (
