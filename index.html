@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://cdn.gpteng.co" crossorigin />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://qovcctfoxgvowedjioil.supabase.co" crossorigin />
     
     <!-- Async font loading to prevent render blocking -->
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500;600;700&family=Noto+Sans+Arabic:wght@300;400;500;600;700&family=Noto+Sans+Devanagari:wght@300;400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
@@ -35,14 +36,26 @@
     <meta property="og:description" content="AI-powered Hajj assistant for pilgrims. Get answers about rituals, duas, and practical guidance." />
     <meta property="og:type" content="website" />
     
+    <!-- Critical inline CSS for instant first paint -->
     <style>
-      .safe-area-bottom {
-        padding-bottom: env(safe-area-inset-bottom, 0);
-      }
+      *,*::before,*::after{box-sizing:border-box;border-width:0;border-style:solid}
+      html{line-height:1.5;-webkit-text-size-adjust:100%;font-family:'Noto Sans',sans-serif;scroll-behavior:smooth}
+      body{margin:0;line-height:inherit;background-color:hsl(37 47% 96%);color:hsl(160 65% 14%);-webkit-font-smoothing:antialiased;font-size:16px;line-height:1.7}
+      #root{min-height:100vh;display:flex;flex-direction:column}
+      .safe-area-bottom{padding-bottom:env(safe-area-inset-bottom,0)}
+      @keyframes spin{to{transform:rotate(360deg)}}
+      .app-loader{min-height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px}
+      .app-loader-spinner{width:32px;height:32px;border:2px solid hsl(160 65% 14%/.2);border-top-color:hsl(160 65% 14%);border-radius:50%;animation:spin 1s linear infinite}
+      .app-loader-text{font-size:14px;color:hsl(160 30% 35%)}
     </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div class="app-loader">
+        <div class="app-loader-spinner"></div>
+        <p class="app-loader-text">Loading...</p>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
