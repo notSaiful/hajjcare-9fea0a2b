@@ -377,6 +377,48 @@ export type Database = {
           },
         ]
       }
+      geofence_zones: {
+        Row: {
+          center_lat: number
+          center_lng: number
+          created_at: string
+          id: string
+          is_active: boolean
+          max_stationary_minutes: number | null
+          name: string
+          name_ar: string | null
+          radius_meters: number
+          updated_at: string
+          zone_type: string
+        }
+        Insert: {
+          center_lat: number
+          center_lng: number
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          max_stationary_minutes?: number | null
+          name: string
+          name_ar?: string | null
+          radius_meters?: number
+          updated_at?: string
+          zone_type?: string
+        }
+        Update: {
+          center_lat?: number
+          center_lng?: number
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          max_stationary_minutes?: number | null
+          name?: string
+          name_ar?: string | null
+          radius_meters?: number
+          updated_at?: string
+          zone_type?: string
+        }
+        Relationships: []
+      }
       group_members: {
         Row: {
           group_id: string
@@ -814,6 +856,7 @@ export type Database = {
           alert_type: string
           created_at: string
           details: Json | null
+          geofence_zone_id: string | null
           group_id: string | null
           id: string
           location_lat: number | null
@@ -829,6 +872,7 @@ export type Database = {
           alert_type: string
           created_at?: string
           details?: Json | null
+          geofence_zone_id?: string | null
           group_id?: string | null
           id?: string
           location_lat?: number | null
@@ -844,6 +888,7 @@ export type Database = {
           alert_type?: string
           created_at?: string
           details?: Json | null
+          geofence_zone_id?: string | null
           group_id?: string | null
           id?: string
           location_lat?: number | null
@@ -856,6 +901,13 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "tracking_alerts_geofence_zone_id_fkey"
+            columns: ["geofence_zone_id"]
+            isOneToOne: false
+            referencedRelation: "geofence_zones"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "tracking_alerts_group_id_fkey"
             columns: ["group_id"]

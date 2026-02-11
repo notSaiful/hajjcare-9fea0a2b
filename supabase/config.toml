@@ -82,3 +82,6 @@ verify_jwt = false
 
 [functions.notification-cascade]
 verify_jwt = false
+
+[functions.geofence-monitor]
+verify_jwt = false
