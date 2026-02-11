@@ -5,6 +5,7 @@ import { useHajjLocation, HAJJ_LOCATIONS, HAJJ_STAGES } from "@/hooks/useHajjLoc
 import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useFamilyGroup } from "@/hooks/useFamilyGroup";
+import { useGeofencedTracking } from "@/hooks/useGeofencedTracking";
 import { Link, useNavigate } from "react-router-dom";
 import { 
   MapPin, 
@@ -12,6 +13,7 @@ import {
   RefreshCw, 
   Loader2, 
   AlertCircle, 
+  ShieldAlert,
   ArrowLeft,
   Compass,
   Target,
@@ -39,9 +41,10 @@ const MapPage = () => {
   const map = useRef<mapboxgl.Map | null>(null);
   const userMarker = useRef<mapboxgl.Marker | null>(null);
   const familyMarkers = useRef<Map<string, mapboxgl.Marker>>(new Map());
-  const { lat, lng, stage, stageInfo, error, isLoading, refresh } = useHajjLocation();
+  const { lat, lng, accuracy, stage, stageInfo, error, isLoading, refresh } = useHajjLocation();
   const { t, language, isRTL } = useLanguage();
   const { group, memberLocations, memberId, updateLocation } = useFamilyGroup();
+  const { processLocation, geofenceStatus, lastSensorResult } = useGeofencedTracking(group?.id ?? null);
   const [mapToken, setMapToken] = useState<string | null>(null);
   const [mapError, setMapError] = useState<string | null>(null);
   const [mapLoading, setMapLoading] = useState(true);
@@ -70,12 +73,18 @@ const MapPage = () => {
     }
   ];
 
-  // Update family group with location
+  // Pipe GPS updates through Smart Sensor + Geofence pipeline
   useEffect(() => {
-    if (group && lat && lng) {
-      updateLocation(lat, lng, stage);
+    if (lat && lng && group) {
+      // Process through Smart Sensor → Geofence Monitor pipeline
+      processLocation(lat, lng, accuracy, stage, memberId).then((result) => {
+        // Only push to family group when sensor says "send"
+        if (result.decision === "send") {
+          updateLocation(lat, lng, stage);
+        }
+      });
     }
-  }, [group, lat, lng, stage, updateLocation]);
+  }, [group, lat, lng, stage, accuracy, memberId, processLocation, updateLocation]);
 
   // Fetch Mapbox token
   useEffect(() => {
@@ -561,6 +570,25 @@ const MapPage = () => {
                 {language === "ar" ? "العودة للرئيسية" : language === "ur" ? "ہوم پیج پر جائیں" : language === "hi" ? "होम पेज पर जाएं" : "Go Home"}
               </Button>
             </Link>
+          </div>
+        </div>
+      )}
+
+      {/* Geofence Violation Alert Banner */}
+      {geofenceStatus.violations > 0 && !geofenceStatus.insideCityZone && (
+        <div className="absolute top-16 left-0 right-0 z-10 px-4">
+          <div className="bg-destructive/90 backdrop-blur-xl text-destructive-foreground rounded-2xl p-3 flex items-center gap-3 shadow-lg border border-destructive/50 animate-pulse">
+            <ShieldAlert className="w-5 h-5 flex-shrink-0" />
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold">
+                {language === "ar" ? "تنبيه: خارج المنطقة الآمنة" : "Alert: Outside Safe Zone"}
+              </p>
+              <p className="text-xs opacity-90">
+                {language === "ar" 
+                  ? "أنت خارج حدود المشاعر المقدسة. يرجى العودة إلى المنطقة المحددة."
+                  : "You are outside the sacred sites boundary. Please return to the designated area."}
+              </p>
+            </div>
           </div>
         </div>
       )}
