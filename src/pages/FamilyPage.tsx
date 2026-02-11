@@ -205,6 +205,55 @@ const FamilyPage = () => {
                   {isRTL ? "جاري تحديد موقعك..." : "Determining your location..."}
                 </span>
               </div>
+            ) : !lat && !lng && !isTestMode ? (
+              <div className="space-y-3 p-3 text-center">
+                <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto border-2 border-primary/20">
+                  <Navigation className="w-7 h-7 text-primary" />
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  {isRTL 
+                    ? "يحتاج نظام سكون إلى إذن الموقع لتتبع مراحل الحج وإرسال إشعارات لعائلتك"
+                    : "Sukoon tracking needs location permission to track your Hajj stages and notify your family"
+                  }
+                </p>
+                <Button 
+                  className="w-full gap-2 h-12 text-base"
+                  onClick={() => {
+                    if (navigator.geolocation) {
+                      navigator.geolocation.getCurrentPosition(
+                        () => {
+                          // Permission granted - the useHajjLocation hook will pick it up
+                          toast({
+                            title: isRTL ? "تم تفعيل الموقع" : "Location Enabled",
+                            description: isRTL ? "تم السماح بالوصول إلى موقعك بنجاح" : "Location access granted successfully",
+                          });
+                          // Force refresh by reloading - the hook's watchPosition will take over
+                          window.location.reload();
+                        },
+                        (err) => {
+                          toast({
+                            title: isRTL ? "تعذر الوصول للموقع" : "Location Access Denied",
+                            description: isRTL 
+                              ? "يرجى السماح بالوصول إلى الموقع من إعدادات المتصفح"
+                              : "Please allow location access in your browser settings",
+                            variant: "destructive",
+                          });
+                        },
+                        { enableHighAccuracy: true, timeout: 10000 }
+                      );
+                    } else {
+                      toast({
+                        title: isRTL ? "غير مدعوم" : "Not Supported",
+                        description: isRTL ? "خدمة الموقع غير مدعومة في هذا المتصفح" : "Geolocation is not supported by this browser",
+                        variant: "destructive",
+                      });
+                    }
+                  }}
+                >
+                  <MapPin className="w-5 h-5" />
+                  {isRTL ? "السماح بالوصول إلى الموقع" : "Allow Location Access"}
+                </Button>
+              </div>
             ) : (
               <div className="space-y-3">
                 {/* Current Stage */}
