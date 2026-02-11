@@ -381,6 +381,93 @@ const MapPage = () => {
         </div>
       )}
 
+      {/* Location Permission Prompt - shown when GPS is unavailable */}
+      {!mapLoading && !isLoading && !lat && !lng && !error && (
+        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-background/80 backdrop-blur-sm p-6">
+          <div className="relative z-10 flex flex-col items-center gap-5 max-w-sm text-center">
+            <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center border-2 border-primary/20">
+              <Navigation className="w-10 h-10 text-primary" />
+            </div>
+            <div className="space-y-2">
+              <h2 className="text-lg font-semibold text-foreground">
+                {language === "ar" ? "يحتاج إلى إذن الموقع" : "Location Permission Needed"}
+              </h2>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                {language === "ar"
+                  ? "السماح بالوصول إلى موقعك لعرض موقعك على الخريطة وتتبع مراحل الحج"
+                  : "Allow location access to show your position on the map and track your Hajj stages"}
+              </p>
+            </div>
+            <Button
+              className="w-full gap-2 h-12 text-base"
+              onClick={() => {
+                if (navigator.geolocation) {
+                  navigator.geolocation.getCurrentPosition(
+                    () => window.location.reload(),
+                    () => {
+                      setMapError(
+                        language === "ar"
+                          ? "يرجى السماح بالوصول إلى الموقع من إعدادات المتصفح"
+                          : "Please allow location access in your browser settings"
+                      );
+                    },
+                    { enableHighAccuracy: true, timeout: 10000 }
+                  );
+                }
+              }}
+            >
+              <MapPin className="w-5 h-5" />
+              {language === "ar" ? "السماح بالوصول إلى الموقع" : "Allow Location Access"}
+            </Button>
+            <Link to="/">
+              <Button variant="ghost" size="sm" className="gap-2">
+                <Home className="w-4 h-4" />
+                {language === "ar" ? "العودة للرئيسية" : "Go Home"}
+              </Button>
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {/* Location Error with Settings Guidance */}
+      {!mapLoading && error && (
+        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-background/80 backdrop-blur-sm p-6">
+          <div className="relative z-10 flex flex-col items-center gap-5 max-w-sm text-center">
+            <div className="w-20 h-20 rounded-full bg-destructive/10 flex items-center justify-center border-2 border-destructive/20">
+              <AlertCircle className="w-10 h-10 text-destructive" />
+            </div>
+            <div className="space-y-2">
+              <h2 className="text-lg font-semibold text-foreground">
+                {language === "ar" ? "تعذر الوصول للموقع" : "Location Access Denied"}
+              </h2>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                {error}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {language === "ar"
+                  ? "يرجى السماح بالوصول إلى الموقع من إعدادات المتصفح ثم إعادة المحاولة"
+                  : "Please allow location access in your browser settings and try again"}
+              </p>
+            </div>
+            <Button
+              className="w-full gap-2 h-12"
+              onClick={() => {
+                refresh();
+              }}
+            >
+              <RefreshCw className="w-4 h-4" />
+              {language === "ar" ? "إعادة المحاولة" : "Try Again"}
+            </Button>
+            <Link to="/">
+              <Button variant="ghost" size="sm" className="gap-2">
+                <Home className="w-4 h-4" />
+                {language === "ar" ? "العودة للرئيسية" : "Go Home"}
+              </Button>
+            </Link>
+          </div>
+        </div>
+      )}
+
       {/* Frosted Glass Top Navigation Bar */}
       <div className="absolute top-0 left-0 right-0 z-10 safe-area-top">
         <div className="bg-background/70 backdrop-blur-xl border-b border-border/30">
