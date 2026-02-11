@@ -6,12 +6,14 @@ interface DashboardSectionProps {
   section: MenuSection;
   language: string;
   onNavigate: (route: string) => void;
+  badges?: Record<string, number>;
 }
 
 export const DashboardSection = memo(function DashboardSection({
   section,
   language,
   onNavigate,
+  badges,
 }: DashboardSectionProps) {
   return (
     <div className="space-y-3">
@@ -28,6 +30,7 @@ export const DashboardSection = memo(function DashboardSection({
             item={item}
             language={language}
             onNavigate={onNavigate}
+            badge={badges?.[item.id]}
           />
         ))}
       </div>
