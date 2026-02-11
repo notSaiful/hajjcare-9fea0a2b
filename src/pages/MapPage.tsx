@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { LocationPermissionFlow } from "@/components/LocationPermissionFlow";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { useHajjLocation, HAJJ_LOCATIONS, HAJJ_STAGES } from "@/hooks/useHajjLocation";
@@ -1065,6 +1066,7 @@ const MapPage = () => {
           )}
         </div>
       </div>
+      <LocationPermissionFlow />
     </div>
   );
 };

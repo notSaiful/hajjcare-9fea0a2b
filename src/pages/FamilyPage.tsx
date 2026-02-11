@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { LocationPermissionFlow } from "@/components/LocationPermissionFlow";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -447,6 +448,7 @@ const FamilyPage = () => {
           </Card>
         )}
       </main>
+      <LocationPermissionFlow />
     </div>
   );
 };
