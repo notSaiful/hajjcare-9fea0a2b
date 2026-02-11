@@ -203,28 +203,51 @@ Deno.serve(async (req) => {
       }
     }
 
-    // If there were exit violations, trigger notification cascade
+    // Trigger notification cascade for each violation
     if (alertsCreated.length > 0) {
-      try {
-        await fetch(`${supabaseUrl}/functions/v1/notification-cascade`, {
-          method: "POST",
-          headers: {
-            Authorization: authHeader,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            type: "geofence_alert",
-            group_id,
-            alerts: alertsCreated.map((a) => ({
-              id: a.id,
-              alert_type: a.alert_type,
-              severity: a.severity,
-              details: a.details,
-            })),
-          }),
-        });
-      } catch (notifyError) {
-        console.error("Notification cascade error:", notifyError);
+      // Resolve member name for notifications
+      let memberName = "Your Haji";
+      const { data: memberData } = await supabase
+        .from("group_members")
+        .select("member_name, member_id")
+        .eq("group_id", group_id)
+        .eq("user_id", user.id)
+        .limit(1);
+      
+      if (memberData && memberData.length > 0) {
+        memberName = memberData[0].member_name;
+      }
+
+      const resolvedMemberId = member_id || (memberData?.[0]?.member_id) || user.id;
+
+      for (const alert of alertsCreated) {
+        const details = alert.details as Record<string, unknown>;
+        try {
+          const cascadeRes = await fetch(`${supabaseUrl}/functions/v1/notification-cascade`, {
+            method: "POST",
+            headers: {
+              Authorization: authHeader,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              memberId: resolvedMemberId,
+              groupId: group_id,
+              newStage: details?.zone_name || "unknown",
+              memberName,
+              alertType: details?.violation_type === "exit" ? "geofence_exit" : "geofence_stationary",
+              geofenceDetails: {
+                zoneName: details?.zone_name || "Unknown Zone",
+                zoneNameAr: details?.zone_name_ar || null,
+                violationType: details?.violation_type || "exit",
+                distanceFromCenter: (details?.distance_from_center as number) || 0,
+              },
+            }),
+          });
+          const cascadeBody = await cascadeRes.text();
+          console.log(`[GeofenceMonitor] Notification cascade result for alert ${alert.id}:`, cascadeBody);
+        } catch (notifyError) {
+          console.error("[GeofenceMonitor] Notification cascade error:", notifyError);
+        }
       }
     }
 

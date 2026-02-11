@@ -32,7 +32,13 @@ interface CascadeRequest {
   groupId: string;
   newStage: string;
   memberName?: string;
-  alertType?: "stage_change" | "emergency" | "health_critical";
+  alertType?: "stage_change" | "emergency" | "health_critical" | "geofence_exit" | "geofence_stationary";
+  geofenceDetails?: {
+    zoneName: string;
+    zoneNameAr?: string;
+    violationType: string;
+    distanceFromCenter: number;
+  };
 }
 
 interface Recipient {
@@ -46,6 +52,8 @@ const CHANNEL_PRIORITY: Record<string, ChannelName[]> = {
   stage_change: ["push", "whatsapp"],
   emergency: ["push", "whatsapp", "sms", "voice"],
   health_critical: ["push", "whatsapp", "sms", "voice"],
+  geofence_exit: ["push", "whatsapp", "sms", "voice"],
+  geofence_stationary: ["push", "whatsapp"],
 };
 
 // ─── Web Push sender ─────────────────────────────────────────────────────
@@ -252,9 +260,9 @@ Deno.serve(async (req) => {
     }
 
     // Parse request
-    const { memberId, groupId, newStage, memberName, alertType = "stage_change" }: CascadeRequest = await req.json();
-    if (!memberId || !groupId || !newStage) {
-      return new Response(JSON.stringify({ error: "memberId, groupId, and newStage are required" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    const { memberId, groupId, newStage, memberName, alertType = "stage_change", geofenceDetails }: CascadeRequest = await req.json();
+    if (!memberId || !groupId) {
+      return new Response(JSON.stringify({ error: "memberId and groupId are required" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
     // Resolve Haji name
@@ -289,14 +297,37 @@ Deno.serve(async (req) => {
       name: p.full_name || "Family Member",
     }));
 
-    // Build messages
-    const stageInfo = STAGE_LABELS[newStage] || { en: newStage, ar: newStage, ur: newStage, hi: newStage };
-    const pushTitle = `🕋 ${hajiName} — ${stageInfo.en}`;
-    const whatsAppMessage = `🕋 *Sukoon Tracking Update*\n\nAssalamu Alaikum! 🤲\n\n*${hajiName}* has reached:\n\n📍 *${stageInfo.en}*\n🇸🇦 ${stageInfo.ar}\n\nMay Allah accept their Hajj. 🤲\n\n_HajjCare AI — Sukoon Tracking_`;
-    const smsMessage = `HajjCare: ${hajiName} has reached ${stageInfo.en}. May Allah accept their Hajj.`;
-    const pushData = { url: "/hajj-progress", stage: newStage };
+    // Build messages based on alert type
+    let pushTitle: string;
+    let whatsAppMessage: string;
+    let smsMessage: string;
+    let pushData: Record<string, string>;
 
-    // ─── Cascade: try channels in priority order, stop after first success ───
+    const isGeofenceAlert = alertType === "geofence_exit" || alertType === "geofence_stationary";
+
+    if (isGeofenceAlert && geofenceDetails) {
+      const zoneName = geofenceDetails.zoneNameAr || geofenceDetails.zoneName;
+      const distKm = (geofenceDetails.distanceFromCenter / 1000).toFixed(1);
+
+      if (alertType === "geofence_exit") {
+        pushTitle = `🚨 ${hajiName} — Left Safe Zone!`;
+        whatsAppMessage = `🚨 *Sukoon Safety Alert*\n\nAssalamu Alaikum! ⚠️\n\n*${hajiName}* has left the designated safe zone.\n\n📍 *Zone:* ${geofenceDetails.zoneName}\n🇸🇦 ${zoneName}\n📏 *Distance:* ${distKm} km from zone center\n\nPlease check on them. 🤲\n\n_HajjCare AI — Sukoon Safety_`;
+        smsMessage = `HajjCare ALERT: ${hajiName} left safe zone (${geofenceDetails.zoneName}), ${distKm}km away. Please check.`;
+      } else {
+        pushTitle = `⚠️ ${hajiName} — Not Moving`;
+        whatsAppMessage = `⚠️ *Sukoon Safety Alert*\n\nAssalamu Alaikum! 🤲\n\n*${hajiName}* has not moved for an extended period.\n\n📍 *Zone:* ${geofenceDetails.zoneName}\n🇸🇦 ${zoneName}\n\nThey may need assistance. 🤲\n\n_HajjCare AI — Sukoon Safety_`;
+        smsMessage = `HajjCare ALERT: ${hajiName} hasn't moved at ${geofenceDetails.zoneName}. They may need help.`;
+      }
+      pushData = { url: "/family", alertType, zone: geofenceDetails.zoneName };
+    } else {
+      const stageInfo = STAGE_LABELS[newStage] || { en: newStage, ar: newStage, ur: newStage, hi: newStage };
+      pushTitle = `🕋 ${hajiName} — ${stageInfo.en}`;
+      whatsAppMessage = `🕋 *Sukoon Tracking Update*\n\nAssalamu Alaikum! 🤲\n\n*${hajiName}* has reached:\n\n📍 *${stageInfo.en}*\n🇸🇦 ${stageInfo.ar}\n\nMay Allah accept their Hajj. 🤲\n\n_HajjCare AI — Sukoon Tracking_`;
+      smsMessage = `HajjCare: ${hajiName} has reached ${stageInfo.en}. May Allah accept their Hajj.`;
+      pushData = { url: "/hajj-progress", stage: newStage };
+    }
+
+    // ─── Cascade: try channels in priority order ───
     const channels = CHANNEL_PRIORITY[alertType] || CHANNEL_PRIORITY.stage_change;
     const results: ChannelResult[] = [];
     let delivered = false;
@@ -312,9 +343,9 @@ Deno.serve(async (req) => {
 
       if (result.status === "sent") {
         delivered = true;
-        // For stage_change, stop after first successful channel
-        // For emergency/critical, continue to ALL channels
-        if (alertType === "stage_change") break;
+        // For stage_change/stationary, stop after first successful channel
+        // For emergency/critical/geofence_exit, continue to ALL channels
+        if (alertType === "stage_change" || alertType === "geofence_stationary") break;
       }
     }
 
