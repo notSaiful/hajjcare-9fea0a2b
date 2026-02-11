@@ -5,6 +5,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useFamilyGroup } from "@/hooks/useFamilyGroup";
 import { useHajjLocation, HAJJ_STAGES, HajjStage } from "@/hooks/useHajjLocation";
 import { FamilyGroupPanel } from "@/components/FamilyGroupPanel";
+import { LinkRequestsPanel } from "@/components/family/LinkRequestsPanel";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -322,6 +323,9 @@ const FamilyPage = () => {
             )}
           </CardContent>
         </Card>
+
+        {/* Link Requests Panel */}
+        <LinkRequestsPanel />
 
         {/* Family Group Panel */}
         <FamilyGroupPanel />
