@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useFamilyGroup } from "@/hooks/useFamilyGroup";
+import { useLinkRequests } from "@/hooks/useLinkRequests";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Search, UserPlus, Phone, ChevronDown } from "lucide-react";
+import { Search, UserPlus, Phone, ChevronDown, Send } from "lucide-react";
 import {
   Popover,
   PopoverContent,
@@ -34,6 +35,7 @@ interface SearchResult {
 export const PhoneInvite = () => {
   const { isRTL } = useLanguage();
   const { group, members, refreshGroup } = useFamilyGroup();
+  const { sendRequest } = useLinkRequests();
   const { toast } = useToast();
 
   const [phone, setPhone] = useState("");
@@ -93,38 +95,34 @@ export const PhoneInvite = () => {
 
     setIsAdding(true);
     try {
-      const newMemberId = crypto.randomUUID();
-
-      const { error } = await supabase.from("group_members").insert({
-        group_id: group.id,
-        member_name: searchResult.full_name || "Member",
-        member_id: newMemberId,
-        user_id: searchResult.user_id,
-      });
+      const { error } = await sendRequest(
+        searchResult.user_id,
+        group.id,
+        isRTL ? "يريد إضافتك للمجموعة العائلية" : "Would like to add you to the family group"
+      );
 
       if (error) {
-        if (error.code === "23505") {
-          toast({ title: isRTL ? "موجود" : "Info", description: isRTL ? "موجود بالفعل" : "Already in the group" });
-        } else {
-          throw error;
-        }
+        toast({
+          title: isRTL ? "خطأ" : "Error",
+          description: error,
+          variant: "destructive",
+        });
       } else {
         toast({
-          title: isRTL ? "تمت الإضافة" : "Added!",
+          title: isRTL ? "تم إرسال الطلب" : "Request Sent!",
           description: isRTL
-            ? `تمت إضافة ${searchResult.full_name} للمجموعة`
-            : `${searchResult.full_name} added to the group`,
+            ? `تم إرسال طلب الربط إلى ${searchResult.full_name}. سيتم إضافته بعد الموافقة.`
+            : `Link request sent to ${searchResult.full_name}. They'll be added once they approve.`,
         });
-        await refreshGroup();
       }
 
       setSearchResult(null);
       setPhone("");
     } catch (error) {
-      console.error("Error adding member:", error);
+      console.error("Error sending link request:", error);
       toast({
         title: isRTL ? "خطأ" : "Error",
-        description: isRTL ? "فشلت الإضافة" : "Failed to add member",
+        description: isRTL ? "فشل إرسال الطلب" : "Failed to send request",
         variant: "destructive",
       });
     } finally {
@@ -205,8 +203,8 @@ export const PhoneInvite = () => {
         <div className="flex items-center justify-between p-2.5 rounded-lg bg-primary/10 animate-in fade-in">
           <span className="text-sm font-medium">{searchResult.full_name}</span>
           <Button size="sm" onClick={handleAdd} disabled={isAdding} className="h-8 gap-1.5 text-xs">
-            <UserPlus className="h-3.5 w-3.5" />
-            {isRTL ? "إضافة" : "Add"}
+            <Send className="h-3.5 w-3.5" />
+            {isRTL ? "إرسال طلب" : "Send Request"}
           </Button>
         </div>
       )}
