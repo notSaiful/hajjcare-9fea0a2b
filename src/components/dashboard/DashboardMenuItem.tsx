@@ -8,6 +8,7 @@ interface DashboardMenuItemProps {
   item: MenuItem;
   language: string;
   onNavigate: (route: string) => void;
+  badge?: number;
 }
 
 // Sacred items that receive gold accent treatment
@@ -17,6 +18,7 @@ export const DashboardMenuItem = memo(function DashboardMenuItem({
   item,
   language,
   onNavigate,
+  badge,
 }: DashboardMenuItemProps) {
   const prefetchProps = getPrefetchProps(item.route);
   const isSacred = SACRED_ITEMS.has(item.id);
@@ -30,7 +32,7 @@ export const DashboardMenuItem = memo(function DashboardMenuItem({
       onClick={handleClick}
       {...prefetchProps}
       className={cn(
-        "flex flex-col items-center gap-2 p-2 sm:p-3 rounded-xl",
+        "relative flex flex-col items-center gap-2 p-2 sm:p-3 rounded-xl",
         "bg-card/60 border border-border/30",
         "transition-all duration-300 ease-out",
         "group active:scale-[0.97] touch-manipulation select-none",
@@ -46,6 +48,11 @@ export const DashboardMenuItem = memo(function DashboardMenuItem({
         ]
       )}
     >
+      {badge != null && badge > 0 && (
+        <span className="absolute -top-1 -right-1 min-w-[1.25rem] h-5 flex items-center justify-center rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold px-1 shadow-sm animate-fade-in">
+          {badge > 9 ? "9+" : badge}
+        </span>
+      )}
       <MenuIcon
         icon={item.icon}
         colorClass={item.colorClass}
