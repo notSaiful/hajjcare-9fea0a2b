@@ -204,10 +204,14 @@ const MapPage = () => {
       geofenceZones.forEach((zone) => {
         const layerId = `geofence-fill-${zone.id}`;
         const outlineId = `geofence-outline-${zone.id}`;
+        const labelId = `geofence-label-${zone.id}`;
         const sourceId = `geofence-${zone.id}`;
+        const labelSourceId = `geofence-label-src-${zone.id}`;
         if (m.getLayer(layerId)) m.removeLayer(layerId);
         if (m.getLayer(outlineId)) m.removeLayer(outlineId);
+        if (m.getLayer(labelId)) m.removeLayer(labelId);
         if (m.getSource(sourceId)) m.removeSource(sourceId);
+        if (m.getSource(labelSourceId)) m.removeSource(labelSourceId);
       });
 
       geofenceZones.forEach((zone) => {
@@ -264,6 +268,39 @@ const MapPage = () => {
             "line-opacity": 0.6,
           },
         });
+
+        // Add zone name label at center
+        const labelSourceId = `geofence-label-src-${zone.id}`;
+        const labelLayerId = `geofence-label-${zone.id}`;
+        const isArabic = language === "ar" || language === "ur";
+        const labelText = isArabic && zone.name_ar ? zone.name_ar : zone.name;
+
+        m.addSource(labelSourceId, {
+          type: "geojson",
+          data: {
+            type: "Feature",
+            properties: { label: labelText },
+            geometry: { type: "Point", coordinates: [zone.center_lng, zone.center_lat] },
+          },
+        });
+
+        m.addLayer({
+          id: labelLayerId,
+          type: "symbol",
+          source: labelSourceId,
+          layout: {
+            "text-field": ["get", "label"],
+            "text-size": isCity ? 11 : 12,
+            "text-font": ["Open Sans Bold", "Arial Unicode MS Bold"],
+            "text-allow-overlap": true,
+          },
+          paint: {
+            "text-color": outlineColor,
+            "text-halo-color": "#ffffff",
+            "text-halo-width": 1.5,
+            "text-opacity": 0.85,
+          },
+        });
       });
     };
 
@@ -272,7 +309,7 @@ const MapPage = () => {
     } else {
       m.once("style.load", addCircles);
     }
-  }, [geofenceZones]);
+  }, [geofenceZones, language]);
 
   // Update user marker
   useEffect(() => {
