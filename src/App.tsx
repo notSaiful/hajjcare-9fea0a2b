@@ -127,7 +127,6 @@ function useCriticalPreload() {
       const routes = [
         () => import("./pages/PreparePage"),
         () => import("./pages/UmrahGuidePage"),
-        () => import("./pages/ChatPage"),
       ];
       routes.forEach((load) => {
         try { load(); } catch { /* non-critical */ }
