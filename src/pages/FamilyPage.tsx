@@ -89,6 +89,25 @@ const FamilyPage = () => {
     return stageData?.color || "#808080";
   };
 
+  const getStatusColor = (status: string) => {
+    switch (status?.toLowerCase()) {
+      case "emergency": return "#ef4444";
+      case "help": case "missing": return "#f59e0b";
+      case "hospital": return "#3b82f6";
+      default: return "#22c55e";
+    }
+  };
+
+  const getStatusLabel = (status: string) => {
+    switch (status?.toLowerCase()) {
+      case "emergency": return isRTL ? "طوارئ" : "Emergency";
+      case "help": return isRTL ? "يحتاج مساعدة" : "Needs Help";
+      case "missing": return isRTL ? "مفقود" : "Missing";
+      case "hospital": return isRTL ? "مستشفى" : "Hospital";
+      default: return isRTL ? "طبيعي" : "Normal";
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background" dir={isRTL ? "rtl" : "ltr"}>
       <div className="absolute inset-0 islamic-pattern opacity-20 pointer-events-none" />
@@ -307,57 +326,82 @@ const FamilyPage = () => {
         {/* Family Group Panel */}
         <FamilyGroupPanel />
 
-        {/* Family Members Live Locations */}
+        {/* Sukoon CONNECT - Family Members Live Locations */}
         {group && otherMembers.length > 0 && (
-          <Card className="bg-card/50 backdrop-blur border-blue-500/20">
+          <Card className="bg-card/50 backdrop-blur border-border/40">
             <CardHeader className="pb-2 sm:pb-3 px-4 sm:px-6">
-              <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-                <Users className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500" />
-                {isRTL ? "مواقع أفراد العائلة" : "Family Member Locations"}
+              <CardTitle className="flex items-center justify-between text-base sm:text-lg">
+                <div className="flex items-center gap-2">
+                  <Users className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                  {isRTL ? "سكون كونكت" : "Sukoon CONNECT"}
+                </div>
+                <span className="text-[10px] bg-primary/15 text-primary px-2 py-0.5 rounded-full font-medium">
+                  {otherMembers.length} {isRTL ? "أعضاء" : "members"}
+                </span>
               </CardTitle>
             </CardHeader>
             <CardContent className="px-4 sm:px-6">
+              {/* Status Legend */}
+              <div className="flex flex-wrap gap-3 mb-3 pb-3 border-b border-border/30">
+                {[
+                  { color: "#22c55e", label: isRTL ? "طبيعي" : "Normal" },
+                  { color: "#ef4444", label: isRTL ? "طوارئ" : "Emergency" },
+                  { color: "#f59e0b", label: isRTL ? "تنبيه" : "Alert" },
+                  { color: "#3b82f6", label: isRTL ? "مستشفى" : "Hospital" },
+                ].map(({ color, label }) => (
+                  <div key={color} className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: color }} />
+                    {label}
+                  </div>
+                ))}
+              </div>
+
               <div className="space-y-2.5 sm:space-y-3">
                 {otherMembers.map((loc) => {
-                  const memberStageColor = getStageColor(loc.current_stage);
+                  const statusColor = getStatusColor(loc.pilgrim_status);
+                  const statusLabel = getStatusLabel(loc.pilgrim_status);
+                  const isEmergency = ["emergency", "help", "missing"].includes(loc.pilgrim_status?.toLowerCase());
                   return (
                     <div 
                       key={loc.member_id}
-                      className="flex items-center justify-between p-2.5 sm:p-3 bg-muted/50 rounded-xl hover:bg-muted/70 transition-colors cursor-pointer"
+                      className={`flex items-center justify-between p-2.5 sm:p-3 rounded-xl hover:bg-muted/70 transition-colors cursor-pointer ${isEmergency ? "bg-destructive/5 border border-destructive/20" : "bg-muted/50"}`}
                       onClick={() => navigate("/map")}
                     >
                       <div className="flex items-center gap-2.5 sm:gap-3">
                         <div 
                           className="w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center shadow-soft border-2"
                           style={{ 
-                            backgroundColor: `${memberStageColor}15`,
-                            borderColor: `${memberStageColor}40`
+                            backgroundColor: `${statusColor}15`,
+                            borderColor: `${statusColor}40`
                           }}
                         >
-                          <Users className="w-6 h-6 sm:w-7 sm:h-7" style={{ color: memberStageColor }} />
+                          <Users className="w-6 h-6 sm:w-7 sm:h-7" style={{ color: statusColor }} />
                         </div>
                         <div>
                           <p className="font-medium text-sm sm:text-base">{loc.member_name}</p>
-                          <p className="text-[11px] sm:text-xs text-muted-foreground">
-                            {isRTL ? "آخر تحديث: " : "Last update: "}
-                            {new Date(loc.updated_at).toLocaleTimeString()}
-                          </p>
+                          <div className="flex items-center gap-2 mt-0.5">
+                            <span className="flex items-center gap-1 text-[10px]">
+                              <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: statusColor }} />
+                              <span style={{ color: statusColor }} className="font-medium">{statusLabel}</span>
+                            </span>
+                            <span className="text-[10px] text-muted-foreground">
+                              {new Date(loc.updated_at).toLocaleTimeString()}
+                            </span>
+                          </div>
                         </div>
                       </div>
                       <div className="text-right flex items-center gap-2">
-                        <div>
+                        <div 
+                          className="flex items-center gap-1 text-xs sm:text-sm px-2 py-1 rounded-full"
+                          style={{ backgroundColor: `${getStageColor(loc.current_stage)}15` }}
+                        >
                           <div 
-                            className="flex items-center gap-1 text-xs sm:text-sm px-2 py-1 rounded-full"
-                            style={{ backgroundColor: `${memberStageColor}15` }}
-                          >
-                            <div 
-                              className="w-2 h-2 rounded-full animate-pulse"
-                              style={{ backgroundColor: memberStageColor }}
-                            />
-                            <span className="font-medium" style={{ color: memberStageColor }}>
-                              {getStageLabel(loc.current_stage)}
-                            </span>
-                          </div>
+                            className="w-2 h-2 rounded-full animate-pulse"
+                            style={{ backgroundColor: getStageColor(loc.current_stage) }}
+                          />
+                          <span className="font-medium" style={{ color: getStageColor(loc.current_stage) }}>
+                            {getStageLabel(loc.current_stage)}
+                          </span>
                         </div>
                         <Eye className="w-4 h-4 text-muted-foreground" />
                       </div>
