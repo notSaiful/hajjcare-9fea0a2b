@@ -230,6 +230,10 @@ const SukoonFamilyFeature = () => {
           <img
             src={sukoonPoster}
             alt="Sukoon Tracking System - Family Peace Feature"
+            width={622}
+            height={622}
+            loading="lazy"
+            decoding="async"
             className="w-full h-auto object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent" />
