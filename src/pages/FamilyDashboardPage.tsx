@@ -19,7 +19,7 @@ import kaabaGreenDome from "@/assets/kaaba-green-dome.jpeg";
 const FamilyDashboardPage = () => {
   const { language, isRTL } = useLanguage();
   const { isAuthenticated, loading: authLoading } = useAuth();
-  const { group, members, memberLocations, refreshGroup, isLoading: groupLoading } = useFamilyGroup();
+  const { group, members, memberLocations, refreshGroup, isLoading: groupLoading, realtimeConnected } = useFamilyGroup();
   const { 
     status, 
     sharingEnabled, 
@@ -139,6 +139,19 @@ const FamilyDashboardPage = () => {
         </div>
 
         <h1 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-6 text-center">{labels.title}</h1>
+
+        {/* Connection Status Indicator */}
+        {group && (
+          <div className="flex items-center justify-center gap-2 mb-4 sm:mb-6">
+            <div className={`w-2.5 h-2.5 rounded-full ${realtimeConnected ? 'bg-green-500' : 'bg-amber-500'}`} />
+            <span className="text-xs sm:text-sm text-muted-foreground">
+              {realtimeConnected 
+                ? (language === "en" ? "Live tracking" : language === "ar" ? "التتبع المباشر" : "لائیو ٹریکنگ")
+                : (language === "en" ? "Sync mode" : language === "ar" ? "وضع المزامنة" : "سنک موڈ")
+              }
+            </span>
+          </div>
+        )}
 
         {!group ? (
           <Card className="bg-card">
