@@ -103,13 +103,18 @@ export const useFamilyGroup = () => {
     loadGroup();
   }, [loadGroup]);
 
-  // Subscribe to realtime location updates
+  // Subscribe to realtime location updates with connection resilience
   useEffect(() => {
     const groupId = localStorage.getItem(GROUP_ID_KEY);
     if (!groupId || !user) return;
 
+    let isActive = true;
+    let pollInterval = 5000; // Start with 5s polling as fallback
+    let timeoutId: ReturnType<typeof setTimeout>;
+    let realtimeConnected = false;
+
     const channel = supabase
-      .channel("member-locations")
+      .channel(`member-locations-${groupId}`)
       .on(
         "postgres_changes",
         {
@@ -131,11 +136,55 @@ export const useFamilyGroup = () => {
               return [...prev, locWithName];
             });
           }
+          // Reset poll interval when Realtime delivers data
+          pollInterval = 10000;
         }
       )
-      .subscribe();
+      .subscribe((status, err) => {
+        if (status === "SUBSCRIBED") {
+          realtimeConnected = true;
+          pollInterval = 30000; // Slow down polling when Realtime is active
+          console.log("[SukoonTracking] Realtime connected");
+        } else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT" || status === "CLOSED") {
+          realtimeConnected = false;
+          pollInterval = 5000; // Speed up polling as fallback
+          console.warn("[SukoonTracking] Realtime disconnected:", status, err);
+        }
+      });
+
+    // Fallback polling with adaptive interval
+    const poll = async () => {
+      if (!isActive) return;
+      try {
+        const { data: locationsData } = await supabase
+          .from("member_locations")
+          .select("*")
+          .eq("group_id", groupId);
+
+        if (locationsData && isActive) {
+          const locationsWithNames = locationsData.map(loc => {
+            const member = members.find(m => m.member_id === loc.member_id);
+            return { ...loc, member_name: member?.member_name };
+          });
+          setMemberLocations(locationsWithNames);
+
+          // Backoff when Realtime is working
+          if (realtimeConnected) {
+            pollInterval = Math.min(pollInterval * 1.5, 60000);
+          }
+        }
+      } catch (err) {
+        console.warn("[SukoonTracking] Poll failed:", err);
+      }
+      if (isActive) timeoutId = setTimeout(poll, pollInterval);
+    };
+
+    // Start fallback polling after a short delay
+    timeoutId = setTimeout(poll, pollInterval);
 
     return () => {
+      isActive = false;
+      clearTimeout(timeoutId);
       supabase.removeChannel(channel);
     };
   }, [members, user]);
