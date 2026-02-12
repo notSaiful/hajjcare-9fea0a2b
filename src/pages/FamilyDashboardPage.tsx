@@ -143,7 +143,7 @@ const FamilyDashboardPage = () => {
         {/* Connection Status Indicator */}
         {group && (
           <div className="flex items-center justify-center gap-2 mb-4 sm:mb-6">
-            <div className={`w-2.5 h-2.5 rounded-full ${realtimeConnected ? 'bg-green-500' : 'bg-amber-500'}`} />
+            <div className={`w-2.5 h-2.5 rounded-full transition-all ${realtimeConnected ? 'bg-green-500 animate-pulse' : 'bg-amber-500'}`} />
             <span className="text-xs sm:text-sm text-muted-foreground">
               {realtimeConnected 
                 ? (language === "en" ? "Live tracking" : language === "ar" ? "التتبع المباشر" : "لائیو ٹریکنگ")
