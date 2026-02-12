@@ -42,10 +42,12 @@ export const useFamilyGroup = () => {
   const [members, setMembers] = useState<GroupMember[]>([]);
   const [memberLocations, setMemberLocations] = useState<MemberLocation[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [realtimeConnected, setRealtimeConnected] = useState(false);
   const { user } = useAuth();
   const { toast } = useToast();
   const { notifyFamilyOfStageChange } = useSukoonNotify();
   const lastStageRef = useRef<string | null>(null);
+  const realtimeConnectedRef = useRef(false);
 
   const memberId = user?.id || "";
   const memberName = user?.user_metadata?.full_name || user?.email?.split("@")[0] || "";
@@ -111,7 +113,6 @@ export const useFamilyGroup = () => {
     let isActive = true;
     let pollInterval = 5000; // Start with 5s polling as fallback
     let timeoutId: ReturnType<typeof setTimeout>;
-    let realtimeConnected = false;
 
     const channel = supabase
       .channel(`member-locations-${groupId}`)
@@ -142,11 +143,13 @@ export const useFamilyGroup = () => {
       )
       .subscribe((status, err) => {
         if (status === "SUBSCRIBED") {
-          realtimeConnected = true;
+          realtimeConnectedRef.current = true;
+          setRealtimeConnected(true);
           pollInterval = 30000; // Slow down polling when Realtime is active
           console.log("[SukoonTracking] Realtime connected");
         } else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT" || status === "CLOSED") {
-          realtimeConnected = false;
+          realtimeConnectedRef.current = false;
+          setRealtimeConnected(false);
           pollInterval = 5000; // Speed up polling as fallback
           console.warn("[SukoonTracking] Realtime disconnected:", status, err);
         }
@@ -169,7 +172,7 @@ export const useFamilyGroup = () => {
           setMemberLocations(locationsWithNames);
 
           // Backoff when Realtime is working
-          if (realtimeConnected) {
+          if (realtimeConnectedRef.current) {
             pollInterval = Math.min(pollInterval * 1.5, 60000);
           }
         }
@@ -366,5 +369,6 @@ export const useFamilyGroup = () => {
     leaveGroup,
     updateLocation,
     refreshGroup: loadGroup,
+    realtimeConnected,
   };
 };
