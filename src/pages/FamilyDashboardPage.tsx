@@ -82,13 +82,8 @@ const FamilyDashboardPage = () => {
     loadFamilyStatuses();
   }, [group, members, memberLocations]);
 
-  // Silent background refresh - NO visual indicators
-  useEffect(() => {
-    const interval = setInterval(() => {
-      refreshGroup();
-    }, 60000);
-    return () => clearInterval(interval);
-  }, [refreshGroup]);
+  // Silent background refresh removed — useFamilyGroup now handles
+  // adaptive polling with Realtime fallback internally.
 
   const calmingMessage = CALMING_MESSAGE[language];
   
