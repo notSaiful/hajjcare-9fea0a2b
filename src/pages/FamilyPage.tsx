@@ -8,6 +8,7 @@ import { useFamilyGroup } from "@/hooks/useFamilyGroup";
 import { useHajjLocation, HAJJ_STAGES, HajjStage } from "@/hooks/useHajjLocation";
 import { FamilyGroupPanel } from "@/components/FamilyGroupPanel";
 import { LinkRequestsPanel } from "@/components/family/LinkRequestsPanel";
+import { WhatsAppVerifyJoin } from "@/components/family/WhatsAppVerifyJoin";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -328,6 +329,9 @@ const FamilyPage = () => {
 
         {/* Link Requests Panel */}
         <LinkRequestsPanel />
+
+        {/* WhatsApp Verify & Auto-Join */}
+        <WhatsAppVerifyJoin />
 
         {/* Family Group Panel */}
         <FamilyGroupPanel />

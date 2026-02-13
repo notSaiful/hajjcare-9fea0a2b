@@ -263,24 +263,30 @@ export type Database = {
           created_by: string
           id: string
           invite_code: string
+          invite_expires_at: string | null
           name: string
           user_id: string | null
+          verified_phone: string | null
         }
         Insert: {
           created_at?: string
           created_by: string
           id?: string
           invite_code?: string
+          invite_expires_at?: string | null
           name: string
           user_id?: string | null
+          verified_phone?: string | null
         }
         Update: {
           created_at?: string
           created_by?: string
           id?: string
           invite_code?: string
+          invite_expires_at?: string | null
           name?: string
           user_id?: string | null
+          verified_phone?: string | null
         }
         Relationships: []
       }
@@ -1225,6 +1231,13 @@ export type Database = {
       apply_promo_code: { Args: { p_code: string }; Returns: Json }
       cleanup_old_rate_limits: { Args: never; Returns: undefined }
       generate_referral_code: { Args: never; Returns: string }
+      generate_timed_invite: {
+        Args: { p_group_id: string }
+        Returns: {
+          expires_at: string
+          invite_code: string
+        }[]
+      }
       get_group_member_profile: {
         Args: { target_user_id: string }
         Returns: {
@@ -1271,6 +1284,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      whatsapp_verify_and_join: { Args: { p_phone: string }; Returns: Json }
     }
     Enums: {
       app_role: "admin" | "coordinator" | "medical_staff" | "user"
