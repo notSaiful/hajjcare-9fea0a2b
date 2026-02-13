@@ -9,7 +9,7 @@ const socialLinks = [
     icon: MessageCircle,
     name: { en: "WhatsApp", ar: "واتساب", ur: "واٹس ایپ", hi: "व्हाट्सएप", ta: "வாட்ஸ்அப்", te: "వాట్సాప్", mr: "व्हाट्सअॅप", bn: "হোয়াটসঅ্যাপ", or: "ହ୍ୱାଟ୍ସଆପ", ml: "വാട്ട്സ്ആപ്പ്", pa: "ਵਟਸਐਪ" },
     description: { en: "Official HajjCare Channel", ar: "قناة HajjCare الرسمية", ur: "آفیشل HajjCare چینل", hi: "आधिकारिक HajjCare चैनल", ta: "அதிகாரப்பூர்வ HajjCare சேனல்", te: "అధికారిక HajjCare ఛానెల్", mr: "अधिकृत HajjCare चॅनल", bn: "অফিসিয়াল HajjCare চ্যানেল", or: "ଅଫିସିଆଲ HajjCare ଚ୍ୟାନେଲ", ml: "ഔദ്യോഗിക HajjCare ചാനൽ", pa: "ਅਧਿਕਾਰਤ HajjCare ਚੈਨਲ" },
-    url: "https://wa.me/message/3CX3XMUXMKECL1",
+    url: "https://wa.me/917588113830?text=Assalamu%20Alaikum%2C%20I%20would%20like%20to%20join%20the%20HajjCare%20WhatsApp%20group.%20Please%20add%20me.%20JazakAllah%20Khair!",
     color: "bg-green-500",
   },
   {
