@@ -675,6 +675,25 @@ export const menuSections: MenuSection[] = [
         colorClass: "icon-gold",
       },
       {
+        id: "volunteer",
+        icon: HandHeart,
+        label: {
+          en: "Volunteer",
+          ar: "متطوع",
+          ur: "رضاکار",
+          hi: "वॉलंटियर",
+          ta: "தொண்டர்",
+          te: "వాలంటీర్",
+          mr: "स्वयंसेवक",
+          bn: "স্বেচ্ছাসেবক",
+          or: "ସ୍ୱେଚ୍ଛାସେବୀ",
+          ml: "വോളന്റിയർ",
+          pa: "ਵਾਲੰਟੀਅਰ",
+        },
+        route: "/volunteer",
+        colorClass: "icon-coral",
+      },
+      {
         id: "free-umrah",
         icon: Gift,
         label: {
