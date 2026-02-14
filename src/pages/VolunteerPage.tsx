@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Heart, Users, Shield, Clock, CheckCircle2, Loader2, HandHeart, Star } from "lucide-react";
+import VolunteerStatusTracker from "@/components/volunteer/VolunteerStatusTracker";
 
 const SKILLS = [
   { value: "ground_volunteer", label: "ग्राउंड वॉलंटियर (Embarkation duty)", labelEn: "Ground Volunteer" },
@@ -255,6 +256,9 @@ const VolunteerPage = () => {
                 </Button>
               </div>
             </Card>
+
+            {/* Status Tracker */}
+            <VolunteerStatusTracker />
 
             {/* Selection Process */}
             <Card>
