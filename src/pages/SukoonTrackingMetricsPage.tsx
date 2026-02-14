@@ -21,7 +21,7 @@ import {
   RefreshCw,
   Radio,
 } from "lucide-react";
-import { Navigate } from "react-router-dom";
+import { UnauthorizedAlert } from '@/components/UnauthorizedAlert';
 
 const STAGE_LABELS: Record<string, string> = {
   arrival: "Arrival",
@@ -137,7 +137,11 @@ export default function SukoonTrackingMetricsPage() {
   ).length;
 
   if (!isAdmin) {
-    return <Navigate to="/" replace />;
+    return (
+      <MainLayout>
+        <UnauthorizedAlert requiredRole="admin" pageName="Sukoon Tracking Metrics" />
+      </MainLayout>
+    );
   }
 
   return (

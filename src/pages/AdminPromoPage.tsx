@@ -16,8 +16,9 @@ import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import {
   Tag, Plus, BarChart3, Users, TrendingUp, Trash2, Edit, Copy,
-  CheckCircle, XCircle, Gift, Award, Sparkles
+  CheckCircle, XCircle, Gift, Award, Sparkles, RefreshCw
 } from "lucide-react";
+import { UnauthorizedAlert } from '@/components/UnauthorizedAlert';
 import { cn } from "@/lib/utils";
 
 interface PromoCode {
@@ -90,12 +91,26 @@ export default function AdminPromoPage() {
   }, []);
 
   useEffect(() => {
-    if (!roleLoading && !isAdmin) {
-      navigate("/");
-      return;
-    }
     if (isAdmin) fetchData();
-  }, [isAdmin, roleLoading, navigate, fetchData]);
+  }, [isAdmin, roleLoading, fetchData]);
+
+  if (roleLoading) {
+    return (
+      <MainLayout>
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <RefreshCw className="w-8 h-8 animate-spin text-primary" />
+        </div>
+      </MainLayout>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <MainLayout>
+        <UnauthorizedAlert requiredRole="admin" pageName="Promo Code Management" />
+      </MainLayout>
+    );
+  }
 
   const handleCreate = async () => {
     if (!formCode.trim() || !formValue) return;

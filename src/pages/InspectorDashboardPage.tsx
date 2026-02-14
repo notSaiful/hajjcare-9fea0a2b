@@ -1,4 +1,6 @@
 import { useState, useMemo } from 'react';
+import { useUserRole } from '@/hooks/useUserRole';
+import { UnauthorizedAlert } from '@/components/UnauthorizedAlert';
 import { useNavigate } from 'react-router-dom';
 import { SimpleHeader } from '@/components/SimpleHeader';
 import { Button } from '@/components/ui/button';
@@ -58,6 +60,7 @@ const DEMO_EMERGENCY_ALERT: EmergencyAlert = {
 
 const InspectorDashboardPage = () => {
   const navigate = useNavigate();
+  const { hasAnyCoordinatorRole, isInspector, isLoading: roleLoading } = useUserRole();
   const { hajis, isLoading, isUsingDemo, updateHajiStatus } = useHajis();
   const { triggerAlertOnce, startEmergencyAlert, stopEmergencyAlert, isAlertActive } = useEmergencyAlert();
   const [emergencyMode, setEmergencyMode] = useState(false);
@@ -136,10 +139,21 @@ const InspectorDashboardPage = () => {
     setTimeout(() => setActiveAlert(null), 2000);
   };
 
-  if (isLoading) {
+  if (isLoading || roleLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!hasAnyCoordinatorRole && !isInspector) {
+    return (
+      <div className="min-h-screen bg-background">
+        <SimpleHeader />
+        <main className="container max-w-2xl mx-auto px-4 py-16">
+          <UnauthorizedAlert requiredRole="any_staff" pageName="Inspector Dashboard" />
+        </main>
       </div>
     );
   }
