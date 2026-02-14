@@ -94,6 +94,7 @@ const AdminOperatorsPage = lazy(() => import("./pages/AdminOperatorsPage"));
 const AdminFraudAlertsPage = lazy(() => import("./pages/AdminFraudAlertsPage"));
 const AdminAIDashboardPage = lazy(() => import("./pages/AdminAIDashboardPage"));
 const SukoonTrackingMetricsPage = lazy(() => import("./pages/SukoonTrackingMetricsPage"));
+const AdminAnalyticsPage = lazy(() => import("./pages/AdminAnalyticsPage"));
 const HajjFaqChatPage = lazy(() => import("./pages/HajjFaqChatPage"));
 const VolunteerPage = lazy(() => import("./pages/VolunteerPage"));
 const VolunteerDashboardPage = lazy(() => import("./pages/VolunteerDashboardPage"));
@@ -212,6 +213,7 @@ function AppContent() {
       <Route path="/admin/fraud-alerts" element={<AdminFraudAlertsPage />} />
       <Route path="/admin/ai-dashboard" element={<AdminAIDashboardPage />} />
       <Route path="/admin/sukoon-metrics" element={<SukoonTrackingMetricsPage />} />
+      <Route path="/admin/analytics" element={<AdminAnalyticsPage />} />
       <Route path="/hajj-faq" element={<HajjFaqChatPage />} />
       <Route path="/volunteer" element={<VolunteerPage />} />
       <Route path="/admin/volunteers" element={<VolunteerDashboardPage />} />
