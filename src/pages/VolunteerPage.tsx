@@ -8,10 +8,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Heart, Users, Shield, Clock, CheckCircle2, Loader2, HandHeart, Star } from "lucide-react";
+import { Heart, Users, Shield, Clock, CheckCircle2, Loader2, HandHeart, Star, FileText, Lock } from "lucide-react";
 import VolunteerStatusTracker from "@/components/volunteer/VolunteerStatusTracker";
 
 const SKILLS = [
@@ -67,6 +69,9 @@ const VolunteerPage = () => {
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [volunteerId, setVolunteerId] = useState("");
+  const [showConsentModal, setShowConsentModal] = useState(false);
+  const [consentPrivacy, setConsentPrivacy] = useState(false);
+  const [consentTerms, setConsentTerms] = useState(false);
 
   const [form, setForm] = useState({
     full_name: "",
@@ -96,7 +101,7 @@ const VolunteerPage = () => {
     }));
   };
 
-  const handleSubmit = async () => {
+  const validateForm = () => {
     // Validation
     if (!form.full_name || !form.father_name || !form.age || !form.mobile || !form.whatsapp || !form.full_address || !form.city || !form.district || !form.state) {
       toast({ title: "कृपया सभी अनिवार्य फ़ील्ड भरें", description: "Please fill all required fields", variant: "destructive" });
@@ -126,8 +131,21 @@ const VolunteerPage = () => {
     const age = parseInt(form.age);
     if (isNaN(age) || age < 18 || age > 65) {
       toast({ title: "उम्र 18-65 के बीच होनी चाहिए", variant: "destructive" });
-      return;
+      return false;
     }
+
+    return true;
+  };
+
+  const openConsentModal = () => {
+    if (!validateForm()) return;
+    setConsentPrivacy(false);
+    setConsentTerms(false);
+    setShowConsentModal(true);
+  };
+
+  const handleSubmit = async () => {
+    setShowConsentModal(false);
 
     setSubmitting(true);
     try {
@@ -152,7 +170,7 @@ const VolunteerPage = () => {
         .insert({
           full_name: form.full_name.trim(),
           father_name: form.father_name.trim(),
-          age,
+          age: parseInt(form.age),
           mobile: form.mobile.trim(),
           whatsapp: form.whatsapp.trim(),
           email: form.email.trim() || null,
@@ -453,7 +471,7 @@ const VolunteerPage = () => {
               size="lg"
               className="w-full text-base"
               disabled={submitting || !form.declaration_agreed}
-              onClick={handleSubmit}
+              onClick={openConsentModal}
             >
               {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Heart className="w-5 h-5" />}
               {submitting ? "Submitting..." : "REGISTER AS VOLUNTEER"}
@@ -464,6 +482,99 @@ const VolunteerPage = () => {
             </Button>
           </div>
         )}
+
+        {/* Consent Modal */}
+        <Dialog open={showConsentModal} onOpenChange={setShowConsentModal}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2 text-lg">
+                <Shield className="w-5 h-5 text-primary" />
+                सहमति और नियम / Consent & Terms
+              </DialogTitle>
+            </DialogHeader>
+
+            <ScrollArea className="max-h-[60vh] pr-2">
+              <div className="space-y-5">
+                {/* Data Privacy Section */}
+                <div className="space-y-2">
+                  <h3 className="text-sm font-semibold flex items-center gap-2 text-foreground">
+                    <Lock className="w-4 h-4 text-primary" />
+                    डेटा गोपनीयता / Data Privacy
+                  </h3>
+                  <div className="text-xs text-muted-foreground space-y-1.5 bg-muted/50 rounded-lg p-3">
+                    <p>आपका व्यक्तिगत डेटा (नाम, मोबाइल, पता) केवल वॉलंटियर प्रबंधन के लिए उपयोग किया जाएगा।</p>
+                    <p>Your personal data (name, mobile, address) will be used solely for volunteer coordination and management.</p>
+                    <ul className="list-disc pl-4 space-y-1 mt-2">
+                      <li>डेटा को तीसरे पक्ष को नहीं बेचा जाएगा / Data will not be sold to third parties</li>
+                      <li>डेटा सुरक्षित सर्वर पर एन्क्रिप्टेड रूप में रखा जाएगा / Data stored encrypted on secure servers</li>
+                      <li>आप किसी भी समय डेटा हटाने का अनुरोध कर सकते हैं / You may request data deletion anytime</li>
+                    </ul>
+                  </div>
+                  <label className="flex items-start gap-3 p-3 rounded-lg border cursor-pointer hover:bg-muted/30 transition-colors">
+                    <Checkbox
+                      checked={consentPrivacy}
+                      onCheckedChange={(v) => setConsentPrivacy(!!v)}
+                      className="mt-0.5"
+                    />
+                    <span className="text-sm text-foreground">
+                      मैं डेटा संग्रह और उपयोग से सहमत हूँ / I consent to data collection and usage
+                    </span>
+                  </label>
+                </div>
+
+                {/* Terms of Service Section */}
+                <div className="space-y-2">
+                  <h3 className="text-sm font-semibold flex items-center gap-2 text-foreground">
+                    <FileText className="w-4 h-4 text-primary" />
+                    नियम और शर्तें / Terms of Service
+                  </h3>
+                  <div className="text-xs text-muted-foreground space-y-1.5 bg-muted/50 rounded-lg p-3">
+                    <p>वॉलंटियर के रूप में रजिस्टर करके, आप सहमत हैं कि:</p>
+                    <ul className="list-disc pl-4 space-y-1">
+                      <li>आप सही और सटीक जानकारी प्रदान कर रहे हैं / You provide accurate information</li>
+                      <li>आप कम से कम 18 वर्ष के हैं / You are at least 18 years old</li>
+                      <li>आप संगठन के आचार संहिता का पालन करेंगे / You will follow the code of conduct</li>
+                      <li>हज मिशन के दौरान हाजियों की जानकारी गोपनीय रखेंगे / Pilgrim data will be kept confidential</li>
+                    </ul>
+                    <a
+                      href="/terms"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-primary hover:underline mt-2"
+                    >
+                      <FileText className="w-3 h-3" />
+                      पूर्ण नियम और शर्तें पढ़ें / Read full Terms & Conditions
+                    </a>
+                  </div>
+                  <label className="flex items-start gap-3 p-3 rounded-lg border cursor-pointer hover:bg-muted/30 transition-colors">
+                    <Checkbox
+                      checked={consentTerms}
+                      onCheckedChange={(v) => setConsentTerms(!!v)}
+                      className="mt-0.5"
+                    />
+                    <span className="text-sm text-foreground">
+                      मैं नियम और शर्तों से सहमत हूँ / I agree to the Terms of Service
+                    </span>
+                  </label>
+                </div>
+              </div>
+            </ScrollArea>
+
+            <DialogFooter className="flex-col gap-2 sm:flex-col">
+              <Button
+                className="w-full"
+                disabled={!consentPrivacy || !consentTerms || submitting}
+                onClick={handleSubmit}
+              >
+                {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
+                सहमत हूँ और रजिस्टर करें / Agree & Register
+              </Button>
+              <Button variant="ghost" className="w-full" onClick={() => setShowConsentModal(false)}>
+                रद्द करें / Cancel
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </main>
       <Footer />
     </div>
