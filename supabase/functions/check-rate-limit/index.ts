@@ -17,8 +17,17 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    // Only allow calls from other edge functions using service role key
+    const authHeader = req.headers.get('Authorization');
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    if (!authHeader || authHeader !== `Bearer ${supabaseKey}`) {
+      return new Response(
+        JSON.stringify({ error: 'Forbidden' }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     const { action, identifier }: RateLimitRequest = await req.json();
