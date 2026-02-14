@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Shield, ShieldCheck, ShieldAlert, Circle, Eye, EyeOff } from "lucide-react";
+import { DataSharingConsentModal } from "@/components/DataSharingConsentModal";
 
 interface PilgrimStatusSettingsProps {
   currentStatus: PilgrimStatus;
@@ -24,6 +25,7 @@ export const PilgrimStatusSettings = ({
   const { language, isRTL } = useLanguage();
   const labels = DASHBOARD_LABELS[language];
   const [updating, setUpdating] = useState(false);
+  const [consentModalOpen, setConsentModalOpen] = useState(false);
 
   const handleStatusChange = async (status: PilgrimStatus) => {
     if (status === currentStatus || updating) return;
@@ -35,11 +37,28 @@ export const PilgrimStatusSettings = ({
     }
   };
 
-  const handleSharingToggle = async () => {
+  const handleSharingToggle = () => {
     if (updating) return;
+    if (!sharingEnabled) {
+      // Show consent modal before enabling
+      setConsentModalOpen(true);
+    } else {
+      // Disable directly
+      doToggleSharing(false);
+    }
+  };
+
+  const handleConsentResponse = async (accepted: boolean) => {
+    setConsentModalOpen(false);
+    if (accepted) {
+      await doToggleSharing(true);
+    }
+  };
+
+  const doToggleSharing = async (enabled: boolean) => {
     setUpdating(true);
     try {
-      await onSharingChange(!sharingEnabled);
+      await onSharingChange(enabled);
     } finally {
       setUpdating(false);
     }
@@ -152,6 +171,14 @@ export const PilgrimStatusSettings = ({
           })}
         </CardContent>
       </Card>
+
+      {/* Data Sharing Consent Modal */}
+      <DataSharingConsentModal
+        open={consentModalOpen}
+        onOpenChange={setConsentModalOpen}
+        onConsent={handleConsentResponse}
+        isEnabling={updating}
+      />
     </div>
   );
 };
