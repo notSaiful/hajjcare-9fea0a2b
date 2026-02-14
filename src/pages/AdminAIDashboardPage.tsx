@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { UnauthorizedAlert } from '@/components/UnauthorizedAlert';
 import { useNavigate } from "react-router-dom";
 import { useAdminAIDashboard } from "@/hooks/useAdminAIDashboard";
 import { useFraudIntelligence } from "@/hooks/useFraudIntelligence";
@@ -30,11 +31,7 @@ const AdminAIDashboardPage = () => {
   const { data, isLoading, error, fetchDashboard } = useAdminAIDashboard();
   const { results: fraudResults, isLoading: fraudLoading, analyzeAll } = useFraudIntelligence();
 
-  useEffect(() => {
-    if (!roleLoading && !isAdmin) {
-      navigate("/");
-    }
-  }, [isAdmin, roleLoading, navigate]);
+  // Access check handled below in render
 
   useEffect(() => {
     if (isAdmin) {
@@ -46,6 +43,17 @@ const AdminAIDashboardPage = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="min-h-screen bg-background">
+        <SimpleHeader />
+        <main className="container max-w-2xl mx-auto px-4 py-16">
+          <UnauthorizedAlert requiredRole="admin" pageName="AI Dashboard" />
+        </main>
       </div>
     );
   }

@@ -33,6 +33,7 @@ import {
 } from "@/components/ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { ArrowLeft, Search, Loader2, CheckCircle, XCircle, Eye, Clock, Users, Download, MessageCircle } from "lucide-react";
+import { UnauthorizedAlert } from '@/components/UnauthorizedAlert';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { adminContent } from "@/data/freeUmrahContent";
@@ -469,18 +470,7 @@ const FreeUmrahAdminPage = () => {
   if (!isAdmin && !isCoordinator) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <Card className="max-w-md w-full text-center">
-          <CardContent className="pt-6">
-            <XCircle className="w-12 h-12 text-destructive mx-auto mb-4" />
-            <h2 className="text-lg font-semibold mb-2">Access Denied</h2>
-            <p className="text-muted-foreground mb-4">
-              You don't have permission to view this page.
-            </p>
-            <Button asChild>
-              <Link to="/">Go Home</Link>
-            </Button>
-          </CardContent>
-        </Card>
+        <UnauthorizedAlert requiredRole="coordinator" pageName="Free Umrah Applications" />
       </div>
     );
   }

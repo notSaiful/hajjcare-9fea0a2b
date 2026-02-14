@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useUserRole } from "@/hooks/useUserRole";
+import { UnauthorizedAlert } from '@/components/UnauthorizedAlert';
 import { toast } from "sonner";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { format, subDays, startOfDay, endOfDay } from "date-fns";
@@ -361,16 +362,7 @@ const EmergencyMetricsPage: React.FC = () => {
   if (!isAdmin) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
-        <Card className="max-w-md w-full text-center">
-          <CardContent className="pt-6 space-y-4">
-            <ShieldAlert className="w-16 h-16 mx-auto text-destructive" />
-            <h2 className="text-xl font-semibold">{t("noAccess")}</h2>
-            <p className="text-muted-foreground">{t("noAccessDesc")}</p>
-            <Button onClick={() => navigate("/")} className="mt-4">
-              {t("back")}
-            </Button>
-          </CardContent>
-        </Card>
+        <UnauthorizedAlert requiredRole="admin" pageName="Emergency Metrics" />
       </div>
     );
   }

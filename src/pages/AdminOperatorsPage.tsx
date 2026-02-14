@@ -12,7 +12,7 @@ import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { ShieldCheck, Plus, Trash2, Star, Search } from "lucide-react";
-import { Navigate } from "react-router-dom";
+import { UnauthorizedAlert } from '@/components/UnauthorizedAlert';
 
 interface OperatorForm {
   name: string;
@@ -97,7 +97,7 @@ export default function AdminOperatorsPage() {
   });
 
   if (roleLoading) return <MainLayout><div className="min-h-screen flex items-center justify-center"><p>Loading...</p></div></MainLayout>;
-  if (!isAdmin) return <Navigate to="/" replace />;
+  if (!isAdmin) return <MainLayout><UnauthorizedAlert requiredRole="admin" pageName="Verified Operators" /></MainLayout>;
 
   const filtered = operators.filter(
     (op) =>
