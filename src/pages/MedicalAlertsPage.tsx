@@ -24,6 +24,7 @@ import {
   Shield,
 } from "lucide-react";
 import { toast } from "sonner";
+import { UnauthorizedAlert } from '@/components/UnauthorizedAlert';
 
 interface EmergencyTicket {
   id: string;
@@ -267,16 +268,8 @@ const MedicalAlertsPage = () => {
   // Access control
   if (!isAuthenticated || !hasAnyCoordinatorRole) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4 gap-4">
-        <Shield className="w-16 h-16 text-muted-foreground" />
-        <h1 className="text-xl font-semibold text-center">Access Restricted</h1>
-        <p className="text-muted-foreground text-center">
-          This view is for medical staff and coordinators only.
-        </p>
-        <Button onClick={() => navigate("/")} variant="outline">
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Go Home
-        </Button>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4">
+        <UnauthorizedAlert requiredRole="any_staff" pageName="Emergency Alerts" />
       </div>
     );
   }

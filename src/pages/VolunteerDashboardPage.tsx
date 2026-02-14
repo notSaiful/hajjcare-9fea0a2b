@@ -14,6 +14,7 @@ import {
   ChevronDown, ChevronUp, Phone, Mail, Loader2,
   CheckCircle2, XCircle, UserCheck, GraduationCap, Rocket,
 } from "lucide-react";
+import { UnauthorizedAlert } from '@/components/UnauthorizedAlert';
 
 const SKILL_LABELS: Record<string, string> = {
   ground_volunteer: "Ground Volunteer",
@@ -154,10 +155,8 @@ const VolunteerDashboardPage = () => {
     return (
       <div className="min-h-screen bg-background" dir={isRTL ? "rtl" : "ltr"}>
         <SimpleHeader />
-        <main className="container max-w-2xl mx-auto px-4 py-16 text-center">
-          <XCircle className="w-12 h-12 text-destructive mx-auto mb-4" />
-          <h1 className="text-xl font-bold text-foreground">Access Denied</h1>
-          <p className="text-muted-foreground mt-2">Admin access required to view this dashboard.</p>
+        <main className="container max-w-2xl mx-auto px-4 py-16">
+          <UnauthorizedAlert requiredRole="admin" pageName="Volunteer Dashboard" />
         </main>
         <Footer />
       </div>

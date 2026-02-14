@@ -24,6 +24,7 @@ import {
   Activity
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { UnauthorizedAlert } from '@/components/UnauthorizedAlert';
 
 type HealthTicket = {
   id: string;
@@ -233,12 +234,7 @@ const CoordinatorDashboardPage: React.FC = () => {
   if (!hasAnyCoordinatorRole) {
     return (
       <MainLayout>
-        <div className="flex flex-col items-center justify-center min-h-[60vh] p-6 text-center">
-          <Shield className="w-16 h-16 text-destructive mb-4" />
-          <h1 className="text-2xl font-bold text-destructive mb-2">{t('noAccess')}</h1>
-          <p className="text-muted-foreground mb-4">{t('noAccessDesc')}</p>
-          <Button onClick={() => navigate('/')}>Go Home</Button>
-        </div>
+        <UnauthorizedAlert requiredRole="any_staff" pageName="Coordinator Dashboard" />
       </MainLayout>
     );
   }
