@@ -14,7 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { AlertTriangle, Plus, Trash2, Clock, MapPin } from "lucide-react";
-import { Navigate } from "react-router-dom";
+import { UnauthorizedAlert } from '@/components/UnauthorizedAlert';
 
 interface AlertForm {
   title: string;
@@ -93,7 +93,7 @@ export default function AdminFraudAlertsPage() {
   });
 
   if (roleLoading) return <MainLayout><div className="min-h-screen flex items-center justify-center"><p>Loading...</p></div></MainLayout>;
-  if (!isAdmin) return <Navigate to="/" replace />;
+  if (!isAdmin) return <MainLayout><UnauthorizedAlert requiredRole="admin" pageName="Fraud Alerts Management" /></MainLayout>;
 
   return (
     <MainLayout>
