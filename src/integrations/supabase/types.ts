@@ -1054,6 +1054,87 @@ export type Database = {
         }
         Relationships: []
       }
+      volunteers: {
+        Row: {
+          age: number
+          availability_days: string
+          availability_tag: string | null
+          city: string
+          city_tag: string | null
+          created_at: string
+          declaration_agreed: boolean
+          district: string
+          duty_location: string
+          email: string | null
+          father_name: string
+          full_address: string
+          full_name: string
+          id: string
+          languages: string[]
+          mobile: string
+          skill_tag: string | null
+          skills: string[]
+          state: string
+          status: string
+          updated_at: string
+          user_id: string | null
+          volunteer_id: string
+          whatsapp: string
+        }
+        Insert: {
+          age: number
+          availability_days: string
+          availability_tag?: string | null
+          city: string
+          city_tag?: string | null
+          created_at?: string
+          declaration_agreed?: boolean
+          district: string
+          duty_location: string
+          email?: string | null
+          father_name: string
+          full_address: string
+          full_name: string
+          id?: string
+          languages?: string[]
+          mobile: string
+          skill_tag?: string | null
+          skills?: string[]
+          state: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+          volunteer_id: string
+          whatsapp: string
+        }
+        Update: {
+          age?: number
+          availability_days?: string
+          availability_tag?: string | null
+          city?: string
+          city_tag?: string | null
+          created_at?: string
+          declaration_agreed?: boolean
+          district?: string
+          duty_location?: string
+          email?: string | null
+          father_name?: string
+          full_address?: string
+          full_name?: string
+          id?: string
+          languages?: string[]
+          mobile?: string
+          skill_tag?: string | null
+          skills?: string[]
+          state?: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+          volunteer_id?: string
+          whatsapp?: string
+        }
+        Relationships: []
+      }
       wallet_transactions: {
         Row: {
           amount: number
