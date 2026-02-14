@@ -1307,9 +1307,37 @@ export type Database = {
         }
         Relationships: []
       }
+      volunteers_public: {
+        Row: {
+          city: string | null
+          created_at: string | null
+          skills: string[] | null
+          status: string | null
+          volunteer_id: string | null
+        }
+        Insert: {
+          city?: string | null
+          created_at?: string | null
+          skills?: string[] | null
+          status?: string | null
+          volunteer_id?: string | null
+        }
+        Update: {
+          city?: string | null
+          created_at?: string | null
+          skills?: string[] | null
+          status?: string | null
+          volunteer_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       apply_promo_code: { Args: { p_code: string }; Returns: Json }
+      check_volunteer_mobile_exists: {
+        Args: { p_mobile: string }
+        Returns: boolean
+      }
       cleanup_old_rate_limits: { Args: never; Returns: undefined }
       generate_referral_code: { Args: never; Returns: string }
       generate_timed_invite: {
@@ -1351,6 +1379,17 @@ export type Database = {
         Returns: {
           full_name: string
           user_id: string
+        }[]
+      }
+      lookup_volunteer_status: {
+        Args: { p_query: string }
+        Returns: {
+          city: string
+          created_at: string
+          full_name: string
+          skills: string[]
+          status: string
+          volunteer_id: string
         }[]
       }
       process_referral: { Args: { p_referral_code: string }; Returns: Json }

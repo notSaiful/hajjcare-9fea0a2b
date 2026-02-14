@@ -149,15 +149,11 @@ const VolunteerPage = () => {
 
     setSubmitting(true);
     try {
-      // Check duplicate mobile
-      const { data: existing } = await (supabase as any)
-        .from("volunteers")
-        .select("volunteer_id")
-        .eq("mobile", form.mobile)
-        .maybeSingle();
+      // Check duplicate mobile via secure RPC
+      const { data: mobileExists } = await supabase.rpc("check_volunteer_mobile_exists", { p_mobile: form.mobile.trim() });
 
-      if (existing) {
-        toast({ title: "इस मोबाइल नंबर से पहले ही रजिस्ट्रेशन हो चुका है", description: `ID: ${existing.volunteer_id}`, variant: "destructive" });
+      if (mobileExists) {
+        toast({ title: "इस मोबाइल नंबर से पहले ही रजिस्ट्रेशन हो चुका है", variant: "destructive" });
         setSubmitting(false);
         return;
       }
