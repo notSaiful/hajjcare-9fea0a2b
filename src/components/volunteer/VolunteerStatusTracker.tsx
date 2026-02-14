@@ -60,23 +60,12 @@ const VolunteerStatusTracker = () => {
     setLoading(true);
     setSearched(true);
     try {
-      let result;
-      if (/^\d{10}$/.test(q)) {
-        result = await (supabase as any)
-          .from("volunteers")
-          .select("full_name, volunteer_id, status, city, skills, created_at")
-          .eq("mobile", q)
-          .maybeSingle();
-      } else {
-        result = await (supabase as any)
-          .from("volunteers")
-          .select("full_name, volunteer_id, status, city, skills, created_at")
-          .eq("volunteer_id", q.toUpperCase())
-          .maybeSingle();
-      }
+      // Use secure RPC for volunteer lookup
+      const result = await supabase.rpc("lookup_volunteer_status", { p_query: q });
 
-      setVolunteer(result.data || null);
-      if (!result.data) {
+      const volunteerData = result.data && result.data.length > 0 ? result.data[0] : null;
+      setVolunteer(volunteerData);
+      if (!volunteerData) {
         toast({ title: getLabel("notFound", language, TRACKER_LABELS), variant: "destructive" });
       }
     } catch {
