@@ -340,8 +340,6 @@ export default function PaymentPage() {
               gstAmount={gstAmount}
               totalAmount={totalAmount}
               serviceName="HajjCare App Maintenance Service Fee"
-              customerName={user?.user_metadata?.full_name}
-              customerEmail={user?.email}
               orgName="Sazo Management Private Limited"
               orgGstin={ORG_GSTIN || undefined}
             />
