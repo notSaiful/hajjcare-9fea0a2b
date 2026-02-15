@@ -1,6 +1,8 @@
-import { IndianRupee, FileText, Building2, Calendar, Hash, User, Mail } from "lucide-react";
+import { useRef } from "react";
+import { IndianRupee, FileText, Building2, Calendar, Hash, Download } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 interface InvoicePreviewProps {
   baseAmount: number;
@@ -30,6 +32,51 @@ export function InvoicePreview({
     month: "short",
     year: "numeric",
   });
+
+  const handleDownloadPDF = () => {
+    const html = `
+      <!DOCTYPE html><html><head><title>Invoice Preview - HajjCare</title>
+      <style>
+        body{font-family:system-ui,sans-serif;max-width:700px;margin:40px auto;padding:20px;color:#1a1a1a}
+        .header{display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid #16a34a;padding-bottom:16px;margin-bottom:24px}
+        .header h1{font-size:22px;color:#16a34a;margin:0}
+        .badge{background:#f0fdf4;color:#16a34a;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;text-transform:uppercase}
+        .meta{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;font-size:13px}
+        .meta .label{color:#666;font-size:11px;text-transform:uppercase;font-weight:600;margin-bottom:4px}
+        table{width:100%;border-collapse:collapse;margin:20px 0}
+        th{text-align:left;font-size:11px;text-transform:uppercase;color:#666;padding:8px 0;border-bottom:2px solid #e5e7eb}
+        th:last-child,td:last-child{text-align:right}
+        td{padding:12px 0;border-bottom:1px solid #f3f4f6;font-size:14px}
+        .total-row td{border-top:3px solid #16a34a;border-bottom:none;font-size:18px;font-weight:700;padding-top:16px}
+        .total-row td:last-child{color:#16a34a}
+        .footer{margin-top:24px;padding:12px 16px;background:#f9fafb;border-radius:8px;font-size:11px;color:#666}
+        @media print{body{margin:0;padding:20px}}
+      </style></head><body>
+      <div class="header">
+        <h1>📋 Invoice Preview</h1>
+        <span class="badge">Draft</span>
+      </div>
+      <div class="meta">
+        <div><div class="label">Billed By</div><strong>${orgName}</strong>${orgGstin ? `<br><span style="font-size:11px;color:#666">GSTIN: ${orgGstin}</span>` : ""}</div>
+        <div style="text-align:right"><div class="label">Date</div><strong>${today}</strong></div>
+      </div>
+      <table>
+        <thead><tr><th>Description</th><th>Amount</th></tr></thead>
+        <tbody>
+          <tr><td>${serviceName}<br><span style="font-size:11px;color:#888">Digital service fee (non-refundable)</span></td><td>₹${baseAmount.toFixed(2)}</td></tr>
+          <tr><td>GST @${gstRate}%<br><span style="font-size:11px;color:#888">Goods & Services Tax (India)</span></td><td>₹${gstAmount.toFixed(2)}</td></tr>
+          <tr class="total-row"><td>Total Payable</td><td>₹${totalAmount.toFixed(2)}</td></tr>
+        </tbody>
+      </table>
+      <div class="footer">This is a draft invoice preview. A final GST-compliant invoice will be generated after successful payment.</div>
+      </body></html>`;
+    const win = window.open("", "_blank");
+    if (win) {
+      win.document.write(html);
+      win.document.close();
+      setTimeout(() => win.print(), 300);
+    }
+  };
 
   return (
     <Card className="border-2 border-primary/20 shadow-lg overflow-hidden">
@@ -78,26 +125,6 @@ export function InvoicePreview({
         </div>
 
         {/* Customer Info */}
-        {(customerName || customerEmail) && (
-          <>
-            <Separator />
-            <div className="text-xs space-y-1">
-              <p className="text-muted-foreground font-medium mb-1.5">Billed To</p>
-              {customerName && (
-                <div className="flex items-center gap-1.5">
-                  <User className="h-3 w-3 text-muted-foreground" />
-                  <span className="text-foreground font-medium">{customerName}</span>
-                </div>
-              )}
-              {customerEmail && (
-                <div className="flex items-center gap-1.5">
-                  <Mail className="h-3 w-3 text-muted-foreground" />
-                  <span className="text-foreground">{customerEmail}</span>
-                </div>
-              )}
-            </div>
-          </>
-        )}
 
         <Separator />
 
@@ -149,6 +176,17 @@ export function InvoicePreview({
             invoice number and transaction ID will be generated after successful payment.
           </p>
         </div>
+
+        {/* Download PDF Button */}
+        <Button
+          variant="outline"
+          size="sm"
+          className="w-full gap-2 text-sm"
+          onClick={handleDownloadPDF}
+        >
+          <Download className="h-4 w-4" />
+          Download Invoice Preview as PDF
+        </Button>
       </CardContent>
     </Card>
   );
