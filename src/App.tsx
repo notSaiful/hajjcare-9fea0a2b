@@ -101,6 +101,7 @@ const HajjFaqChatPage = lazy(() => import("./pages/HajjFaqChatPage"));
 const VolunteerPage = lazy(() => import("./pages/VolunteerPage"));
 const VolunteerDashboardPage = lazy(() => import("./pages/VolunteerDashboardPage"));
 const ResponderCommandPage = lazy(() => import("./pages/ResponderCommandPage"));
+const NationalCommandPage = lazy(() => import("./pages/NationalCommandPage"));
 
 // Optimized Query Client with caching
 const queryClient = new QueryClient({
@@ -223,6 +224,7 @@ function AppContent() {
       <Route path="/volunteer" element={<VolunteerPage />} />
         <Route path="/admin/volunteers" element={<VolunteerDashboardPage />} />
         <Route path="/command-center" element={<ResponderCommandPage />} />
+        <Route path="/national-command" element={<NationalCommandPage />} />
       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
       <Route path="*" element={<NotFound />} />
     </Routes>
