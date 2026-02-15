@@ -4,244 +4,294 @@ import { useAuth } from "@/hooks/useAuth";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import {
-  MessageCircle,
-  Users,
-  MapPin,
-  BookOpen,
-  Heart,
   ChevronRight,
   ChevronLeft,
   X,
   Sparkles,
+  Heart,
+  CheckCircle2,
+  Plane,
+  Stethoscope,
+  Users,
+  BookOpen,
 } from "lucide-react";
 
 const TOUR_STORAGE_KEY = "hajjcare_onboarding_complete";
 
-type TourStep = {
+type LocalizedText = Record<string, string>;
+
+type QAStep = {
   icon: React.ReactNode;
-  titleKey: Record<string, string>;
-  descKey: Record<string, string>;
-  tip: Record<string, string>;
+  color: string;
+  questionKey: LocalizedText;
+  options: {
+    labelKey: LocalizedText;
+    value: string;
+    tipKey: LocalizedText;
+  }[];
+};
+
+type WelcomeStep = {
+  type: "welcome";
+  icon: React.ReactNode;
+  color: string;
+  titleKey: LocalizedText;
+  descKey: LocalizedText;
+};
+
+type ResultStep = {
+  type: "result";
+  icon: React.ReactNode;
   color: string;
 };
 
+type TourStep = QAStep | WelcomeStep | ResultStep;
+
+const isWelcome = (s: TourStep): s is WelcomeStep => "type" in s && s.type === "welcome";
+const isResult = (s: TourStep): s is ResultStep => "type" in s && s.type === "result";
+
+const L = (en: string, ar: string, ur: string, hi: string, ta?: string, te?: string, mr?: string, bn?: string, or_?: string, ml?: string, pa?: string): LocalizedText => ({
+  en, ar, ur, hi,
+  ta: ta || en, te: te || en, mr: mr || en, bn: bn || en,
+  or: or_ || en, ml: ml || en, pa: pa || en,
+});
+
 const tourSteps: TourStep[] = [
+  // Step 0: Welcome
   {
+    type: "welcome",
     icon: <Sparkles className="w-10 h-10" />,
     color: "from-emerald-500 to-teal-600",
-    titleKey: {
-      en: "Welcome to HajjCare AI",
-      ar: "مرحباً بك في حج كير",
-      ur: "حج کیئر میں خوش آمدید",
-      hi: "हज केयर AI में आपका स्वागत है",
-      ta: "ஹஜ்கேர் AI-க்கு வரவேற்கிறோம்",
-      te: "హజ్‌కేర్ AIకి స్వాగతం",
-      mr: "हज केअर AI मध्ये स्वागत",
-      bn: "হজকেয়ার AI-তে স্বাগতম",
-      or: "ହଜକେୟାର AIରେ ସ୍ୱାଗତ",
-      ml: "ഹജ്ജ്‌കെയർ AIലേക്ക് സ്വാഗതം",
-      pa: "ਹੱਜ ਕੇਅਰ AI ਵਿੱਚ ਜੀ ਆਇਆਂ ਨੂੰ",
-    },
-    descKey: {
-      en: "Your complete companion for a blessed Hajj journey. Let us show you how this app can help you every step of the way.",
-      ar: "رفيقك الكامل لرحلة حج مباركة. دعنا نعرفك كيف يمكن لهذا التطبيق مساعدتك في كل خطوة.",
-      ur: "حج کے مبارک سفر کے لیے آپ کا مکمل ساتھی۔ آئیے ہم آپ کو دکھائیں کہ یہ ایپ ہر قدم پر آپ کی مدد کیسے کر سکتی ہے۔",
-      hi: "एक मुबारक हज यात्रा के लिए आपका पूर्ण साथी। आइए हम आपको दिखाएं कि यह ऐप हर कदम पर आपकी कैसे मदद कर सकता है।",
-      ta: "ஒரு அருளான ஹஜ் பயணத்திற்கான உங்கள் முழுமையான துணை. ஒவ்வொரு அடியிலும் இந்த ஆப் எவ்வாறு உதவும் என்று காட்டுகிறோம்.",
-      te: "ధన్యమైన హజ్ ప్రయాణానికి మీ పూర్తి సహచరుడు. ప్రతి అడుగులో ఈ యాప్ మీకు ఎలా సహాయపడుతుందో చూపిస్తాము.",
-      mr: "एका मुबारक हज प्रवासासाठी तुमचा संपूर्ण साथीदार. प्रत्येक पावलावर हे ॲप कसे मदत करू शकते ते दाखवू या.",
-      bn: "একটি বরকতময় হজ যাত্রার জন্য আপনার সম্পূর্ণ সঙ্গী। প্রতিটি ধাপে এই অ্যাপ কীভাবে সাহায্য করতে পারে তা দেখাই।",
-      or: "ଏକ ବରକତମୟ ହଜ ଯାତ୍ରା ପାଇଁ ଆପଣଙ୍କ ସମ୍ପୂର୍ଣ୍ଣ ସାଥୀ। ପ୍ରତ୍ୟେକ ପଦକ୍ଷେପରେ ଏହି ଆପ୍ କିପରି ସାହାଯ୍ୟ କରିପାରିବ ତାହା ଦେଖାଇବା।",
-      ml: "അനുഗ്രഹപൂർണ്ണമായ ഹജ്ജ് യാത്രയ്ക്കുള്ള നിങ്ങളുടെ പൂർണ്ണ സഹചാരി. എല്ലാ ഘട്ടത്തിലും ഈ ആപ്പ് എങ്ങനെ സഹായിക്കും എന്ന് കാണിക്കട്ടെ.",
-      pa: "ਇੱਕ ਮੁਬਾਰਕ ਹੱਜ ਯਾਤਰਾ ਲਈ ਤੁਹਾਡਾ ਪੂਰਾ ਸਾਥੀ। ਆਓ ਤੁਹਾਨੂੰ ਦਿਖਾਈਏ ਕਿ ਇਹ ਐਪ ਹਰ ਕਦਮ ਤੇ ਕਿਵੇਂ ਮਦਦ ਕਰ ਸਕਦੀ ਹੈ।",
-    },
-    tip: {
-      en: "Swipe through to learn the key features!",
-      ar: "اسحب للتعرف على الميزات الرئيسية!",
-      ur: "اہم خصوصیات جاننے کے لیے سوائپ کریں!",
-      hi: "मुख्य विशेषताएं जानने के लिए स्वाइप करें!",
-      ta: "முக்கிய அம்சங்களை அறிய ஸ்வைப் செய்யுங்கள்!",
-      te: "ముఖ్య ఫీచర్‌లను తెలుసుకోవడానికి స్వైప్ చేయండి!",
-      mr: "मुख्य वैशिष्ट्ये जाणून घेण्यासाठी स्वाइप करा!",
-      bn: "মূল বৈশিষ্ট্যগুলি জানতে সোয়াইপ করুন!",
-      or: "ମୁଖ୍ୟ ବୈଶିଷ୍ଟ୍ୟ ଜାଣିବାକୁ ସ୍ୱାଇପ୍ କରନ୍ତୁ!",
-      ml: "പ്രധാന ഫീച്ചറുകൾ അറിയാൻ സ്വൈപ്പ് ചെയ്യൂ!",
-      pa: "ਮੁੱਖ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਜਾਣਨ ਲਈ ਸਵਾਈਪ ਕਰੋ!",
-    },
+    titleKey: L(
+      "Welcome to HajjCare AI",
+      "مرحباً بك في حج كير",
+      "حج کیئر میں خوش آمدید",
+      "हज केयर AI में आपका स्वागत है",
+      "ஹஜ்கேர் AIக்கு வரவேற்கிறோம்",
+      "హజ్‌కేర్ AIకి స్వాగతం",
+      "हज केअर AI मध्ये स्वागत",
+      "হজকেয়ার AI-তে স্বাগতম",
+      "ହଜକେୟାର AIରେ ସ୍ୱାଗତ",
+      "ഹജ്ജ്‌കെയർ AIലേക്ക് സ്വാഗതം",
+      "ਹੱਜ ਕੇਅਰ AI ਵਿੱਚ ਜੀ ਆਇਆਂ ਨੂੰ"
+    ),
+    descKey: L(
+      "Let us personalize your experience! Answer a few quick questions so we can guide you better on your blessed journey.",
+      "دعنا نخصص تجربتك! أجب على بعض الأسئلة السريعة لنرشدك بشكل أفضل.",
+      "آئیے آپ کا تجربہ ذاتی بنائیں! چند فوری سوالات کے جواب دیں تاکہ ہم آپ کی بہتر رہنمائی کر سکیں۔",
+      "आइए आपका अनुभव निजीकृत करें! कुछ त्वरित सवालों के जवाब दें ताकि हम आपकी बेहतर मार्गदर्शना कर सकें।",
+      "உங்கள் அனுபவத்தை தனிப்பயனாக்குவோம்! சில கேள்விகளுக்கு பதிலளியுங்கள்.",
+      "మీ అనుభవాన్ని వ్యక్తిగతీకరించుకుందాం! కొన్ని ప్రశ్నలకు సమాధానమివ్వండి.",
+      "तुमचा अनुभव वैयक्तिक करूया! काही प्रश्नांची उत्तरे द्या.",
+      "আপনার অভিজ্ঞতা ব্যক্তিগত করি! কয়েকটি প্রশ্নের উত্তর দিন।",
+      "ଆପଣଙ୍କ ଅଭିଜ୍ଞତା ବ୍ୟକ୍ତିଗତ କରିବା! କିଛି ପ୍ରଶ୍ନର ଉତ୍ତର ଦିଅନ୍ତୁ।",
+      "നിങ്ങളുടെ അനുഭവം വ്യക്തിഗതമാക്കാം! കുറച്ച് ചോദ്യങ്ങൾക്ക് ഉത്തരം നൽകൂ.",
+      "ਆਓ ਤੁਹਾਡਾ ਤਜਰਬਾ ਨਿੱਜੀ ਬਣਾਈਏ! ਕੁਝ ਸਵਾਲਾਂ ਦੇ ਜਵਾਬ ਦਿਓ।"
+    ),
   },
+  // Q1: First Hajj?
   {
-    icon: <MessageCircle className="w-10 h-10" />,
+    icon: <Plane className="w-10 h-10" />,
     color: "from-blue-500 to-indigo-600",
-    titleKey: {
-      en: "AI Hajj Assistant",
-      ar: "مساعد الحج الذكي",
-      ur: "AI حج اسسٹنٹ",
-      hi: "AI हज सहायक",
-      ta: "AI ஹஜ் உதவியாளர்",
-      te: "AI హజ్ సహాయకుడు",
-      mr: "AI हज सहाय्यक",
-      bn: "AI হজ সহায়ক",
-      or: "AI ହଜ ସହାୟକ",
-      ml: "AI ഹജ്ജ് സഹായി",
-      pa: "AI ਹੱਜ ਸਹਾਇਕ",
-    },
-    descKey: {
-      en: "Ask any question about Hajj rituals, duas, health tips, or travel logistics. Our AI understands your language and guides you with authentic Islamic knowledge.",
-      ar: "اسأل أي سؤال عن مناسك الحج أو الأدعية أو النصائح الصحية أو اللوجستيات. ذكاؤنا الاصطناعي يفهم لغتك ويرشدك بعلم إسلامي موثوق.",
-      ur: "حج کے مناسک، دعاؤں، صحت کی تجاویز، یا سفری معلومات کے بارے میں کوئی بھی سوال پوچھیں۔ ہمارا AI آپ کی زبان سمجھتا ہے۔",
-      hi: "हज के रीति-रिवाजों, दुआओं, स्वास्थ्य सुझावों, या यात्रा के बारे में कोई भी सवाल पूछें। हमारा AI आपकी भाषा समझता है।",
-      ta: "ஹஜ் சடங்குகள், துஆக்கள், உடல்நல குறிப்புகள் பற்றி எந்த கேள்வியும் கேளுங்கள். AI உங்கள் மொழியைப் புரிந்துகொள்கிறது.",
-      te: "హజ్ ఆచారాలు, దుఆలు, ఆరోగ్య చిట్కాలు గురించి ఏ ప్రశ్న అయినా అడగండి. AI మీ భాషను అర్థం చేసుకుంటుంది.",
-      mr: "हज विधी, दुआ, आरोग्य टिप्स बद्दल कोणताही प्रश्न विचारा. AI तुमची भाषा समजते.",
-      bn: "হজের আচার, দোয়া, স্বাস্থ্য পরামর্শ সম্পর্কে যেকোনো প্রশ্ন করুন। AI আপনার ভাষা বোঝে।",
-      or: "ହଜ ରୀତି, ଦୁଆ, ସ୍ୱାସ୍ଥ୍ୟ ପରାମର୍ଶ ବିଷୟରେ ଯେକୌଣସି ପ୍ରଶ୍ନ ପଚାରନ୍ତୁ। AI ଆପଣଙ୍କ ଭାଷା ବୁଝେ।",
-      ml: "ഹജ്ജ് ആചാരങ്ങൾ, ദുആകൾ, ആരോഗ്യ ടിപ്പുകൾ കുറിച്ച് ഏത് ചോദ്യവും ചോദിക്കൂ. AI നിങ്ങളുടെ ഭാഷ മനസ്സിലാക്കുന്നു.",
-      pa: "ਹੱਜ ਰੀਤੀ, ਦੁਆਵਾਂ, ਸਿਹਤ ਸੁਝਾਅ ਬਾਰੇ ਕੋਈ ਵੀ ਸਵਾਲ ਪੁੱਛੋ। AI ਤੁਹਾਡੀ ਭਾਸ਼ਾ ਸਮਝਦਾ ਹੈ।",
-    },
-    tip: {
-      en: "Tap 'AI Help' in the bottom navigation to start chatting!",
-      ar: "اضغط على 'مساعدة AI' في الشريط السفلي لبدء المحادثة!",
-      ur: "چیٹ شروع کرنے کے لیے نیچے 'AI مدد' پر ٹیپ کریں!",
-      hi: "चैट शुरू करने के लिए नीचे 'AI मदद' पर टैप करें!",
-      ta: "அரட்டையைத் தொடங்க 'AI உதவி' தட்டவும்!",
-      te: "చాట్ ప్రారంభించడానికి 'AI సహాయం' ట్యాప్ చేయండి!",
-      mr: "चॅट सुरू करण्यासाठी 'AI मदत' टॅप करा!",
-      bn: "চ্যাট শুরু করতে 'AI সাহায্য' ট্যাপ করুন!",
-      or: "ଚାଟ୍ ଆରମ୍ଭ କରିବାକୁ 'AI ସାହାଯ୍ୟ' ଟ୍ୟାପ୍ କରନ୍ତୁ!",
-      ml: "ചാറ്റ് ആരംഭിക്കാൻ 'AI സഹായം' ടാപ്പ് ചെയ്യൂ!",
-      pa: "ਚੈਟ ਸ਼ੁਰੂ ਕਰਨ ਲਈ 'AI ਮਦਦ' ਟੈਪ ਕਰੋ!",
-    },
+    questionKey: L(
+      "Is this your first Hajj?",
+      "هل هذا حجك الأول؟",
+      "کیا یہ آپ کا پہلا حج ہے؟",
+      "क्या यह आपका पहला हज है?",
+      "இது உங்கள் முதல் ஹஜ்ஜா?",
+      "ఇది మీ మొదటి హజ్‌నా?",
+      "हा तुमचा पहिला हज आहे का?",
+      "এটি কি আপনার প্রথম হজ?",
+      "ଏହା ଆପଣଙ୍କ ପ୍ରଥମ ହଜ କି?",
+      "ഇത് നിങ്ങളുടെ ആദ്യ ഹജ്ജാണോ?",
+      "ਕੀ ਇਹ ਤੁਹਾਡਾ ਪਹਿਲਾ ਹੱਜ ਹੈ?"
+    ),
+    options: [
+      {
+        value: "first",
+        labelKey: L("Yes, first time! ✨", "نعم، أول مرة! ✨", "ہاں، پہلی بار! ✨", "हां, पहली बार! ✨"),
+        tipKey: L(
+          "We'll highlight all the step-by-step ritual guides for you. Check 'Hajj Guide' from the dashboard!",
+          "سنبرز لك جميع الأدلة خطوة بخطوة. تحقق من 'دليل الحج' من لوحة التحكم!",
+          "ہم آپ کے لیے تمام مرحلہ وار گائیڈز نمایاں کریں گے۔ ڈیش بورڈ سے 'حج گائیڈ' دیکھیں!",
+          "हम आपके लिए सभी चरण-दर-चरण गाइड हाइलाइट करेंगे। डैशबोर्ड से 'हज गाइड' देखें!"
+        ),
+      },
+      {
+        value: "experienced",
+        labelKey: L("No, done before 🕋", "لا، حججت سابقاً 🕋", "نہیں، پہلے کر چکا ہوں 🕋", "नहीं, पहले कर चुका हूं 🕋"),
+        tipKey: L(
+          "Great! You can use the AI assistant for quick fatwa lookups and updated Saudi regulations.",
+          "رائع! يمكنك استخدام المساعد الذكي للبحث السريع عن الفتاوى واللوائح السعودية المحدثة.",
+          "بہت اچھا! آپ AI اسسٹنٹ کو فتوی تلاش اور سعودی قوانین کے لیے استعمال کر سکتے ہیں۔",
+          "बहुत अच्छा! आप AI सहायक का उपयोग फतवा खोज और अपडेटेड सऊदी नियमों के लिए कर सकते हैं।"
+        ),
+      },
+    ],
   },
+  // Q2: Documents ready?
+  {
+    icon: <CheckCircle2 className="w-10 h-10" />,
+    color: "from-amber-500 to-orange-600",
+    questionKey: L(
+      "Are your travel documents ready?",
+      "هل وثائق سفرك جاهزة؟",
+      "کیا آپ کے سفری دستاویزات تیار ہیں؟",
+      "क्या आपके यात्रा दस्तावेज़ तैयार हैं?",
+      "உங்கள் பயண ஆவணங்கள் தயாரா?",
+      "మీ ప్రయాణ పత్రాలు సిద్ధంగా ఉన్నాయా?",
+      "तुमची प्रवासी कागदपत्रे तयार आहेत का?",
+      "আপনার ভ্রমণ নথি প্রস্তুত আছে কি?",
+      "ଆପଣଙ୍କ ଯାତ୍ରା ଦଲିଲ ପ୍ରସ୍ତୁତ ଅଛି କି?",
+      "നിങ്ങളുടെ യാത്രാ രേഖകൾ തയ്യാറാണോ?",
+      "ਕੀ ਤੁਹਾਡੇ ਯਾਤਰਾ ਦਸਤਾਵੇਜ਼ ਤਿਆਰ ਹਨ?"
+    ),
+    options: [
+      {
+        value: "ready",
+        labelKey: L("Yes, all ready! ✅", "نعم، كلها جاهزة! ✅", "ہاں، سب تیار! ✅", "हां, सब तैयार! ✅"),
+        tipKey: L(
+          "Excellent! Keep digital copies in the app. Check 'Pre-Hajj India' guide for last-minute reminders.",
+          "ممتاز! احتفظ بنسخ رقمية. راجع دليل 'ما قبل الحج' للتذكيرات الأخيرة.",
+          "بہترین! ڈیجیٹل کاپیاں رکھیں۔ آخری لمحے کی یاد دہانیوں کے لیے 'پری-حج' گائیڈ دیکھیں۔",
+          "उत्कृष्ट! डिजिटल कॉपी रखें। अंतिम समय की याद के लिए 'प्री-हज इंडिया' गाइड देखें।"
+        ),
+      },
+      {
+        value: "not_ready",
+        labelKey: L("Not yet 📋", "ليس بعد 📋", "ابھی نہیں 📋", "अभी नहीं 📋"),
+        tipKey: L(
+          "No worries! Go to 'Preparation Guide' for a complete checklist of passport, visa, vaccination, and more.",
+          "لا تقلق! اذهب إلى 'دليل التحضير' للحصول على قائمة كاملة بالجواز والتأشيرة والتطعيمات.",
+          "فکر نہ کریں! پاسپورٹ، ویزا، ویکسینیشن کی مکمل چیک لسٹ کے لیے 'تیاری گائیڈ' دیکھیں۔",
+          "चिंता न करें! पासपोर्ट, वीज़ा, टीकाकरण की पूरी चेकलिस्ट के लिए 'तैयारी गाइड' देखें।"
+        ),
+      },
+    ],
+  },
+  // Q3: Health concerns?
+  {
+    icon: <Stethoscope className="w-10 h-10" />,
+    color: "from-rose-500 to-pink-600",
+    questionKey: L(
+      "Do you have any health conditions?",
+      "هل لديك أي حالات صحية؟",
+      "کیا آپ کو کوئی صحت کا مسئلہ ہے؟",
+      "क्या आपको कोई स्वास्थ्य समस्या है?",
+      "உங்களுக்கு ஏதேனும் உடல்நல நிலை உள்ளதா?",
+      "మీకు ఏదైనా ఆరోగ్య సమస్యలు ఉన్నాయా?",
+      "तुम्हाला काही आरोग्य समस्या आहे का?",
+      "আপনার কি কোনো স্বাস্থ্য সমস্যা আছে?",
+      "ଆପଣଙ୍କର କୌଣସି ସ୍ୱାସ୍ଥ୍ୟ ସମସ୍ୟା ଅଛି କି?",
+      "നിങ്ങൾക്ക് എന്തെങ്കിലും ആരോഗ്യ പ്രശ്നങ്ങൾ ഉണ്ടോ?",
+      "ਕੀ ਤੁਹਾਨੂੰ ਕੋਈ ਸਿਹਤ ਸਮੱਸਿਆ ਹੈ?"
+    ),
+    options: [
+      {
+        value: "yes_health",
+        labelKey: L("Yes, I need guidance 🏥", "نعم، أحتاج إرشاد 🏥", "ہاں، مجھے رہنمائی چاہیے 🏥", "हां, मुझे मार्गदर्शन चाहिए 🏥"),
+        tipKey: L(
+          "Check the 'Health Guide' for medicine tips, heat safety, and emergency contacts. You can also use 'Health Help' for AI triage.",
+          "راجع 'دليل الصحة' للنصائح الطبية وسلامة الحرارة وأرقام الطوارئ. يمكنك أيضاً استخدام 'مساعدة صحية' للفرز الذكي.",
+          "دوائی کے مشورے، گرمی سے حفاظت کے لیے 'صحت گائیڈ' دیکھیں۔ AI ٹرائیج کے لیے 'صحت مدد' استعمال کریں۔",
+          "दवा सुझाव, गर्मी से सुरक्षा के लिए 'स्वास्थ्य गाइड' देखें। AI ट्रायज के लिए 'स्वास्थ्य सहायता' उपयोग करें।"
+        ),
+      },
+      {
+        value: "no_health",
+        labelKey: L("No, I'm healthy 💪", "لا، أنا بصحة جيدة 💪", "نہیں، میں صحت مند ہوں 💪", "नहीं, मैं स्वस्थ हूं 💪"),
+        tipKey: L(
+          "Alhamdulillah! Still check 'Health Guide' for hydration & heat tips — Saudi summer can be intense!",
+          "الحمد لله! لا تنس مراجعة 'دليل الصحة' لنصائح الترطيب والحرارة — صيف السعودية حار جداً!",
+          "الحمد للہ! پھر بھی پانی اور گرمی کے مشورے کے لیے 'صحت گائیڈ' دیکھیں — سعودی گرمی شدید ہو سکتی ہے!",
+          "अल्हम्दुलिल्लाह! फिर भी पानी और गर्मी के सुझावों के लिए 'स्वास्थ्य गाइड' देखें — सऊदी गर्मी तीव्र होती है!"
+        ),
+      },
+    ],
+  },
+  // Q4: Traveling with family?
   {
     icon: <Users className="w-10 h-10" />,
     color: "from-purple-500 to-violet-600",
-    titleKey: {
-      en: "Family Tracking",
-      ar: "تتبع العائلة",
-      ur: "خاندان کی ٹریکنگ",
-      hi: "परिवार ट्रैकिंग",
-      ta: "குடும்ப கண்காணிப்பு",
-      te: "కుటుంబ ట్రాకింగ్",
-      mr: "कुटुंब ट्रॅकिंग",
-      bn: "পরিবার ট্র্যাকিং",
-      or: "ପରିବାର ଟ୍ରାକିଂ",
-      ml: "കുടുംബ ട്രാക്കിംഗ്",
-      pa: "ਪਰਿਵਾਰ ਟ੍ਰੈਕਿੰਗ",
-    },
-    descKey: {
-      en: "Stay connected with your family during Hajj. Create a family group, share your location, and see each other's status in real-time. Never worry about losing your loved ones in the crowd.",
-      ar: "ابق على اتصال مع عائلتك أثناء الحج. أنشئ مجموعة عائلية وشارك موقعك وتابع حالة بعضكم البعض مباشرة.",
-      ur: "حج کے دوران اپنے خاندان سے جڑے رہیں۔ فیملی گروپ بنائیں، اپنا مقام شیئر کریں اور ایک دوسرے کی حالت دیکھیں۔",
-      hi: "हज के दौरान अपने परिवार से जुड़े रहें। फैमिली ग्रुप बनाएं, अपना स्थान साझा करें और एक-दूसरे की स्थिति देखें।",
-      ta: "ஹஜ்ஜின் போது உங்கள் குடும்பத்துடன் இணைந்திருங்கள். குடும்ப குழு உருவாக்கி, இருப்பிடம் பகிருங்கள்.",
-      te: "హజ్ సమయంలో మీ కుటుంబంతో అనుసంధానమై ఉండండి. కుటుంబ గ్రూప్ సృష్టించండి, లొకేషన్ పంచుకోండి.",
-      mr: "हज दरम्यान तुमच्या कुटुंबाशी जोडलेले राहा. कुटुंब गट तयार करा, स्थान शेअर करा.",
-      bn: "হজের সময় আপনার পরিবারের সাথে সংযুক্ত থাকুন। পরিবার গ্রুপ তৈরি করুন, অবস্থান শেয়ার করুন।",
-      or: "ହଜ ସମୟରେ ଆପଣଙ୍କ ପରିବାର ସହ ଯୋଡି ରୁହନ୍ତୁ। ପରିବାର ଗ୍ରୁପ୍ ତିଆରି କରନ୍ତୁ, ସ୍ଥାନ ଶେୟାର କରନ୍ତୁ।",
-      ml: "ഹജ്ജ് സമയത്ത് കുടുംബവുമായി ബന്ധപ്പെട്ടിരിക്കൂ. കുടുംബ ഗ്രൂപ്പ് സൃഷ്ടിക്കൂ, ലൊക്കേഷൻ പങ്കിടൂ.",
-      pa: "ਹੱਜ ਦੌਰਾਨ ਆਪਣੇ ਪਰਿਵਾਰ ਨਾਲ ਜੁੜੇ ਰਹੋ। ਪਰਿਵਾਰ ਗਰੁੱਪ ਬਣਾਓ, ਸਥਾਨ ਸਾਂਝਾ ਕਰੋ।",
-    },
-    tip: {
-      en: "Go to 'Family' tab to create or join a group!",
-      ar: "اذهب إلى تبويب 'العائلة' لإنشاء أو الانضمام لمجموعة!",
-      ur: "گروپ بنانے یا شامل ہونے کے لیے 'خاندان' ٹیب پر جائیں!",
-      hi: "ग्रुप बनाने या जुड़ने के लिए 'परिवार' टैब पर जाएं!",
-      ta: "குழு உருவாக்க 'குடும்பம்' டேப் செல்லுங்கள்!",
-      te: "గ్రూప్ సృష్టించడానికి 'కుటుంబం' ట్యాబ్ కు వెళ్ళండి!",
-      mr: "गट तयार करण्यासाठी 'कुटुंब' टॅबवर जा!",
-      bn: "গ্রুপ তৈরি করতে 'পরিবার' ট্যাবে যান!",
-      or: "ଗ୍ରୁପ୍ ତିଆରି କରିବାକୁ 'ପରିବାର' ଟ୍ୟାବ ଯାଆନ୍ତୁ!",
-      ml: "ഗ്രൂപ്പ് സൃഷ്ടിക്കാൻ 'കുടുംബം' ടാബിലേക്ക് പോകൂ!",
-      pa: "ਗਰੁੱਪ ਬਣਾਉਣ ਲਈ 'ਪਰਿਵਾਰ' ਟੈਬ ਤੇ ਜਾਓ!",
-    },
+    questionKey: L(
+      "Are you traveling with family?",
+      "هل تسافر مع العائلة؟",
+      "کیا آپ خاندان کے ساتھ سفر کر رہے ہیں؟",
+      "क्या आप परिवार के साथ यात्रा कर रहे हैं?",
+      "நீங்கள் குடும்பத்துடன் பயணம் செய்கிறீர்களா?",
+      "మీరు కుటుంబంతో ప్రయాణిస్తున్నారా?",
+      "तुम्ही कुटुंबासह प्रवास करत आहात का?",
+      "আপনি কি পরিবারের সাথে ভ্রমণ করছেন?",
+      "ଆପଣ ପରିବାର ସହ ଯାତ୍ରା କରୁଛନ୍ତି କି?",
+      "നിങ്ങൾ കുടുംബവുമായി യാത്ര ചെയ്യുന്നുണ്ടോ?",
+      "ਕੀ ਤੁਸੀਂ ਪਰਿਵਾਰ ਨਾਲ ਯਾਤਰਾ ਕਰ ਰਹੇ ਹੋ?"
+    ),
+    options: [
+      {
+        value: "with_family",
+        labelKey: L("Yes, with family 👨‍👩‍👧‍👦", "نعم، مع العائلة 👨‍👩‍👧‍👦", "ہاں، خاندان کے ساتھ 👨‍👩‍👧‍👦", "हां, परिवार के साथ 👨‍👩‍👧‍👦"),
+        tipKey: L(
+          "Set up 'Sukoon Family Tracking' from the home screen to stay connected! Share locations and see everyone's status in real-time.",
+          "الصفحة الرئيسية من 'تتبع عائلة سكون' أنشئ للبقاء على اتصال! شارك المواقع وتابع حالة الجميع مباشرة.",
+          "جڑے رہنے کے لیے ہوم اسکرین سے 'سکون فیملی ٹریکنگ' سیٹ اپ کریں! مقامات شیئر کریں اور سب کی حالت دیکھیں۔",
+          "जुड़े रहने के लिए होम स्क्रीन से 'सुकून फैमिली ट्रैकिंग' सेट करें! स्थान साझा करें और सबकी स्थिति देखें।"
+        ),
+      },
+      {
+        value: "alone",
+        labelKey: L("No, traveling alone 🧳", "لا، أسافر وحدي 🧳", "نہیں، اکیلے سفر 🧳", "नहीं, अकेले यात्रा 🧳"),
+        tipKey: L(
+          "Stay safe! Save emergency contacts via 'Contact Numbers' and use the SOS button if you ever need help.",
+          "ابق آمناً! احفظ أرقام الطوارئ عبر 'أرقام الاتصال' واستخدم زر الطوارئ عند الحاجة.",
+          "محفوظ رہیں! 'رابطہ نمبر' کے ذریعے ایمرجنسی نمبر محفوظ کریں اور مدد کے لیے SOS بٹن استعمال کریں۔",
+          "सुरक्षित रहें! 'संपर्क नंबर' से इमरजेंसी नंबर सेव करें और मदद के लिए SOS बटन उपयोग करें।"
+        ),
+      },
+    ],
   },
+  // Final: Result
   {
-    icon: <BookOpen className="w-10 h-10" />,
-    color: "from-amber-500 to-orange-600",
-    titleKey: {
-      en: "Complete Hajj Guides",
-      ar: "أدلة حج كاملة",
-      ur: "مکمل حج گائیڈز",
-      hi: "पूर्ण हज गाइड",
-      ta: "முழுமையான ஹஜ் வழிகாட்டிகள்",
-      te: "సంపూర్ణ హజ్ గైడ్‌లు",
-      mr: "संपूर्ण हज मार्गदर्शक",
-      bn: "সম্পূর্ণ হজ গাইড",
-      or: "ସମ୍ପୂର୍ଣ୍ଣ ହଜ ଗାଇଡ୍",
-      ml: "സമ്പൂർണ്ണ ഹജ്ജ് ഗൈഡുകൾ",
-      pa: "ਪੂਰੀ ਹੱਜ ਗਾਈਡ",
-    },
-    descKey: {
-      en: "Access step-by-step guides for every ritual — Tawaf, Sa'i, Arafat, Muzdalifah, and more. Plus health tips, packing lists, money guides, and Saudi rules — all in your language.",
-      ar: "احصل على أدلة خطوة بخطوة لكل منسك — الطواف والسعي وعرفة ومزدلفة وأكثر. بالإضافة إلى نصائح صحية وقوائم التعبئة وأحكام السعودية — كلها بلغتك.",
-      ur: "ہر منسک کے لیے مرحلہ وار رہنمائی — طواف، سعی، عرفات، مزدلفہ اور مزید۔ صحت کی تجاویز، پیکنگ لسٹ، اور سعودی قوانین — سب آپ کی زبان میں۔",
-      hi: "हर रीति के लिए चरण-दर-चरण गाइड — तवाफ, सई, अरफात, मुज़दलिफा और अधिक। स्वास्थ्य सुझाव, पैकिंग सूची, और सऊदी नियम — सब आपकी भाषा में।",
-      ta: "ஒவ்வொரு சடங்கிற்கும் படிப்படியான வழிகாட்டிகள் — தவாஃப், ஸஃஈ, அரஃபா. உடல்நல குறிப்புகள், பேக்கிங் பட்டியல் — உங்கள் மொழியில்.",
-      te: "ప్రతి ఆచారానికి దశల వారీ గైడ్‌లు — తవాఫ్, సఈ, అరఫాత్. ఆరోగ్య చిట్కాలు, ప్యాకింగ్ — మీ భాషలో.",
-      mr: "प्रत्येक विधीसाठी टप्प्याटप्प्याने मार्गदर्शक — तवाफ, सई, अराफात. आरोग्य टिप्स, पॅकिंग — तुमच्या भाषेत.",
-      bn: "প্রতিটি আচারের জন্য ধাপে ধাপে গাইড — তাওয়াফ, সাঈ, আরাফাত। স্বাস্থ্য পরামর্শ, প্যাকিং — আপনার ভাষায়।",
-      or: "ପ୍ରତ୍ୟେକ ରୀତି ପାଇଁ ପଦକ୍ଷେପ ଗାଇଡ — ତାୱାଫ, ସାଈ, ଆରାଫାତ। ସ୍ୱାସ୍ଥ୍ୟ ପରାମର୍ଶ, ପ୍ୟାକିଂ — ଆପଣଙ୍କ ଭାଷାରେ।",
-      ml: "ഓരോ ആചാരത്തിനും ഘട്ടം ഘട്ടമായ ഗൈഡുകൾ — ത്വവാഫ്, സഅ്‌യ്, അറഫ. ആരോഗ്യ ടിപ്പുകൾ, പാക്കിംഗ് — നിങ്ങളുടെ ഭാഷയിൽ.",
-      pa: "ਹਰ ਰੀਤੀ ਲਈ ਕਦਮ-ਦਰ-ਕਦਮ ਗਾਈਡ — ਤਵਾਫ਼, ਸਈ, ਅਰਫ਼ਾਤ। ਸਿਹਤ ਸੁਝਾਅ, ਪੈਕਿੰਗ — ਤੁਹਾਡੀ ਭਾਸ਼ਾ ਵਿੱਚ।",
-    },
-    tip: {
-      en: "Open the sidebar ☰ to browse all guides!",
-      ar: "افتح القائمة الجانبية ☰ لتصفح جميع الأدلة!",
-      ur: "تمام گائیڈز دیکھنے کے لیے سائیڈبار ☰ کھولیں!",
-      hi: "सभी गाइड देखने के लिए साइडबार ☰ खोलें!",
-      ta: "அனைத்து வழிகாட்டிகளையும் பார்க்க ☰ திறக்கவும்!",
-      te: "అన్ని గైడ్‌లు చూడటానికి ☰ తెరవండి!",
-      mr: "सर्व मार्गदर्शक पाहण्यासाठी ☰ उघडा!",
-      bn: "সব গাইড দেখতে ☰ খুলুন!",
-      or: "ସବୁ ଗାଇଡ ଦେଖିବାକୁ ☰ ଖୋଲନ୍ତୁ!",
-      ml: "എല്ലാ ഗൈഡുകളും കാണാൻ ☰ തുറക്കൂ!",
-      pa: "ਸਾਰੀਆਂ ਗਾਈਡਾਂ ਦੇਖਣ ਲਈ ☰ ਖੋਲ੍ਹੋ!",
-    },
-  },
-  {
+    type: "result",
     icon: <Heart className="w-10 h-10" />,
-    color: "from-rose-500 to-pink-600",
-    titleKey: {
-      en: "You're All Set!",
-      ar: "أنت جاهز!",
-      ur: "آپ تیار ہیں!",
-      hi: "आप तैयार हैं!",
-      ta: "நீங்கள் தயார்!",
-      te: "మీరు సిద్ధంగా ఉన్నారు!",
-      mr: "तुम्ही तयार आहात!",
-      bn: "আপনি প্রস্তুত!",
-      or: "ଆପଣ ପ୍ରସ୍ତୁତ!",
-      ml: "നിങ്ങൾ തയ്യാർ!",
-      pa: "ਤੁਸੀਂ ਤਿਆਰ ਹੋ!",
-    },
-    descKey: {
-      en: "May Allah accept your Hajj. Start exploring the app — ask the AI assistant, connect with family, or browse the guides. We're here with you every step of the way. Labbaik Allahumma Labbaik! 🕋",
-      ar: "تقبل الله حجك. ابدأ باستكشاف التطبيق — اسأل المساعد الذكي أو تواصل مع عائلتك أو تصفح الأدلة. نحن معك في كل خطوة. لبيك اللهم لبيك! 🕋",
-      ur: "اللہ آپ کا حج قبول فرمائے۔ ایپ استعمال شروع کریں — AI اسسٹنٹ سے پوچھیں، خاندان سے جڑیں، یا گائیڈز دیکھیں۔ لبیک اللہم لبیک! 🕋",
-      hi: "अल्लाह आपका हज कबूल करे। ऐप खोजना शुरू करें — AI से पूछें, परिवार से जुड़ें, या गाइड देखें। लब्बैक अल्लाहुम्मा लब्बैक! 🕋",
-      ta: "அல்லாஹ் உங்கள் ஹஜ்ஜை ஏற்றுக்கொள்வானாக. ஆப்பை ஆராயுங்கள். லப்பைக் அல்லாஹும்ம லப்பைக்! 🕋",
-      te: "అల్లాహ్ మీ హజ్‌ను స్వీకరించుగాక. యాప్ అన్వేషించండి. లబ్బైక్ అల్లాహుమ్మ లబ్బైక్! 🕋",
-      mr: "अल्लाह तुमचा हज कबूल करो. ॲप एक्सप्लोर करा. लब्बैक अल्लाहुम्मा लब्बैक! 🕋",
-      bn: "আল্লাহ আপনার হজ কবুল করুন। অ্যাপ এক্সপ্লোর করুন। লাব্বাইক আল্লাহুম্মা লাব্বাইক! 🕋",
-      or: "ଆଲ୍ଲାହ ଆପଣଙ୍କ ହଜ କବୁଲ କରନ୍ତୁ। ଆପ୍ ଏକ୍ସପ୍ଲୋର କରନ୍ତୁ। ଲାବ୍ବାଇକ ଆଲ୍ଲାହୁମ୍ମା ଲାବ୍ବାଇକ! 🕋",
-      ml: "അല്ലാഹു നിങ്ങളുടെ ഹജ്ജ് സ്വീകരിക്കട്ടെ. ആപ്പ് എക്സ്പ്ലോർ ചെയ്യൂ. ലബ്ബൈക് അല്ലാഹുമ്മ ലബ്ബൈക്! 🕋",
-      pa: "ਅੱਲਾਹ ਤੁਹਾਡਾ ਹੱਜ ਕਬੂਲ ਕਰੇ। ਐਪ ਐਕਸਪਲੋਰ ਕਰੋ। ਲੱਬੈਕ ਅੱਲਾਹੁੰਮਾ ਲੱਬੈਕ! 🕋",
-    },
-    tip: {
-      en: "You can replay this tour anytime from the sidebar!",
-      ar: "يمكنك إعادة هذه الجولة في أي وقت من القائمة الجانبية!",
-      ur: "آپ سائیڈبار سے کبھی بھی یہ ٹور دوبارہ دیکھ سکتے ہیں!",
-      hi: "आप साइडबार से कभी भी यह टूर दोबारा देख सकते हैं!",
-      ta: "சைட்பாரில் இருந்து எப்போது வேண்டுமானாலும் இந்த சுற்றுப்பயணத்தை மீண்டும் பார்க்கலாம்!",
-      te: "సైడ్‌బార్ నుండి ఎప్పుడైనా ఈ టూర్ మళ్ళీ చూడవచ్చు!",
-      mr: "साइडबारमधून कधीही हा टूर पुन्हा पाहू शकता!",
-      bn: "সাইডবার থেকে যেকোনো সময় এই ট্যুর আবার দেখতে পারেন!",
-      or: "ସାଇଡବାରରୁ ଯେକୌଣସି ସମୟରେ ଏହି ଟୁର୍ ପୁନରାବୃତ୍ତି କରିପାରିବେ!",
-      ml: "സൈഡ്ബാറിൽ നിന്ന് എപ്പോൾ വേണമെങ്കിലും ഈ ടൂർ വീണ്ടും കാണാം!",
-      pa: "ਸਾਈਡਬਾਰ ਤੋਂ ਕਿਸੇ ਵੀ ਸਮੇਂ ਇਹ ਟੂਰ ਦੁਬਾਰਾ ਦੇਖ ਸਕਦੇ ਹੋ!",
-    },
+    color: "from-emerald-500 to-teal-600",
   },
 ];
+
+// Result screen content
+const resultTitle = L(
+  "You're All Set! 🕋",
+  "أنت جاهز! 🕋",
+  "آپ تیار ہیں! 🕋",
+  "आप तैयार हैं! 🕋",
+  "நீங்கள் தயார்! 🕋",
+  "మీరు సిద్ధంగా ఉన్నారు! 🕋",
+  "तुम्ही तयार आहात! 🕋",
+  "আপনি প্রস্তুত! 🕋",
+  "ଆପଣ ପ୍ରସ୍ତୁତ! 🕋",
+  "നിങ്ങൾ തയ്യാർ! 🕋",
+  "ਤੁਸੀਂ ਤਿਆਰ ਹੋ! 🕋"
+);
+
+const resultDesc = L(
+  "Based on your answers, we've personalized your experience. May Allah accept your Hajj — Labbaik Allahumma Labbaik!",
+  "بناءً على إجاباتك، خصصنا تجربتك. تقبل الله حجك — لبيك اللهم لبيك!",
+  "آپ کے جوابات کی بنیاد پر ہم نے آپ کا تجربہ ذاتی بنایا۔ اللہ آپ کا حج قبول فرمائے — لبیک اللہم لبیک!",
+  "आपके जवाबों के आधार पर हमने आपका अनुभव निजीकृत किया। अल्लाह आपका हज कबूल करे — लब्बैक अल्लाहुम्मा लब्बैक!",
+  "உங்கள் பதில்கள் அடிப்படையில் அனுபவத்தை தனிப்பயனாக்கினோம்। லப்பைக் அல்லாஹும்ம லப்பைக்!",
+  "మీ సమాధానాల ఆధారంగా అనుభవాన్ని వ్యక్తిగతీకరించాము. లబ్బైక్ అల్లాహుమ్మ లబ్బైక్!",
+  "तुमच्या उत्तरांवर आधारित अनुभव वैयक्तिक केला. लब्बैक अल्लाहुम्मा लब्बैक!",
+  "আপনার উত্তরের ভিত্তিতে অভিজ্ঞতা ব্যক্তিগত করেছি। লাব্বাইক আল্লাহুম্মা লাব্বাইক!",
+  "ଆପଣଙ୍କ ଉତ୍ତର ଆଧାରରେ ଅଭିଜ୍ଞତା ବ୍ୟକ୍ତିଗତ କରାଯାଇଛି। ଲାବ୍ବାଇକ ଆଲ୍ଲାହୁମ୍ମା ଲାବ୍ବାଇକ!",
+  "നിങ്ങളുടെ ഉത്തരങ്ങൾ അടിസ്ഥാനമാക്കി അനുഭവം വ്യക്തിഗതമാക്കി. ലബ്ബൈക് അല്ലാഹുമ്മ ലബ്ബൈക്!",
+  "ਤੁਹਾਡੇ ਜਵਾਬਾਂ ਦੇ ਆਧਾਰ ਤੇ ਤਜਰਬਾ ਨਿੱਜੀ ਬਣਾਇਆ। ਲੱਬੈਕ ਅੱਲਾਹੁੰਮਾ ਲੱਬੈਕ!"
+);
+
+const replayTip = L(
+  "You can replay this tour anytime from the sidebar!",
+  "يمكنك إعادة هذه الجولة في أي وقت من القائمة الجانبية!",
+  "آپ سائیڈبار سے کبھی بھی یہ ٹور دوبارہ دیکھ سکتے ہیں!",
+  "आप साइडबार से कभी भी यह टूर दोबारा देख सकते हैं!",
+);
 
 export const resetOnboardingTour = () => {
   localStorage.removeItem(TOUR_STORAGE_KEY);
@@ -250,6 +300,7 @@ export const resetOnboardingTour = () => {
 export const OnboardingTour = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [step, setStep] = useState(0);
+  const [answers, setAnswers] = useState<Record<number, number>>({});
   const { language } = useLanguage();
   const { isAuthenticated } = useAuth();
 
@@ -265,6 +316,7 @@ export const OnboardingTour = () => {
     setIsOpen(false);
     localStorage.setItem(TOUR_STORAGE_KEY, "true");
     setStep(0);
+    setAnswers({});
   }, []);
 
   const handleNext = useCallback(() => {
@@ -279,10 +331,15 @@ export const OnboardingTour = () => {
     if (step > 0) setStep((s) => s - 1);
   }, [step]);
 
-  // Public method for re-triggering
+  const handleAnswer = useCallback((optionIndex: number) => {
+    setAnswers((prev) => ({ ...prev, [step]: optionIndex }));
+  }, [step]);
+
+  // Replay event
   useEffect(() => {
     const handler = () => {
       setStep(0);
+      setAnswers({});
       setIsOpen(true);
     };
     window.addEventListener("hajjcare:replay-tour", handler);
@@ -291,27 +348,20 @@ export const OnboardingTour = () => {
 
   const current = tourSteps[step];
   const lang = language as string;
-
-  const nextLabel: Record<string, string> = {
-    en: "Next", ar: "التالي", ur: "اگلا", hi: "अगला", ta: "அடுத்து",
-    te: "తదుపరి", mr: "पुढे", bn: "পরবর্তী", or: "ପରବର୍ତ୍ତୀ", ml: "അടുത്തത്", pa: "ਅਗਲਾ",
-  };
-  const prevLabel: Record<string, string> = {
-    en: "Back", ar: "رجوع", ur: "پیچھے", hi: "पीछे", ta: "முந்தைய",
-    te: "వెనుకకు", mr: "मागे", bn: "পিছনে", or: "ପଛକୁ", ml: "പിന്നോട്ട്", pa: "ਪਿੱਛੇ",
-  };
-  const doneLabel: Record<string, string> = {
-    en: "Start Exploring!", ar: "ابدأ الاستكشاف!", ur: "دریافت شروع کریں!", hi: "खोजना शुरू करें!",
-    ta: "ஆராய்வதைத் தொடங்குங்கள்!", te: "అన్వేషించడం ప్రారంభించండి!", mr: "शोधायला सुरुवात करा!",
-    bn: "এক্সপ্লোর শুরু করুন!", or: "ଅନ୍ୱେଷଣ ଆରମ୍ଭ କରନ୍ତୁ!", ml: "പര്യവേക്ഷണം ആരംഭിക്കൂ!", pa: "ਖੋਜ ਸ਼ੁਰੂ ਕਰੋ!",
-  };
-  const skipLabel: Record<string, string> = {
-    en: "Skip", ar: "تخطي", ur: "چھوڑیں", hi: "छोड़ें", ta: "தவிர்",
-    te: "దాటవేయి", mr: "वगळा", bn: "এড়িয়ে যান", or: "ଛାଡିଦିଅନ୍ତୁ", ml: "ഒഴിവാക്കുക", pa: "ਛੱਡੋ",
-  };
-
   const isRTL = ["ar", "ur"].includes(lang);
   const isLast = step === tourSteps.length - 1;
+  const t = (obj: LocalizedText) => obj[lang] || obj.en;
+
+  const nextLabel = L("Next", "التالي", "اگلا", "अगला");
+  const prevLabel = L("Back", "رجوع", "پیچھے", "पीछे");
+  const doneLabel = L("Start Exploring!", "ابدأ الاستكشاف!", "دریافت شروع کریں!", "खोजना शुरू करें!");
+  const skipLabel = L("Skip", "تخطي", "چھوڑیں", "छोड़ें");
+  const beginLabel = L("Let's Begin!", "لنبدأ!", "شروع کریں!", "शुरू करें!");
+
+  // Check if current Q has been answered
+  const currentAnswer = answers[step];
+  const isQA = !isWelcome(current) && !isResult(current);
+  const qaStep = isQA ? (current as QAStep) : null;
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => { if (!open) handleClose(); }}>
@@ -319,7 +369,7 @@ export const OnboardingTour = () => {
         className="max-w-[92vw] sm:max-w-md p-0 overflow-hidden rounded-2xl border-0 shadow-2xl gap-0 [&>button]:hidden"
       >
         <div dir={isRTL ? "rtl" : "ltr"}>
-          {/* Skip button */}
+          {/* Close button */}
           <button
             onClick={handleClose}
             className="absolute top-3 right-3 z-10 p-2 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm transition-colors"
@@ -334,35 +384,93 @@ export const OnboardingTour = () => {
               {current.icon}
             </div>
             <h2 className="text-xl sm:text-2xl font-bold text-center leading-tight">
-              {current.titleKey[lang] || current.titleKey.en}
+              {isWelcome(current)
+                ? t(current.titleKey)
+                : isResult(current)
+                  ? t(resultTitle)
+                  : t((current as QAStep).questionKey)}
             </h2>
           </div>
 
           {/* Content */}
           <div className="p-6 space-y-4">
-            <p className="text-base sm:text-lg text-foreground/80 leading-relaxed text-center">
-              {current.descKey[lang] || current.descKey.en}
-            </p>
-
-            {/* Tip */}
-            <div className="bg-primary/5 border border-primary/10 rounded-xl p-3 text-center">
-              <p className="text-sm font-medium text-primary">
-                💡 {current.tip[lang] || current.tip.en}
+            {/* Welcome step */}
+            {isWelcome(current) && (
+              <p className="text-base sm:text-lg text-foreground/80 leading-relaxed text-center">
+                {t(current.descKey)}
               </p>
-            </div>
+            )}
+
+            {/* Q&A step */}
+            {qaStep && (
+              <div className="space-y-3">
+                {qaStep.options.map((opt, i) => (
+                  <button
+                    key={i}
+                    onClick={() => handleAnswer(i)}
+                    className={`w-full text-start p-4 rounded-xl border-2 transition-all duration-200 text-base font-medium ${
+                      currentAnswer === i
+                        ? "border-primary bg-primary/10 text-primary shadow-sm"
+                        : "border-border hover:border-primary/40 hover:bg-muted/40 text-foreground"
+                    }`}
+                  >
+                    {t(opt.labelKey)}
+                  </button>
+                ))}
+
+                {/* Show personalized tip when answered */}
+                {currentAnswer !== undefined && (
+                  <div className="bg-primary/5 border border-primary/10 rounded-xl p-3 text-center animate-fade-in">
+                    <p className="text-sm font-medium text-primary">
+                      💡 {t(qaStep.options[currentAnswer].tipKey)}
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Result step */}
+            {isResult(current) && (
+              <>
+                <p className="text-base sm:text-lg text-foreground/80 leading-relaxed text-center">
+                  {t(resultDesc)}
+                </p>
+
+                {/* Show summary of tips based on answers */}
+                <div className="space-y-2">
+                  {Object.entries(answers).map(([stepIdx, optIdx]) => {
+                    const s = tourSteps[Number(stepIdx)] as QAStep;
+                    if (!s || !s.options) return null;
+                    const opt = s.options[optIdx];
+                    return (
+                      <div key={stepIdx} className="flex items-start gap-2 bg-muted/40 rounded-lg p-2.5">
+                        <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                        <p className="text-xs text-foreground/70">{t(opt.tipKey)}</p>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div className="bg-primary/5 border border-primary/10 rounded-xl p-3 text-center">
+                  <p className="text-sm font-medium text-primary">
+                    💡 {t(replayTip)}
+                  </p>
+                </div>
+              </>
+            )}
 
             {/* Progress dots */}
             <div className="flex items-center justify-center gap-2 pt-2">
               {tourSteps.map((_, i) => (
-                <button
+                <div
                   key={i}
-                  onClick={() => setStep(i)}
                   className={`rounded-full transition-all duration-300 ${
                     i === step
                       ? "w-8 h-2.5 bg-primary"
-                      : "w-2.5 h-2.5 bg-muted-foreground/30 hover:bg-muted-foreground/50"
+                      : i < step
+                        ? "w-2.5 h-2.5 bg-primary/50"
+                        : "w-2.5 h-2.5 bg-muted-foreground/30"
                   }`}
-                  aria-label={`Step ${i + 1}`}
                 />
               ))}
             </div>
@@ -376,7 +484,7 @@ export const OnboardingTour = () => {
                   className="flex-1 h-12 text-base rounded-xl"
                 >
                   <ChevronLeft className="w-4 h-4 mr-1" />
-                  {prevLabel[lang] || prevLabel.en}
+                  {t(prevLabel)}
                 </Button>
               ) : (
                 <Button
@@ -384,16 +492,19 @@ export const OnboardingTour = () => {
                   onClick={handleClose}
                   className="flex-1 h-12 text-base rounded-xl text-muted-foreground"
                 >
-                  {skipLabel[lang] || skipLabel.en}
+                  {t(skipLabel)}
                 </Button>
               )}
               <Button
                 onClick={handleNext}
-                className={`flex-1 h-12 text-base rounded-xl bg-gradient-to-r ${current.color} text-white hover:opacity-90`}
+                disabled={isQA && currentAnswer === undefined}
+                className={`flex-1 h-12 text-base rounded-xl bg-gradient-to-r ${current.color} text-white hover:opacity-90 disabled:opacity-50`}
               >
                 {isLast
-                  ? (doneLabel[lang] || doneLabel.en)
-                  : (nextLabel[lang] || nextLabel.en)}
+                  ? t(doneLabel)
+                  : step === 0
+                    ? t(beginLabel)
+                    : t(nextLabel)}
                 {!isLast && <ChevronRight className="w-4 h-4 ml-1" />}
               </Button>
             </div>
