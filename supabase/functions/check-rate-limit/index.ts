@@ -43,6 +43,7 @@ Deno.serve(async (req) => {
     const rateLimits: Record<string, { maxRequests: number; windowMinutes: number }> = {
       'free-umrah-apply': { maxRequests: 3, windowMinutes: 60 }, // 3 applications per hour
       'free-umrah-status': { maxRequests: 10, windowMinutes: 5 }, // 10 status checks per 5 minutes
+      'inspector-register': { maxRequests: 2, windowMinutes: 60 }, // 2 registrations per hour per mobile
     };
 
     const config = rateLimits[action] || { maxRequests: 10, windowMinutes: 60 };
