@@ -98,37 +98,38 @@ const InspectorRegisterPage = () => {
         return;
       }
 
-      const { data: reg, error } = await supabase
-        .from('inspector_registrations')
-        .insert({
-          full_name: result.data.fullName,
-          mobile: result.data.mobile,
-          city: result.data.city,
-          state: result.data.state,
-          role: result.data.role,
-          language_preference: result.data.languagePreference,
-          status: result.data.role === 'haj_inspector' ? 'verified' : 'pending',
-        })
-        .select('id')
-        .single();
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/inspector-register`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+          },
+          body: JSON.stringify({
+            fullName: result.data.fullName,
+            mobile: result.data.mobile,
+            city: result.data.city,
+            state: result.data.state,
+            role: result.data.role,
+            languagePreference: result.data.languagePreference,
+          }),
+        }
+      );
 
-      if (error) {
-        if (error.code === '23505') {
+      const data = await response.json();
+
+      if (!response.ok) {
+        if (response.status === 409) {
           setErrors({ mobile: isHindi ? 'यह नंबर पहले से पंजीकृत है' : 'This number is already registered' });
+        } else if (response.status === 429) {
+          toast.error(isHindi ? 'बहुत अधिक प्रयास। कृपया बाद में पुनः प्रयास करें।' : 'Too many attempts. Please try again later.');
         } else {
-          toast.error(error.message);
+          toast.error(data.error || 'Something went wrong');
         }
         setIsSubmitting(false);
         return;
       }
-
-      // Audit log
-      await supabase.from('inspector_audit_log').insert({
-        registration_id: reg.id,
-        action: 'registration_submitted',
-        details: { role: result.data.role, state: result.data.state, city: result.data.city },
-        performed_by: 'self',
-      });
 
       setIsSuccess(true);
       toast.success(
