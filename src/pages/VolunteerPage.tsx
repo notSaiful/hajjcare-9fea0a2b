@@ -72,6 +72,7 @@ const VolunteerPage = () => {
   const [showConsentModal, setShowConsentModal] = useState(false);
   const [consentPrivacy, setConsentPrivacy] = useState(false);
   const [consentTerms, setConsentTerms] = useState(false);
+  const [showReviewModal, setShowReviewModal] = useState(false);
 
   const [form, setForm] = useState({
     full_name: "",
@@ -144,8 +145,13 @@ const VolunteerPage = () => {
     setShowConsentModal(true);
   };
 
-  const handleSubmit = async () => {
+  const handleConsentDone = () => {
     setShowConsentModal(false);
+    setShowReviewModal(true);
+  };
+
+  const handleSubmit = async () => {
+    setShowReviewModal(false);
 
     setSubmitting(true);
     try {
@@ -560,13 +566,76 @@ const VolunteerPage = () => {
               <Button
                 className="w-full"
                 disabled={!consentPrivacy || !consentTerms || submitting}
-                onClick={handleSubmit}
+                onClick={handleConsentDone}
               >
                 {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
                 सहमत हूँ और रजिस्टर करें / Agree & Register
               </Button>
               <Button variant="ghost" className="w-full" onClick={() => setShowConsentModal(false)}>
                 रद्द करें / Cancel
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Review & Confirm Modal */}
+        <Dialog open={showReviewModal} onOpenChange={setShowReviewModal}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2 text-lg">
+                <FileText className="w-5 h-5 text-primary" />
+                📋 Review Your Details / अपनी जानकारी जाँचें
+              </DialogTitle>
+            </DialogHeader>
+
+            <ScrollArea className="max-h-[60vh] pr-2">
+              <div className="space-y-3 text-sm">
+                <div className="bg-muted/50 rounded-lg p-3 space-y-1.5">
+                  <p className="font-semibold text-foreground">A. Basic Identity</p>
+                  <p><span className="text-muted-foreground">नाम:</span> {form.full_name}</p>
+                  <p><span className="text-muted-foreground">पिता:</span> {form.father_name}</p>
+                  <p><span className="text-muted-foreground">उम्र:</span> {form.age}</p>
+                  <p><span className="text-muted-foreground">मोबाइल:</span> {form.mobile}</p>
+                  <p><span className="text-muted-foreground">WhatsApp:</span> {form.whatsapp}</p>
+                  {form.email && <p><span className="text-muted-foreground">Email:</span> {form.email}</p>}
+                  <p><span className="text-muted-foreground">पता:</span> {form.full_address}</p>
+                  <p><span className="text-muted-foreground">शहर:</span> {form.city}, {form.district}, {form.state}</p>
+                </div>
+
+                <div className="bg-muted/50 rounded-lg p-3 space-y-1.5">
+                  <p className="font-semibold text-foreground">B. Skills</p>
+                  <p>{form.skills.map(s => SKILLS.find(sk => sk.value === s)?.labelEn || s).join(", ")}</p>
+                </div>
+
+                <div className="bg-muted/50 rounded-lg p-3 space-y-1.5">
+                  <p className="font-semibold text-foreground">C. Availability</p>
+                  <p><span className="text-muted-foreground">Days:</span> {AVAILABILITY.find(a => a.value === form.availability_days)?.label || form.availability_days}</p>
+                  <p><span className="text-muted-foreground">Location:</span> {DUTY_LOCATIONS.find(d => d.value === form.duty_location)?.label || form.duty_location}</p>
+                </div>
+
+                <div className="bg-muted/50 rounded-lg p-3 space-y-1.5">
+                  <p className="font-semibold text-foreground">D. Languages</p>
+                  <p>{[...form.languages.map(l => LANGUAGES.find(lg => lg.value === l)?.label || l), form.other_language.trim()].filter(Boolean).join(", ")}</p>
+                </div>
+
+                <div className="p-3 rounded-lg border border-primary/20 bg-primary/5 text-xs text-muted-foreground">
+                  <p>⚠️ कृपया ऊपर दी गई जानकारी ध्यान से जाँचें। सबमिट करने के बाद इसमें बदलाव नहीं किया जा सकेगा।</p>
+                  <p className="mt-1">Please verify all details above. Changes cannot be made after submission.</p>
+                </div>
+              </div>
+            </ScrollArea>
+
+            <DialogFooter className="flex-col gap-2 sm:flex-col">
+              <Button
+                className="w-full"
+                disabled={submitting}
+                onClick={handleSubmit}
+              >
+                {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
+                ✅ Confirm & Register / पुष्टि करें
+              </Button>
+              <Button variant="ghost" className="w-full" onClick={() => setShowReviewModal(false)}>
+                ← वापस जाएं / Go Back
               </Button>
             </DialogFooter>
           </DialogContent>
