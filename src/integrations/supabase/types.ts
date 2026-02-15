@@ -213,6 +213,80 @@ export type Database = {
         }
         Relationships: []
       }
+      backup_registry: {
+        Row: {
+          backup_type: string
+          checksum: string | null
+          completed_at: string | null
+          created_at: string
+          encryption_key_id: string | null
+          expires_at: string | null
+          id: string
+          initiated_by: string | null
+          last_restore_test_at: string | null
+          record_count: number | null
+          restore_test_result: string | null
+          restore_time_seconds: number | null
+          retention_days: number
+          scope: string
+          size_bytes: number | null
+          started_at: string
+          status: string
+          storage_location: string | null
+          updated_at: string
+        }
+        Insert: {
+          backup_type: string
+          checksum?: string | null
+          completed_at?: string | null
+          created_at?: string
+          encryption_key_id?: string | null
+          expires_at?: string | null
+          id?: string
+          initiated_by?: string | null
+          last_restore_test_at?: string | null
+          record_count?: number | null
+          restore_test_result?: string | null
+          restore_time_seconds?: number | null
+          retention_days?: number
+          scope: string
+          size_bytes?: number | null
+          started_at?: string
+          status?: string
+          storage_location?: string | null
+          updated_at?: string
+        }
+        Update: {
+          backup_type?: string
+          checksum?: string | null
+          completed_at?: string | null
+          created_at?: string
+          encryption_key_id?: string | null
+          expires_at?: string | null
+          id?: string
+          initiated_by?: string | null
+          last_restore_test_at?: string | null
+          record_count?: number | null
+          restore_test_result?: string | null
+          restore_time_seconds?: number | null
+          retention_days?: number
+          scope?: string
+          size_bytes?: number | null
+          started_at?: string
+          status?: string
+          storage_location?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "backup_registry_encryption_key_id_fkey"
+            columns: ["encryption_key_id"]
+            isOneToOne: false
+            referencedRelation: "encryption_key_registry"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       billing_invoices: {
         Row: {
           base_amount: number
@@ -336,6 +410,273 @@ export type Database = {
           test_type?: string
           tested_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      consent_records: {
+        Row: {
+          collection_method: string
+          consent_version: string
+          created_at: string
+          cross_border_transfer: boolean
+          details: Json | null
+          expires_at: string | null
+          granted_at: string
+          id: string
+          ip_address: string | null
+          lawful_basis: string
+          purpose: string
+          status: string
+          transfer_destination: string | null
+          user_agent: string | null
+          user_id: string
+          withdrawn_at: string | null
+        }
+        Insert: {
+          collection_method?: string
+          consent_version?: string
+          created_at?: string
+          cross_border_transfer?: boolean
+          details?: Json | null
+          expires_at?: string | null
+          granted_at?: string
+          id?: string
+          ip_address?: string | null
+          lawful_basis?: string
+          purpose: string
+          status?: string
+          transfer_destination?: string | null
+          user_agent?: string | null
+          user_id: string
+          withdrawn_at?: string | null
+        }
+        Update: {
+          collection_method?: string
+          consent_version?: string
+          created_at?: string
+          cross_border_transfer?: boolean
+          details?: Json | null
+          expires_at?: string | null
+          granted_at?: string
+          id?: string
+          ip_address?: string | null
+          lawful_basis?: string
+          purpose?: string
+          status?: string
+          transfer_destination?: string | null
+          user_agent?: string | null
+          user_id?: string
+          withdrawn_at?: string | null
+        }
+        Relationships: []
+      }
+      data_breach_log: {
+        Row: {
+          affected_users_count: number | null
+          breach_type: string
+          contained_at: string | null
+          containment_actions: string | null
+          created_at: string
+          cross_border_impact: boolean
+          data_categories_affected: string[] | null
+          description: string
+          detected_at: string
+          dpa_notified_at: string | null
+          handled_by: string | null
+          id: string
+          lessons_learned: string | null
+          notification_method: string | null
+          occurred_at: string | null
+          remediation_steps: string | null
+          reported_by: string | null
+          resolved_at: string | null
+          root_cause: string | null
+          severity: string
+          status: string
+          title: string
+          updated_at: string
+          users_notified_at: string | null
+        }
+        Insert: {
+          affected_users_count?: number | null
+          breach_type: string
+          contained_at?: string | null
+          containment_actions?: string | null
+          created_at?: string
+          cross_border_impact?: boolean
+          data_categories_affected?: string[] | null
+          description: string
+          detected_at?: string
+          dpa_notified_at?: string | null
+          handled_by?: string | null
+          id?: string
+          lessons_learned?: string | null
+          notification_method?: string | null
+          occurred_at?: string | null
+          remediation_steps?: string | null
+          reported_by?: string | null
+          resolved_at?: string | null
+          root_cause?: string | null
+          severity?: string
+          status?: string
+          title: string
+          updated_at?: string
+          users_notified_at?: string | null
+        }
+        Update: {
+          affected_users_count?: number | null
+          breach_type?: string
+          contained_at?: string | null
+          containment_actions?: string | null
+          created_at?: string
+          cross_border_impact?: boolean
+          data_categories_affected?: string[] | null
+          description?: string
+          detected_at?: string
+          dpa_notified_at?: string | null
+          handled_by?: string | null
+          id?: string
+          lessons_learned?: string | null
+          notification_method?: string | null
+          occurred_at?: string | null
+          remediation_steps?: string | null
+          reported_by?: string | null
+          resolved_at?: string | null
+          root_cause?: string | null
+          severity?: string
+          status?: string
+          title?: string
+          updated_at?: string
+          users_notified_at?: string | null
+        }
+        Relationships: []
+      }
+      data_processing_logs: {
+        Row: {
+          action: string
+          actor_id: string | null
+          actor_role: string | null
+          created_at: string
+          cross_border: boolean
+          data_categories: string[] | null
+          denial_reason: string | null
+          destination_country: string | null
+          id: string
+          ip_address: string | null
+          lawful_basis: string | null
+          outcome: string
+          purpose: string | null
+          request_id: string | null
+          resource_id: string | null
+          resource_type: string
+          user_agent: string | null
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          actor_role?: string | null
+          created_at?: string
+          cross_border?: boolean
+          data_categories?: string[] | null
+          denial_reason?: string | null
+          destination_country?: string | null
+          id?: string
+          ip_address?: string | null
+          lawful_basis?: string | null
+          outcome?: string
+          purpose?: string | null
+          request_id?: string | null
+          resource_id?: string | null
+          resource_type: string
+          user_agent?: string | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          actor_role?: string | null
+          created_at?: string
+          cross_border?: boolean
+          data_categories?: string[] | null
+          denial_reason?: string | null
+          destination_country?: string | null
+          id?: string
+          ip_address?: string | null
+          lawful_basis?: string | null
+          outcome?: string
+          purpose?: string | null
+          request_id?: string | null
+          resource_id?: string | null
+          resource_type?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
+      data_subject_requests: {
+        Row: {
+          acknowledged_at: string | null
+          assigned_to: string | null
+          completed_at: string | null
+          created_at: string
+          description: string | null
+          due_by: string
+          export_expires_at: string | null
+          export_format: string | null
+          export_url: string | null
+          id: string
+          identity_verified: boolean
+          rejection_reason: string | null
+          request_type: string
+          response: string | null
+          scope: string[] | null
+          status: string
+          submitted_at: string
+          updated_at: string
+          user_id: string
+          verification_method: string | null
+        }
+        Insert: {
+          acknowledged_at?: string | null
+          assigned_to?: string | null
+          completed_at?: string | null
+          created_at?: string
+          description?: string | null
+          due_by?: string
+          export_expires_at?: string | null
+          export_format?: string | null
+          export_url?: string | null
+          id?: string
+          identity_verified?: boolean
+          rejection_reason?: string | null
+          request_type: string
+          response?: string | null
+          scope?: string[] | null
+          status?: string
+          submitted_at?: string
+          updated_at?: string
+          user_id: string
+          verification_method?: string | null
+        }
+        Update: {
+          acknowledged_at?: string | null
+          assigned_to?: string | null
+          completed_at?: string | null
+          created_at?: string
+          description?: string | null
+          due_by?: string
+          export_expires_at?: string | null
+          export_format?: string | null
+          export_url?: string | null
+          id?: string
+          identity_verified?: boolean
+          rejection_reason?: string | null
+          request_type?: string
+          response?: string | null
+          scope?: string[] | null
+          status?: string
+          submitted_at?: string
+          updated_at?: string
+          user_id?: string
+          verification_method?: string | null
         }
         Relationships: []
       }
@@ -498,6 +839,66 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      encryption_key_registry: {
+        Row: {
+          activated_at: string | null
+          algorithm: string
+          created_at: string
+          id: string
+          key_alias: string
+          key_length_bits: number
+          key_type: string
+          last_used_at: string | null
+          managed_by: string
+          purpose: string
+          retired_at: string | null
+          rotated_at: string | null
+          rotated_by: string | null
+          rotation_due_at: string | null
+          status: string
+          updated_at: string
+          usage_count: number | null
+        }
+        Insert: {
+          activated_at?: string | null
+          algorithm: string
+          created_at?: string
+          id?: string
+          key_alias: string
+          key_length_bits: number
+          key_type: string
+          last_used_at?: string | null
+          managed_by?: string
+          purpose: string
+          retired_at?: string | null
+          rotated_at?: string | null
+          rotated_by?: string | null
+          rotation_due_at?: string | null
+          status?: string
+          updated_at?: string
+          usage_count?: number | null
+        }
+        Update: {
+          activated_at?: string | null
+          algorithm?: string
+          created_at?: string
+          id?: string
+          key_alias?: string
+          key_length_bits?: number
+          key_type?: string
+          last_used_at?: string | null
+          managed_by?: string
+          purpose?: string
+          retired_at?: string | null
+          rotated_at?: string | null
+          rotated_by?: string | null
+          rotation_due_at?: string | null
+          status?: string
+          updated_at?: string
+          usage_count?: number | null
+        }
+        Relationships: []
       }
       family_groups: {
         Row: {
@@ -1951,6 +2352,7 @@ export type Database = {
         Returns: boolean
       }
       cleanup_old_rate_limits: { Args: never; Returns: undefined }
+      expire_stale_consents: { Args: never; Returns: undefined }
       generate_invoice_number: { Args: never; Returns: string }
       generate_referral_code: { Args: never; Returns: string }
       generate_timed_invite: {
@@ -1969,6 +2371,10 @@ export type Database = {
           id: string
           user_id: string
         }[]
+      }
+      has_active_consent: {
+        Args: { p_purpose: string; p_user_id: string }
+        Returns: boolean
       }
       has_role: {
         Args: {
