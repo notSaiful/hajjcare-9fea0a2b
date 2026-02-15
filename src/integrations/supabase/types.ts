@@ -297,6 +297,104 @@ export type Database = {
         }
         Relationships: []
       }
+      certification_tests: {
+        Row: {
+          created_at: string
+          evaluated_by: string | null
+          evaluation_notes: string | null
+          id: string
+          passed: boolean
+          score: number
+          target_rank: Database["public"]["Enums"]["responder_rank"] | null
+          target_specialty: string | null
+          test_type: string
+          tested_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          evaluated_by?: string | null
+          evaluation_notes?: string | null
+          id?: string
+          passed?: boolean
+          score: number
+          target_rank?: Database["public"]["Enums"]["responder_rank"] | null
+          target_specialty?: string | null
+          test_type: string
+          tested_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          evaluated_by?: string | null
+          evaluation_notes?: string | null
+          id?: string
+          passed?: boolean
+          score?: number
+          target_rank?: Database["public"]["Enums"]["responder_rank"] | null
+          target_specialty?: string | null
+          test_type?: string
+          tested_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      deployment_logs: {
+        Row: {
+          assignment_id: string | null
+          created_at: string
+          deployment_type: string
+          duration_minutes: number | null
+          ended_at: string | null
+          id: string
+          incident_report: string | null
+          outcome: string | null
+          performance_rating: number | null
+          rated_by: string | null
+          started_at: string
+          user_id: string
+          zone: string | null
+        }
+        Insert: {
+          assignment_id?: string | null
+          created_at?: string
+          deployment_type?: string
+          duration_minutes?: number | null
+          ended_at?: string | null
+          id?: string
+          incident_report?: string | null
+          outcome?: string | null
+          performance_rating?: number | null
+          rated_by?: string | null
+          started_at?: string
+          user_id: string
+          zone?: string | null
+        }
+        Update: {
+          assignment_id?: string | null
+          created_at?: string
+          deployment_type?: string
+          duration_minutes?: number | null
+          ended_at?: string | null
+          id?: string
+          incident_report?: string | null
+          outcome?: string | null
+          performance_rating?: number | null
+          rated_by?: string | null
+          started_at?: string
+          user_id?: string
+          zone?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deployment_logs_assignment_id_fkey"
+            columns: ["assignment_id"]
+            isOneToOne: false
+            referencedRelation: "emergency_assignments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       emergency_assignments: {
         Row: {
           acknowledged_at: string | null
@@ -679,6 +777,42 @@ export type Database = {
           user_id?: string | null
           whatsapp_group_alerted?: string | null
           zone?: string | null
+        }
+        Relationships: []
+      }
+      hierarchy_audit_log: {
+        Row: {
+          action: string
+          created_at: string
+          details: Json | null
+          id: string
+          ip_address: string | null
+          new_value: string | null
+          performed_by: string | null
+          previous_value: string | null
+          user_id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          ip_address?: string | null
+          new_value?: string | null
+          performed_by?: string | null
+          previous_value?: string | null
+          user_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          ip_address?: string | null
+          new_value?: string | null
+          performed_by?: string | null
+          previous_value?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -1182,6 +1316,95 @@ export type Database = {
         }
         Relationships: []
       }
+      responder_profiles: {
+        Row: {
+          avg_response_time_seconds: number | null
+          background_check_notes: string | null
+          background_check_status: string
+          background_checked_at: string | null
+          created_at: string
+          field_ready_since: string | null
+          id: string
+          id_document_type: string | null
+          id_document_url: string | null
+          id_verified: boolean
+          id_verified_at: string | null
+          id_verified_by: string | null
+          is_field_ready: boolean
+          languages: string[] | null
+          performance_score: number | null
+          promoted_by: string | null
+          rank: Database["public"]["Enums"]["responder_rank"]
+          rank_promoted_at: string | null
+          specialty: string[] | null
+          supervisor_id: string | null
+          total_deployments: number
+          total_incidents_resolved: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avg_response_time_seconds?: number | null
+          background_check_notes?: string | null
+          background_check_status?: string
+          background_checked_at?: string | null
+          created_at?: string
+          field_ready_since?: string | null
+          id?: string
+          id_document_type?: string | null
+          id_document_url?: string | null
+          id_verified?: boolean
+          id_verified_at?: string | null
+          id_verified_by?: string | null
+          is_field_ready?: boolean
+          languages?: string[] | null
+          performance_score?: number | null
+          promoted_by?: string | null
+          rank?: Database["public"]["Enums"]["responder_rank"]
+          rank_promoted_at?: string | null
+          specialty?: string[] | null
+          supervisor_id?: string | null
+          total_deployments?: number
+          total_incidents_resolved?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avg_response_time_seconds?: number | null
+          background_check_notes?: string | null
+          background_check_status?: string
+          background_checked_at?: string | null
+          created_at?: string
+          field_ready_since?: string | null
+          id?: string
+          id_document_type?: string | null
+          id_document_url?: string | null
+          id_verified?: boolean
+          id_verified_at?: string | null
+          id_verified_by?: string | null
+          is_field_ready?: boolean
+          languages?: string[] | null
+          performance_score?: number | null
+          promoted_by?: string | null
+          rank?: Database["public"]["Enums"]["responder_rank"]
+          rank_promoted_at?: string | null
+          specialty?: string[] | null
+          supervisor_id?: string | null
+          total_deployments?: number
+          total_incidents_resolved?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "responder_profiles_supervisor_id_fkey"
+            columns: ["supervisor_id"]
+            isOneToOne: false
+            referencedRelation: "responder_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tracking_alerts: {
         Row: {
           alert_type: string
@@ -1244,6 +1467,110 @@ export type Database = {
             columns: ["group_id"]
             isOneToOne: false
             referencedRelation: "family_groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      training_modules: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          duration_minutes: number
+          id: string
+          is_active: boolean
+          is_mandatory: boolean
+          material_url: string | null
+          min_rank_required: Database["public"]["Enums"]["responder_rank"]
+          passing_score: number
+          sort_order: number
+          title: string
+          title_ar: string | null
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          duration_minutes?: number
+          id?: string
+          is_active?: boolean
+          is_mandatory?: boolean
+          material_url?: string | null
+          min_rank_required?: Database["public"]["Enums"]["responder_rank"]
+          passing_score?: number
+          sort_order?: number
+          title: string
+          title_ar?: string | null
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          duration_minutes?: number
+          id?: string
+          is_active?: boolean
+          is_mandatory?: boolean
+          material_url?: string | null
+          min_rank_required?: Database["public"]["Enums"]["responder_rank"]
+          passing_score?: number
+          sort_order?: number
+          title?: string
+          title_ar?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      training_records: {
+        Row: {
+          attempts: number
+          certificate_url: string | null
+          completed_at: string | null
+          created_at: string
+          expires_at: string | null
+          id: string
+          module_id: string
+          score: number | null
+          started_at: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          attempts?: number
+          certificate_url?: string | null
+          completed_at?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          module_id: string
+          score?: number | null
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          attempts?: number
+          certificate_url?: string | null
+          completed_at?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          module_id?: string
+          score?: number | null
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "training_records_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "training_modules"
             referencedColumns: ["id"]
           },
         ]
@@ -1679,6 +2006,14 @@ export type Database = {
         }[]
       }
       process_referral: { Args: { p_referral_code: string }; Returns: Json }
+      promote_responder: {
+        Args: {
+          p_new_rank: Database["public"]["Enums"]["responder_rank"]
+          p_notes?: string
+          p_target_user_id: string
+        }
+        Returns: Json
+      }
       shares_group_with: { Args: { target_user_id: string }; Returns: boolean }
       upsert_member_location: {
         Args: {
@@ -1703,6 +2038,12 @@ export type Database = {
         | "action_taken"
         | "resolved"
         | "closed"
+      responder_rank:
+        | "trainee"
+        | "field_responder"
+        | "senior_responder"
+        | "zone_commander"
+        | "war_room_commander"
       urgency_level: "low" | "medium" | "high" | "critical"
     }
     CompositeTypes: {
@@ -1841,6 +2182,13 @@ export const Constants = {
         "action_taken",
         "resolved",
         "closed",
+      ],
+      responder_rank: [
+        "trainee",
+        "field_responder",
+        "senior_responder",
+        "zone_commander",
+        "war_room_commander",
       ],
       urgency_level: ["low", "medium", "high", "critical"],
     },
