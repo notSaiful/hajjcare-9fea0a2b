@@ -47,6 +47,13 @@ const DUTY_LOCATIONS = [
   { value: "remote", label: "Remote (Call / Tech Support)" },
 ];
 
+const EMBARKATION_POINTS = [
+  "Srinagar", "Gaya", "Guwahati", "Indore", "Jaipur", "Nagpur",
+  "Delhi", "Mumbai", "Kolkata", "Bengaluru", "Hyderabad",
+  "Cochin (Kochi)", "Chennai", "Ahmedabad", "Lucknow",
+  "Kannur", "Calicut (Kozhikode)", "Vijayawada",
+] as const;
+
 const INDIAN_STATES = [
   "Andhra Pradesh", "Assam", "Bihar", "Chhattisgarh", "Delhi", "Goa", "Gujarat",
   "Haryana", "Himachal Pradesh", "Jammu & Kashmir", "Jharkhand", "Karnataka",
@@ -88,6 +95,7 @@ const VolunteerPage = () => {
     skills: [] as string[],
     availability_days: "",
     duty_location: "",
+    embarkation_point: "",
     languages: [] as string[],
     other_language: "",
     declaration_agreed: false,
@@ -104,7 +112,7 @@ const VolunteerPage = () => {
 
   const validateForm = () => {
     // Validation
-    if (!form.full_name || !form.father_name || !form.age || !form.mobile || !form.whatsapp || !form.full_address || !form.city || !form.district || !form.state) {
+    if (!form.full_name || !form.father_name || !form.age || !form.mobile || !form.whatsapp || !form.full_address || !form.city || !form.district || !form.state || !form.embarkation_point) {
       toast({ title: "कृपया सभी अनिवार्य फ़ील्ड भरें", description: "Please fill all required fields", variant: "destructive" });
       return;
     }
@@ -183,6 +191,7 @@ const VolunteerPage = () => {
           skills: form.skills,
           availability_days: form.availability_days,
           duty_location: form.duty_location,
+          embarkation_point: form.embarkation_point,
           languages: langs,
           declaration_agreed: true,
           volunteer_id: "TEMP", // Will be overwritten by trigger
@@ -359,6 +368,13 @@ const VolunteerPage = () => {
                       {INDIAN_STATES.map(s => <option key={s} value={s}>{s}</option>)}
                     </select>
                   </div>
+                </div>
+                <div>
+                  <Label className="text-xs">Embarkation Point *</Label>
+                  <select className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" value={form.embarkation_point} onChange={e => setForm(p => ({ ...p, embarkation_point: e.target.value }))}>
+                    <option value="">Select Embarkation Point</option>
+                    {EMBARKATION_POINTS.map(ep => <option key={ep} value={ep}>{ep}</option>)}
+                  </select>
                 </div>
               </CardContent>
             </Card>
@@ -600,6 +616,7 @@ const VolunteerPage = () => {
                   {form.email && <p><span className="text-muted-foreground">Email:</span> {form.email}</p>}
                   <p><span className="text-muted-foreground">पता:</span> {form.full_address}</p>
                   <p><span className="text-muted-foreground">शहर:</span> {form.city}, {form.district}, {form.state}</p>
+                  <p><span className="text-muted-foreground">Embarkation:</span> {form.embarkation_point}</p>
                 </div>
 
                 <div className="bg-muted/50 rounded-lg p-3 space-y-1.5">
