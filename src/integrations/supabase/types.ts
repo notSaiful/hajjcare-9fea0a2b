@@ -213,6 +213,90 @@ export type Database = {
         }
         Relationships: []
       }
+      billing_invoices: {
+        Row: {
+          base_amount: number
+          created_at: string
+          customer_email: string | null
+          customer_name: string | null
+          customer_phone: string | null
+          email_sent: boolean | null
+          gst_amount: number
+          gst_rate: number
+          id: string
+          invoice_date: string
+          invoice_number: string
+          invoice_pdf_url: string | null
+          org_address: string
+          org_gstin: string | null
+          org_name: string
+          payment_gateway: string
+          payment_status: string
+          payment_transaction_id: string | null
+          razorpay_order_id: string | null
+          razorpay_payment_id: string | null
+          service_name: string
+          total_amount: number
+          updated_at: string
+          user_id: string
+          whatsapp_sent: boolean | null
+        }
+        Insert: {
+          base_amount: number
+          created_at?: string
+          customer_email?: string | null
+          customer_name?: string | null
+          customer_phone?: string | null
+          email_sent?: boolean | null
+          gst_amount: number
+          gst_rate?: number
+          id?: string
+          invoice_date?: string
+          invoice_number: string
+          invoice_pdf_url?: string | null
+          org_address?: string
+          org_gstin?: string | null
+          org_name?: string
+          payment_gateway?: string
+          payment_status?: string
+          payment_transaction_id?: string | null
+          razorpay_order_id?: string | null
+          razorpay_payment_id?: string | null
+          service_name: string
+          total_amount: number
+          updated_at?: string
+          user_id: string
+          whatsapp_sent?: boolean | null
+        }
+        Update: {
+          base_amount?: number
+          created_at?: string
+          customer_email?: string | null
+          customer_name?: string | null
+          customer_phone?: string | null
+          email_sent?: boolean | null
+          gst_amount?: number
+          gst_rate?: number
+          id?: string
+          invoice_date?: string
+          invoice_number?: string
+          invoice_pdf_url?: string | null
+          org_address?: string
+          org_gstin?: string | null
+          org_name?: string
+          payment_gateway?: string
+          payment_status?: string
+          payment_transaction_id?: string | null
+          razorpay_order_id?: string | null
+          razorpay_payment_id?: string | null
+          service_name?: string
+          total_amount?: number
+          updated_at?: string
+          user_id?: string
+          whatsapp_sent?: boolean | null
+        }
+        Relationships: []
+      }
       emotional_support_logs: {
         Row: {
           confidence: number
@@ -1435,6 +1519,7 @@ export type Database = {
         Returns: boolean
       }
       cleanup_old_rate_limits: { Args: never; Returns: undefined }
+      generate_invoice_number: { Args: never; Returns: string }
       generate_referral_code: { Args: never; Returns: string }
       generate_timed_invite: {
         Args: { p_group_id: string }
