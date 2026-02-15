@@ -72,6 +72,7 @@ const MedicalAlertsPage = lazy(() => import("./pages/MedicalAlertsPage"));
 const EmergencyMetricsPage = lazy(() => import("./pages/EmergencyMetricsPage"));
 const InspectorDashboardPage = lazy(() => import("./pages/InspectorDashboardPage"));
 const HajInspectorsDirectoryPage = lazy(() => import("./pages/HajInspectorsDirectoryPage"));
+const InspectorRegisterPage = lazy(() => import("./pages/InspectorRegisterPage"));
 const FreeUmrahApplyPage = lazy(() => import("./pages/FreeUmrahApplyPage"));
 const FreeUmrahAdminPage = lazy(() => import("./pages/FreeUmrahAdminPage"));
 const ShiTrainingPage = lazy(() => import("./pages/ShiTrainingPage"));
@@ -192,6 +193,7 @@ function AppContent() {
       <Route path="/admin/metrics" element={<EmergencyMetricsPage />} />
       <Route path="/inspector" element={<InspectorDashboardPage />} />
       <Route path="/haj-inspectors" element={<HajInspectorsDirectoryPage />} />
+      <Route path="/haj-inspector-register" element={<InspectorRegisterPage />} />
       <Route path="/free-umrah" element={<FreeUmrahApplyPage />} />
       <Route path="/admin/free-umrah" element={<FreeUmrahAdminPage />} />
       <Route path="/shi-training" element={<ShiTrainingPage />} />

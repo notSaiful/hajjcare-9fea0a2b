@@ -538,6 +538,98 @@ export type Database = {
         }
         Relationships: []
       }
+      inspector_audit_log: {
+        Row: {
+          action: string
+          created_at: string
+          details: Json | null
+          id: string
+          performed_by: string | null
+          registration_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          performed_by?: string | null
+          registration_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          performed_by?: string | null
+          registration_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inspector_audit_log_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: false
+            referencedRelation: "inspector_registrations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      inspector_registrations: {
+        Row: {
+          city: string
+          created_at: string
+          duty_status: string
+          full_name: string
+          id: string
+          is_active: boolean
+          language_preference: string
+          mobile: string
+          rejection_reason: string | null
+          role: string
+          state: string
+          status: string
+          updated_at: string
+          user_id: string | null
+          verified_at: string | null
+          verified_by: string | null
+        }
+        Insert: {
+          city: string
+          created_at?: string
+          duty_status?: string
+          full_name: string
+          id?: string
+          is_active?: boolean
+          language_preference?: string
+          mobile: string
+          rejection_reason?: string | null
+          role: string
+          state: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Update: {
+          city?: string
+          created_at?: string
+          duty_status?: string
+          full_name?: string
+          id?: string
+          is_active?: boolean
+          language_preference?: string
+          mobile?: string
+          rejection_reason?: string | null
+          role?: string
+          state?: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Relationships: []
+      }
       member_link_requests: {
         Row: {
           created_at: string
@@ -1334,6 +1426,10 @@ export type Database = {
     }
     Functions: {
       apply_promo_code: { Args: { p_code: string }; Returns: Json }
+      check_inspector_mobile_exists: {
+        Args: { p_mobile: string }
+        Returns: boolean
+      }
       check_volunteer_mobile_exists: {
         Args: { p_mobile: string }
         Returns: boolean
