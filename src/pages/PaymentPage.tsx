@@ -215,15 +215,27 @@ export default function PaymentPage() {
           iconVariant="primary"
         />
 
-        {/* GST Warning if GSTIN not configured */}
+        {/* GSTIN Configuration Guidance */}
         {!ORG_GSTIN && (
-          <Card className="border-2 border-destructive/30 bg-destructive/5">
-            <CardContent className="p-4">
-              <div className="flex items-start gap-3 text-sm">
-                <AlertTriangle className="h-5 w-5 flex-shrink-0 mt-0.5 text-destructive" />
-                <p className="text-destructive">
-                  GST billing is temporarily unavailable. Invoices will be generated without GSTIN. Please contact support.
+          <Card className="border-2 border-destructive/20 bg-destructive/5 overflow-hidden">
+            <CardContent className="p-0">
+              <div className="flex items-center gap-2 px-4 py-2.5 bg-destructive/10 border-b border-destructive/10">
+                <AlertTriangle className="h-4 w-4 text-destructive" />
+                <span className="text-sm font-semibold text-destructive">GSTIN Not Configured</span>
+              </div>
+              <div className="px-4 py-3 space-y-2 text-sm text-muted-foreground">
+                <p>
+                  Invoices will be generated <strong className="text-foreground">without GSTIN</strong> until it is configured. 
+                  This does not affect payment processing.
                 </p>
+                <div className="bg-muted/40 rounded-lg p-3 space-y-1.5 text-xs">
+                  <p className="font-semibold text-foreground">How to fix:</p>
+                  <ol className="list-decimal list-inside space-y-1 text-muted-foreground">
+                    <li>Obtain your 15-digit GSTIN from the GST portal</li>
+                    <li>Contact the admin at <a href="mailto:info@hajjcare.in" className="text-primary underline">info@hajjcare.in</a></li>
+                    <li>Once configured, all future invoices will include GSTIN automatically</li>
+                  </ol>
+                </div>
               </div>
             </CardContent>
           </Card>
