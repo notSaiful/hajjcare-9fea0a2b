@@ -1,0 +1,1 @@
+ALTER TABLE public.volunteers ADD COLUMN embarkation_point TEXT;

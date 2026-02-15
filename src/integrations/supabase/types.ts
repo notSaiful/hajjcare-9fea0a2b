@@ -1242,6 +1242,7 @@ export type Database = {
           district: string
           duty_location: string
           email: string | null
+          embarkation_point: string | null
           father_name: string
           full_address: string
           full_name: string
@@ -1268,6 +1269,7 @@ export type Database = {
           district: string
           duty_location: string
           email?: string | null
+          embarkation_point?: string | null
           father_name: string
           full_address: string
           full_name: string
@@ -1294,6 +1296,7 @@ export type Database = {
           district?: string
           duty_location?: string
           email?: string | null
+          embarkation_point?: string | null
           father_name?: string
           full_address?: string
           full_name?: string

@@ -12,7 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import {
   Search, Filter, Users, MapPin, Briefcase, Clock,
   ChevronDown, ChevronUp, Phone, Mail, Loader2,
-  CheckCircle2, XCircle, UserCheck, GraduationCap, Rocket,
+  CheckCircle2, XCircle, UserCheck, GraduationCap, Rocket, Plane,
 } from "lucide-react";
 import { UnauthorizedAlert } from '@/components/UnauthorizedAlert';
 
@@ -55,6 +55,7 @@ interface Volunteer {
   city: string;
   district: string;
   state: string;
+  embarkation_point: string | null;
   skills: string[];
   availability_days: string;
   duty_location: string;
@@ -82,6 +83,8 @@ const VolunteerDashboardPage = () => {
   const [filterSkill, setFilterSkill] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
   const [filterAvailability, setFilterAvailability] = useState("");
+  const [filterEmbarkation, setFilterEmbarkation] = useState("");
+  const [groupByEmbarkation, setGroupByEmbarkation] = useState(true);
 
   useEffect(() => {
     if (!roleLoading && isAdmin) fetchVolunteers();
@@ -121,6 +124,7 @@ const VolunteerDashboardPage = () => {
   // Derived data
   const cities = useMemo(() => [...new Set(volunteers.map(v => v.city))].sort(), [volunteers]);
   const allSkills = useMemo(() => [...new Set(volunteers.flatMap(v => v.skills))].sort(), [volunteers]);
+  const embarkationPoints = useMemo(() => [...new Set(volunteers.map(v => v.embarkation_point || "Unassigned"))].sort(), [volunteers]);
 
   const filtered = useMemo(() => {
     return volunteers.filter(v => {
@@ -132,9 +136,10 @@ const VolunteerDashboardPage = () => {
       if (filterSkill && !v.skills.includes(filterSkill)) return false;
       if (filterStatus && v.status !== filterStatus) return false;
       if (filterAvailability && v.availability_days !== filterAvailability) return false;
+      if (filterEmbarkation && (v.embarkation_point || "Unassigned") !== filterEmbarkation) return false;
       return true;
     });
-  }, [volunteers, searchQuery, filterCity, filterSkill, filterStatus, filterAvailability]);
+  }, [volunteers, searchQuery, filterCity, filterSkill, filterStatus, filterAvailability, filterEmbarkation]);
 
   // Stats
   const stats = useMemo(() => {
@@ -142,6 +147,83 @@ const VolunteerDashboardPage = () => {
     for (const v of volunteers) s[v.status] = (s[v.status] || 0) + 1;
     return s;
   }, [volunteers]);
+
+  const renderVolunteerCard = (v: Volunteer) => {
+    const isExpanded = expandedId === v.id;
+    const statusCfg = STATUS_CONFIG[v.status] || STATUS_CONFIG.registered;
+    return (
+      <Card key={v.id} className="overflow-hidden">
+        <button
+          className="w-full text-left p-4 flex items-center gap-3"
+          onClick={() => setExpandedId(isExpanded ? null : v.id)}
+        >
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="font-semibold text-sm text-foreground truncate">{v.full_name}</span>
+              <span className="text-[10px] font-mono text-muted-foreground">{v.volunteer_id}</span>
+            </div>
+            <div className="flex items-center gap-2 mt-1 flex-wrap">
+              <span className="text-xs text-muted-foreground flex items-center gap-1"><MapPin className="w-3 h-3" />{v.city}, {v.state}</span>
+              {v.embarkation_point && (
+                <span className="text-xs text-muted-foreground flex items-center gap-1"><Plane className="w-3 h-3" />{v.embarkation_point}</span>
+              )}
+              <Badge variant="outline" className={`text-[10px] ${statusCfg.color}`}>{statusCfg.label}</Badge>
+            </div>
+          </div>
+          {isExpanded ? <ChevronUp className="w-4 h-4 text-muted-foreground shrink-0" /> : <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />}
+        </button>
+
+        {isExpanded && (
+          <CardContent className="pt-0 pb-4 space-y-4 border-t">
+            <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm pt-3">
+              <div><span className="text-muted-foreground text-xs">Father</span><p>{v.father_name}</p></div>
+              <div><span className="text-muted-foreground text-xs">Age</span><p>{v.age}</p></div>
+              <div className="flex items-center gap-1"><Phone className="w-3 h-3 text-muted-foreground" /><span>{v.mobile}</span></div>
+              <div className="flex items-center gap-1"><Mail className="w-3 h-3 text-muted-foreground" /><span className="truncate">{v.email || "—"}</span></div>
+              <div><span className="text-muted-foreground text-xs">District</span><p>{v.district}</p></div>
+              <div className="flex items-center gap-1"><Clock className="w-3 h-3 text-muted-foreground" /><span>{AVAILABILITY_LABELS[v.availability_days] || v.availability_days}</span></div>
+              <div><span className="text-muted-foreground text-xs">Embarkation</span><p>{v.embarkation_point || "—"}</p></div>
+            </div>
+
+            <div>
+              <p className="text-xs text-muted-foreground mb-1 flex items-center gap-1"><Briefcase className="w-3 h-3" />Skills</p>
+              <div className="flex flex-wrap gap-1">
+                {v.skills.map(s => <Badge key={s} variant="secondary" className="text-[10px]">{SKILL_LABELS[s] || s}</Badge>)}
+              </div>
+            </div>
+
+            <div>
+              <p className="text-xs text-muted-foreground mb-1">Languages</p>
+              <div className="flex flex-wrap gap-1">
+                {v.languages.map(l => <Badge key={l} variant="outline" className="text-[10px] capitalize">{l}</Badge>)}
+              </div>
+            </div>
+
+            <div>
+              <p className="text-xs text-muted-foreground mb-2">Update Status</p>
+              <div className="flex flex-wrap gap-1.5">
+                {Object.entries(STATUS_CONFIG).map(([key, cfg]) => (
+                  <Button
+                    key={key}
+                    size="sm"
+                    variant={v.status === key ? "default" : "outline"}
+                    className="text-xs h-7 px-2"
+                    disabled={updatingId === v.id}
+                    onClick={() => updateStatus(v.id, key)}
+                  >
+                    {updatingId === v.id ? <Loader2 className="w-3 h-3 animate-spin" /> : null}
+                    {cfg.label}
+                  </Button>
+                ))}
+              </div>
+            </div>
+
+            <p className="text-[10px] text-muted-foreground">Registered: {new Date(v.created_at).toLocaleDateString()}</p>
+          </CardContent>
+        )}
+      </Card>
+    );
+  };
 
   if (roleLoading) {
     return (
@@ -203,7 +285,15 @@ const VolunteerDashboardPage = () => {
                 onChange={e => setSearchQuery(e.target.value)}
               />
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+              <select
+                className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm"
+                value={filterEmbarkation}
+                onChange={e => setFilterEmbarkation(e.target.value)}
+              >
+                <option value="">All Embarkation Points</option>
+                {embarkationPoints.map(ep => <option key={ep} value={ep}>{ep}</option>)}
+              </select>
               <select
                 className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm"
                 value={filterCity}
@@ -237,11 +327,17 @@ const VolunteerDashboardPage = () => {
                 {Object.entries(AVAILABILITY_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
               </select>
             </div>
-            {(searchQuery || filterCity || filterSkill || filterStatus || filterAvailability) && (
-              <Button variant="ghost" size="sm" onClick={() => { setSearchQuery(""); setFilterCity(""); setFilterSkill(""); setFilterStatus(""); setFilterAvailability(""); }}>
-                Clear all filters
-              </Button>
-            )}
+            <div className="flex items-center justify-between">
+              {(searchQuery || filterCity || filterSkill || filterStatus || filterAvailability || filterEmbarkation) && (
+                <Button variant="ghost" size="sm" onClick={() => { setSearchQuery(""); setFilterCity(""); setFilterSkill(""); setFilterStatus(""); setFilterAvailability(""); setFilterEmbarkation(""); }}>
+                  Clear all filters
+                </Button>
+              )}
+              <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer ml-auto">
+                <input type="checkbox" checked={groupByEmbarkation} onChange={e => setGroupByEmbarkation(e.target.checked)} className="rounded" />
+                Group by Embarkation Point
+              </label>
+            </div>
           </CardContent>
         </Card>
 
@@ -252,84 +348,29 @@ const VolunteerDashboardPage = () => {
           <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>
         ) : filtered.length === 0 ? (
           <Card><CardContent className="py-8 text-center text-muted-foreground">No volunteers match filters</CardContent></Card>
+        ) : groupByEmbarkation ? (
+          <div className="space-y-6">
+            {embarkationPoints
+              .filter(ep => filtered.some(v => (v.embarkation_point || "Unassigned") === ep))
+              .map(ep => {
+                const groupVolunteers = filtered.filter(v => (v.embarkation_point || "Unassigned") === ep);
+                return (
+                  <div key={ep} className="space-y-2">
+                    <div className="flex items-center gap-2 px-1">
+                      <Plane className="w-4 h-4 text-primary" />
+                      <h2 className="text-sm font-bold text-foreground">{ep}</h2>
+                      <Badge variant="secondary" className="text-[10px]">{groupVolunteers.length}</Badge>
+                    </div>
+                    <div className="space-y-2">
+                      {groupVolunteers.map(v => renderVolunteerCard(v))}
+                    </div>
+                  </div>
+                );
+              })}
+          </div>
         ) : (
           <div className="space-y-3">
-            {filtered.map(v => {
-              const isExpanded = expandedId === v.id;
-              const statusCfg = STATUS_CONFIG[v.status] || STATUS_CONFIG.registered;
-              return (
-                <Card key={v.id} className="overflow-hidden">
-                  <button
-                    className="w-full text-left p-4 flex items-center gap-3"
-                    onClick={() => setExpandedId(isExpanded ? null : v.id)}
-                  >
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-semibold text-sm text-foreground truncate">{v.full_name}</span>
-                        <span className="text-[10px] font-mono text-muted-foreground">{v.volunteer_id}</span>
-                      </div>
-                      <div className="flex items-center gap-2 mt-1 flex-wrap">
-                        <span className="text-xs text-muted-foreground flex items-center gap-1"><MapPin className="w-3 h-3" />{v.city}, {v.state}</span>
-                        <Badge variant="outline" className={`text-[10px] ${statusCfg.color}`}>{statusCfg.label}</Badge>
-                      </div>
-                    </div>
-                    {isExpanded ? <ChevronUp className="w-4 h-4 text-muted-foreground shrink-0" /> : <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />}
-                  </button>
-
-                  {isExpanded && (
-                    <CardContent className="pt-0 pb-4 space-y-4 border-t">
-                      {/* Details */}
-                      <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm pt-3">
-                        <div><span className="text-muted-foreground text-xs">Father</span><p>{v.father_name}</p></div>
-                        <div><span className="text-muted-foreground text-xs">Age</span><p>{v.age}</p></div>
-                        <div className="flex items-center gap-1"><Phone className="w-3 h-3 text-muted-foreground" /><span>{v.mobile}</span></div>
-                        <div className="flex items-center gap-1"><Mail className="w-3 h-3 text-muted-foreground" /><span className="truncate">{v.email || "—"}</span></div>
-                        <div><span className="text-muted-foreground text-xs">District</span><p>{v.district}</p></div>
-                        <div className="flex items-center gap-1"><Clock className="w-3 h-3 text-muted-foreground" /><span>{AVAILABILITY_LABELS[v.availability_days] || v.availability_days}</span></div>
-                      </div>
-
-                      {/* Skills */}
-                      <div>
-                        <p className="text-xs text-muted-foreground mb-1 flex items-center gap-1"><Briefcase className="w-3 h-3" />Skills</p>
-                        <div className="flex flex-wrap gap-1">
-                          {v.skills.map(s => <Badge key={s} variant="secondary" className="text-[10px]">{SKILL_LABELS[s] || s}</Badge>)}
-                        </div>
-                      </div>
-
-                      {/* Languages */}
-                      <div>
-                        <p className="text-xs text-muted-foreground mb-1">Languages</p>
-                        <div className="flex flex-wrap gap-1">
-                          {v.languages.map(l => <Badge key={l} variant="outline" className="text-[10px] capitalize">{l}</Badge>)}
-                        </div>
-                      </div>
-
-                      {/* Status Update */}
-                      <div>
-                        <p className="text-xs text-muted-foreground mb-2">Update Status</p>
-                        <div className="flex flex-wrap gap-1.5">
-                          {Object.entries(STATUS_CONFIG).map(([key, cfg]) => (
-                            <Button
-                              key={key}
-                              size="sm"
-                              variant={v.status === key ? "default" : "outline"}
-                              className="text-xs h-7 px-2"
-                              disabled={updatingId === v.id}
-                              onClick={() => updateStatus(v.id, key)}
-                            >
-                              {updatingId === v.id ? <Loader2 className="w-3 h-3 animate-spin" /> : null}
-                              {cfg.label}
-                            </Button>
-                          ))}
-                        </div>
-                      </div>
-
-                      <p className="text-[10px] text-muted-foreground">Registered: {new Date(v.created_at).toLocaleDateString()}</p>
-                    </CardContent>
-                  )}
-                </Card>
-              );
-            })}
+            {filtered.map(v => renderVolunteerCard(v))}
           </div>
         )}
       </main>
