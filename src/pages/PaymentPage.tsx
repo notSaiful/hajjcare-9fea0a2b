@@ -21,7 +21,7 @@ declare global {
 }
 
 const GST_RATE = 0.18;
-const ORG_GSTIN = ""; // Set your GSTIN here when available
+const ORG_GSTIN = "27ABDCS8059C1Z8";
 
 const PRESET_AMOUNTS = [
   { value: 99, label: "Basic" },
