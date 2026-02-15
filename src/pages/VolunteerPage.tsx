@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { SimpleHeader } from "@/components/SimpleHeader";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -8,12 +8,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Heart, Users, Shield, Clock, CheckCircle2, Loader2, HandHeart, Star, FileText, Lock } from "lucide-react";
+import { Heart, Users, Shield, Clock, CheckCircle2, Loader2, HandHeart, Star, FileText, Lock, Plane, Search, X } from "lucide-react";
 import VolunteerStatusTracker from "@/components/volunteer/VolunteerStatusTracker";
 
 const SKILLS = [
@@ -80,6 +81,29 @@ const VolunteerPage = () => {
   const [consentPrivacy, setConsentPrivacy] = useState(false);
   const [consentTerms, setConsentTerms] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
+  const [filterEP, setFilterEP] = useState<string | null>(null);
+  const [showFilterDock, setShowFilterDock] = useState(false);
+  const [filterSearch, setFilterSearch] = useState("");
+
+  // Keyboard shortcut: Ctrl+K to toggle filter dock
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "k") {
+        e.preventDefault();
+        setShowFilterDock(prev => !prev);
+        setFilterSearch("");
+      }
+      if (e.key === "Escape" && showFilterDock) {
+        setShowFilterDock(false);
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [showFilterDock]);
+
+  const filteredEPs = EMBARKATION_POINTS.filter(ep =>
+    ep.toLowerCase().includes(filterSearch.toLowerCase())
+  );
 
   const [form, setForm] = useState({
     full_name: "",
@@ -284,6 +308,89 @@ const VolunteerPage = () => {
                   REGISTER AS VOLUNTEER
                 </Button>
               </div>
+            </Card>
+
+            {/* Embarkation Quick Filter Dock */}
+            <Card className="border-primary/10">
+              <CardContent className="p-3 space-y-2">
+                <div className="flex items-center justify-between">
+                  <p className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                    <Plane className="w-3.5 h-3.5 text-primary" />
+                    Filter by Embarkation Point
+                  </p>
+                  <button
+                    onClick={() => setShowFilterDock(prev => !prev)}
+                    className="text-[10px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded font-mono hover:bg-muted/80 transition-colors"
+                    title="Ctrl+K to toggle"
+                  >
+                    Ctrl+K
+                  </button>
+                </div>
+                {showFilterDock && (
+                  <div className="space-y-2 animate-fade-up">
+                    <div className="relative">
+                      <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+                      <Input
+                        placeholder="Search embarkation point..."
+                        className="pl-8 h-8 text-xs"
+                        value={filterSearch}
+                        onChange={e => setFilterSearch(e.target.value)}
+                        autoFocus
+                      />
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {filteredEPs.map(ep => (
+                        <button
+                          key={ep}
+                          onClick={() => setFilterEP(filterEP === ep ? null : ep)}
+                          className={`text-[11px] px-2.5 py-1 rounded-full border transition-all font-medium ${
+                            filterEP === ep
+                              ? "bg-primary text-primary-foreground border-primary"
+                              : "bg-card text-foreground border-border hover:border-primary/50"
+                          }`}
+                        >
+                          {ep}
+                        </button>
+                      ))}
+                    </div>
+                    {filterEP && (
+                      <button
+                        onClick={() => setFilterEP(null)}
+                        className="text-xs text-muted-foreground flex items-center gap-1 hover:text-foreground transition-colors"
+                      >
+                        <X className="w-3 h-3" /> Clear filter
+                      </button>
+                    )}
+                  </div>
+                )}
+                {!showFilterDock && filterEP && (
+                  <div className="flex items-center gap-2">
+                    <Badge variant="secondary" className="text-xs flex items-center gap-1">
+                      <Plane className="w-3 h-3" /> {filterEP}
+                      <button onClick={() => setFilterEP(null)} className="ml-1 hover:text-destructive"><X className="w-3 h-3" /></button>
+                    </Badge>
+                  </div>
+                )}
+                {!showFilterDock && !filterEP && (
+                  <div className="flex flex-wrap gap-1">
+                    {EMBARKATION_POINTS.slice(0, 6).map(ep => (
+                      <button
+                        key={ep}
+                        onClick={() => { setFilterEP(ep); }}
+                        className="text-[10px] px-2 py-0.5 rounded-full border bg-card text-muted-foreground hover:border-primary/50 hover:text-foreground transition-all"
+                      >
+                        {ep}
+                      </button>
+                    ))}
+                    <button
+                      onClick={() => setShowFilterDock(true)}
+                      className="text-[10px] px-2 py-0.5 rounded-full border border-dashed text-muted-foreground hover:text-primary transition-all"
+                    >
+                      +{EMBARKATION_POINTS.length - 6} more
+                    </button>
+                  </div>
+                )}
+              </CardContent>
             </Card>
 
             {/* Status Tracker */}
