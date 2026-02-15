@@ -148,6 +148,23 @@ const VolunteerDashboardPage = () => {
     return s;
   }, [volunteers]);
 
+  // Embarkation stats with counts and percentages
+  const embarkationStats = useMemo(() => {
+    const total = volunteers.length;
+    const counts: Record<string, number> = {};
+    for (const v of volunteers) {
+      const ep = v.embarkation_point || "Unassigned";
+      counts[ep] = (counts[ep] || 0) + 1;
+    }
+    return Object.entries(counts)
+      .sort((a, b) => b[1] - a[1])
+      .map(([ep, count]) => ({
+        name: ep,
+        count,
+        percentage: total > 0 ? Math.round((count / total) * 100) : 0,
+      }));
+  }, [volunteers]);
+
   const renderVolunteerCard = (v: Volunteer) => {
     const isExpanded = expandedId === v.id;
     const statusCfg = STATUS_CONFIG[v.status] || STATUS_CONFIG.registered;
@@ -267,6 +284,40 @@ const VolunteerDashboardPage = () => {
             </button>
           ))}
         </div>
+
+        {/* Embarkation Point Summary */}
+        {embarkationStats.length > 0 && (
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm flex items-center gap-2">
+                <Plane className="w-4 h-4 text-primary" />
+                Embarkation Point Overview
+                <Badge variant="secondary" className="text-[10px] ml-auto">{volunteers.length} total</Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-1.5">
+              {embarkationStats.map(({ name, count, percentage }) => (
+                <button
+                  key={name}
+                  onClick={() => setFilterEmbarkation(filterEmbarkation === name ? "" : name)}
+                  className={`w-full flex items-center gap-3 p-2 rounded-lg text-left transition-all hover:bg-muted/50 ${
+                    filterEmbarkation === name ? "ring-1 ring-primary bg-primary/5" : ""
+                  }`}
+                >
+                  <span className="text-xs font-medium text-foreground flex-1 min-w-0 truncate">{name}</span>
+                  <span className="text-xs font-bold text-foreground tabular-nums">{count}</span>
+                  <div className="w-20 h-2 bg-muted rounded-full overflow-hidden shrink-0">
+                    <div
+                      className="h-full bg-primary rounded-full transition-all"
+                      style={{ width: `${percentage}%` }}
+                    />
+                  </div>
+                  <span className="text-[10px] text-muted-foreground w-8 text-right tabular-nums">{percentage}%</span>
+                </button>
+              ))}
+            </CardContent>
+          </Card>
+        )}
 
         {/* Filters */}
         <Card>
