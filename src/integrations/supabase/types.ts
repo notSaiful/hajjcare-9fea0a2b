@@ -297,6 +297,66 @@ export type Database = {
         }
         Relationships: []
       }
+      emergency_assignments: {
+        Row: {
+          acknowledged_at: string | null
+          assigned_at: string
+          created_at: string
+          distance_meters: number | null
+          escalation_level: number
+          id: string
+          notes: string | null
+          resolved_at: string | null
+          responder_id: string
+          status: string
+          ticket_id: string
+          updated_at: string
+        }
+        Insert: {
+          acknowledged_at?: string | null
+          assigned_at?: string
+          created_at?: string
+          distance_meters?: number | null
+          escalation_level?: number
+          id?: string
+          notes?: string | null
+          resolved_at?: string | null
+          responder_id: string
+          status?: string
+          ticket_id: string
+          updated_at?: string
+        }
+        Update: {
+          acknowledged_at?: string | null
+          assigned_at?: string
+          created_at?: string
+          distance_meters?: number | null
+          escalation_level?: number
+          id?: string
+          notes?: string | null
+          resolved_at?: string | null
+          responder_id?: string
+          status?: string
+          ticket_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "emergency_assignments_responder_id_fkey"
+            columns: ["responder_id"]
+            isOneToOne: false
+            referencedRelation: "responder_locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "emergency_assignments_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "health_tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       emotional_support_logs: {
         Row: {
           confidence: number
@@ -1077,6 +1137,48 @@ export type Database = {
           referrer_id?: string
           reward_credited?: boolean
           status?: string
+        }
+        Relationships: []
+      }
+      responder_locations: {
+        Row: {
+          created_at: string
+          full_name: string
+          id: string
+          is_available: boolean
+          last_heartbeat: string
+          latitude: number
+          longitude: number
+          role: string
+          updated_at: string
+          user_id: string
+          zone: string | null
+        }
+        Insert: {
+          created_at?: string
+          full_name: string
+          id?: string
+          is_available?: boolean
+          last_heartbeat?: string
+          latitude: number
+          longitude: number
+          role?: string
+          updated_at?: string
+          user_id: string
+          zone?: string | null
+        }
+        Update: {
+          created_at?: string
+          full_name?: string
+          id?: string
+          is_available?: boolean
+          last_heartbeat?: string
+          latitude?: number
+          longitude?: number
+          role?: string
+          updated_at?: string
+          user_id?: string
+          zone?: string | null
         }
         Relationships: []
       }

@@ -182,7 +182,28 @@ export const EmergencySOS = () => {
 
       if (ticketError) throw ticketError;
 
-      // Immediately trigger WhatsApp alert
+      // Auto-allocate nearest responder
+      try {
+        const { data: allocation, error: allocError } = await supabase.functions.invoke("allocate-responder", {
+          body: {
+            ticket_id: ticket.id,
+            lat: lat || 0,
+            lng: lng || 0,
+            zone: zone,
+            escalation_level: 1,
+          },
+        });
+
+        if (!allocError && allocation?.allocated) {
+          console.log("Responder allocated:", allocation.responder?.name, "at", allocation.responder?.distance_meters, "m");
+        } else {
+          console.warn("No responder allocated, falling back to WhatsApp alert");
+        }
+      } catch (allocErr) {
+        console.error("Allocation error (non-blocking):", allocErr);
+      }
+
+      // Also trigger WhatsApp alert as backup
       const { error: alertError } = await supabase.functions.invoke("whatsapp-alert", {
         body: {
           ticketId: ticket.id,
@@ -197,7 +218,6 @@ export const EmergencySOS = () => {
 
       if (alertError) {
         console.error("WhatsApp alert error:", alertError);
-        // Don't fail the whole operation if WhatsApp fails
       }
 
       setStatus("success");
