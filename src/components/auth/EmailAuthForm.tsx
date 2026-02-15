@@ -5,7 +5,10 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, Mail, Lock, User, MapPin, Eye, EyeOff } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Loader2, Mail, Lock, User, MapPin, Eye, EyeOff, ShieldCheck, FileText, Database, Bell } from "lucide-react";
 import { z } from "zod";
 
 const EMBARKATION_POINTS = [
@@ -21,10 +24,10 @@ const nameSchema = z.string().min(2, "Name must be at least 2 characters").max(1
   .regex(/^[\p{L}\p{M}\s'-]+$/u, "Name can only contain letters, spaces, hyphens and apostrophes");
 
 const labels = {
-  en: { signIn: "Sign In", signUp: "Sign Up", email: "Email Address", password: "Password", fullName: "Full Name", embarkation: "Embarkation Point", showPassword: "Show", hidePassword: "Hide", haveAccount: "Have an account? Sign in", noAccount: "No account? Sign up", welcome: "Welcome back, pilgrim", joinUs: "Join the Hajj journey" },
-  ar: { signIn: "تسجيل الدخول", signUp: "إنشاء حساب", email: "البريد الإلكتروني", password: "كلمة المرور", fullName: "الاسم الكامل", embarkation: "نقطة المغادرة", showPassword: "إظهار", hidePassword: "إخفاء", haveAccount: "لديك حساب؟ سجل دخولك", noAccount: "ليس لديك حساب؟ أنشئ واحداً", welcome: "مرحباً بعودتك أيها الحاج", joinUs: "انضم إلى رحلة الحج" },
-  ur: { signIn: "لاگ ان", signUp: "اکاؤنٹ بنائیں", email: "ای میل", password: "پاسورڈ", fullName: "پورا نام", embarkation: "روانگی کا مقام", showPassword: "دکھائیں", hidePassword: "چھپائیں", haveAccount: "اکاؤنٹ ہے؟ لاگ ان کریں", noAccount: "اکاؤنٹ نہیں؟ بنائیں", welcome: "خوش آمدید حاجی", joinUs: "حج کے سفر میں شامل ہوں" },
-  hi: { signIn: "लॉग इन", signUp: "खाता बनाएं", email: "ईमेल", password: "पासवर्ड", fullName: "पूरा नाम", embarkation: "प्रस्थान बिंदु", showPassword: "दिखाएं", hidePassword: "छिपाएं", haveAccount: "खाता है? लॉग इन करें", noAccount: "खाता नहीं? बनाएं", welcome: "वापसी पर स्वागत है", joinUs: "हज यात्रा में शामिल हों" },
+  en: { signIn: "Sign In", signUp: "Sign Up", email: "Email Address", password: "Password", fullName: "Full Name", embarkation: "Embarkation Point", showPassword: "Show", hidePassword: "Hide", haveAccount: "Have an account? Sign in", noAccount: "No account? Sign up", welcome: "Welcome back, pilgrim", joinUs: "Join the Hajj journey", consentTitle: "Privacy & Terms Review", consentDesc: "Please review and accept before creating your account.", consentData: "How we use your data:", consentProfile: "Your name and embarkation point are stored securely to personalize your Hajj journey.", consentAuth: "Your email is used for authentication and account recovery only.", consentNotify: "We may send you important Hajj-related notifications and safety alerts.", consentPrivacy: "Your data is never shared with third parties without your consent.", consentAgree: "I have reviewed and agree to the Privacy Policy and Terms of Service", consentConfirm: "Create Account", consentCancel: "Go Back" },
+  ar: { signIn: "تسجيل الدخول", signUp: "إنشاء حساب", email: "البريد الإلكتروني", password: "كلمة المرور", fullName: "الاسم الكامل", embarkation: "نقطة المغادرة", showPassword: "إظهار", hidePassword: "إخفاء", haveAccount: "لديك حساب؟ سجل دخولك", noAccount: "ليس لديك حساب؟ أنشئ واحداً", welcome: "مرحباً بعودتك أيها الحاج", joinUs: "انضم إلى رحلة الحج", consentTitle: "مراجعة الخصوصية والشروط", consentDesc: "يرجى المراجعة والموافقة قبل إنشاء حسابك.", consentData: "كيف نستخدم بياناتك:", consentProfile: "يتم تخزين اسمك ونقطة مغادرتك بأمان لتخصيص رحلة الحج.", consentAuth: "يُستخدم بريدك الإلكتروني للمصادقة واسترداد الحساب فقط.", consentNotify: "قد نرسل إليك إشعارات مهمة تتعلق بالحج وتنبيهات السلامة.", consentPrivacy: "لا تتم مشاركة بياناتك مع أطراف ثالثة بدون موافقتك.", consentAgree: "لقد راجعت وأوافق على سياسة الخصوصية وشروط الخدمة", consentConfirm: "إنشاء الحساب", consentCancel: "رجوع" },
+  ur: { signIn: "لاگ ان", signUp: "اکاؤنٹ بنائیں", email: "ای میل", password: "پاسورڈ", fullName: "پورا نام", embarkation: "روانگی کا مقام", showPassword: "دکھائیں", hidePassword: "چھپائیں", haveAccount: "اکاؤنٹ ہے؟ لاگ ان کریں", noAccount: "اکاؤنٹ نہیں؟ بنائیں", welcome: "خوش آمدید حاجی", joinUs: "حج کے سفر میں شامل ہوں", consentTitle: "رازداری اور شرائط کا جائزہ", consentDesc: "اکاؤنٹ بنانے سے پہلے جائزہ لیں اور قبول کریں۔", consentData: "ہم آپ کا ڈیٹا کیسے استعمال کرتے ہیں:", consentProfile: "آپ کا نام اور روانگی کا مقام محفوظ طریقے سے ذخیرہ کیا جاتا ہے۔", consentAuth: "آپ کا ای میل صرف تصدیق اور اکاؤنٹ بحالی کے لیے استعمال ہوتا ہے۔", consentNotify: "ہم آپ کو اہم حج سے متعلق اطلاعات بھیج سکتے ہیں۔", consentPrivacy: "آپ کا ڈیٹا تیسرے فریق کے ساتھ شیئر نہیں کیا جاتا۔", consentAgree: "میں نے رازداری کی پالیسی اور شرائط کا جائزہ لیا اور قبول کیا", consentConfirm: "اکاؤنٹ بنائیں", consentCancel: "واپس" },
+  hi: { signIn: "लॉग इन", signUp: "खाता बनाएं", email: "ईमेल", password: "पासवर्ड", fullName: "पूरा नाम", embarkation: "प्रस्थान बिंदु", showPassword: "दिखाएं", hidePassword: "छिपाएं", haveAccount: "खाता है? लॉग इन करें", noAccount: "खाता नहीं? बनाएं", welcome: "वापसी पर स्वागत है", joinUs: "हज यात्रा में शामिल हों", consentTitle: "गोपनीयता और शर्तों की समीक्षा", consentDesc: "खाता बनाने से पहले कृपया समीक्षा करें और स्वीकार करें।", consentData: "हम आपका डेटा कैसे उपयोग करते हैं:", consentProfile: "आपका नाम और प्रस्थान बिंदु सुरक्षित रूप से संग्रहीत किया जाता है।", consentAuth: "आपका ईमेल केवल प्रमाणीकरण और खाता पुनर्प्राप्ति के लिए उपयोग होता है।", consentNotify: "हम आपको महत्वपूर्ण हज संबंधी सूचनाएं भेज सकते हैं।", consentPrivacy: "आपका डेटा तीसरे पक्ष के साथ साझा नहीं किया जाता।", consentAgree: "मैंने गोपनीयता नीति और सेवा शर्तों की समीक्षा की और स्वीकार किया", consentConfirm: "खाता बनाएं", consentCancel: "वापस" },
 };
 
 interface EmailAuthFormProps {
@@ -40,7 +43,8 @@ export function EmailAuthForm({ onSuccess }: EmailAuthFormProps) {
   const [embarkationPoint, setEmbarkationPoint] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-
+  const [showConsentModal, setShowConsentModal] = useState(false);
+  const [consentAgreed, setConsentAgreed] = useState(false);
   const { signUp, signIn } = useAuth();
   const { language, isRTL } = useLanguage();
   const { toast } = useToast();
@@ -62,10 +66,20 @@ export function EmailAuthForm({ onSuccess }: EmailAuthFormProps) {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
+    if (isSignUp) {
+      setConsentAgreed(false);
+      setShowConsentModal(true);
+      return;
+    }
+    doSubmit();
+  };
+
+  const doSubmit = async () => {
     setIsLoading(true);
+    setShowConsentModal(false);
     try {
       if (isSignUp) {
         const { error } = await signUp(email, password, fullName, embarkationPoint);
@@ -96,7 +110,7 @@ export function EmailAuthForm({ onSuccess }: EmailAuthFormProps) {
         {isSignUp ? t.joinUs : t.welcome}
       </p>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleFormSubmit} className="space-y-4">
         {isSignUp && (
           <>
             {/* Full Name */}
@@ -197,6 +211,69 @@ export function EmailAuthForm({ onSuccess }: EmailAuthFormProps) {
           {isSignUp ? t.haveAccount : t.noAccount}
         </button>
       </div>
+
+      {/* Consent Review Modal - only for signup */}
+      <Dialog open={showConsentModal} onOpenChange={(v) => { if (!v) setConsentAgreed(false); setShowConsentModal(v); }}>
+        <DialogContent className="sm:max-w-md rounded-2xl" dir={isRTL ? "rtl" : "ltr"}>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-lg">
+              <ShieldCheck className="w-5 h-5 text-primary" />
+              {t.consentTitle}
+            </DialogTitle>
+            <DialogDescription className="text-sm">
+              {t.consentDesc}
+            </DialogDescription>
+          </DialogHeader>
+
+          <ScrollArea className="max-h-[50vh]">
+            <div className="space-y-4 py-2">
+              <p className="text-sm font-medium text-foreground">{t.consentData}</p>
+              <ul className="space-y-3">
+                {[
+                  { icon: User, text: t.consentProfile },
+                  { icon: Database, text: t.consentAuth },
+                  { icon: Bell, text: t.consentNotify },
+                  { icon: FileText, text: t.consentPrivacy },
+                ].map((item, i) => {
+                  const Icon = item.icon;
+                  return (
+                    <li key={i} className="flex items-start gap-3 text-sm text-muted-foreground">
+                      <Icon className="w-4 h-4 mt-0.5 shrink-0 text-primary/70" />
+                      <span>{item.text}</span>
+                    </li>
+                  );
+                })}
+              </ul>
+
+              <div className="p-3 rounded-xl bg-muted/40 border border-border/50 space-y-1">
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  🔒 {t.consentPrivacy}
+                </p>
+              </div>
+
+              <label className="flex items-start gap-3 cursor-pointer select-none">
+                <Checkbox
+                  checked={consentAgreed}
+                  onCheckedChange={(v) => setConsentAgreed(v === true)}
+                  className="mt-0.5"
+                />
+                <span className="text-sm font-medium text-foreground leading-snug">
+                  {t.consentAgree}
+                </span>
+              </label>
+            </div>
+          </ScrollArea>
+
+          <DialogFooter className="flex-col sm:flex-row gap-2">
+            <Button variant="outline" onClick={() => { setShowConsentModal(false); setConsentAgreed(false); }} className="rounded-xl">
+              {t.consentCancel}
+            </Button>
+            <Button onClick={doSubmit} disabled={!consentAgreed || isLoading} className="rounded-xl">
+              {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : t.consentConfirm}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
