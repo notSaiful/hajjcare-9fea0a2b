@@ -91,3 +91,6 @@ verify_jwt = false
 
 [functions.hajj-faq-chat]
 verify_jwt = false
+
+[functions.inspector-register]
+verify_jwt = false
