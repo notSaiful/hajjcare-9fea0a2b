@@ -11,7 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { PageHeader } from "@/components/PageHeader";
 import { cn } from "@/lib/utils";
-import { GstBreakdown } from "@/components/billing/GstBreakdown";
+import { InvoicePreview } from "@/components/billing/GstBreakdown";
 import { useNavigate } from "react-router-dom";
 
 declare global {
@@ -321,13 +321,17 @@ export default function PaymentPage() {
               )}
             </div>
 
-            {/* GST Breakdown */}
-            <GstBreakdown
+            {/* Persistent Invoice Preview */}
+            <InvoicePreview
               baseAmount={baseAmount}
               gstRate={18}
               gstAmount={gstAmount}
               totalAmount={totalAmount}
-              serviceName="HajjCare Service Fee"
+              serviceName="HajjCare App Maintenance Service Fee"
+              customerName={user?.user_metadata?.full_name}
+              customerEmail={user?.email}
+              orgName="Sazo Management Private Limited"
+              orgGstin={ORG_GSTIN || undefined}
             />
 
             {/* Pay Button */}
