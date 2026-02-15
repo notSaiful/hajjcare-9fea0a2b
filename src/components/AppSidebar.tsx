@@ -27,6 +27,7 @@ import {
   BarChart3,
   Gift,
   Route,
+  Sparkles,
 } from "lucide-react";
 import {
   Sidebar,
@@ -538,11 +539,29 @@ export function AppSidebar() {
         )}
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-border/50 p-4">
+      <SidebarFooter className="border-t border-border/50 p-3 space-y-2">
         {!isCollapsed && (
-          <p className="text-xs text-muted-foreground text-center">
-            © 2024 Hajj Guide
-          </p>
+          <>
+            <button
+              onClick={() => window.dispatchEvent(new Event("hajjcare:replay-tour"))}
+              className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
+            >
+              <Sparkles className="w-5 h-5 flex-shrink-0 text-primary" />
+              <span>{language === "hi" ? "ऐप टूर दोबारा देखें" : language === "ar" ? "إعادة جولة التطبيق" : language === "ur" ? "ایپ ٹور دوبارہ دیکھیں" : "Replay App Tour"}</span>
+            </button>
+            <p className="text-xs text-muted-foreground text-center">
+              © 2024 Hajj Guide
+            </p>
+          </>
+        )}
+        {isCollapsed && (
+          <button
+            onClick={() => window.dispatchEvent(new Event("hajjcare:replay-tour"))}
+            className="flex items-center justify-center p-2 rounded-lg text-muted-foreground hover:text-primary hover:bg-muted/60 transition-colors"
+            title="Replay Tour"
+          >
+            <Sparkles className="w-5 h-5" />
+          </button>
         )}
       </SidebarFooter>
     </Sidebar>

@@ -6,6 +6,7 @@ import { DashboardMenu } from "@/components/DashboardMenu";
 import SukoonFamilyFeature from "@/components/SukoonFamilyFeature";
 const WelcomePromoDialog = lazy(() => import("@/components/WelcomePromoDialog").then(m => ({ default: m.WelcomePromoDialog })));
 import { HeroSection } from "@/components/HeroSection";
+import { OnboardingTour } from "@/components/OnboardingTour";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
 import { Loader2 } from "lucide-react";
@@ -77,6 +78,9 @@ const HomePage = () => {
       <Suspense fallback={null}>
         <WelcomePromoDialog />
       </Suspense>
+
+      {/* Onboarding Tour */}
+      <OnboardingTour />
     </div>
   );
 };
