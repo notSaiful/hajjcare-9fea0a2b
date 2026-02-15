@@ -137,12 +137,15 @@ serve(async (req) => {
       { global: { headers: { Authorization: authHeader } } }
     );
 
-    // Try to get user, but allow anonymous access
-    let userId = "anonymous";
-    const { data: { user } } = await supabaseClient.auth.getUser(token);
-    if (user) {
-      userId = user.id;
+    // Require authenticated user
+    const { data: { user }, error: authError } = await supabaseClient.auth.getUser(token);
+    if (authError || !user) {
+      return new Response(
+        JSON.stringify({ error: "Authentication required" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
+    const userId = user.id;
 
     const { message, messages = [], language = "en", session_id } = await req.json();
 
