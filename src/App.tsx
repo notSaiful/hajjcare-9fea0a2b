@@ -88,6 +88,7 @@ const AboutUsPage = lazy(() => import("./pages/AboutUsPage"));
 const PricingDisclosurePage = lazy(() => import("./pages/PricingDisclosurePage"));
 const GovtServicesPage = lazy(() => import("./pages/GovtServicesPage"));
 const PaymentPage = lazy(() => import("./pages/PaymentPage"));
+const BillingHistoryPage = lazy(() => import("./pages/BillingHistoryPage"));
 const RewardsPage = lazy(() => import("./pages/RewardsPage"));
 const AdminPromoPage = lazy(() => import("./pages/AdminPromoPage"));
 const SukoonRdPage = lazy(() => import("./pages/SukoonRdPage"));
@@ -208,6 +209,7 @@ function AppContent() {
       <Route path="/pricing" element={<PricingDisclosurePage />} />
       <Route path="/govt-services" element={<GovtServicesPage />} />
       <Route path="/payment" element={<PaymentPage />} />
+      <Route path="/billing-history" element={<BillingHistoryPage />} />
       <Route path="/rewards" element={<RewardsPage />} />
       <Route path="/admin/promo" element={<AdminPromoPage />} />
       <Route path="/sukoon-rd" element={<SukoonRdPage />} />

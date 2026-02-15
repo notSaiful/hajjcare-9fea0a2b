@@ -1,22 +1,27 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MainLayout } from "@/components/MainLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { IndianRupee, Shield, Check, Info, CreditCard, Sparkles } from "lucide-react";
+import { IndianRupee, Shield, Check, Info, CreditCard, Sparkles, AlertTriangle, Receipt } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { PageHeader } from "@/components/PageHeader";
 import { cn } from "@/lib/utils";
+import { GstBreakdown } from "@/components/billing/GstBreakdown";
+import { useNavigate } from "react-router-dom";
 
 declare global {
   interface Window {
     Razorpay: any;
   }
 }
+
+const GST_RATE = 0.18;
+const ORG_GSTIN = ""; // Set your GSTIN here when available
 
 const PRESET_AMOUNTS = [
   { value: 99, label: "Basic" },
@@ -44,17 +49,22 @@ export default function PaymentPage() {
   const { language } = useLanguage();
   const { toast } = useToast();
   const { user, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
   const [selectedAmount, setSelectedAmount] = useState<number>(199);
   const [customAmount, setCustomAmount] = useState<string>("");
   const [isCustomMode, setIsCustomMode] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const getFinalAmount = () => {
+  const getBaseAmount = () => {
     if (isCustomMode && customAmount && parseInt(customAmount) >= 10) {
       return parseInt(customAmount);
     }
     return selectedAmount;
   };
+
+  const baseAmount = getBaseAmount();
+  const gstAmount = Math.round(baseAmount * GST_RATE * 100) / 100;
+  const totalAmount = Math.round((baseAmount + gstAmount) * 100) / 100;
 
   const loadRazorpayScript = (): Promise<boolean> => {
     return new Promise((resolve) => {
@@ -70,6 +80,39 @@ export default function PaymentPage() {
     });
   };
 
+  const createInvoiceRecord = async (
+    razorpayOrderId: string,
+    razorpayPaymentId: string,
+    paymentStatus: string
+  ) => {
+    try {
+      const { data: invoiceNum } = await supabase.rpc("generate_invoice_number");
+      const invoiceNumber = invoiceNum || `HC-${Date.now().toString(36).toUpperCase()}`;
+
+      const { error } = await supabase.from("billing_invoices").insert({
+        user_id: user!.id,
+        invoice_number: invoiceNumber,
+        service_name: "HajjCare App Maintenance Service Fee",
+        base_amount: Math.round(baseAmount * 100),
+        gst_rate: 18.00,
+        gst_amount: Math.round(gstAmount * 100),
+        total_amount: Math.round(totalAmount * 100),
+        razorpay_order_id: razorpayOrderId,
+        razorpay_payment_id: razorpayPaymentId,
+        payment_status: paymentStatus,
+        customer_name: user?.user_metadata?.full_name || null,
+        customer_email: user?.email || null,
+        org_gstin: ORG_GSTIN || null,
+      });
+
+      if (error) console.error("Invoice creation error:", error);
+      return invoiceNumber;
+    } catch (err) {
+      console.error("Failed to create invoice:", err);
+      return null;
+    }
+  };
+
   const handlePayment = async () => {
     if (!user) {
       toast({
@@ -80,8 +123,12 @@ export default function PaymentPage() {
       return;
     }
 
-    const amount = getFinalAmount();
-    if (amount < 10 || amount > 100000) {
+    if (!ORG_GSTIN) {
+      // Allow payment but warn — GST not configured
+      console.warn("GSTIN not configured — invoices will be generated without GSTIN");
+    }
+
+    if (baseAmount < 10 || baseAmount > 100000) {
       toast({
         title: "Invalid Amount",
         description: "Amount must be between ₹10 and ₹1,00,000",
@@ -94,17 +141,16 @@ export default function PaymentPage() {
 
     try {
       const loaded = await loadRazorpayScript();
-      if (!loaded) {
-        throw new Error("Failed to load payment gateway");
-      }
+      if (!loaded) throw new Error("Failed to load payment gateway");
+
+      // Send total amount (including GST) in paise to Razorpay
+      const totalInPaise = Math.round(totalAmount * 100);
 
       const response = await supabase.functions.invoke("create-razorpay-order", {
-        body: { amount: amount * 100, currency: "INR" },
+        body: { amount: totalInPaise, currency: "INR" },
       });
 
-      if (response.error) {
-        throw new Error(response.error.message || "Failed to create order");
-      }
+      if (response.error) throw new Error(response.error.message || "Failed to create order");
 
       const { order_id, key_id, amount: orderAmount, currency } = response.data;
 
@@ -113,7 +159,7 @@ export default function PaymentPage() {
         amount: orderAmount,
         currency: currency,
         name: "Hajj Care",
-        description: "Service Fee",
+        description: `Service Fee ₹${baseAmount} + GST @18%`,
         order_id: order_id,
         prefill: {
           email: user.email || "",
@@ -121,10 +167,13 @@ export default function PaymentPage() {
         theme: {
           color: "#16a34a",
         },
-        handler: function () {
+        handler: async function (resp: any) {
+          // Payment successful — create invoice
+          await createInvoiceRecord(order_id, resp.razorpay_payment_id, "paid");
+
           toast({
             title: "Payment Successful! 🎉",
-            description: "Thank you for supporting Hajj Care.",
+            description: "Invoice generated. View it in your billing history.",
           });
         },
         modal: {
@@ -135,7 +184,8 @@ export default function PaymentPage() {
       };
 
       const razorpay = new window.Razorpay(options);
-      razorpay.on("payment.failed", function (resp: any) {
+      razorpay.on("payment.failed", async function (resp: any) {
+        await createInvoiceRecord(order_id, "", "failed");
         toast({
           title: "Payment Failed",
           description: resp.error.description || "Please try again",
@@ -155,8 +205,6 @@ export default function PaymentPage() {
     }
   };
 
-  const finalAmount = getFinalAmount();
-
   return (
     <MainLayout>
       <div className="container max-w-2xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 space-y-5">
@@ -166,6 +214,20 @@ export default function PaymentPage() {
           icon={CreditCard}
           iconVariant="primary"
         />
+
+        {/* GST Warning if GSTIN not configured */}
+        {!ORG_GSTIN && (
+          <Card className="border-2 border-destructive/30 bg-destructive/5">
+            <CardContent className="p-4">
+              <div className="flex items-start gap-3 text-sm">
+                <AlertTriangle className="h-5 w-5 flex-shrink-0 mt-0.5 text-destructive" />
+                <p className="text-destructive">
+                  GST billing is temporarily unavailable. Invoices will be generated without GSTIN. Please contact support.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Amount Selection */}
         <Card className="border-2 border-primary/15 shadow-md overflow-hidden">
@@ -259,6 +321,15 @@ export default function PaymentPage() {
               )}
             </div>
 
+            {/* GST Breakdown */}
+            <GstBreakdown
+              baseAmount={baseAmount}
+              gstRate={18}
+              gstAmount={gstAmount}
+              totalAmount={totalAmount}
+              serviceName="HajjCare Service Fee"
+            />
+
             {/* Pay Button */}
             <Button
               className="w-full h-13 text-base font-semibold rounded-xl shadow-md hover:shadow-lg transition-shadow"
@@ -270,7 +341,7 @@ export default function PaymentPage() {
                 "Processing..."
               ) : (
                 <>
-                  Pay ₹{finalAmount} <Shield className="ml-2 h-5 w-5" />
+                  Pay ₹{totalAmount.toFixed(2)} (incl. GST) <Shield className="ml-2 h-5 w-5" />
                 </>
               )}
             </Button>
@@ -286,6 +357,18 @@ export default function PaymentPage() {
             )}
           </CardContent>
         </Card>
+
+        {/* View Invoices */}
+        {user && (
+          <Button
+            variant="outline"
+            className="w-full gap-2"
+            onClick={() => navigate("/billing-history")}
+          >
+            <Receipt className="h-4 w-4" />
+            View Billing History & Invoices
+          </Button>
+        )}
 
         {/* Benefits */}
         <Card className="border-2 border-border/50">
@@ -318,7 +401,7 @@ export default function PaymentPage() {
             <div className="flex items-start gap-3 text-sm text-muted-foreground">
               <Info className="h-5 w-5 flex-shrink-0 mt-0.5 text-primary/70" />
               <div className="space-y-1">
-                <p>This is an optional service fee, not a donation. Fees are non-refundable.</p>
+                <p>This is an optional service fee, not a donation. Fees are non-refundable. GST @18% is applied as per Indian law.</p>
                 <p>
                   Contact:{" "}
                   <a href="mailto:info@hajjcare.in" className="text-primary underline">
