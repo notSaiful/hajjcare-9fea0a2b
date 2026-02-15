@@ -2,15 +2,20 @@ import { useState, useMemo } from 'react';
 import { SimpleHeader } from '@/components/SimpleHeader';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { HAJ_INSPECTORS, getStateStats } from '@/data/hajInspectorsData';
-import { Search, Award } from 'lucide-react';
+import { Search, Award, MessageCircle, ExternalLink, UserPlus } from 'lucide-react';
 import { StateSelector } from '@/components/StateSelector';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { InspectorStatsCard } from '@/components/inspector/InspectorStatsCard';
 import { StateGroupedInspectors } from '@/components/inspector/StateGroupedInspectors';
+import { useNavigate } from 'react-router-dom';
+
+const WHATSAPP_GROUP_LINK = 'https://chat.whatsapp.com/LdH4cHBImrWIAwX2wv83Xz?mode=gi_t';
 
 const HajInspectorsDirectoryPage = () => {
   const { language } = useLanguage();
+  const navigate = useNavigate();
   const [selectedState, setSelectedState] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -132,6 +137,21 @@ const HajInspectorsDirectoryPage = () => {
       <SimpleHeader />
       
       <main className="container max-w-2xl mx-auto px-4 py-6 space-y-4">
+        {/* WhatsApp Group + Register CTA */}
+        <div className="flex gap-2">
+          <Button asChild variant="outline" className="flex-1 border-emerald-300 dark:border-emerald-700">
+            <a href={WHATSAPP_GROUP_LINK} target="_blank" rel="noopener noreferrer">
+              <MessageCircle className="w-4 h-4 mr-1.5 text-emerald-600" />
+              WhatsApp Group
+              <ExternalLink className="w-3 h-3 ml-1" />
+            </a>
+          </Button>
+          <Button onClick={() => navigate('/haj-inspector-register')} className="flex-1">
+            <UserPlus className="w-4 h-4 mr-1.5" />
+            {language === 'hi' ? 'पंजीकरण' : 'Register'}
+          </Button>
+        </div>
+
         {/* Header */}
         <div className="text-center mb-6">
           <h1 className="text-2xl font-bold text-foreground flex items-center justify-center gap-2">
