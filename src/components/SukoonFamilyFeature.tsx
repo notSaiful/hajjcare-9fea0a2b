@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Heart, Shield, Bell, Users, MapPin, Phone } from "lucide-react";
 import { Link } from "react-router-dom";
-import sukoonPoster from "@/assets/sukoon-tracking-poster.webp";
+import sukoonPoster from "@/assets/sukoon-tracking-poster-optimized.webp";
 
 interface LocalizedText {
   en: string;
