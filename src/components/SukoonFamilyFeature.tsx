@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Heart, Shield, Bell, Users, MapPin, Phone } from "lucide-react";
 import { Link } from "react-router-dom";
+import sukoonPosterMobile from "@/assets/sukoon-poster-mobile.webp";
 import sukoonPoster from "@/assets/sukoon-poster-622.webp";
 import sukoonPosterLarge from "@/assets/sukoon-tracking-poster-optimized.webp";
 
@@ -229,14 +230,14 @@ const SukoonFamilyFeature = () => {
         {/* Poster Image */}
         <div className="relative">
           <img
-            src={sukoonPoster}
-            srcSet={`${sukoonPoster} 622w, ${sukoonPosterLarge} 1024w`}
-            sizes="(max-width: 672px) 100vw, 622px"
+            src={sukoonPosterMobile}
+            srcSet={`${sukoonPosterMobile} 400w, ${sukoonPoster} 622w, ${sukoonPosterLarge} 1024w`}
+            sizes="(max-width: 430px) 100vw, (max-width: 672px) 100vw, 622px"
             alt="Sukoon Tracking System - Family Peace Feature"
             width={622}
             height={622}
-            loading="lazy"
             decoding="async"
+            fetchPriority="high"
             className="w-full h-auto object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent" />
