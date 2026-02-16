@@ -32,6 +32,7 @@ export const SimpleHeader = () => {
               alt="Hajj Guide" 
               width={44}
               height={44}
+              sizes="44px"
               className="w-10 h-10 sm:w-11 sm:h-11 rounded-full flex-shrink-0 shadow-soft transition-transform duration-300 group-hover:scale-105"
             />
             {/* Subtle glow */}
