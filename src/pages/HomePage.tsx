@@ -1,33 +1,23 @@
 import { lazy, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
 import { SimpleHeader } from "@/components/SimpleHeader";
-import { Footer } from "@/components/Footer";
-import { DashboardMenu } from "@/components/DashboardMenu";
-import SukoonFamilyFeature from "@/components/SukoonFamilyFeature";
-const WelcomePromoDialog = lazy(() => import("@/components/WelcomePromoDialog").then(m => ({ default: m.WelcomePromoDialog })));
 import { HeroSection } from "@/components/HeroSection";
-import { OnboardingTour } from "@/components/OnboardingTour";
+import { DashboardMenu } from "@/components/DashboardMenu";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
-import { Loader2 } from "lucide-react";
-import { LocationPermissionFlow } from "@/components/LocationPermissionFlow";
-import { LocationReminderBanner } from "@/components/LocationReminderBanner";
+
+// Lazy-load below-fold and non-critical components to reduce TTI
+const SukoonFamilyFeature = lazy(() => import("@/components/SukoonFamilyFeature"));
+const Footer = lazy(() => import("@/components/Footer").then(m => ({ default: m.Footer })));
+const WelcomePromoDialog = lazy(() => import("@/components/WelcomePromoDialog").then(m => ({ default: m.WelcomePromoDialog })));
+const OnboardingTour = lazy(() => import("@/components/OnboardingTour").then(m => ({ default: m.OnboardingTour })));
+const LocationPermissionFlow = lazy(() => import("@/components/LocationPermissionFlow").then(m => ({ default: m.LocationPermissionFlow })));
+const LocationReminderBanner = lazy(() => import("@/components/LocationReminderBanner").then(m => ({ default: m.LocationReminderBanner })));
 
 const HomePage = () => {
   const { t, isRTL, language } = useLanguage();
   const { isAuthenticated, loading: authLoading } = useAuth();
   const navigate = useNavigate();
-
-  if (authLoading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="relative z-10 flex flex-col items-center gap-4">
-          <Loader2 className="w-8 h-8 animate-spin text-primary" />
-          <p className="text-sm text-muted-foreground animate-fade-in">Loading...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-background" dir={isRTL ? "rtl" : "ltr"}>
@@ -45,13 +35,15 @@ const HomePage = () => {
             <DashboardMenu />
           </section>
 
-          {/* Sukoon Family Tracking */}
-          <section className="animate-fade-up" style={{ animationDelay: "160ms" }}>
-            <SukoonFamilyFeature />
-          </section>
+          {/* Sukoon Family Tracking - lazy loaded */}
+          <Suspense fallback={null}>
+            <section className="animate-fade-up" style={{ animationDelay: "160ms" }}>
+              <SukoonFamilyFeature />
+            </section>
+          </Suspense>
 
-          {/* Auth prompt */}
-          {!isAuthenticated && (
+          {/* Auth prompt - only show after auth resolves */}
+          {!authLoading && !isAuthenticated && (
             <section
               className="text-center pt-2 animate-fade-up"
               style={{ animationDelay: "240ms" }}
@@ -67,20 +59,18 @@ const HomePage = () => {
         </div>
       </main>
 
-      {/* Footer */}
-      <Footer />
-
-      {/* Location Permission Flow */}
-      <LocationPermissionFlow />
-      <LocationReminderBanner />
-
-      {/* Welcome Promo Dialog - lazy loaded to avoid critical chain */}
+      {/* Footer - lazy loaded */}
       <Suspense fallback={null}>
-        <WelcomePromoDialog />
+        <Footer />
       </Suspense>
 
-      {/* Onboarding Tour */}
-      <OnboardingTour />
+      {/* Non-critical overlays - lazy loaded */}
+      <Suspense fallback={null}>
+        <LocationPermissionFlow />
+        <LocationReminderBanner />
+        <WelcomePromoDialog />
+        <OnboardingTour />
+      </Suspense>
     </div>
   );
 };
