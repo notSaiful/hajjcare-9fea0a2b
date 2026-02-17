@@ -105,7 +105,7 @@ const ResponderCommandPage = lazy(() => import("./pages/ResponderCommandPage"));
 const NationalCommandPage = lazy(() => import("./pages/NationalCommandPage"));
 const DeploymentRoadmapPage = lazy(() => import("./pages/DeploymentRoadmapPage"));
 const ComplianceDashboardPage = lazy(() => import("./pages/ComplianceDashboardPage"));
-
+const AdminWhatsAppApiPage = lazy(() => import("./pages/AdminWhatsAppApiPage"));
 // Optimized Query Client with caching
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -231,6 +231,7 @@ function AppContent() {
         <Route path="/national-command" element={<NationalCommandPage />} />
         <Route path="/deployment-roadmap" element={<DeploymentRoadmapPage />} />
         <Route path="/admin/compliance" element={<ComplianceDashboardPage />} />
+        <Route path="/admin/whatsapp-api" element={<AdminWhatsAppApiPage />} />
       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
       <Route path="*" element={<NotFound />} />
     </Routes>
