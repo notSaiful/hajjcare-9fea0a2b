@@ -98,6 +98,7 @@ const AdminAIDashboardPage = lazy(() => import("./pages/AdminAIDashboardPage"));
 const SukoonTrackingMetricsPage = lazy(() => import("./pages/SukoonTrackingMetricsPage"));
 const AdminAnalyticsPage = lazy(() => import("./pages/AdminAnalyticsPage"));
 const HajjFaqChatPage = lazy(() => import("./pages/HajjFaqChatPage"));
+const HajjQueryWizardPage = lazy(() => import("./pages/HajjQueryWizardPage"));
 const VolunteerPage = lazy(() => import("./pages/VolunteerPage"));
 const VolunteerDashboardPage = lazy(() => import("./pages/VolunteerDashboardPage"));
 const ResponderCommandPage = lazy(() => import("./pages/ResponderCommandPage"));
@@ -222,7 +223,8 @@ function AppContent() {
       <Route path="/admin/ai-dashboard" element={<AdminAIDashboardPage />} />
       <Route path="/admin/sukoon-metrics" element={<SukoonTrackingMetricsPage />} />
       <Route path="/admin/analytics" element={<AdminAnalyticsPage />} />
-      <Route path="/hajj-faq" element={<HajjFaqChatPage />} />
+        <Route path="/hajj-faq" element={<HajjFaqChatPage />} />
+        <Route path="/hajj-wizard" element={<HajjQueryWizardPage />} />
       <Route path="/volunteer" element={<VolunteerPage />} />
         <Route path="/admin/volunteers" element={<VolunteerDashboardPage />} />
         <Route path="/command-center" element={<ResponderCommandPage />} />

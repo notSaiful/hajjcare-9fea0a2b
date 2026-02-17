@@ -30,6 +30,7 @@ import {
   Shield,
   CreditCard,
   Wallet,
+  Sparkles,
   LucideIcon,
 } from "lucide-react";
 
@@ -238,6 +239,25 @@ export const menuSections: MenuSection[] = [
         },
         route: "/chat",
         colorClass: "icon-teal",
+      },
+      {
+        id: "hajj-wizard",
+        icon: Sparkles,
+        label: {
+          en: "Hajj Query Wizard",
+          ar: "معالج أسئلة الحج",
+          ur: "حج سوالات وزرڈ",
+          hi: "हज क्वेरी विज़ार्ड",
+          ta: "ஹஜ் வழிகாட்டி",
+          te: "హజ్ క్వెరీ విజార్డ్",
+          mr: "हज क्वेरी विझार्ड",
+          bn: "হজ কোয়েরি উইজার্ড",
+          or: "ହଜ କ୍ୱେରି ୱିଜାର୍ଡ",
+          ml: "ഹജ്ജ് ക്വറി വിസാർഡ്",
+          pa: "ਹੱਜ ਕੁਐਰੀ ਵਿਜ਼ਾਰਡ",
+        },
+        route: "/hajj-wizard",
+        colorClass: "icon-gold",
       },
     ],
   },
