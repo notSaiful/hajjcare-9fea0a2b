@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 
 export interface DashboardData {
@@ -51,17 +52,17 @@ export interface DashboardData {
 }
 
 const DASHBOARD_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-ai-dashboard`;
+const ENDPOINT_NAME = "admin-ai-dashboard";
 
 export const useAdminAIDashboard = () => {
+  const navigate = useNavigate();
   const [data, setData] = useState<DashboardData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [forbiddenError, setForbiddenError] = useState<{ statusCode: number; endpoint: string; detail: string } | null>(null);
 
   const fetchDashboard = useCallback(async (action: "dashboard" | "raw" = "dashboard") => {
     setIsLoading(true);
     setError(null);
-    setForbiddenError(null);
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.access_token) throw new Error("Not authenticated");
@@ -77,18 +78,24 @@ export const useAdminAIDashboard = () => {
 
       if (!response.ok) {
         if (response.status === 403) {
-          setForbiddenError({
-            statusCode: 403,
-            endpoint: "admin-ai-dashboard",
-            detail: "This endpoint requires admin-level server authentication.",
+          navigate("/error/forbidden", {
+            state: {
+              statusCode: 403,
+              endpoint: ENDPOINT_NAME,
+              detail: "This endpoint requires admin-level server authentication.",
+              returnTo: "/admin/ai-dashboard",
+            },
           });
           return null;
         }
         if (response.status === 429) {
-          setForbiddenError({
-            statusCode: 429,
-            endpoint: "admin-ai-dashboard",
-            detail: "Rate limit reached. Please wait before retrying.",
+          navigate("/error/rate-limited", {
+            state: {
+              statusCode: 429,
+              endpoint: ENDPOINT_NAME,
+              detail: "Rate limit reached. Please wait before retrying.",
+              returnTo: "/admin/ai-dashboard",
+            },
           });
           return null;
         }
@@ -105,7 +112,7 @@ export const useAdminAIDashboard = () => {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [navigate]);
 
-  return { data, isLoading, error, forbiddenError, fetchDashboard };
+  return { data, isLoading, error, fetchDashboard };
 };
