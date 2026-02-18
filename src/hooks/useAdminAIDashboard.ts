@@ -56,10 +56,12 @@ export const useAdminAIDashboard = () => {
   const [data, setData] = useState<DashboardData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [forbiddenError, setForbiddenError] = useState<{ statusCode: number; endpoint: string; detail: string } | null>(null);
 
   const fetchDashboard = useCallback(async (action: "dashboard" | "raw" = "dashboard") => {
     setIsLoading(true);
     setError(null);
+    setForbiddenError(null);
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.access_token) throw new Error("Not authenticated");
@@ -74,7 +76,22 @@ export const useAdminAIDashboard = () => {
       });
 
       if (!response.ok) {
-        if (response.status === 403) throw new Error("Admin access required");
+        if (response.status === 403) {
+          setForbiddenError({
+            statusCode: 403,
+            endpoint: "admin-ai-dashboard",
+            detail: "This endpoint requires admin-level server authentication.",
+          });
+          return null;
+        }
+        if (response.status === 429) {
+          setForbiddenError({
+            statusCode: 429,
+            endpoint: "admin-ai-dashboard",
+            detail: "Rate limit reached. Please wait before retrying.",
+          });
+          return null;
+        }
         throw new Error("Failed to fetch dashboard");
       }
 
@@ -90,5 +107,5 @@ export const useAdminAIDashboard = () => {
     }
   }, []);
 
-  return { data, isLoading, error, fetchDashboard };
+  return { data, isLoading, error, forbiddenError, fetchDashboard };
 };
