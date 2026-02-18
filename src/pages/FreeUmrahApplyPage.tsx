@@ -421,32 +421,20 @@ const FreeUmrahApplyPage = () => {
     setShowReupload(false);
 
     try {
-      // Rate limit check — use IP-like fingerprint (application_id prefix as identifier)
-      const identifier = `status_${checkId.trim().substring(0, 10)}`;
-      const { data: rlData } = await supabase.functions.invoke("check-rate-limit", {
-        body: { action: "free-umrah-status", identifier },
-      });
-
-      if (rlData && !rlData.allowed) {
-        toast.error(rlData.message || "Too many requests. Please try again later.");
-        setIsChecking(false);
-        return;
-      }
-
       const { data, error } = await supabase
         .from("applicants_status_check" as any)
-        .select("status, application_id, state, city")
+        .select("status, application_id, created_at")
         .eq("application_id", checkId.trim())
         .maybeSingle();
 
       if (error || !data) {
         setCheckResult("not_found");
       } else {
-        const typedData = data as unknown as { status: string; application_id: string; state: string; city: string };
+        const typedData = data as unknown as { status: string; application_id: string; created_at: string };
         setCheckResult(typedData.status);
         setCheckedApplicationId(typedData.application_id);
-        setCheckedState(typedData.state);
-        setCheckedCity(typedData.city);
+        setCheckedState(null);
+        setCheckedCity(null);
       }
     } catch (err) {
       console.error("[StatusCheck] Error:", err);
