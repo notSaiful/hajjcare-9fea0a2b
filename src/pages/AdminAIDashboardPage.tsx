@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { UnauthorizedAlert } from '@/components/UnauthorizedAlert';
+import { ForbiddenError } from '@/components/ForbiddenError';
 import { useNavigate } from "react-router-dom";
 import { useAdminAIDashboard } from "@/hooks/useAdminAIDashboard";
 import { useFraudIntelligence } from "@/hooks/useFraudIntelligence";
@@ -28,7 +29,7 @@ const AdminAIDashboardPage = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
   const { isAdmin, isLoading: roleLoading } = useUserRole();
-  const { data, isLoading, error, fetchDashboard } = useAdminAIDashboard();
+  const { data, isLoading, error, forbiddenError, fetchDashboard } = useAdminAIDashboard();
   const { results: fraudResults, isLoading: fraudLoading, analyzeAll } = useFraudIntelligence();
 
   // Access check handled below in render
@@ -57,6 +58,23 @@ const AdminAIDashboardPage = () => {
       </div>
     );
   }
+
+  if (forbiddenError) {
+    return (
+      <div className="min-h-screen bg-background">
+        <SimpleHeader />
+        <main className="container max-w-2xl mx-auto px-4 py-16">
+          <ForbiddenError
+            statusCode={forbiddenError.statusCode}
+            endpoint={forbiddenError.endpoint}
+            detail={forbiddenError.detail}
+            onRetry={() => fetchDashboard()}
+          />
+        </main>
+      </div>
+    );
+  }
+
 
   const modules = [
     { key: "ilm", label: "ILM Engine", icon: Brain, color: "text-emerald-500" },
