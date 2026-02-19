@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Loader2, CheckCircle, Search, RefreshCw, ChevronLeft, ChevronRight, Clock } from "lucide-react";
+import { ArrowLeft, Loader2, CheckCircle, Search, ChevronLeft, ChevronRight, Clock } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import {
@@ -20,9 +20,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { z } from "zod";
 import { freeUmrahContent } from "@/data/freeUmrahContent";
-import { DocumentReupload } from "@/components/DocumentReupload";
 import { compressImage, needsCompression } from "@/lib/imageCompression";
 import { WizardProgress } from "@/components/free-umrah/WizardProgress";
+import { ApplicationStatusDisplay } from "@/components/free-umrah/ApplicationStatusDisplay";
 import { StepPersonalInfo } from "@/components/free-umrah/StepPersonalInfo";
 import { StepLocation } from "@/components/free-umrah/StepLocation";
 import { StepServiceDetails } from "@/components/free-umrah/StepServiceDetails";
@@ -144,7 +144,6 @@ const FreeUmrahApplyPage = () => {
   const [checkedCity, setCheckedCity] = useState<string | null>(null);
   const [submittedFormData, setSubmittedFormData] = useState<FreeUmrahFormData | null>(null);
   const [isChecking, setIsChecking] = useState(false);
-  const [showReupload, setShowReupload] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [masjidCertificate, setMasjidCertificate] = useState<File | null>(null);
@@ -418,7 +417,6 @@ const FreeUmrahApplyPage = () => {
     setCheckedApplicationId(null);
     setCheckedState(null);
     setCheckedCity(null);
-    setShowReupload(false);
 
     try {
       const { data, error } = await supabase
@@ -594,51 +592,15 @@ const FreeUmrahApplyPage = () => {
               </Button>
             </div>
             {checkResult && (
-              <div className="space-y-3">
-                {checkedApplicationId && checkResult !== "not_found" && (
-                  <div className="bg-muted/50 p-3 rounded-lg text-center">
-                    <p className="text-xs text-muted-foreground mb-1">{t.applicationId}</p>
-                    <p className="text-sm font-mono font-semibold text-foreground break-all">
-                      {getCheckedFormattedIdentifier()}
-                    </p>
-                  </div>
-                )}
-                <div className={`p-3 rounded-lg text-center font-medium ${
-                  checkResult === "VERIFIED" ? "bg-primary/10 text-primary" :
-                  checkResult === "SELECTED" ? "bg-primary/10 text-primary" :
-                  checkResult === "REJECTED" ? "bg-destructive/10 text-destructive" :
-                  checkResult === "not_found" ? "bg-muted text-muted-foreground" :
-                  "bg-accent text-accent-foreground"
-                }`}>
-                  {t.status}: {getStatusLabel(checkResult)}
-                </div>
-                
-                {checkedApplicationId && (checkResult === "SUBMITTED" || checkResult === "UNDER_REVIEW") && (
-                  <>
-                    {!showReupload ? (
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="w-full"
-                        onClick={() => setShowReupload(true)}
-                      >
-                        <RefreshCw className="w-4 h-4 mr-2" />
-                        {t.updateDocument || "Update Document"}
-                      </Button>
-                    ) : (
-                      <DocumentReupload
-                        applicationId={checkedApplicationId}
-                        currentStatus={checkResult}
-                        language={language}
-                        onSuccess={() => {
-                          setShowReupload(false);
-                          handleCheckStatus();
-                        }}
-                      />
-                    )}
-                  </>
-                )}
-              </div>
+              <ApplicationStatusDisplay
+                checkResult={checkResult}
+                checkedApplicationId={checkedApplicationId}
+                formattedIdentifier={getCheckedFormattedIdentifier()}
+                language={language}
+                applicationIdLabel={t.applicationId}
+                updateDocumentLabel={t.updateDocument || "Update Document"}
+                onRecheck={handleCheckStatus}
+              />
             )}
           </CardContent>
         </Card>
