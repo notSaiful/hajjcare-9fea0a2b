@@ -22,14 +22,35 @@ const FreeUmrahStatusPage = () => {
   const [searchParams] = useSearchParams();
   const t = freeUmrahContent[language as keyof typeof freeUmrahContent] || freeUmrahContent.en;
 
-  const [inputId, setInputId] = useState(() => searchParams.get("id") || "");
+const [inputId, setInputId] = useState(() => searchParams.get("id") || "");
   const [isChecking, setIsChecking] = useState(false);
   const [checkResult, setCheckResult] = useState<string | null>(null);
   const [checkedApplicationId, setCheckedApplicationId] = useState<string | null>(null);
+  const [validationError, setValidationError] = useState<string | null>(null);
+
+  const validationMessages: Record<string, { empty: string; invalid: string }> = {
+    en: { empty: "Please enter an Application ID", invalid: "Invalid format. Expected: UMR-2026-000001" },
+    hi: { empty: "कृपया आवेदन आईडी दर्ज करें", invalid: "अमान्य प्रारूप। अपेक्षित: UMR-2026-000001" },
+    ur: { empty: "براہ کرم درخواست آئی ڈی درج کریں", invalid: "غلط فارمیٹ۔ متوقع: UMR-2026-000001" },
+    ar: { empty: "يرجى إدخال رقم الطلب", invalid: "تنسيق غير صالح. المتوقع: UMR-2026-000001" },
+  };
 
   const handleCheck = async () => {
-    const queryId = extractApplicationId(inputId);
-    if (!queryId) return;
+    const vm = validationMessages[language] || validationMessages.en;
+    const trimmed = inputId.trim();
+
+    if (!trimmed) {
+      setValidationError(vm.empty);
+      return;
+    }
+
+    const queryId = extractApplicationId(trimmed);
+    if (!/^UMR-\d{4}-\d{6}$/i.test(queryId)) {
+      setValidationError(vm.invalid);
+      return;
+    }
+
+    setValidationError(null);
 
     setIsChecking(true);
     setCheckResult(null);
@@ -97,14 +118,17 @@ const FreeUmrahStatusPage = () => {
               <Input
                 placeholder={l.placeholder}
                 value={inputId}
-                onChange={(e) => setInputId(e.target.value)}
+                onChange={(e) => { setInputId(e.target.value); setValidationError(null); }}
                 onKeyDown={handleKeyDown}
-                className="font-mono text-sm"
+                className={`font-mono text-sm ${validationError ? "border-destructive focus-visible:ring-destructive" : ""}`}
               />
               <Button onClick={handleCheck} disabled={isChecking || !inputId.trim()}>
                 {isChecking ? <Loader2 className="w-4 h-4 animate-spin" /> : t.check}
               </Button>
             </div>
+            {validationError && (
+              <p className="text-xs text-destructive font-medium">{validationError}</p>
+            )}
             <p className="text-xs text-muted-foreground">{l.hint}</p>
 
             {checkResult && (
