@@ -418,11 +418,16 @@ const FreeUmrahApplyPage = () => {
     setCheckedState(null);
     setCheckedCity(null);
 
+    // Extract UMR-* application ID if user pasted the full formatted identifier
+    const rawInput = checkId.trim();
+    const umrMatch = rawInput.match(/UMR-\d{4}-\d{6}/i);
+    const queryId = umrMatch ? umrMatch[0].toUpperCase() : rawInput;
+
     try {
       const { data, error } = await supabase
         .from("applicants_status_check" as any)
         .select("status, application_id, created_at")
-        .eq("application_id", checkId.trim())
+        .eq("application_id", queryId)
         .maybeSingle();
 
       if (error || !data) {
