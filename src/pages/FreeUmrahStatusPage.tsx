@@ -57,18 +57,15 @@ const [inputId, setInputId] = useState(() => searchParams.get("id") || "");
     setCheckedApplicationId(null);
 
     try {
-      const { data, error } = await supabase
-        .from("applicants_status_check" as any)
-        .select("status, application_id, created_at")
-        .eq("application_id", queryId)
-        .maybeSingle();
+      const { data, error } = await supabase.functions.invoke('check-application-status', {
+        body: { application_id: queryId },
+      });
 
-      if (error || !data) {
+      if (error || !data || !data.found) {
         setCheckResult("not_found");
       } else {
-        const typed = data as unknown as { status: string; application_id: string };
-        setCheckResult(typed.status);
-        setCheckedApplicationId(typed.application_id);
+        setCheckResult(data.status);
+        setCheckedApplicationId(data.application_id);
       }
     } catch {
       setCheckResult("not_found");
