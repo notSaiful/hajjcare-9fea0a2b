@@ -6,14 +6,17 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Zone-based WhatsApp group mappings
-// These should be configured with actual group phone numbers
+// Zone-based WhatsApp group mappings loaded from environment variables
+// Configure via secrets: WHATSAPP_ZONE_MAKKAH_MEDICAL, WHATSAPP_ZONE_MADINAH_MEDICAL, etc.
+const parsePhoneList = (envVar: string): string[] =>
+  (Deno.env.get(envVar) || '').split(',').map(s => s.trim()).filter(Boolean);
+
 const ZONE_GROUPS: Record<string, string[]> = {
-  makkah_medical: [], // Add phone numbers like: ['+966501234567', '+966507654321']
-  madinah_medical: [],
-  mina_medical: [],
-  arafat_medical: [],
-  general: [],
+  makkah_medical: parsePhoneList('WHATSAPP_ZONE_MAKKAH_MEDICAL'),
+  madinah_medical: parsePhoneList('WHATSAPP_ZONE_MADINAH_MEDICAL'),
+  mina_medical: parsePhoneList('WHATSAPP_ZONE_MINA_MEDICAL'),
+  arafat_medical: parsePhoneList('WHATSAPP_ZONE_ARAFAT_MEDICAL'),
+  general: parsePhoneList('WHATSAPP_ZONE_GENERAL'),
 };
 
 interface AlertRequest {
