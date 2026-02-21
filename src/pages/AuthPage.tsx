@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Loader2, Star } from "lucide-react";
 import logo from "@/assets/logo.jpeg";
 import { EmailAuthForm } from "@/components/auth/EmailAuthForm";
-import { BiometricLogin } from "@/components/auth/BiometricLogin";
+
 import { IslamicPattern } from "@/components/auth/IslamicPattern";
 import { MosqueSilhouette } from "@/components/auth/MosqueSilhouette";
 
@@ -92,7 +92,7 @@ const AuthPage = () => {
 
         <CardContent className="px-5 sm:px-6 py-6">
           <EmailAuthForm onSuccess={() => navigate("/")} />
-          <BiometricLogin onSuccess={() => navigate("/")} />
+          
         </CardContent>
       </Card>
 
