@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -10,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Loader2, Mail, Lock, User, MapPin, Eye, EyeOff, ShieldCheck, FileText, Database, Bell } from "lucide-react";
 import { z } from "zod";
+import { MfaVerifyForm } from "./MfaVerifyForm";
 
 const EMBARKATION_POINTS = [
   "Srinagar", "Gaya", "Guwahati", "Indore", "Jaipur", "Nagpur",
@@ -45,6 +47,7 @@ export function EmailAuthForm({ onSuccess }: EmailAuthFormProps) {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showConsentModal, setShowConsentModal] = useState(false);
   const [consentAgreed, setConsentAgreed] = useState(false);
+  const [mfaFactorId, setMfaFactorId] = useState<string | null>(null);
   const { signUp, signIn } = useAuth();
   const { language, isRTL } = useLanguage();
   const { toast } = useToast();
@@ -94,6 +97,16 @@ export function EmailAuthForm({ onSuccess }: EmailAuthFormProps) {
         if (error) {
           toast({ title: "Error", description: isRTL ? "بيانات الدخول غير صحيحة" : "Invalid credentials", variant: "destructive" });
         } else {
+          // Check if user has MFA enrolled
+          const { data: factors, error: mfaError } = await supabase.auth.mfa.listFactors();
+          if (!mfaError && factors?.totp?.length > 0) {
+            const verifiedFactor = factors.totp.find((f) => f.status === "verified");
+            if (verifiedFactor) {
+              setMfaFactorId(verifiedFactor.id);
+              setIsLoading(false);
+              return; // Don't call onSuccess yet - need MFA verification
+            }
+          }
           onSuccess();
         }
       }
@@ -103,6 +116,11 @@ export function EmailAuthForm({ onSuccess }: EmailAuthFormProps) {
       setIsLoading(false);
     }
   };
+
+  // Show MFA verification if needed
+  if (mfaFactorId) {
+    return <MfaVerifyForm factorId={mfaFactorId} onSuccess={onSuccess} />;
+  }
 
   return (
     <div className="space-y-5">
