@@ -735,6 +735,25 @@ export const menuSections: MenuSection[] = [
         colorClass: "icon-emerald",
       },
       {
+        id: "security-settings",
+        icon: Shield,
+        label: {
+          en: "2FA Security",
+          ar: "أمان ثنائي",
+          ur: "دو مرحلی سیکیورٹی",
+          hi: "2FA सुरक्षा",
+          ta: "2FA பாதுகாப்பு",
+          te: "2FA భద్రత",
+          mr: "2FA सुरक्षा",
+          bn: "2FA নিরাপত্তা",
+          or: "2FA ସୁରକ୍ଷା",
+          ml: "2FA സുരക്ഷ",
+          pa: "2FA ਸੁਰੱਖਿਆ",
+        },
+        route: "/security-settings",
+        colorClass: "icon-emerald",
+      },
+      {
         id: "support",
         icon: Headphones,
         label: {

@@ -108,7 +108,7 @@ const DeploymentRoadmapPage = lazy(() => import("./pages/DeploymentRoadmapPage")
 const ComplianceDashboardPage = lazy(() => import("./pages/ComplianceDashboardPage"));
 const AdminWhatsAppApiPage = lazy(() => import("./pages/AdminWhatsAppApiPage"));
 const ForbiddenPage = lazy(() => import("./pages/ForbiddenPage"));
-// Optimized Query Client with caching
+const SecuritySettingsPage = lazy(() => import("./pages/SecuritySettingsPage"));
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -237,6 +237,7 @@ function AppContent() {
         <Route path="/admin/whatsapp-api" element={<AdminWhatsAppApiPage />} />
         <Route path="/error/forbidden" element={<ForbiddenPage />} />
         <Route path="/error/rate-limited" element={<ForbiddenPage />} />
+        <Route path="/security-settings" element={<SecuritySettingsPage />} />
       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
       <Route path="*" element={<NotFound />} />
     </Routes>
