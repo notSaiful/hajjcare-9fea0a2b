@@ -4,7 +4,7 @@ import { SimpleHeader } from "@/components/SimpleHeader";
 import { HeroSection } from "@/components/HeroSection";
 import { DashboardMenu } from "@/components/DashboardMenu";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuthContext } from "@/contexts/AuthContext";
 
 // Lazy-load below-fold and non-critical components to reduce TTI
 const SukoonFamilyFeature = lazy(() => import("@/components/SukoonFamilyFeature"));
@@ -16,7 +16,7 @@ const LocationReminderBanner = lazy(() => import("@/components/LocationReminderB
 
 const HomePage = () => {
   const { t, isRTL, language } = useLanguage();
-  const { isAuthenticated, loading: authLoading } = useAuth();
+  const { isAuthenticated, loading: authLoading } = useAuthContext();
   const navigate = useNavigate();
 
   return (

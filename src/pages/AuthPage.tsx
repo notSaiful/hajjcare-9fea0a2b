@@ -27,7 +27,7 @@ const AuthPage = () => {
 
   useEffect(() => {
     if (!loading && isAuthenticated) {
-      navigate("/");
+      navigate("/home");
     }
   }, [isAuthenticated, loading, navigate]);
 
@@ -91,7 +91,7 @@ const AuthPage = () => {
         <div className="h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
 
         <CardContent className="px-5 sm:px-6 py-6">
-          <EmailAuthForm onSuccess={() => navigate("/")} />
+          <EmailAuthForm onSuccess={() => navigate("/home")} />
           
         </CardContent>
       </Card>
