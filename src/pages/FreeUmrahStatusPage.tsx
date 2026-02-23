@@ -79,6 +79,33 @@ const [inputId, setInputId] = useState(() => searchParams.get("id") || "");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Real-time status updates: subscribe when we have a checked application
+  useEffect(() => {
+    if (!checkedApplicationId) return;
+
+    const channel = supabase
+      .channel(`status-${checkedApplicationId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'applicants',
+          filter: `application_id=eq.${checkedApplicationId}`,
+        },
+        (payload) => {
+          if (payload.new && payload.new.status) {
+            setCheckResult(payload.new.status as string);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [checkedApplicationId]);
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") handleCheck();
   };
