@@ -64,12 +64,9 @@ const HomePage = () => {
         <Footer />
       </Suspense>
 
-      {/* Non-critical overlays - lazy loaded */}
+      {/* Location reminder banner - non-intrusive */}
       <Suspense fallback={null}>
-        <LocationPermissionFlow />
         <LocationReminderBanner />
-        <WelcomePromoDialog />
-        <OnboardingTour />
       </Suspense>
     </div>
   );
