@@ -135,38 +135,35 @@ const VolunteerPage = () => {
   };
 
   const validateForm = () => {
-    // Validation
     if (!form.full_name || !form.father_name || !form.age || !form.mobile || !form.whatsapp || !form.full_address || !form.city || !form.district || !form.state || !form.embarkation_point) {
       toast({ title: "कृपया सभी अनिवार्य फ़ील्ड भरें", description: "Please fill all required fields", variant: "destructive" });
-      return;
-    }
-    if (form.mobile.length !== 10 || !/^\d{10}$/.test(form.mobile)) {
-      toast({ title: "मोबाइल नंबर 10 अंकों का होना चाहिए", variant: "destructive" });
-      return;
-    }
-    if (form.skills.length === 0) {
-      toast({ title: "कम से कम एक स्किल चुनें", variant: "destructive" });
-      return;
-    }
-    if (!form.availability_days || !form.duty_location) {
-      toast({ title: "Availability और Duty Location चुनें", variant: "destructive" });
-      return;
-    }
-    if (form.languages.length === 0) {
-      toast({ title: "कम से कम एक भाषा चुनें", variant: "destructive" });
-      return;
-    }
-    if (!form.declaration_agreed) {
-      toast({ title: "कृपया Declaration को स्वीकार करें", variant: "destructive" });
-      return;
-    }
-
-    const age = parseInt(form.age);
-    if (isNaN(age) || age < 18 || age > 65) {
-      toast({ title: "उम्र 18-65 के बीच होनी चाहिए", variant: "destructive" });
       return false;
     }
-
+    if (form.mobile.length !== 10 || !/^\d{10}$/.test(form.mobile)) {
+      toast({ title: "मोबाइल नंबर 10 अंकों का होना चाहिए", description: "Mobile number must be 10 digits", variant: "destructive" });
+      return false;
+    }
+    if (form.skills.length === 0) {
+      toast({ title: "कम से कम एक स्किल चुनें", description: "Select at least one skill", variant: "destructive" });
+      return false;
+    }
+    if (!form.availability_days || !form.duty_location) {
+      toast({ title: "Availability और Duty Location चुनें", description: "Select availability and duty location", variant: "destructive" });
+      return false;
+    }
+    if (form.languages.length === 0) {
+      toast({ title: "कम से कम एक भाषा चुनें", description: "Select at least one language", variant: "destructive" });
+      return false;
+    }
+    if (!form.declaration_agreed) {
+      toast({ title: "कृपया Declaration को स्वीकार करें", description: "Please accept the declaration", variant: "destructive" });
+      return false;
+    }
+    const age = parseInt(form.age);
+    if (isNaN(age) || age < 18 || age > 65) {
+      toast({ title: "उम्र 18-65 के बीच होनी चाहिए", description: "Age must be between 18-65", variant: "destructive" });
+      return false;
+    }
     return true;
   };
 
@@ -187,6 +184,14 @@ const VolunteerPage = () => {
 
     setSubmitting(true);
     try {
+      // Ensure user is authenticated (required by RLS)
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({ title: "कृपया पहले लॉगिन करें", description: "Please log in before registering as a volunteer.", variant: "destructive" });
+        setSubmitting(false);
+        return;
+      }
+
       // Check duplicate mobile via secure RPC
       const { data: mobileExists } = await supabase.rpc("check_volunteer_mobile_exists", { p_mobile: form.mobile.trim() });
 
@@ -202,6 +207,7 @@ const VolunteerPage = () => {
       const { data, error } = await (supabase as any)
         .from("volunteers")
         .insert({
+          user_id: user.id,
           full_name: form.full_name.trim(),
           father_name: form.father_name.trim(),
           age: parseInt(form.age),
@@ -223,14 +229,17 @@ const VolunteerPage = () => {
         .select("volunteer_id")
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error("Insert error:", error);
+        throw new Error(error.message || "Failed to submit registration");
+      }
 
       setVolunteerId(data.volunteer_id);
       setSuccess(true);
-      toast({ title: "✅ रजिस्ट्रेशन सफल!", description: `आपकी Volunteer ID: ${data.volunteer_id}` });
+      toast({ title: "✅ Your Volunteer Registration has been submitted successfully.", description: `आपकी Volunteer ID: ${data.volunteer_id}` });
     } catch (err: any) {
       console.error("Volunteer registration error:", err);
-      toast({ title: "रजिस्ट्रेशन में त्रुटि", description: err.message, variant: "destructive" });
+      toast({ title: "रजिस्ट्रेशन में त्रुटि", description: err.message || "An unexpected error occurred. Please try again.", variant: "destructive" });
     } finally {
       setSubmitting(false);
     }
