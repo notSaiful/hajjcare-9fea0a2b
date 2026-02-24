@@ -6,7 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { AuthProvider } from "@/contexts/AuthContext";
-import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { LoginGate } from "@/components/LoginGate";
 
 // Handle dynamic import failures (stale cache, network issues)
 if (typeof window !== "undefined") {
@@ -131,9 +131,9 @@ const PageLoader = memo(() => (
 ));
 PageLoader.displayName = "PageLoader";
 
-/** Helper: wrap a page element with ProtectedRoute */
-function P({ children }: { children: React.ReactNode }) {
-  return <ProtectedRoute>{children}</ProtectedRoute>;
+/** Helper: wrap a page that requires login (Free Umrah, Volunteer, status checks) */
+function L({ children }: { children: React.ReactNode }) {
+  return <LoginGate>{children}</LoginGate>;
 }
 
 function useCriticalPreload() {
@@ -164,83 +164,85 @@ function AppContent() {
       <Route path="/" element={<LandingPage />} />
       <Route path="/auth" element={<AuthPage />} />
 
-      {/* Protected routes */}
-      <Route path="/home" element={<P><HomePage /></P>} />
-      <Route path="/prepare" element={<P><PreparePage /></P>} />
-      <Route path="/prepare/:ritualId" element={<P><RitualDetailPage /></P>} />
-      <Route path="/umrah" element={<P><UmrahGuidePage /></P>} />
-      <Route path="/umrah/:ritualId" element={<P><UmrahDetailPage /></P>} />
-      <Route path="/makkah-guide" element={<P><MakkahGuidePage /></P>} />
-      <Route path="/makkah-guide/:topicId" element={<P><MakkahGuideDetailPage /></P>} />
-      <Route path="/madinah-guide" element={<P><MadinahGuidePage /></P>} />
-      <Route path="/madinah-guide/:topicId" element={<P><MadinahGuideDetailPage /></P>} />
-      <Route path="/preparation" element={<P><PreparationGuidePage /></P>} />
-      <Route path="/dua" element={<P><DuaGuidePage /></P>} />
-      <Route path="/health" element={<P><HealthGuidePage /></P>} />
-      <Route path="/money" element={<P><MoneyGuidePage /></P>} />
-      <Route path="/telecom" element={<P><TelecomGuidePage /></P>} />
-      <Route path="/grievances" element={<P><GrievancesPage /></P>} />
-      <Route path="/contacts" element={<P><ContactNumbersPage /></P>} />
-      <Route path="/haj-directory" element={<P><HajMissionDirectoryPage /></P>} />
-      <Route path="/rules" element={<P><RulesBriefingPage /></P>} />
-      <Route path="/rules/:sectionId" element={<P><RulesSectionPage /></P>} />
-      <Route path="/family-status" element={<P><FamilyViewPage /></P>} />
-      <Route path="/family-dashboard" element={<P><FamilyDashboardPage /></P>} />
-      <Route path="/family" element={<P><FamilyPage /></P>} />
-      <Route path="/map" element={<P><MapPage /></P>} />
-      <Route path="/chat" element={<P><ChatPage /></P>} />
-      <Route path="/pre-hajj-india" element={<P><PreHajjIndiaPage /></P>} />
-      <Route path="/pre-hajj-india/:sectionId" element={<P><PreHajjIndiaDetailPage /></P>} />
-      <Route path="/post-hajj" element={<P><PostHajjGuidePage /></P>} />
-      <Route path="/women" element={<P><WomenSolutionsPage /></P>} />
-      <Route path="/socials" element={<P><SocialsPage /></P>} />
-      <Route path="/video-call" element={<P><VideoCallPage /></P>} />
-      <Route path="/qurbani" element={<P><QurbaniPage /></P>} />
-      <Route path="/food-guide" element={<P><FoodGuidePage /></P>} />
-      <Route path="/food" element={<P><FoodGuidePage /></P>} />
-      <Route path="/help" element={<P><HealthHelpPage /></P>} />
-      <Route path="/coordinator" element={<P><CoordinatorDashboardPage /></P>} />
-      <Route path="/medical-alerts" element={<P><MedicalAlertsPage /></P>} />
-      <Route path="/admin/roles" element={<P><AdminRolesPage /></P>} />
-      <Route path="/admin/metrics" element={<P><EmergencyMetricsPage /></P>} />
-      <Route path="/inspector" element={<P><InspectorDashboardPage /></P>} />
-      <Route path="/haj-inspectors" element={<P><HajInspectorsDirectoryPage /></P>} />
-      <Route path="/haj-inspector-register" element={<P><InspectorRegisterPage /></P>} />
-      <Route path="/free-umrah" element={<P><FreeUmrahApplyPage /></P>} />
-      <Route path="/free-umrah/status" element={<P><FreeUmrahStatusPage /></P>} />
-      <Route path="/admin/free-umrah" element={<P><FreeUmrahAdminPage /></P>} />
-      <Route path="/shi-training" element={<P><ShiTrainingPage /></P>} />
-      <Route path="/hajj-progress" element={<P><FamilyProgressPage /></P>} />
-      <Route path="/privacy-policy" element={<P><PrivacyPolicyPage /></P>} />
-      <Route path="/terms-conditions" element={<P><TermsConditionsPage /></P>} />
-      <Route path="/refund-policy" element={<P><RefundPolicyPage /></P>} />
-      <Route path="/shipping-policy" element={<P><ShippingPolicyPage /></P>} />
-      <Route path="/contact-us" element={<P><ContactUsPage /></P>} />
-      <Route path="/about-us" element={<P><AboutUsPage /></P>} />
-      <Route path="/pricing" element={<P><PricingDisclosurePage /></P>} />
-      <Route path="/govt-services" element={<P><GovtServicesPage /></P>} />
-      <Route path="/payment" element={<P><PaymentPage /></P>} />
-      <Route path="/billing-history" element={<P><BillingHistoryPage /></P>} />
-      <Route path="/rewards" element={<P><RewardsPage /></P>} />
-      <Route path="/admin/promo" element={<P><AdminPromoPage /></P>} />
-      <Route path="/sukoon-rd" element={<P><SukoonRdPage /></P>} />
-      <Route path="/admin/operators" element={<P><AdminOperatorsPage /></P>} />
-      <Route path="/admin/fraud-alerts" element={<P><AdminFraudAlertsPage /></P>} />
-      <Route path="/admin/ai-dashboard" element={<P><AdminAIDashboardPage /></P>} />
-      <Route path="/admin/sukoon-metrics" element={<P><SukoonTrackingMetricsPage /></P>} />
-      <Route path="/admin/analytics" element={<P><AdminAnalyticsPage /></P>} />
-      <Route path="/hajj-faq" element={<P><HajjFaqChatPage /></P>} />
-      <Route path="/hajj-wizard" element={<P><HajjQueryWizardPage /></P>} />
-      <Route path="/volunteer" element={<P><VolunteerPage /></P>} />
-      <Route path="/admin/volunteers" element={<P><VolunteerDashboardPage /></P>} />
-      <Route path="/command-center" element={<P><ResponderCommandPage /></P>} />
-      <Route path="/national-command" element={<P><NationalCommandPage /></P>} />
-      <Route path="/deployment-roadmap" element={<P><DeploymentRoadmapPage /></P>} />
-      <Route path="/admin/compliance" element={<P><ComplianceDashboardPage /></P>} />
-      <Route path="/admin/whatsapp-api" element={<P><AdminWhatsAppApiPage /></P>} />
-      <Route path="/error/forbidden" element={<P><ForbiddenPage /></P>} />
-      <Route path="/error/rate-limited" element={<P><ForbiddenPage /></P>} />
-      <Route path="/security-settings" element={<P><SecuritySettingsPage /></P>} />
+      {/* Public routes — open without login */}
+      <Route path="/home" element={<HomePage />} />
+      <Route path="/prepare" element={<PreparePage />} />
+      <Route path="/prepare/:ritualId" element={<RitualDetailPage />} />
+      <Route path="/umrah" element={<UmrahGuidePage />} />
+      <Route path="/umrah/:ritualId" element={<UmrahDetailPage />} />
+      <Route path="/makkah-guide" element={<MakkahGuidePage />} />
+      <Route path="/makkah-guide/:topicId" element={<MakkahGuideDetailPage />} />
+      <Route path="/madinah-guide" element={<MadinahGuidePage />} />
+      <Route path="/madinah-guide/:topicId" element={<MadinahGuideDetailPage />} />
+      <Route path="/preparation" element={<PreparationGuidePage />} />
+      <Route path="/dua" element={<DuaGuidePage />} />
+      <Route path="/health" element={<HealthGuidePage />} />
+      <Route path="/money" element={<MoneyGuidePage />} />
+      <Route path="/telecom" element={<TelecomGuidePage />} />
+      <Route path="/grievances" element={<GrievancesPage />} />
+      <Route path="/contacts" element={<ContactNumbersPage />} />
+      <Route path="/haj-directory" element={<HajMissionDirectoryPage />} />
+      <Route path="/rules" element={<RulesBriefingPage />} />
+      <Route path="/rules/:sectionId" element={<RulesSectionPage />} />
+      <Route path="/family-status" element={<FamilyViewPage />} />
+      <Route path="/family-dashboard" element={<FamilyDashboardPage />} />
+      <Route path="/family" element={<FamilyPage />} />
+      <Route path="/map" element={<MapPage />} />
+      <Route path="/chat" element={<ChatPage />} />
+      <Route path="/pre-hajj-india" element={<PreHajjIndiaPage />} />
+      <Route path="/pre-hajj-india/:sectionId" element={<PreHajjIndiaDetailPage />} />
+      <Route path="/post-hajj" element={<PostHajjGuidePage />} />
+      <Route path="/women" element={<WomenSolutionsPage />} />
+      <Route path="/socials" element={<SocialsPage />} />
+      <Route path="/video-call" element={<VideoCallPage />} />
+      <Route path="/qurbani" element={<QurbaniPage />} />
+      <Route path="/food-guide" element={<FoodGuidePage />} />
+      <Route path="/food" element={<FoodGuidePage />} />
+      <Route path="/help" element={<HealthHelpPage />} />
+      <Route path="/coordinator" element={<CoordinatorDashboardPage />} />
+      <Route path="/medical-alerts" element={<MedicalAlertsPage />} />
+      <Route path="/admin/roles" element={<AdminRolesPage />} />
+      <Route path="/admin/metrics" element={<EmergencyMetricsPage />} />
+      <Route path="/inspector" element={<InspectorDashboardPage />} />
+      <Route path="/haj-inspectors" element={<HajInspectorsDirectoryPage />} />
+      <Route path="/haj-inspector-register" element={<InspectorRegisterPage />} />
+      <Route path="/shi-training" element={<ShiTrainingPage />} />
+      <Route path="/hajj-progress" element={<FamilyProgressPage />} />
+      <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+      <Route path="/terms-conditions" element={<TermsConditionsPage />} />
+      <Route path="/refund-policy" element={<RefundPolicyPage />} />
+      <Route path="/shipping-policy" element={<ShippingPolicyPage />} />
+      <Route path="/contact-us" element={<ContactUsPage />} />
+      <Route path="/about-us" element={<AboutUsPage />} />
+      <Route path="/pricing" element={<PricingDisclosurePage />} />
+      <Route path="/govt-services" element={<GovtServicesPage />} />
+      <Route path="/payment" element={<PaymentPage />} />
+      <Route path="/billing-history" element={<BillingHistoryPage />} />
+      <Route path="/rewards" element={<RewardsPage />} />
+      <Route path="/admin/promo" element={<AdminPromoPage />} />
+      <Route path="/sukoon-rd" element={<SukoonRdPage />} />
+      <Route path="/admin/operators" element={<AdminOperatorsPage />} />
+      <Route path="/admin/fraud-alerts" element={<AdminFraudAlertsPage />} />
+      <Route path="/admin/ai-dashboard" element={<AdminAIDashboardPage />} />
+      <Route path="/admin/sukoon-metrics" element={<SukoonTrackingMetricsPage />} />
+      <Route path="/admin/analytics" element={<AdminAnalyticsPage />} />
+      <Route path="/hajj-faq" element={<HajjFaqChatPage />} />
+      <Route path="/hajj-wizard" element={<HajjQueryWizardPage />} />
+      <Route path="/command-center" element={<ResponderCommandPage />} />
+      <Route path="/national-command" element={<NationalCommandPage />} />
+      <Route path="/deployment-roadmap" element={<DeploymentRoadmapPage />} />
+      <Route path="/admin/compliance" element={<ComplianceDashboardPage />} />
+      <Route path="/admin/whatsapp-api" element={<AdminWhatsAppApiPage />} />
+      <Route path="/error/forbidden" element={<ForbiddenPage />} />
+      <Route path="/error/rate-limited" element={<ForbiddenPage />} />
+      <Route path="/security-settings" element={<SecuritySettingsPage />} />
+
+      {/* Login-gated routes — show dialog if not authenticated */}
+      <Route path="/free-umrah" element={<L><FreeUmrahApplyPage /></L>} />
+      <Route path="/free-umrah/status" element={<L><FreeUmrahStatusPage /></L>} />
+      <Route path="/admin/free-umrah" element={<L><FreeUmrahAdminPage /></L>} />
+      <Route path="/volunteer" element={<L><VolunteerPage /></L>} />
+      <Route path="/admin/volunteers" element={<L><VolunteerDashboardPage /></L>} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
