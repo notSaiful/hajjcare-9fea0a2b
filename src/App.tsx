@@ -109,6 +109,8 @@ const ComplianceDashboardPage = lazy(() => import("./pages/ComplianceDashboardPa
 const AdminWhatsAppApiPage = lazy(() => import("./pages/AdminWhatsAppApiPage"));
 const ForbiddenPage = lazy(() => import("./pages/ForbiddenPage"));
 const SecuritySettingsPage = lazy(() => import("./pages/SecuritySettingsPage"));
+const CircularsPage = lazy(() => import("./pages/CircularsPage"));
+const AdminCircularsPage = lazy(() => import("./pages/AdminCircularsPage"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -236,6 +238,8 @@ function AppContent() {
       <Route path="/error/forbidden" element={<ForbiddenPage />} />
       <Route path="/error/rate-limited" element={<ForbiddenPage />} />
       <Route path="/security-settings" element={<SecuritySettingsPage />} />
+      <Route path="/circulars" element={<CircularsPage />} />
+      <Route path="/admin/circulars" element={<L><AdminCircularsPage /></L>} />
 
       {/* Login-gated routes — show dialog if not authenticated */}
       <Route path="/free-umrah" element={<L><FreeUmrahApplyPage /></L>} />

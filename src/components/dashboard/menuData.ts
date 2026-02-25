@@ -31,6 +31,7 @@ import {
   CreditCard,
   Wallet,
   Sparkles,
+  Bell,
   LucideIcon,
 } from "lucide-react";
 
@@ -258,6 +259,25 @@ export const menuSections: MenuSection[] = [
         },
         route: "/hajj-wizard",
         colorClass: "icon-gold",
+      },
+      {
+        id: "circulars",
+        icon: Bell,
+        label: {
+          en: "Circulars",
+          ar: "التعاميم",
+          ur: "سرکلرز",
+          hi: "परिपत्र",
+          ta: "சுற்றறிக்கைகள்",
+          te: "సర్క్యులర్లు",
+          mr: "परिपत्रके",
+          bn: "সার্কুলার",
+          or: "ସର୍କୁଲାର",
+          ml: "സർക്കുലറുകൾ",
+          pa: "ਸਰਕੁਲਰ",
+        },
+        route: "/circulars",
+        colorClass: "icon-coral",
       },
     ],
   },

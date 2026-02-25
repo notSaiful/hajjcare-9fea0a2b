@@ -413,6 +413,35 @@ export type Database = {
         }
         Relationships: []
       }
+      circular_reads: {
+        Row: {
+          circular_id: string
+          id: string
+          read_at: string
+          user_id: string
+        }
+        Insert: {
+          circular_id: string
+          id?: string
+          read_at?: string
+          user_id: string
+        }
+        Update: {
+          circular_id?: string
+          id?: string
+          read_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "circular_reads_circular_id_fkey"
+            columns: ["circular_id"]
+            isOneToOne: false
+            referencedRelation: "hajj_circulars"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       consent_records: {
         Row: {
           collection_method: string
@@ -1102,6 +1131,69 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      hajj_circulars: {
+        Row: {
+          ai_processed: boolean
+          category: string
+          circular_date: string | null
+          circular_number: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          is_published: boolean
+          original_content: string
+          priority: string
+          source_url: string | null
+          summary_en: string | null
+          summary_hi: string | null
+          summary_ur: string | null
+          title: string
+          title_hi: string | null
+          title_ur: string | null
+          updated_at: string
+        }
+        Insert: {
+          ai_processed?: boolean
+          category?: string
+          circular_date?: string | null
+          circular_number?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_published?: boolean
+          original_content: string
+          priority?: string
+          source_url?: string | null
+          summary_en?: string | null
+          summary_hi?: string | null
+          summary_ur?: string | null
+          title: string
+          title_hi?: string | null
+          title_ur?: string | null
+          updated_at?: string
+        }
+        Update: {
+          ai_processed?: boolean
+          category?: string
+          circular_date?: string | null
+          circular_number?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_published?: boolean
+          original_content?: string
+          priority?: string
+          source_url?: string | null
+          summary_en?: string | null
+          summary_hi?: string | null
+          summary_ur?: string | null
+          title?: string
+          title_hi?: string | null
+          title_ur?: string | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       health_tickets: {
         Row: {
