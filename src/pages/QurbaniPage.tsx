@@ -2,6 +2,7 @@ import { SimpleHeader } from "@/components/SimpleHeader";
 import { useLanguage } from "@/contexts/LanguageContext";
 import QurbaniStatusTracker from "@/components/QurbaniStatusTracker";
 import QurbaniPaymentFlow from "@/components/QurbaniPaymentFlow";
+import OnlineQurbaniBooking from "@/components/OnlineQurbaniBooking";
 import { Card, CardContent } from "@/components/ui/card";
 import { Sword, BookOpen, Info } from "lucide-react";
 
@@ -117,6 +118,9 @@ const QurbaniPage = () => {
 
         {/* Status Tracker */}
         <QurbaniStatusTracker />
+
+        {/* Online Qurbani Booking */}
+        <OnlineQurbaniBooking />
 
         {/* Payment Flow */}
         <QurbaniPaymentFlow />
