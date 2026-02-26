@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { SimpleHeader } from "@/components/SimpleHeader";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,7 @@ import {
   Search, Filter, Users, MapPin, Briefcase, Clock,
   ChevronDown, ChevronUp, Phone, Mail, Loader2,
   CheckCircle2, XCircle, UserCheck, GraduationCap, Rocket, Plane,
+  Download, AlertTriangle, Copy,
 } from "lucide-react";
 import { UnauthorizedAlert } from '@/components/UnauthorizedAlert';
 
@@ -107,6 +108,7 @@ const VolunteerDashboardPage = () => {
 
   const updateStatus = async (id: string, newStatus: string) => {
     setUpdatingId(id);
+    const volunteer = volunteers.find(v => v.id === id);
     const { error } = await (supabase as any)
       .from("volunteers")
       .update({ status: newStatus })
@@ -117,9 +119,38 @@ const VolunteerDashboardPage = () => {
     } else {
       setVolunteers(prev => prev.map(v => v.id === id ? { ...v, status: newStatus } : v));
       toast({ title: `Status updated to ${STATUS_CONFIG[newStatus]?.label || newStatus}` });
+
+      // Send WhatsApp notification
+      if (volunteer) {
+        try {
+          await supabase.functions.invoke("volunteer-status-notify", {
+            body: {
+              volunteer_id: volunteer.volunteer_id,
+              volunteer_name: volunteer.full_name,
+              mobile: volunteer.mobile,
+              new_status: newStatus,
+              whatsapp_number: volunteer.whatsapp || volunteer.mobile,
+            },
+          });
+          toast({ title: "WhatsApp notification sent" });
+        } catch {
+          // Non-blocking - status update already succeeded
+        }
+      }
     }
     setUpdatingId(null);
   };
+
+  // Duplicate detection
+  const duplicates = useMemo(() => {
+    const phoneMap = new Map<string, string[]>();
+    for (const v of volunteers) {
+      const existing = phoneMap.get(v.mobile) || [];
+      existing.push(v.volunteer_id);
+      phoneMap.set(v.mobile, existing);
+    }
+    return new Map([...phoneMap].filter(([, ids]) => ids.length > 1));
+  }, [volunteers]);
 
   // Derived data
   const cities = useMemo(() => [...new Set(volunteers.map(v => v.city))].sort(), [volunteers]);
@@ -140,6 +171,28 @@ const VolunteerDashboardPage = () => {
       return true;
     });
   }, [volunteers, searchQuery, filterCity, filterSkill, filterStatus, filterAvailability, filterEmbarkation]);
+
+  // Export to CSV
+  const exportToCSV = useCallback(() => {
+    const headers = ["Volunteer ID", "Name", "Father Name", "Age", "Mobile", "WhatsApp", "Email", "City", "District", "State", "Embarkation", "Skills", "Availability", "Languages", "Status", "Registered"];
+    const rows = filtered.map(v => [
+      v.volunteer_id, v.full_name, v.father_name, v.age, v.mobile, v.whatsapp,
+      v.email || "", v.city, v.district, v.state, v.embarkation_point || "",
+      v.skills.map(s => SKILL_LABELS[s] || s).join("; "),
+      AVAILABILITY_LABELS[v.availability_days] || v.availability_days,
+      v.languages.join("; "), v.status,
+      new Date(v.created_at).toLocaleDateString(),
+    ]);
+    const csv = [headers, ...rows].map(r => r.map(c => `"${c}"`).join(",")).join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `volunteers-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast({ title: `Exported ${filtered.length} volunteers` });
+  }, [filtered, toast]);
 
   // Stats
   const stats = useMemo(() => {
@@ -266,10 +319,42 @@ const VolunteerDashboardPage = () => {
     <div className="min-h-screen bg-background" dir={isRTL ? "rtl" : "ltr"}>
       <SimpleHeader />
       <main className="container max-w-4xl mx-auto px-4 py-6 space-y-5">
-        <h1 className="text-xl font-bold text-foreground flex items-center gap-2">
-          <Users className="w-5 h-5 text-primary" />
-          Volunteer Dashboard
-        </h1>
+        <div className="flex items-center justify-between flex-wrap gap-3">
+          <h1 className="text-xl font-bold text-foreground flex items-center gap-2">
+            <Users className="w-5 h-5 text-primary" />
+            Volunteer Dashboard
+          </h1>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={exportToCSV} disabled={filtered.length === 0}>
+              <Download className="w-4 h-4 mr-1" />
+              Export CSV
+            </Button>
+            <Button variant="outline" size="sm" onClick={fetchVolunteers}>
+              <Loader2 className={`w-4 h-4 mr-1 ${loading ? "animate-spin" : ""}`} />
+              Refresh
+            </Button>
+          </div>
+        </div>
+
+        {/* Duplicate Alert */}
+        {duplicates.size > 0 && (
+          <Card className="border-destructive/50 bg-destructive/5">
+            <CardContent className="p-3 flex items-start gap-2">
+              <AlertTriangle className="w-4 h-4 text-destructive mt-0.5 shrink-0" />
+              <div>
+                <p className="text-sm font-medium text-destructive">Duplicate Registrations Detected</p>
+                <div className="mt-1 space-y-0.5">
+                  {[...duplicates].map(([phone, ids]) => (
+                    <p key={phone} className="text-xs text-muted-foreground flex items-center gap-1">
+                      <Copy className="w-3 h-3" />
+                      Phone {phone}: {ids.join(", ")}
+                    </p>
+                  ))}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Stats Row */}
         <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
