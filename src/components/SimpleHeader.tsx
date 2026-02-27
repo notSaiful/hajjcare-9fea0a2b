@@ -12,7 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import logo from "@/assets/header-logo.jpeg";
+import logo from "@/assets/hajcare-ai-icon.jpg";
 
 export const SimpleHeader = () => {
   const { t, isRTL, language, setLanguage } = useLanguage();
