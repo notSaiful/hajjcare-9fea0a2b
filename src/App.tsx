@@ -111,6 +111,7 @@ const ForbiddenPage = lazy(() => import("./pages/ForbiddenPage"));
 const SecuritySettingsPage = lazy(() => import("./pages/SecuritySettingsPage"));
 const CircularsPage = lazy(() => import("./pages/CircularsPage"));
 const AdminCircularsPage = lazy(() => import("./pages/AdminCircularsPage"));
+const AdminControlPanelPage = lazy(() => import("./pages/AdminControlPanelPage"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -247,6 +248,7 @@ function AppContent() {
       <Route path="/admin/free-umrah" element={<L><FreeUmrahAdminPage /></L>} />
       <Route path="/volunteer" element={<L><VolunteerPage /></L>} />
       <Route path="/admin/volunteers" element={<L><VolunteerDashboardPage /></L>} />
+      <Route path="/admin/panel" element={<L><AdminControlPanelPage /></L>} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
