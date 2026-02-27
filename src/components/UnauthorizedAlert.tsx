@@ -7,7 +7,7 @@ import { useEffect } from 'react';
 import { toast } from 'sonner';
 
 interface UnauthorizedAlertProps {
-  requiredRole: 'admin' | 'coordinator' | 'medical_staff' | 'any_staff';
+  requiredRole: 'admin' | 'coordinator' | 'medical_staff' | 'any_staff' | 'inspector';
   pageName?: string;
 }
 
@@ -16,6 +16,7 @@ const roleLabels: Record<string, { en: string; hi: string }> = {
   coordinator: { en: 'Coordinator', hi: 'समन्वयक' },
   medical_staff: { en: 'Medical Staff', hi: 'चिकित्सा कर्मचारी' },
   any_staff: { en: 'Coordinator / Medical Staff', hi: 'समन्वयक / चिकित्सा कर्मचारी' },
+  inspector: { en: 'Haj Inspector', hi: 'हज इंस्पेक्टर' },
 };
 
 const labels = {

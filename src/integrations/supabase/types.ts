@@ -1377,6 +1377,125 @@ export type Database = {
           },
         ]
       }
+      inspector_pilgrim_groups: {
+        Row: {
+          created_at: string
+          group_name: string
+          id: string
+          inspector_user_id: string
+          max_capacity: number
+          updated_at: string
+          whatsapp_group_link: string | null
+        }
+        Insert: {
+          created_at?: string
+          group_name: string
+          id?: string
+          inspector_user_id: string
+          max_capacity?: number
+          updated_at?: string
+          whatsapp_group_link?: string | null
+        }
+        Update: {
+          created_at?: string
+          group_name?: string
+          id?: string
+          inspector_user_id?: string
+          max_capacity?: number
+          updated_at?: string
+          whatsapp_group_link?: string | null
+        }
+        Relationships: []
+      }
+      inspector_pilgrims: {
+        Row: {
+          age: number
+          blood_group: string | null
+          city: string | null
+          created_at: string
+          disease: string | null
+          emergency_contact: string | null
+          family_tag: string | null
+          father_name: string | null
+          full_name: string
+          gender: string
+          group_id: string
+          id: string
+          inspector_user_id: string
+          is_group_leader: boolean
+          medical_conditions: string[] | null
+          notes: string | null
+          passport_number: string | null
+          phone: string | null
+          pilgrim_id: string
+          risk_level: string
+          state: string | null
+          status: string
+          updated_at: string
+          wheelchair: boolean
+        }
+        Insert: {
+          age: number
+          blood_group?: string | null
+          city?: string | null
+          created_at?: string
+          disease?: string | null
+          emergency_contact?: string | null
+          family_tag?: string | null
+          father_name?: string | null
+          full_name: string
+          gender: string
+          group_id: string
+          id?: string
+          inspector_user_id: string
+          is_group_leader?: boolean
+          medical_conditions?: string[] | null
+          notes?: string | null
+          passport_number?: string | null
+          phone?: string | null
+          pilgrim_id: string
+          risk_level?: string
+          state?: string | null
+          status?: string
+          updated_at?: string
+          wheelchair?: boolean
+        }
+        Update: {
+          age?: number
+          blood_group?: string | null
+          city?: string | null
+          created_at?: string
+          disease?: string | null
+          emergency_contact?: string | null
+          family_tag?: string | null
+          father_name?: string | null
+          full_name?: string
+          gender?: string
+          group_id?: string
+          id?: string
+          inspector_user_id?: string
+          is_group_leader?: boolean
+          medical_conditions?: string[] | null
+          notes?: string | null
+          passport_number?: string | null
+          phone?: string | null
+          pilgrim_id?: string
+          risk_level?: string
+          state?: string | null
+          status?: string
+          updated_at?: string
+          wheelchair?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inspector_pilgrims_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "inspector_pilgrim_groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       inspector_registrations: {
         Row: {
           city: string
