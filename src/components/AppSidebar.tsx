@@ -202,6 +202,14 @@ const labels = {
     tr: "Yönetici",
     ru: "Админ",
   },
+  controlPanel: {
+    en: "Control Panel",
+    ar: "لوحة التحكم",
+    ur: "کنٹرول پینل",
+    hi: "कंट्रोल पैनल",
+    tr: "Kontrol Paneli",
+    ru: "Панель управления",
+  },
   coordinatorDashboard: {
     en: "Health Tickets",
     ar: "تذاكر الصحة",
@@ -251,7 +259,7 @@ export function AppSidebar() {
   const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
 
-  const adminRoutes = ["/coordinator", "/admin/roles", "/medical-alerts", "/admin/metrics", "/admin/free-umrah", "/admin/sukoon-metrics", "/admin/volunteers"];
+  const adminRoutes = ["/admin/panel", "/coordinator", "/admin/roles", "/medical-alerts", "/admin/metrics", "/admin/free-umrah", "/admin/sukoon-metrics", "/admin/volunteers"];
   
   const guideRoutes = [
     "/prepare",
@@ -282,6 +290,11 @@ export function AppSidebar() {
   const [adminOpen, setAdminOpen] = useState(isAdminActive);
 
   const adminItems = [
+    {
+      title: labels.controlPanel[language] || labels.controlPanel.en,
+      url: "/admin/panel",
+      icon: Shield,
+    },
     {
       title: labels.medicalAlerts[language] || labels.medicalAlerts.en,
       url: "/medical-alerts",
