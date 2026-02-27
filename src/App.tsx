@@ -112,6 +112,7 @@ const SecuritySettingsPage = lazy(() => import("./pages/SecuritySettingsPage"));
 const CircularsPage = lazy(() => import("./pages/CircularsPage"));
 const AdminCircularsPage = lazy(() => import("./pages/AdminCircularsPage"));
 const AdminControlPanelPage = lazy(() => import("./pages/AdminControlPanelPage"));
+const InspectorGroupManagePage = lazy(() => import("./pages/InspectorGroupManagePage"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -208,6 +209,7 @@ function AppContent() {
       <Route path="/admin/metrics" element={<EmergencyMetricsPage />} />
       <Route path="/inspector" element={<InspectorDashboardPage />} />
       <Route path="/haj-inspectors" element={<HajInspectorsDirectoryPage />} />
+      <Route path="/inspector-group" element={<InspectorGroupManagePage />} />
       <Route path="/haj-inspector-register" element={<InspectorRegisterPage />} />
       <Route path="/shi-training" element={<ShiTrainingPage />} />
       <Route path="/hajj-progress" element={<FamilyProgressPage />} />

@@ -4,7 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { HAJ_INSPECTORS, getStateStats } from '@/data/hajInspectorsData';
-import { Search, Award, MessageCircle, ExternalLink, UserPlus } from 'lucide-react';
+import { Search, Award, MessageCircle, ExternalLink, UserPlus, Users, ClipboardList } from 'lucide-react';
 import { StateSelector } from '@/components/StateSelector';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { InspectorStatsCard } from '@/components/inspector/InspectorStatsCard';
@@ -137,6 +137,12 @@ const HajInspectorsDirectoryPage = () => {
       <SimpleHeader />
       
       <main className="container max-w-2xl mx-auto px-4 py-6 space-y-4">
+        {/* Inspector Group Management CTA */}
+        <Button onClick={() => navigate('/inspector-group')} variant="default" className="w-full h-12 text-base font-semibold">
+          <ClipboardList className="w-5 h-5 mr-2" />
+          {language === 'hi' ? 'मेरा तीर्थयात्री समूह प्रबंधित करें' : language === 'ur' ? 'میرا زائرین گروپ منظم کریں' : 'Manage My Pilgrim Group (150 Pilgrims)'}
+        </Button>
+
         {/* WhatsApp Group + Register CTA */}
         <div className="flex gap-2">
           <Button asChild variant="outline" className="flex-1 border-emerald-300 dark:border-emerald-700">
