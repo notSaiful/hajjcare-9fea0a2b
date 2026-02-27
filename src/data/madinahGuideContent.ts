@@ -784,6 +784,96 @@ export const MADINAH_GUIDE_TOPICS: MadinahGuideTopic[] = [
         }
       }
     ]
+  },
+  {
+    id: "rawdah-booking-strategy",
+    order: 6,
+    title: { en: "Rawdah Booking Strategy & Nusuk App", ar: "استراتيجية حجز الروضة وتطبيق نسك", ur: "روضہ بکنگ حکمت عملی اور نسک ایپ", hi: "रौज़ा बुकिंग रणनीति और नुसुक ऐप" },
+    whatItIs: { en: "Rawdah access is now managed through the Nusuk app booking system. Slots fill up within minutes of release. Without a strategy, you'll spend your entire Madinah stay without ever entering the Rawdah.", ar: "الوصول للروضة يُدار عبر نظام حجز تطبيق نسك. الأماكن تمتلئ في دقائق.", ur: "روضہ تک رسائی اب نسک ایپ بکنگ سسٹم سے ہوتی ہے۔ سلاٹ منٹوں میں بھر جاتے ہیں۔", hi: "रौज़ा तक पहुंच अब नुसुक ऐप बुकिंग सिस्टम से होती है। स्लॉट मिनटों में भर जाते हैं।" },
+    steps: [
+      { order: 1, instruction: { en: "INSTALL NUSUK APP BEFORE TRAVEL: Download from App Store/Play Store. Register with your passport details. Do this at least 1 week before arriving in Madinah.", ar: "ثبّت تطبيق نسك قبل السفر: حمّله وسجّل ببيانات جواز السفر قبل أسبوع.", ur: "سفر سے پہلے نسک ایپ انسٹال کریں۔ پاسپورٹ سے رجسٹر کریں۔ مدینہ پہنچنے سے 1 ہفتہ پہلے کریں۔", hi: "यात्रा से पहले नुसुक ऐप इंस्टॉल करें। पासपोर्ट से रजिस्टर करें। मदीना पहुंचने से 1 हफ़्ते पहले करें।" } },
+      { order: 2, instruction: { en: "BOOKING TIMING: New Rawdah slots release at 12:00 AM Saudi time. Set alarm for 11:55 PM, open app, refresh at midnight. Women's slots released separately.", ar: "توقيت الحجز: تُطلق أماكن الروضة في 12:00 منتصف الليل. اضبط منبه 11:55 مساءً.", ur: "بکنگ کا وقت: نئے سلاٹ رات 12:00 سعودی وقت پر آتے ہیں۔ رات 11:55 کا الارم لگائیں۔", hi: "बुकिंग समय: नए स्लॉट रात 12:00 सऊदी समय पर आते हैं। रात 11:55 का अलार्म लगाएं।" } },
+      { order: 3, instruction: { en: "BEST SLOT TIMES: Early morning (after Fajr, 5:30-7:00 AM) — shortest queues. Late night (10:00-11:30 PM) — also less crowded. Avoid post-Dhuhr and post-Asr slots.", ar: "أفضل الأوقات: الصباح الباكر بعد الفجر. الليل المتأخر أيضاً أقل ازدحاماً.", ur: "بہترین اوقات: صبح سویرے فجر کے بعد۔ دیر رات بھی کم بھیڑ والے ہیں۔", hi: "सर्वश्रेष्ठ समय: सुबह-सवेरे फज्र के बाद। देर रात भी कम भीड़ वाले हैं।" } },
+      { order: 4, instruction: { en: "WOMEN'S ACCESS: Women have separate designated time slots (typically morning hours). Same Nusuk app booking. Arrive 15 minutes before your slot. Sections clearly marked with barriers and staff guidance.", ar: "دخول النساء: أوقات مخصصة منفصلة. نفس الحجز عبر نسك. اصلي قبل 15 دقيقة.", ur: "خواتین کی رسائی: الگ مخصوص سلاٹ (عام طور پر صبح)۔ نسک ایپ سے بکنگ۔ 15 منٹ پہلے پہنچیں۔", hi: "महिलाओं की पहुंच: अलग निर्धारित स्लॉट (आमतौर पर सुबह)। नुसुक ऐप से बुकिंग। 15 मिनट पहले पहुंचें।" } }
+    ],
+    duaGuidance: { en: "Prepare your du'a list before entering. Pray 2 rak'ahs and make extensive du'a. If you cannot get a slot, your prayers anywhere in Masjid an-Nabawi carry 1000x reward.", ar: "جهّز قائمة أدعيتك. صلِّ ركعتين وادعُ. صلاتك في أي مكان بالمسجد النبوي بألف صلاة.", ur: "دعاؤں کی فہرست تیار رکھیں۔ 2 رکعات پڑھیں۔ مسجد نبوی میں کہیں بھی نماز 1000 گنا ثواب۔", hi: "दुआओं की सूची तैयार रखें। 2 रकात पढ़ें। मस्जिद-ए-नबवी में कहीं भी नमाज़ 1000 गुना सवाब।" },
+    importantBoundaries: [{ text: { en: "Your allotted Rawdah time is typically 10-15 minutes. Move when asked by staff.", ar: "وقتك المخصص 10-15 دقيقة. تحرك عندما يُطلب.", ur: "مقررہ وقت 10-15 منٹ۔ عملے کی ہدایت پر آگے بڑھیں۔", hi: "निर्धारित समय 10-15 मिनट। स्टाफ़ के कहने पर आगे बढ़ें।" } }],
+    mistakes: [
+      { id: "rb-1", text: { en: "Waiting until Madinah to install Nusuk app — registration takes time and slots may be gone.", ar: "انتظار الوصول لتثبيت نسك — التسجيل يأخذ وقتاً.", ur: "مدینہ پہنچ کر نسک انسٹال کرنا — رجسٹریشن میں وقت لگتا ہے۔", hi: "मदीना पहुंचकर नुसुक इंस्टॉल करना — रजिस्ट्रेशन में समय लगता है।" } },
+      { id: "rb-2", text: { en: "Trying to enter Rawdah without a booking — security will turn you away.", ar: "محاولة الدخول بدون حجز — الأمن سيرفضك.", ur: "بغیر بکنگ روضہ میں داخل ہونا — سیکیورٹی واپس بھیج دے گی۔", hi: "बिना बुकिंग रौज़ा में प्रवेश — सुरक्षा वापस भेज देगी।" } }
+    ]
+  },
+  {
+    id: "prayer-optimization-schedule",
+    order: 7,
+    title: { en: "Daily Prayer Optimization Schedule", ar: "جدول تحسين الصلاة اليومي", ur: "روزانہ نماز کی بہترین ترتیب", hi: "दैनिक नमाज़ अनुकूलन शेड्यूल" },
+    whatItIs: { en: "Every prayer in Masjid an-Nabawi equals 1,000 prayers elsewhere. A well-planned daily schedule maximizes your prayer count while managing energy and sleep.", ar: "كل صلاة في المسجد النبوي تعادل 1000 صلاة. جدول مُحكم يزيد عدد صلواتك.", ur: "مسجد نبوی میں ہر نماز 1000 نمازوں کے برابر ہے۔ اچھی منصوبہ بندی سے نمازوں کی تعداد بڑھائیں۔", hi: "मस्जिद-ए-नबवी में हर नमाज़ 1000 नमाज़ों के बराबर है। अच्छी योजना से नमाज़ों की संख्या बढ़ाएं।" },
+    steps: [
+      { order: 1, instruction: { en: "FAJR: Arrive 45 min before Adhan. Pray Tahajjud. After Fajr, stay for Ishraq (15-20 min after sunrise) — reward of complete Hajj & Umrah (Tirmidhi).", ar: "الفجر: اصل قبل 45 دقيقة. صلِّ التهجد. ابق للإشراق — أجر حج وعمرة.", ur: "فجر: 45 منٹ پہلے پہنچیں۔ تہجد پڑھیں۔ اشراق تک رکیں — مکمل حج و عمرہ کا ثواب۔", hi: "फज्र: 45 मिनट पहले पहुंचें। तहज्जुद पढ़ें। इश्राक तक रुकें — पूरे हज और उमरा का सवाब।" } },
+      { order: 2, instruction: { en: "REST: Return to hotel after Ishraq (~7 AM). Sleep until 11 AM. This is critical recovery. Exhaustion collapses happen to pilgrims who skip sleep.", ar: "الراحة: عد للفندق بعد الإشراق. نم حتى 11 صباحاً. هذه فترة تعافي حرجة.", ur: "آرام: اشراق کے بعد ہوٹل واپسی۔ 11 بجے تک سوئیں۔ یہ بحالی کا اہم وقت ہے۔", hi: "आराम: इश्राक के बाद होटल वापसी। 11 बजे तक सोएं। यह रिकवरी का ज़रूरी समय है।" } },
+      { order: 3, instruction: { en: "DHUHR-ASR BLOCK: Arrive 30 min before Dhuhr, stay through Asr. Use gap for Quran and du'a. Saves two round trips.", ar: "الظهر-العصر: اصل قبل 30 دقيقة. ابق للعصر. استغل الوقت للقرآن.", ur: "ظہر-عصر بلاک: 30 منٹ پہلے پہنچیں، عصر تک رکیں۔ قرآن اور دعا کے لیے وقت۔", hi: "ज़ुहर-अस्र ब्लॉक: 30 मिनट पहले पहुंचें, अस्र तक रुकें। क़ुरआन और दुआ के लिए समय।" } },
+      { order: 4, instruction: { en: "MAGHRIB-ISHA BLOCK: Arrive before Maghrib, stay through Isha. After Isha — Rawdah visit (if booked) or extended du'a. Hotel by 10:30 PM for sleep.", ar: "المغرب-العشاء: اصل قبل المغرب. بعد العشاء — الروضة أو الدعاء. الفندق بحلول 10:30.", ur: "مغرب-عشاء: مغرب سے پہلے پہنچیں۔ عشاء کے بعد — روضہ یا دعا۔ 10:30 تک ہوٹل۔", hi: "मग़रिब-इशा: मग़रिब से पहले पहुंचें। इशा के बाद — रौज़ा या दुआ। 10:30 तक होटल।" } }
+    ],
+    duaGuidance: { en: "Best times for du'a: last third of night, between Adhan and Iqamah, after obligatory prayers, sitting after Fajr until sunrise.", ar: "أفضل أوقات الدعاء: الثلث الأخير من الليل، بين الأذان والإقامة، بعد الفريضة.", ur: "دعا کے بہترین اوقات: رات کا آخری تہائی، اذان اور اقامت کے درمیان، فرض نماز کے بعد۔", hi: "दुआ के सर्वश्रेष्ठ समय: रात का आखिरी तिहाई, अज़ान और इक़ामत के बीच, फ़र्ज़ नमाज़ के बाद।" },
+    importantBoundaries: [],
+    mistakes: [
+      { id: "po-1", text: { en: "All 5 prayers + Tahajjud with no sleep — you'll collapse by day 3.", ar: "الخمس كلها + التهجد بدون نوم — ستنهار في اليوم الثالث.", ur: "پانچوں نمازیں + تہجد بغیر نیند — تیسرے دن گریں گے۔", hi: "पांचों नमाज़ें + तहज्जुद बिना नींद — तीसरे दिन गिर जाएंगे।" } },
+      { id: "po-2", text: { en: "Leaving after Fajr instead of staying for Ishraq — you miss Hajj/Umrah reward for just 20 min wait.", ar: "المغادرة بعد الفجر بدل الإشراق — تفوت أجر حج وعمرة.", ur: "فجر کے بعد چلے جانا بجائے اشراق — 20 منٹ سے حج/عمرہ کا ثواب۔", hi: "फज्र के बाद चले जाना बजाय इश्राक — 20 मिनट से हज/उमरा का सवाब।" } }
+    ]
+  },
+  {
+    id: "smart-ziyarat-routing",
+    order: 8,
+    title: { en: "Smart Ziyarat Routing", ar: "تخطيط الزيارات الذكي", ur: "ذہین زیارت کی ترتیب", hi: "स्मार्ट ज़ियारत रूटिंग" },
+    whatItIs: { en: "Madinah has several significant sites beyond the mosque. This guide provides optimized routing that minimizes backtracking and avoids peak crowd times.", ar: "في المدينة عدة مواقع مهمة. هذا الدليل يوفر ترتيباً مُحسّناً يقلل التراجع ويتجنب أوقات الذروة.", ur: "مدینہ میں مسجد کے علاوہ کئی اہم مقامات ہیں۔ یہ گائیڈ بہترین ترتیب فراہم کرتا ہے۔", hi: "मदीना में मस्जिद के अलावा कई महत्वपूर्ण स्थान हैं। यह गाइड इष्टतम क्रम प्रदान करता है।" },
+    steps: [
+      { order: 1, instruction: { en: "MASJID QUBA: Visit after Fajr or before Dhuhr. Pray 2 rak'ahs — reward equals an Umrah (Tirmidhi). ~3.5 km south. Taxi ~10-15 SAR.", ar: "مسجد قباء: زره بعد الفجر. صلِّ ركعتين — أجر عمرة. ~3.5 كم. تاكسي ~10-15 ريال.", ur: "مسجد قباء: فجر کے بعد جائیں۔ 2 رکعات — عمرہ کا ثواب۔ ~3.5 کلومیٹر۔ ٹیکسی ~10-15 ریال۔", hi: "मस्जिद क़ुबा: फज्र के बाद जाएं। 2 रकात — उमरा का सवाब। ~3.5 किमी। टैक्सी ~10-15 रियाल।" } },
+      { order: 2, instruction: { en: "UHUD & MARTYRS: Visit early morning (7-9 AM) when cooler. Greet martyrs with salam. Do NOT climb Mount Uhud — steep and unsafe. Taxi ~15-20 SAR.", ar: "أحد والشهداء: صباحاً (7-9). سلّم على الشهداء. لا تتسلق الجبل. تاكسي ~15-20 ريال.", ur: "احد اور شہداء: صبح (7-9) جائیں۔ سلام کریں۔ جبل احد پر نہ چڑھیں۔ ٹیکسی ~15-20 ریال۔", hi: "उहद और शहीद: सुबह (7-9) जाएं। सलाम करें। जबल उहद पर न चढ़ें। टैक्सी ~15-20 रियाल।" } },
+      { order: 3, instruction: { en: "JANNAT UL-BAQI: Right next to Masjid an-Nabawi (east side). Open after Fajr and after Dhuhr. Stand at entrance, face graves, greet with salam. Men only.", ar: "جنة البقيع: بجوار المسجد النبوي. مفتوحة بعد الفجر والظهر. قف وسلّم. للرجال فقط.", ur: "جنت البقیع: مسجد نبوی کے ساتھ۔ فجر اور ظہر کے بعد کھلتا ہے۔ دروازے پر سلام کریں۔ صرف مرد۔", hi: "जन्नतुल-बक़ी: मस्जिद-ए-नबवी के बगल में। फज्र और ज़ुहर के बाद खुलता है। दरवाज़े पर सलाम करें। सिर्फ़ पुरुष।" } },
+      { order: 4, instruction: { en: "OPTIMAL ORDER: Day 1 — Settle, prayers, Baqi. Day 2 — Quba (AM), Uhud + Martyrs (combine). Day 3+ — Focus on prayers, Rawdah, Quran. Don't sacrifice prayer quality for ziyarat.", ar: "الترتيب المثالي: يوم 1 — استقرار، صلاة، البقيع. يوم 2 — قباء وأحد. يوم 3+ — صلاة وروضة وقرآن.", ur: "بہترین ترتیب: دن 1 — آباد ہونا، نمازیں، بقیع۔ دن 2 — قباء، احد۔ دن 3+ — نمازیں، روضہ، قرآن۔", hi: "इष्टतम क्रम: दिन 1 — बसना, नमाज़ें, बक़ी। दिन 2 — क़ुबा, उहद। दिन 3+ — नमाज़ें, रौज़ा, क़ुरआन।" } }
+    ],
+    duaGuidance: { en: "At Baqi: 'As-salamu alaikum ahl ad-diyar min al-mu'minin wal-muslimin...' At Uhud: Reflect on sacrifice and ask Allah for steadfastness.", ar: "عند البقيع: 'السلام عليكم أهل الديار...' عند أحد: تأمل في التضحية واسأل الله الثبات.", ur: "بقیع پر: 'السلام عليکم أہل الديار...' احد پر: قربانی پر غور کریں اور استقامت مانگیں۔", hi: "बक़ी पर: 'अस्सलामु अलैकुम अहलद-दियार...' उहद पर: कुर्बानी पर विचार करें।" },
+    importantBoundaries: [{ text: { en: "These are historical sites for learning, not for performing rituals. Do not pray AT graves.", ar: "مواقع تاريخية للتعلم لا للطقوس. لا تصلِّ عند القبور.", ur: "یہ سیکھنے کے لیے ہیں، رسومات کے لیے نہیں۔ قبروں پر نماز نہ پڑھیں۔", hi: "ये सीखने के लिए हैं, रस्में अदा करने के लिए नहीं। क़ब्रों पर नमाज़ न पढ़ें।" } }],
+    mistakes: [
+      { id: "zr-1", text: { en: "Visiting Uhud in peak afternoon heat — people faint regularly. Go early morning only.", ar: "زيارة أحد في حر الظهيرة — يُغمى على الناس. صباحاً فقط.", ur: "دوپہر کی گرمی میں احد — لوگ بے ہوش ہوتے ہیں۔ صرف صبح۔", hi: "दोपहर की गर्मी में उहद — लोग बेहोश होते हैं। सिर्फ सुबह।" } },
+      { id: "zr-2", text: { en: "Spending full days on ziyarat and missing prayers at Masjid an-Nabawi — 1000x reward prayers matter more.", ar: "تفويت الصلاة بالمسجد النبوي للزيارات — الصلاة بألف صلاة أهم.", ur: "زیارتوں میں دن گزارنا اور مسجد نبوی کی نمازیں چھوڑنا — 1000 گنا نمازیں اہم ہیں۔", hi: "ज़ियारतों में दिन गुज़ारना और मस्जिद-ए-नबवी की नमाज़ें छोड़ना — 1000 गुना नमाज़ें ज़्यादा अहम हैं।" } }
+    ]
+  },
+  {
+    id: "transport-madinah",
+    order: 9,
+    title: { en: "Madinah Transport & Taxi Guide", ar: "دليل النقل في المدينة", ur: "مدینہ ٹرانسپورٹ گائیڈ", hi: "मदीना परिवहन गाइड" },
+    whatItIs: { en: "Madinah transport is more organized than Makkah, but pilgrims still get overcharged. This covers real prices, ride apps, and walking route safety.", ar: "النقل في المدينة أكثر تنظيماً لكن الحجاج يتعرضون لزيادة الأسعار.", ur: "مدینہ ٹرانسپورٹ مکہ سے زیادہ منظم ہے لیکن حجاج زیادہ پیسے دیتے ہیں۔", hi: "मदीना परिवहन मक्का से ज़्यादा व्यवस्थित है लेकिन तीर्थयात्री ज़्यादा पैसे देते हैं।" },
+    steps: [
+      { order: 1, instruction: { en: "USE RIDE APPS: Uber/Careem work well. Hotel→Haram: 8-15 SAR. Hotel→Quba: 10-20 SAR. Hotel→Uhud: 15-25 SAR. Street taxis charge 2-3x more.", ar: "استخدم أوبر/كريم. الفندق→الحرم: 8-15 ريال. سيارات الشارع تبالغ 2-3 أضعاف.", ur: "اوبر/کریم استعمال کریں۔ ہوٹل→حرم: 8-15 ریال۔ سڑک ٹیکسی 2-3 گنا زیادہ۔", hi: "उबर/करीम इस्तेमाल करें। होटल→हरम: 8-15 रियाल। सड़क टैक्सी 2-3 गुना ज़्यादा।" } },
+      { order: 2, instruction: { en: "WALKING: Most central hotels are 10-15 min walk. Shaded pedestrian walkways are well-maintained. Night walks are pleasant and safe.", ar: "المشي: معظم الفنادق المركزية 10-15 دقيقة مشياً. الممرات المظللة ممتازة.", ur: "پیدل: زیادہ تر مرکزی ہوٹل 10-15 منٹ پیدل۔ سایہ دار راستے اچھے ہیں۔", hi: "पैदल: अधिकांश केंद्रीय होटल 10-15 मिनट पैदल। छायादार रास्ते अच्छे हैं।" } },
+      { order: 3, instruction: { en: "AIRPORT: ~15 km from center. Pre-book via hotel or Uber/Careem (40-60 SAR). Do NOT use airport taxi touts (100-150 SAR).", ar: "المطار: ~15 كم. احجز مسبقاً أو استخدم أوبر (40-60 ريال). لا تستخدم سيارات المطار.", ur: "ایئرپورٹ: ~15 کلومیٹر۔ پہلے سے بک کریں یا اوبر (40-60 ریال)۔ ایئرپورٹ ٹاؤٹس استعمال نہ کریں۔", hi: "एयरपोर्ट: ~15 किमी। पहले से बुक करें या उबर (40-60 रियाल)। एयरपोर्ट दलालों से न लें।" } },
+      { order: 4, instruction: { en: "HARAMAIN TRAIN: Madinah→Makkah in ~2.5 hours. Book on SAR website or Almosafer app. 150-300 SAR. Much better than 5-6 hour bus ride.", ar: "قطار الحرمين: المدينة→مكة في ~2.5 ساعة. احجز عبر SAR. 150-300 ريال.", ur: "حرمین ٹرین: مدینہ→مکہ ~2.5 گھنٹے۔ SAR ویب سائٹ سے بک کریں۔ 150-300 ریال۔", hi: "हरमैन ट्रेन: मदीना→मक्का ~2.5 घंटे। SAR वेबसाइट से बुक करें। 150-300 रियाल।" } }
+    ],
+    duaGuidance: { en: "Travel du'a: 'Subhanal-ladhi sakh-khara lana hadha...' When leaving Madinah, make du'a to return again.", ar: "دعاء السفر: 'سبحان الذي سخر لنا هذا...' عند المغادرة ادعُ بالعودة.", ur: "سفر کی دعا: 'سبحان الذی سخر لنا ہذا...' مدینہ سے رخصت ہوتے وقت واپسی کی دعا کریں۔", hi: "यात्रा दुआ: 'सुबहानल्लज़ी सख़्ख़रा...' मदीना से विदा होते समय वापसी की दुआ करें।" },
+    importantBoundaries: [],
+    mistakes: [
+      { id: "tm-1", text: { en: "Taking street taxis without ride apps — always use Uber/Careem for fair prices.", ar: "أخذ سيارات الشارع بدون تطبيقات — استخدم أوبر/كريم.", ur: "ایپ کے بغیر سڑک ٹیکسی — ہمیشہ اوبر/کریم استعمال کریں۔", hi: "ऐप के बिना सड़क टैक्सी — हमेशा उबर/करीम इस्तेमाल करें।" } },
+      { id: "tm-2", text: { en: "Not booking Haramain train in advance during peak season — trains sell out days ahead.", ar: "عدم حجز القطار مسبقاً — يُباع قبل أيام.", ur: "پیک سیزن میں ٹرین پہلے سے نہ بک کرنا — دن پہلے بھر جاتی ہیں۔", hi: "पीक सीज़न में ट्रेन पहले से न बुक करना — दिन पहले भर जाती हैं।" } }
+    ]
+  },
+  {
+    id: "elderly-women-itinerary",
+    order: 10,
+    title: { en: "Elderly & Women-Safe Itineraries", ar: "جداول آمنة للمسنين والنساء", ur: "بزرگوں اور خواتین کے لیے محفوظ ترتیب", hi: "बुज़ुर्गों और महिलाओं के लिए सुरक्षित कार्यक्रम" },
+    whatItIs: { en: "Elderly pilgrims and women face unique challenges: extreme heat, long walks, crowded prayer areas, and limited Rawdah access. This provides customized itineraries prioritizing safety and maximum spiritual benefit.", ar: "يواجه المسنون والنساء تحديات: حرارة، مسافات، زحام. جداول مخصصة للسلامة.", ur: "بزرگ اور خواتین کو منفرد چیلنجز: گرمی، لمبی چال، بھری جگہیں۔ حفاظت کے لیے مخصوص ترتیب۔", hi: "बुज़ुर्ग और महिलाओं को अनोखी चुनौतियां: गर्मी, लंबी चाल, भरे क्षेत्र। सुरक्षा के लिए कस्टम कार्यक्रम।" },
+    steps: [
+      { order: 1, instruction: { en: "ELDERLY: Focus on 3 prayers in mosque (Fajr, Dhuhr, Maghrib). Pray Asr & Isha in hotel. Use wheelchair without hesitation. Stay on flat pathways.", ar: "المسنون: 3 صلوات في المسجد. العصر والعشاء في الفندق. استخدم الكرسي المتحرك.", ur: "بزرگ: مسجد میں 3 نمازیں۔ عصر اور عشاء ہوٹل میں۔ وہیل چیئر بلا تردد استعمال کریں۔", hi: "बुज़ुर्ग: मस्जिद में 3 नमाज़ें। अस्र और इशा होटल में। व्हीलचेयर बिना हिचक इस्तेमाल करें।" } },
+      { order: 2, instruction: { en: "WOMEN'S SECTIONS: Entry through Gates 25, 29. Separate Rawdah times (morning). Check posted schedule daily. Always travel in groups after Isha.", ar: "أقسام النساء: دخول من أبواب 25، 29. أوقات روضة منفصلة. سافري في مجموعات بعد العشاء.", ur: "خواتین کے حصے: گیٹ 25، 29 سے داخلہ۔ الگ روضہ اوقات۔ عشاء کے بعد گروپ میں جائیں۔", hi: "महिला सेक्शन: गेट 25, 29 से प्रवेश। अलग रौज़ा समय। इशा के बाद ग्रुप में जाएं।" } },
+      { order: 3, instruction: { en: "HYDRATION: Carry water, ORS, medications at ALL times. Set phone alarms for medication. Eat before going to mosque — never go on empty stomach.", ar: "الترطيب: احمل الماء والأدوية دائماً. اضبط منبهات الأدوية. كل قبل الذهاب.", ur: "پانی: ہمیشہ پانی، ORS، ادویات رکھیں۔ دوائیوں کا الارم لگائیں۔ خالی پیٹ مسجد نہ جائیں۔", hi: "पानी: हमेशा पानी, ORS, दवाइयां रखें। दवाइयों का अलार्म लगाएं। खाली पेट मस्जिद न जाएं।" } },
+      { order: 4, instruction: { en: "COMPANION SYSTEM: Never go to mosque alone. Have a younger companion who knows the route, carries charged phone, and can communicate with staff.", ar: "نظام المرافقة: لا تذهب وحدك. رافق شخصاً يعرف الطريق وهاتفه مشحون.", ur: "ساتھی نظام: اکیلے مسجد نہ جائیں۔ ایک نوجوان ساتھی ہو جو راستہ جانتا ہو۔", hi: "साथी प्रणाली: अकेले मस्जिद न जाएं। एक युवा साथी हो जो रास्ता जानता हो।" } }
+    ],
+    duaGuidance: { en: "'Allahumma inni a'udhu bika min al-ajzi wal-kasali' (O Allah, I seek refuge from weakness and laziness). Prayers performed with difficulty carry extra reward.", ar: "'اللهم إني أعوذ بك من العجز والكسل'. الصلوات بمشقة لها أجر إضافي.", ur: "'اللهم إني أعوذ بك من العجز والکسل'۔ مشکل سے ادا کی گئی نمازوں کا اجر زیادہ ہے۔", hi: "'अल्लाहुम्मा इन्नी अऊज़ु बिका मिनल अज्ज़ि वल-कसलि'। मुश्किल से अदा नमाज़ों का सवाब ज़्यादा है।" },
+    importantBoundaries: [{ text: { en: "It is permissible for elderly or sick pilgrims to pray in the hotel. The reward of intention is preserved.", ar: "يجوز للمسنين الصلاة في الفندق. أجر النية محفوظ.", ur: "بزرگوں کے لیے ہوٹل میں نماز جائز ہے۔ نیت کا ثواب محفوظ ہے۔", hi: "बुज़ुर्गों के लिए होटल में नमाज़ जायज़ है। नीयत का सवाब सुरक्षित है।" } }],
+    mistakes: [
+      { id: "ew-1", text: { en: "Forcing elderly to attend all 5 prayers — causes dangerous exhaustion and falls.", ar: "إجبار المسنين على الخمس — يسبب إرهاقاً خطيراً.", ur: "بزرگوں کو پانچوں نمازوں پر مجبور کرنا — خطرناک تھکاوٹ۔", hi: "बुज़ुर्गों को पांचों नमाज़ों पर मजबूर करना — खतरनाक थकान।" } },
+      { id: "ew-2", text: { en: "Women going alone to late-night prayers — always travel in groups after Isha.", ar: "ذهاب النساء وحدهن ليلاً — سافري في مجموعات.", ur: "خواتین کا رات اکیلے جانا — ہمیشہ گروپ میں جائیں۔", hi: "महिलाओं का रात अकेले जाना — हमेशा ग्रुप में जाएं।" } }
+    ]
   }
 ];
 
