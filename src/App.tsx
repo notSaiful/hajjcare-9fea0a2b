@@ -115,6 +115,8 @@ const AdminControlPanelPage = lazy(() => import("./pages/AdminControlPanelPage")
 const InspectorGroupManagePage = lazy(() => import("./pages/InspectorGroupManagePage"));
 const InspectorDirectoryPage = lazy(() => import("./pages/InspectorDirectoryPage"));
 const AdminInspectorsPage = lazy(() => import("./pages/AdminInspectorsPage"));
+const HajiJoinGroupPage = lazy(() => import("./pages/HajiJoinGroupPage"));
+const HajiGroupDashboardPage = lazy(() => import("./pages/HajiGroupDashboardPage"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -214,7 +216,9 @@ function AppContent() {
       <Route path="/inspector-directory" element={<InspectorDirectoryPage />} />
       <Route path="/admin/inspectors" element={<L><AdminInspectorsPage /></L>} />
       <Route path="/inspector-group" element={<InspectorGroupManagePage />} />
-      <Route path="/haj-inspector-register" element={<InspectorRegisterPage />} />
+        <Route path="/haj-inspector-register" element={<InspectorRegisterPage />} />
+        <Route path="/join-group" element={<L><HajiJoinGroupPage /></L>} />
+        <Route path="/my-hajj-group" element={<L><HajiGroupDashboardPage /></L>} />
       <Route path="/shi-training" element={<ShiTrainingPage />} />
       <Route path="/hajj-progress" element={<FamilyProgressPage />} />
       <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />

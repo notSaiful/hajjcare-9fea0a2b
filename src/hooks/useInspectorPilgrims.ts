@@ -35,6 +35,7 @@ export interface InspectorGroup {
   inspector_user_id: string;
   group_name: string;
   whatsapp_group_link: string | null;
+  invite_code: string | null;
   max_capacity: number;
   created_at: string;
   updated_at: string;

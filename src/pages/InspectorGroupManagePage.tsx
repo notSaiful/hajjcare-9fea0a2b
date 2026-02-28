@@ -13,7 +13,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Loader2, Users, Plus, Upload, Search, AlertTriangle, Shield, Crown, Trash2, ExternalLink, Phone, Accessibility, Heart, MessageCircle, BarChart3, UserCheck } from 'lucide-react';
+import { Loader2, Users, Plus, Upload, Search, AlertTriangle, Shield, Crown, Trash2, ExternalLink, Phone, Accessibility, Heart, MessageCircle, BarChart3, UserCheck, ClipboardList, Megaphone, Copy, Check } from 'lucide-react';
+import { KhidmatTracker } from '@/components/inspector/KhidmatTracker';
+import { BroadcastPanel } from '@/components/inspector/BroadcastPanel';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 
@@ -354,6 +356,31 @@ function EmergencyPanel({ pilgrims, onStatusChange }: { pilgrims: InspectorPilgr
   );
 }
 
+function InviteCodeCard({ code }: { code: string }) {
+  const [copied, setCopied] = useState(false);
+  const handleCopy = () => {
+    navigator.clipboard.writeText(code);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+  return (
+    <Card className="border-primary/30 bg-primary/5">
+      <CardContent className="p-3">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-xs text-muted-foreground">Invite Code for Hajis</p>
+            <p className="text-2xl font-mono font-bold tracking-[0.3em] text-primary">{code}</p>
+            <p className="text-xs text-muted-foreground mt-1">Share this code so hajis can self-register at /join-group</p>
+          </div>
+          <Button variant="outline" size="sm" onClick={handleCopy}>
+            {copied ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 const InspectorGroupManagePage = () => {
   const { isInspector, hasAnyCoordinatorRole, isLoading: roleLoading } = useUserRole();
   const { group, pilgrims, isLoading, demographics, createGroup, updateGroupWhatsApp, addPilgrim, bulkAddPilgrims, updatePilgrimStatus, toggleGroupLeader, deletePilgrim } = useInspectorPilgrims();
@@ -414,6 +441,11 @@ const InspectorGroupManagePage = () => {
               </CardContent>
             </Card>
 
+            {/* Invite Code for Hajis */}
+            {group.invite_code && (
+              <InviteCodeCard code={group.invite_code} />
+            )}
+
             {/* WhatsApp Integration */}
             <Card>
               <CardContent className="p-3">
@@ -438,10 +470,12 @@ const InspectorGroupManagePage = () => {
             </Card>
 
             <Tabs defaultValue="pilgrims" className="w-full">
-              <TabsList className="w-full grid grid-cols-3">
+              <TabsList className="w-full grid grid-cols-5">
                 <TabsTrigger value="pilgrims">Pilgrims</TabsTrigger>
-                <TabsTrigger value="analytics"><BarChart3 className="w-4 h-4 mr-1" /> Analytics</TabsTrigger>
-                <TabsTrigger value="emergency"><AlertTriangle className="w-4 h-4 mr-1" /> Emergency</TabsTrigger>
+                <TabsTrigger value="khidmat"><ClipboardList className="w-4 h-4 mr-1" /> Khidmat</TabsTrigger>
+                <TabsTrigger value="broadcast"><Megaphone className="w-4 h-4 mr-1" /> Broadcast</TabsTrigger>
+                <TabsTrigger value="analytics"><BarChart3 className="w-4 h-4 mr-1" /> Stats</TabsTrigger>
+                <TabsTrigger value="emergency"><AlertTriangle className="w-4 h-4 mr-1" /> SOS</TabsTrigger>
               </TabsList>
 
               <TabsContent value="pilgrims" className="space-y-3 mt-3">
@@ -503,6 +537,14 @@ const InspectorGroupManagePage = () => {
                   ))}
                   {filtered.length === 0 && <p className="text-center py-8 text-muted-foreground">No pilgrims found</p>}
                 </div>
+              </TabsContent>
+
+              <TabsContent value="khidmat" className="mt-3">
+                <KhidmatTracker groupId={group.id} />
+              </TabsContent>
+
+              <TabsContent value="broadcast" className="mt-3">
+                <BroadcastPanel groupId={group.id} />
               </TabsContent>
 
               <TabsContent value="analytics" className="mt-3">
