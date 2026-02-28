@@ -1514,6 +1514,51 @@ export type Database = {
           },
         ]
       }
+      inspector_my_profile: {
+        Row: {
+          batch: string | null
+          cover_number: string | null
+          created_at: string
+          departure_date: string | null
+          embarkation_point: string | null
+          id: string
+          mobile: string | null
+          name: string
+          state: string
+          updated_at: string
+          user_id: string
+          whatsapp: string | null
+        }
+        Insert: {
+          batch?: string | null
+          cover_number?: string | null
+          created_at?: string
+          departure_date?: string | null
+          embarkation_point?: string | null
+          id?: string
+          mobile?: string | null
+          name?: string
+          state?: string
+          updated_at?: string
+          user_id: string
+          whatsapp?: string | null
+        }
+        Update: {
+          batch?: string | null
+          cover_number?: string | null
+          created_at?: string
+          departure_date?: string | null
+          embarkation_point?: string | null
+          id?: string
+          mobile?: string | null
+          name?: string
+          state?: string
+          updated_at?: string
+          user_id?: string
+          whatsapp?: string | null
+        }
+        Relationships: []
+      }
       inspector_pilgrim_groups: {
         Row: {
           created_at: string
