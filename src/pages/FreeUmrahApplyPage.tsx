@@ -372,6 +372,13 @@ const FreeUmrahApplyPage = () => {
         }
       );
 
+      const contentType = response.headers.get("content-type");
+      if (!contentType?.includes("application/json")) {
+        const text = await response.text();
+        console.error("Non-JSON response:", response.status, text.substring(0, 200));
+        throw new Error("Server error. Please check your internet connection and try again.");
+      }
+
       const result = await response.json();
 
       if (!response.ok) {
@@ -401,10 +408,9 @@ const FreeUmrahApplyPage = () => {
       clearSavedData();
       toast.success(t.success);
     } catch (err) {
-      if (err instanceof Error) {
-        toast.error(err.message);
-      }
-      console.error(err);
+      const message = err instanceof Error ? err.message : "Failed to submit application. Please try again.";
+      toast.error(message);
+      console.error("Submit error:", err);
     } finally {
       setIsSubmitting(false);
     }
