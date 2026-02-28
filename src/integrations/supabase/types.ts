@@ -1130,6 +1130,44 @@ export type Database = {
         }
         Relationships: []
       }
+      group_announcements: {
+        Row: {
+          created_at: string
+          group_id: string
+          id: string
+          inspector_user_id: string
+          message: string
+          priority: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          group_id: string
+          id?: string
+          inspector_user_id: string
+          message: string
+          priority?: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          group_id?: string
+          id?: string
+          inspector_user_id?: string
+          message?: string
+          priority?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_announcements_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "inspector_pilgrim_groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       group_members: {
         Row: {
           group_id: string
@@ -1482,6 +1520,7 @@ export type Database = {
           group_name: string
           id: string
           inspector_user_id: string
+          invite_code: string | null
           max_capacity: number
           updated_at: string
           whatsapp_group_link: string | null
@@ -1491,6 +1530,7 @@ export type Database = {
           group_name: string
           id?: string
           inspector_user_id: string
+          invite_code?: string | null
           max_capacity?: number
           updated_at?: string
           whatsapp_group_link?: string | null
@@ -1500,6 +1540,7 @@ export type Database = {
           group_name?: string
           id?: string
           inspector_user_id?: string
+          invite_code?: string | null
           max_capacity?: number
           updated_at?: string
           whatsapp_group_link?: string | null
@@ -1531,6 +1572,7 @@ export type Database = {
           state: string | null
           status: string
           updated_at: string
+          user_id: string | null
           wheelchair: boolean
         }
         Insert: {
@@ -1557,6 +1599,7 @@ export type Database = {
           state?: string | null
           status?: string
           updated_at?: string
+          user_id?: string | null
           wheelchair?: boolean
         }
         Update: {
@@ -1583,6 +1626,7 @@ export type Database = {
           state?: string | null
           status?: string
           updated_at?: string
+          user_id?: string | null
           wheelchair?: boolean
         }
         Relationships: [
@@ -1651,6 +1695,60 @@ export type Database = {
           verified_by?: string | null
         }
         Relationships: []
+      }
+      khidmat_logs: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          group_id: string
+          id: string
+          inspector_user_id: string
+          log_date: string
+          pilgrim_count: number | null
+          pilgrim_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description?: string | null
+          group_id: string
+          id?: string
+          inspector_user_id: string
+          log_date?: string
+          pilgrim_count?: number | null
+          pilgrim_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          group_id?: string
+          id?: string
+          inspector_user_id?: string
+          log_date?: string
+          pilgrim_count?: number | null
+          pilgrim_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "khidmat_logs_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "inspector_pilgrim_groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "khidmat_logs_pilgrim_id_fkey"
+            columns: ["pilgrim_id"]
+            isOneToOne: false
+            referencedRelation: "inspector_pilgrims"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       member_link_requests: {
         Row: {
