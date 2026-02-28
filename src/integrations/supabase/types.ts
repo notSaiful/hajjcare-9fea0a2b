@@ -1165,6 +1165,72 @@ export type Database = {
           },
         ]
       }
+      haj_inspectors: {
+        Row: {
+          category: string | null
+          cbt_marks: number | null
+          cover_number: string | null
+          created_at: string
+          duty_location: string
+          father_name: string | null
+          gender: string | null
+          id: string
+          interview_marks: number | null
+          is_active: boolean
+          language: string
+          mobile: string | null
+          name: string
+          photo_url: string | null
+          quota: string | null
+          result: string | null
+          state: string
+          total_marks: number | null
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          cbt_marks?: number | null
+          cover_number?: string | null
+          created_at?: string
+          duty_location?: string
+          father_name?: string | null
+          gender?: string | null
+          id?: string
+          interview_marks?: number | null
+          is_active?: boolean
+          language?: string
+          mobile?: string | null
+          name: string
+          photo_url?: string | null
+          quota?: string | null
+          result?: string | null
+          state: string
+          total_marks?: number | null
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          cbt_marks?: number | null
+          cover_number?: string | null
+          created_at?: string
+          duty_location?: string
+          father_name?: string | null
+          gender?: string | null
+          id?: string
+          interview_marks?: number | null
+          is_active?: boolean
+          language?: string
+          mobile?: string | null
+          name?: string
+          photo_url?: string | null
+          quota?: string | null
+          result?: string | null
+          state?: string
+          total_marks?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       hajj_circulars: {
         Row: {
           ai_processed: boolean

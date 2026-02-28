@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { MainLayout } from "@/components/MainLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { IconCircle } from "@/components/IconCircle";
@@ -35,6 +35,7 @@ import {
 
 const HajMissionDirectoryPage = () => {
   const { language, isRTL } = useLanguage();
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
@@ -324,7 +325,13 @@ const HajMissionDirectoryPage = () => {
           {filteredCategories.map((category, index) => (
             <button
               key={category.id}
-              onClick={() => setSelectedCategory(category.id)}
+              onClick={() => {
+                if (category.id === "inspector") {
+                  navigate("/inspector-directory");
+                } else {
+                  setSelectedCategory(category.id);
+                }
+              }}
               className="flex flex-col items-center gap-2 p-2 sm:p-3 rounded-xl bg-card/50 hover:bg-card border border-border/50 hover:border-primary/30 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 group animate-fade-up"
               style={{ animationDelay: `${index * 30}ms` }}
             >
