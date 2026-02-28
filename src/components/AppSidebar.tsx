@@ -28,6 +28,7 @@ import {
   Gift,
   Route,
   Sparkles,
+  UserCheck,
 } from "lucide-react";
 import {
   Sidebar,
@@ -259,7 +260,7 @@ export function AppSidebar() {
   const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
 
-  const adminRoutes = ["/admin/panel", "/coordinator", "/admin/roles", "/medical-alerts", "/admin/metrics", "/admin/free-umrah", "/admin/sukoon-metrics", "/admin/volunteers"];
+  const adminRoutes = ["/admin/panel", "/coordinator", "/admin/roles", "/medical-alerts", "/admin/metrics", "/admin/free-umrah", "/admin/sukoon-metrics", "/admin/volunteers", "/admin/inspectors"];
   
   const guideRoutes = [
     "/prepare",
@@ -330,6 +331,11 @@ export function AppSidebar() {
         title: language === "hi" ? "वालंटियर प्रबंधन" : "Volunteer Management",
         url: "/admin/volunteers",
         icon: Users,
+      },
+      {
+        title: language === "hi" ? "हज इंस्पेक्टर प्रबंधन" : "Haj Inspectors",
+        url: "/admin/inspectors",
+        icon: UserCheck,
       },
     ] : []),
   ];
