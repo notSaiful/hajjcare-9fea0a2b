@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { SimpleHeader } from "@/components/SimpleHeader";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -23,6 +23,12 @@ import {
   ChevronDown,
   ChevronUp,
   UserCheck,
+  Plane,
+  AlertTriangle,
+  Users,
+  Building2,
+  Stethoscope,
+  ClipboardList,
 } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useHajInspectors, HajInspectorRecord } from "@/hooks/useHajInspectors";
@@ -66,6 +72,16 @@ const InspectorDirectoryPage = () => {
       marks: "Marks",
       result: "Result",
       total: "Total",
+      flightSchedule: "Flight Schedule",
+      emergencyControl: "Emergency Control Room",
+      hajiQuota: "Haji Quota",
+      totalHajis: "Total Hajis",
+      totalGroups: "Total Groups",
+      groupLeaders: "Group Leaders",
+      doctors: "Doctors",
+      buildings: "Buildings",
+      liveEmergency: "Live Emergency",
+      liveComplaints: "Complaints",
     },
     hi: {
       title: "हज इंस्पेक्टर डायरेक्टरी",
@@ -87,6 +103,16 @@ const InspectorDirectoryPage = () => {
       marks: "अंक",
       result: "परिणाम",
       total: "कुल",
+      flightSchedule: "उड़ान अनुसूची",
+      emergencyControl: "आपातकालीन नियंत्रण कक्ष",
+      hajiQuota: "हाजी कोटा",
+      totalHajis: "कुल हाजी",
+      totalGroups: "कुल समूह",
+      groupLeaders: "समूह नेता",
+      doctors: "डॉक्टर",
+      buildings: "भवन",
+      liveEmergency: "लाइव आपातकाल",
+      liveComplaints: "शिकायतें",
     },
     ur: {
       title: "حج انسپکٹر ڈائریکٹری",
@@ -108,6 +134,16 @@ const InspectorDirectoryPage = () => {
       marks: "نمبرات",
       result: "نتیجہ",
       total: "کل",
+      flightSchedule: "پرواز کا شیڈول",
+      emergencyControl: "ایمرجنسی کنٹرول روم",
+      hajiQuota: "حاجی کوٹہ",
+      totalHajis: "کل حاجی",
+      totalGroups: "کل گروپس",
+      groupLeaders: "گروپ لیڈرز",
+      doctors: "ڈاکٹرز",
+      buildings: "عمارتیں",
+      liveEmergency: "لائیو ایمرجنسی",
+      liveComplaints: "شکایات",
     },
   };
 
@@ -117,8 +153,8 @@ const InspectorDirectoryPage = () => {
     window.open(`tel:${mobile}`, "_self");
   };
 
-  const handleWhatsApp = (mobile: string, name: string) => {
-    const cleanNumber = mobile.replace(/\D/g, "");
+  const handleWhatsApp = (number: string, name: string) => {
+    const cleanNumber = number.replace(/\D/g, "");
     const message = encodeURIComponent(`Assalamu Alaikum, ${name}. I am a pilgrim and need your help.`);
     window.open(`https://wa.me/${cleanNumber}?text=${message}`, "_blank");
   };
@@ -128,7 +164,6 @@ const InspectorDirectoryPage = () => {
       <SimpleHeader />
 
       <main className="container max-w-2xl mx-auto px-4 py-6 space-y-4">
-        {/* Header */}
         <div className="text-center mb-4">
           <h1 className="text-2xl font-bold text-foreground flex items-center justify-center gap-2">
             <UserCheck className="w-6 h-6 text-primary" />
@@ -137,7 +172,6 @@ const InspectorDirectoryPage = () => {
           <p className="text-sm text-muted-foreground mt-1">{labels.subtitle}</p>
         </div>
 
-        {/* Search */}
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
@@ -148,7 +182,6 @@ const InspectorDirectoryPage = () => {
           />
         </div>
 
-        {/* Filters */}
         <div className="grid grid-cols-2 gap-2">
           <Select value={selectedState} onValueChange={(v) => setSelectedState(v === "all" ? "" : v)}>
             <SelectTrigger>
@@ -175,21 +208,18 @@ const InspectorDirectoryPage = () => {
           </Select>
         </div>
 
-        {/* Cover Number Filter */}
         <Input
           placeholder={labels.coverNumber}
           value={coverNumberFilter}
           onChange={(e) => setCoverNumberFilter(e.target.value)}
         />
 
-        {/* Results Count */}
         <div className="text-sm text-muted-foreground">
           {inspectors.length} {labels.total.toLowerCase()}
           {selectedState && ` • ${selectedState}`}
           {selectedDutyLocation && ` • ${selectedDutyLocation}`}
         </div>
 
-        {/* Loading State */}
         {isLoading && (
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
@@ -198,7 +228,6 @@ const InspectorDirectoryPage = () => {
           </div>
         )}
 
-        {/* Inspector List */}
         {!isLoading && inspectors.length === 0 && (
           <div className="text-center py-12 text-muted-foreground">{labels.noResults}</div>
         )}
@@ -230,6 +259,14 @@ interface InspectorProfileCardProps {
   onWhatsApp: (mobile: string, name: string) => void;
 }
 
+const StatBox = ({ icon: Icon, label, value, color = "text-primary" }: { icon: any; label: string; value: number | null; color?: string }) => (
+  <div className="bg-muted/50 rounded-lg p-2 text-center">
+    <Icon className={`w-4 h-4 mx-auto mb-0.5 ${color}`} />
+    <div className={`text-lg font-bold ${color}`}>{value ?? 0}</div>
+    <div className="text-[10px] text-muted-foreground leading-tight">{label}</div>
+  </div>
+);
+
 const InspectorProfileCard = ({
   inspector,
   isExpanded,
@@ -238,15 +275,15 @@ const InspectorProfileCard = ({
   onCall,
   onWhatsApp,
 }: InspectorProfileCardProps) => {
+  const whatsappNumber = inspector.whatsapp || inspector.mobile;
+
   return (
     <Card className="overflow-hidden">
       <CardContent className="p-0">
-        {/* Main row - always visible */}
         <button
           onClick={onToggle}
           className="w-full p-4 flex items-start gap-3 text-left hover:bg-muted/50 transition-colors"
         >
-          {/* Photo/Avatar */}
           <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0 overflow-hidden">
             {inspector.photo_url ? (
               <img src={inspector.photo_url} alt={inspector.name} className="w-full h-full object-cover" />
@@ -292,10 +329,12 @@ const InspectorProfileCard = ({
               <span className="flex items-center gap-1">
                 <Languages className="w-3 h-3" /> {inspector.language}
               </span>
-              {inspector.total_marks && (
+              {inspector.mobile && (
                 <>
                   <span>•</span>
-                  <span>{labels.marks}: {inspector.total_marks}</span>
+                  <span className="flex items-center gap-1">
+                    <Phone className="w-3 h-3" /> {inspector.mobile}
+                  </span>
                 </>
               )}
             </div>
@@ -306,7 +345,6 @@ const InspectorProfileCard = ({
           </div>
         </button>
 
-        {/* Expanded details */}
         {isExpanded && (
           <div className="px-4 pb-4 border-t space-y-3 pt-3">
             {/* Detail grid */}
@@ -335,6 +373,36 @@ const InspectorProfileCard = ({
                   <p className="font-medium">{inspector.gender}</p>
                 </div>
               )}
+              {inspector.flight_schedule && (
+                <div className="col-span-2">
+                  <span className="text-muted-foreground flex items-center gap-1">
+                    <Plane className="w-3 h-3" /> {labels.flightSchedule}:
+                  </span>
+                  <p className="font-medium">{inspector.flight_schedule}</p>
+                </div>
+              )}
+              {inspector.emergency_control_room_no && (
+                <div className="col-span-2">
+                  <span className="text-muted-foreground flex items-center gap-1">
+                    <AlertTriangle className="w-3 h-3" /> {labels.emergencyControl}:
+                  </span>
+                  <p className="font-medium">{inspector.emergency_control_room_no}</p>
+                </div>
+              )}
+            </div>
+
+            {/* Operational Stats Grid */}
+            <div className="grid grid-cols-4 gap-2">
+              <StatBox icon={Users} label={labels.hajiQuota} value={inspector.total_haji_quota} />
+              <StatBox icon={Users} label={labels.totalHajis} value={inspector.total_hajis} />
+              <StatBox icon={ClipboardList} label={labels.totalGroups} value={inspector.total_groups} />
+              <StatBox icon={UserCheck} label={labels.groupLeaders} value={inspector.total_group_leaders} />
+            </div>
+            <div className="grid grid-cols-4 gap-2">
+              <StatBox icon={Stethoscope} label={labels.doctors} value={inspector.total_doctors} />
+              <StatBox icon={Building2} label={labels.buildings} value={inspector.total_buildings} />
+              <StatBox icon={AlertTriangle} label={labels.liveEmergency} value={inspector.live_emergency_cases} color="text-destructive" />
+              <StatBox icon={ClipboardList} label={labels.liveComplaints} value={inspector.live_complaints} color="text-amber-600" />
             </div>
 
             {/* Marks */}
@@ -356,8 +424,8 @@ const InspectorProfileCard = ({
             )}
 
             {/* Call & WhatsApp buttons */}
-            {inspector.mobile && (
-              <div className="flex gap-2">
+            <div className="flex gap-2">
+              {inspector.mobile && (
                 <Button
                   onClick={() => onCall(inspector.mobile!)}
                   variant="default"
@@ -366,16 +434,18 @@ const InspectorProfileCard = ({
                   <Phone className="w-4 h-4 mr-2" />
                   {labels.call}
                 </Button>
+              )}
+              {whatsappNumber && (
                 <Button
-                  onClick={() => onWhatsApp(inspector.mobile!, inspector.name)}
+                  onClick={() => onWhatsApp(whatsappNumber, inspector.name)}
                   variant="outline"
                   className="flex-1 border-emerald-300 text-emerald-700 hover:bg-emerald-50"
                 >
                   <MessageCircle className="w-4 h-4 mr-2" />
                   {labels.whatsapp}
                 </Button>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         )}
       </CardContent>
