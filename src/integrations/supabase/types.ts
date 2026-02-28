@@ -1172,20 +1172,31 @@ export type Database = {
           cover_number: string | null
           created_at: string
           duty_location: string
+          emergency_control_room_no: string | null
           father_name: string | null
+          flight_schedule: string | null
           gender: string | null
           id: string
           interview_marks: number | null
           is_active: boolean
           language: string
+          live_complaints: number | null
+          live_emergency_cases: number | null
           mobile: string | null
           name: string
           photo_url: string | null
           quota: string | null
           result: string | null
           state: string
+          total_buildings: number | null
+          total_doctors: number | null
+          total_group_leaders: number | null
+          total_groups: number | null
+          total_haji_quota: number | null
+          total_hajis: number | null
           total_marks: number | null
           updated_at: string
+          whatsapp: string | null
         }
         Insert: {
           category?: string | null
@@ -1193,20 +1204,31 @@ export type Database = {
           cover_number?: string | null
           created_at?: string
           duty_location?: string
+          emergency_control_room_no?: string | null
           father_name?: string | null
+          flight_schedule?: string | null
           gender?: string | null
           id?: string
           interview_marks?: number | null
           is_active?: boolean
           language?: string
+          live_complaints?: number | null
+          live_emergency_cases?: number | null
           mobile?: string | null
           name: string
           photo_url?: string | null
           quota?: string | null
           result?: string | null
           state: string
+          total_buildings?: number | null
+          total_doctors?: number | null
+          total_group_leaders?: number | null
+          total_groups?: number | null
+          total_haji_quota?: number | null
+          total_hajis?: number | null
           total_marks?: number | null
           updated_at?: string
+          whatsapp?: string | null
         }
         Update: {
           category?: string | null
@@ -1214,20 +1236,31 @@ export type Database = {
           cover_number?: string | null
           created_at?: string
           duty_location?: string
+          emergency_control_room_no?: string | null
           father_name?: string | null
+          flight_schedule?: string | null
           gender?: string | null
           id?: string
           interview_marks?: number | null
           is_active?: boolean
           language?: string
+          live_complaints?: number | null
+          live_emergency_cases?: number | null
           mobile?: string | null
           name?: string
           photo_url?: string | null
           quota?: string | null
           result?: string | null
           state?: string
+          total_buildings?: number | null
+          total_doctors?: number | null
+          total_group_leaders?: number | null
+          total_groups?: number | null
+          total_haji_quota?: number | null
+          total_hajis?: number | null
           total_marks?: number | null
           updated_at?: string
+          whatsapp?: string | null
         }
         Relationships: []
       }

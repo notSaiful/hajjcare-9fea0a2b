@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { SimpleHeader } from "@/components/SimpleHeader";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -17,10 +16,8 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Plus, Pencil, Trash2, Search, UserCheck, Loader2 } from "lucide-react";
-import { useLanguage } from "@/contexts/LanguageContext";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -34,6 +31,7 @@ interface InspectorForm {
   state: string;
   cover_number: string;
   mobile: string;
+  whatsapp: string;
   duty_location: string;
   language: string;
   gender: string;
@@ -43,24 +41,29 @@ interface InspectorForm {
   interview_marks: string;
   total_marks: string;
   result: string;
+  flight_schedule: string;
+  emergency_control_room_no: string;
+  total_haji_quota: string;
+  total_hajis: string;
+  total_groups: string;
+  total_group_leaders: string;
+  total_doctors: string;
+  total_buildings: string;
+  live_emergency_cases: string;
+  live_complaints: string;
 }
 
 const emptyForm: InspectorForm = {
-  name: "",
-  father_name: "",
-  state: "",
-  cover_number: "",
-  mobile: "",
-  duty_location: "Makkah",
-  language: "Hindi",
-  gender: "Male",
-  category: "",
-  quota: "",
-  cbt_marks: "",
-  interview_marks: "",
-  total_marks: "",
-  result: "Selected",
+  name: "", father_name: "", state: "", cover_number: "", mobile: "", whatsapp: "",
+  duty_location: "Makkah", language: "Hindi", gender: "Male", category: "", quota: "",
+  cbt_marks: "", interview_marks: "", total_marks: "", result: "Selected",
+  flight_schedule: "", emergency_control_room_no: "",
+  total_haji_quota: "0", total_hajis: "0", total_groups: "0", total_group_leaders: "0",
+  total_doctors: "0", total_buildings: "0", live_emergency_cases: "0", live_complaints: "0",
 };
+
+const toInt = (v: string) => v ? parseInt(v) || 0 : 0;
+const toIntOrNull = (v: string) => v ? parseInt(v) || null : null;
 
 const AdminInspectorsPage = () => {
   const { isAdmin } = useUserRole();
@@ -92,15 +95,26 @@ const AdminInspectorsPage = () => {
         state: formData.state,
         cover_number: formData.cover_number.trim() || null,
         mobile: formData.mobile.trim() || null,
+        whatsapp: formData.whatsapp.trim() || null,
         duty_location: formData.duty_location,
         language: formData.language,
         gender: formData.gender,
         category: formData.category || null,
         quota: formData.quota || null,
-        cbt_marks: formData.cbt_marks ? parseInt(formData.cbt_marks) : null,
-        interview_marks: formData.interview_marks ? parseInt(formData.interview_marks) : null,
-        total_marks: formData.total_marks ? parseInt(formData.total_marks) : null,
+        cbt_marks: toIntOrNull(formData.cbt_marks),
+        interview_marks: toIntOrNull(formData.interview_marks),
+        total_marks: toIntOrNull(formData.total_marks),
         result: formData.result,
+        flight_schedule: formData.flight_schedule.trim() || null,
+        emergency_control_room_no: formData.emergency_control_room_no.trim() || null,
+        total_haji_quota: toInt(formData.total_haji_quota),
+        total_hajis: toInt(formData.total_hajis),
+        total_groups: toInt(formData.total_groups),
+        total_group_leaders: toInt(formData.total_group_leaders),
+        total_doctors: toInt(formData.total_doctors),
+        total_buildings: toInt(formData.total_buildings),
+        live_emergency_cases: toInt(formData.live_emergency_cases),
+        live_complaints: toInt(formData.live_complaints),
       };
 
       if (editId) {
@@ -156,6 +170,7 @@ const AdminInspectorsPage = () => {
       state: inspector.state || "",
       cover_number: inspector.cover_number || "",
       mobile: inspector.mobile || "",
+      whatsapp: inspector.whatsapp || "",
       duty_location: inspector.duty_location || "Makkah",
       language: inspector.language || "Hindi",
       gender: inspector.gender || "Male",
@@ -165,6 +180,16 @@ const AdminInspectorsPage = () => {
       interview_marks: inspector.interview_marks?.toString() || "",
       total_marks: inspector.total_marks?.toString() || "",
       result: inspector.result || "Selected",
+      flight_schedule: inspector.flight_schedule || "",
+      emergency_control_room_no: inspector.emergency_control_room_no || "",
+      total_haji_quota: inspector.total_haji_quota?.toString() || "0",
+      total_hajis: inspector.total_hajis?.toString() || "0",
+      total_groups: inspector.total_groups?.toString() || "0",
+      total_group_leaders: inspector.total_group_leaders?.toString() || "0",
+      total_doctors: inspector.total_doctors?.toString() || "0",
+      total_buildings: inspector.total_buildings?.toString() || "0",
+      live_emergency_cases: inspector.live_emergency_cases?.toString() || "0",
+      live_complaints: inspector.live_complaints?.toString() || "0",
     });
     setDialogOpen(true);
   };
@@ -174,6 +199,17 @@ const AdminInspectorsPage = () => {
     setForm(emptyForm);
     setDialogOpen(true);
   };
+
+  const F = (label: string, key: keyof InspectorForm, type = "text") => (
+    <div>
+      <Label>{label}</Label>
+      <Input
+        type={type}
+        value={form[key]}
+        onChange={(e) => setForm({ ...form, [key]: e.target.value })}
+      />
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-background">
@@ -191,12 +227,7 @@ const AdminInspectorsPage = () => {
 
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input
-            placeholder="Search inspectors..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-9"
-          />
+          <Input placeholder="Search inspectors..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
         </div>
 
         <p className="text-sm text-muted-foreground">{filtered.length} inspectors</p>
@@ -214,18 +245,17 @@ const AdminInspectorsPage = () => {
                     {inspector.cover_number && ` • Cover: ${inspector.cover_number}`}
                     {inspector.mobile && ` • ${inspector.mobile}`}
                   </p>
+                  <p className="text-xs text-muted-foreground">
+                    Hajis: {inspector.total_hajis || 0} • Groups: {inspector.total_groups || 0} • Emergency: {inspector.live_emergency_cases || 0}
+                  </p>
                 </div>
                 <div className="flex gap-1 shrink-0 ml-2">
                   <Button size="icon" variant="ghost" onClick={() => openEdit(inspector)}>
                     <Pencil className="w-4 h-4" />
                   </Button>
                   <Button
-                    size="icon"
-                    variant="ghost"
-                    className="text-destructive"
-                    onClick={() => {
-                      if (confirm("Remove this inspector?")) deleteMutation.mutate(inspector.id);
-                    }}
+                    size="icon" variant="ghost" className="text-destructive"
+                    onClick={() => { if (confirm("Remove this inspector?")) deleteMutation.mutate(inspector.id); }}
                   >
                     <Trash2 className="w-4 h-4" />
                   </Button>
@@ -235,31 +265,20 @@ const AdminInspectorsPage = () => {
           ))}
         </div>
 
-        {/* Add/Edit Dialog */}
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogContent className="max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>{editId ? "Edit Inspector" : "Add Inspector"}</DialogTitle>
             </DialogHeader>
             <div className="space-y-3">
-              <div>
-                <Label>Name *</Label>
-                <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
-              </div>
-              <div>
-                <Label>Father's Name</Label>
-                <Input value={form.father_name} onChange={(e) => setForm({ ...form, father_name: e.target.value })} />
-              </div>
+              {F("Name *", "name")}
+              {F("Father's Name", "father_name")}
               <div className="grid grid-cols-2 gap-2">
                 <div>
                   <Label>State *</Label>
                   <Select value={form.state} onValueChange={(v) => setForm({ ...form, state: v })}>
                     <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
-                    <SelectContent>
-                      {INSPECTOR_STATES.map((s) => (
-                        <SelectItem key={s} value={s}>{s}</SelectItem>
-                      ))}
-                    </SelectContent>
+                    <SelectContent>{INSPECTOR_STATES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
                   </Select>
                 </div>
                 <div>
@@ -274,20 +293,14 @@ const AdminInspectorsPage = () => {
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <Label>Cover Number</Label>
-                  <Input value={form.cover_number} onChange={(e) => setForm({ ...form, cover_number: e.target.value })} />
-                </div>
-                <div>
-                  <Label>Mobile</Label>
-                  <Input value={form.mobile} onChange={(e) => setForm({ ...form, mobile: e.target.value })} />
-                </div>
+                {F("Cover Number", "cover_number")}
+                {F("Mobile", "mobile")}
               </div>
               <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <Label>Language</Label>
-                  <Input value={form.language} onChange={(e) => setForm({ ...form, language: e.target.value })} />
-                </div>
+                {F("WhatsApp", "whatsapp")}
+                {F("Language", "language")}
+              </div>
+              <div className="grid grid-cols-2 gap-2">
                 <div>
                   <Label>Gender</Label>
                   <Select value={form.gender} onValueChange={(v) => setForm({ ...form, gender: v })}>
@@ -298,41 +311,51 @@ const AdminInspectorsPage = () => {
                     </SelectContent>
                   </Select>
                 </div>
+                <div>
+                  <Label>Result</Label>
+                  <Select value={form.result} onValueChange={(v) => setForm({ ...form, result: v })}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Selected">Selected</SelectItem>
+                      <SelectItem value="Waitlisted">Waitlisted</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <Label>Category</Label>
-                  <Input value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} />
-                </div>
-                <div>
-                  <Label>Quota</Label>
-                  <Input value={form.quota} onChange={(e) => setForm({ ...form, quota: e.target.value })} />
-                </div>
+                {F("Category", "category")}
+                {F("Quota", "quota")}
               </div>
+
+              <p className="text-sm font-semibold text-foreground pt-2 border-t">Flight & Emergency</p>
+              {F("Flight Schedule", "flight_schedule")}
+              {F("Emergency Control Room No.", "emergency_control_room_no")}
+
+              <p className="text-sm font-semibold text-foreground pt-2 border-t">Operational Stats</p>
+              <div className="grid grid-cols-2 gap-2">
+                {F("Total Haji Quota", "total_haji_quota", "number")}
+                {F("Total Hajis", "total_hajis", "number")}
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                {F("Total Groups", "total_groups", "number")}
+                {F("Total Group Leaders", "total_group_leaders", "number")}
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                {F("Total Doctors", "total_doctors", "number")}
+                {F("Total Buildings", "total_buildings", "number")}
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                {F("Live Emergency Cases", "live_emergency_cases", "number")}
+                {F("Live Complaints", "live_complaints", "number")}
+              </div>
+
+              <p className="text-sm font-semibold text-foreground pt-2 border-t">Marks</p>
               <div className="grid grid-cols-3 gap-2">
-                <div>
-                  <Label>CBT Marks</Label>
-                  <Input type="number" value={form.cbt_marks} onChange={(e) => setForm({ ...form, cbt_marks: e.target.value })} />
-                </div>
-                <div>
-                  <Label>Interview</Label>
-                  <Input type="number" value={form.interview_marks} onChange={(e) => setForm({ ...form, interview_marks: e.target.value })} />
-                </div>
-                <div>
-                  <Label>Total</Label>
-                  <Input type="number" value={form.total_marks} onChange={(e) => setForm({ ...form, total_marks: e.target.value })} />
-                </div>
+                {F("CBT", "cbt_marks", "number")}
+                {F("Interview", "interview_marks", "number")}
+                {F("Total", "total_marks", "number")}
               </div>
-              <div>
-                <Label>Result</Label>
-                <Select value={form.result} onValueChange={(v) => setForm({ ...form, result: v })}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Selected">Selected</SelectItem>
-                    <SelectItem value="Waitlisted">Waitlisted</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+
               <Button
                 className="w-full"
                 onClick={() => saveMutation.mutate(form)}
