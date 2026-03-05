@@ -563,7 +563,21 @@ export function AppSidebar() {
         )}
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-border/50 p-3 space-y-2">
+      <SidebarFooter className="border-t border-border/50 p-3 space-y-1">
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild tooltip="Privacy Policy">
+              <NavLink
+                to="/privacy-policy"
+                className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
+                activeClassName="bg-primary/10 text-primary hover:bg-primary/15"
+              >
+                <Shield className="w-5 h-5 flex-shrink-0" />
+                {!isCollapsed && <span>{language === "hi" ? "गोपनीयता नीति" : language === "ar" ? "سياسة الخصوصية" : language === "ur" ? "رازداری پالیسی" : "Privacy Policy"}</span>}
+              </NavLink>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
         {!isCollapsed && (
           <>
             <button
