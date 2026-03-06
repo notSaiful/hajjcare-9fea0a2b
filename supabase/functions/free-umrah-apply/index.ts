@@ -150,31 +150,40 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Rate limit by mobile number (strongest identifier - not spoofable like IP)
-    const rateLimitResponse = await fetch(
-      `${supabaseUrl}/functions/v1/check-rate-limit`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${supabaseServiceKey}`,
-        },
-        body: JSON.stringify({
-          action: 'free-umrah-apply',
-          identifier: `mobile:${cleanMobile}`,
-        }),
-      }
-    );
-
-    const rateLimitResult = await rateLimitResponse.json();
-    if (!rateLimitResult.allowed) {
-      return new Response(
-        JSON.stringify({ 
-          error: 'Too many applications. Please try again later.',
-          resetIn: rateLimitResult.resetIn 
-        }),
-        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    // Rate limit by mobile number (non-fatal: if rate limiter is down, allow submission)
+    try {
+      const rateLimitResponse = await fetch(
+        `${supabaseUrl}/functions/v1/check-rate-limit`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${supabaseServiceKey}`,
+          },
+          body: JSON.stringify({
+            action: 'free-umrah-apply',
+            identifier: `mobile:${cleanMobile}`,
+          }),
+        }
       );
+
+      if (rateLimitResponse.ok || rateLimitResponse.status === 429) {
+        const rateLimitResult = await rateLimitResponse.json();
+        if (!rateLimitResult.allowed) {
+          return new Response(
+            JSON.stringify({ 
+              error: 'Too many applications. Please try again later.',
+              resetIn: rateLimitResult.resetIn 
+            }),
+            { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+      } else {
+        console.warn("Rate limit check returned non-OK status:", rateLimitResponse.status);
+      }
+    } catch (rateLimitErr) {
+      console.warn("Rate limit check failed (non-fatal):", rateLimitErr);
+      // Continue with submission even if rate limiter is unavailable
     }
     // Validate pincode format (6 digits)
     if (!/^[0-9]{6}$/.test(pincode)) {
