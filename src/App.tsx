@@ -261,6 +261,7 @@ function AppContent() {
       <Route path="/volunteer" element={<L><VolunteerPage /></L>} />
       <Route path="/admin/volunteers" element={<L><VolunteerDashboardPage /></L>} />
       <Route path="/admin/panel" element={<L><AdminControlPanelPage /></L>} />
+      <Route path="/profile" element={<L><ProfilePage /></L>} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
