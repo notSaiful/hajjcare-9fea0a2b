@@ -76,6 +76,11 @@ const HomePage = () => {
       <Suspense fallback={null}>
         <LocationReminderBanner />
       </Suspense>
+
+      {/* Onboarding Tour for first-time users */}
+      <Suspense fallback={null}>
+        <OnboardingTour />
+      </Suspense>
     </div>
   );
 };
