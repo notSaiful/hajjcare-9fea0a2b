@@ -234,23 +234,23 @@ function AppContent() {
       <Route path="/payment" element={<PaymentPage />} />
       <Route path="/billing-history" element={<BillingHistoryPage />} />
       <Route path="/rewards" element={<RewardsPage />} />
-      <Route path="/admin/promo" element={<AdminPromoPage />} />
+      <Route path="/admin/promo" element={<L><AdminPromoPage /></L>} />
       <Route path="/sukoon-rd" element={<SukoonRdPage />} />
-      <Route path="/admin/operators" element={<AdminOperatorsPage />} />
-      <Route path="/admin/fraud-alerts" element={<AdminFraudAlertsPage />} />
-      <Route path="/admin/ai-dashboard" element={<AdminAIDashboardPage />} />
-      <Route path="/admin/sukoon-metrics" element={<SukoonTrackingMetricsPage />} />
-      <Route path="/admin/analytics" element={<AdminAnalyticsPage />} />
+      <Route path="/admin/operators" element={<L><AdminOperatorsPage /></L>} />
+      <Route path="/admin/fraud-alerts" element={<L><AdminFraudAlertsPage /></L>} />
+      <Route path="/admin/ai-dashboard" element={<L><AdminAIDashboardPage /></L>} />
+      <Route path="/admin/sukoon-metrics" element={<L><SukoonTrackingMetricsPage /></L>} />
+      <Route path="/admin/analytics" element={<L><AdminAnalyticsPage /></L>} />
       <Route path="/hajj-faq" element={<HajjFaqChatPage />} />
       <Route path="/hajj-wizard" element={<HajjQueryWizardPage />} />
-      <Route path="/command-center" element={<ResponderCommandPage />} />
-      <Route path="/national-command" element={<NationalCommandPage />} />
+      <Route path="/command-center" element={<L><ResponderCommandPage /></L>} />
+      <Route path="/national-command" element={<L><NationalCommandPage /></L>} />
       <Route path="/deployment-roadmap" element={<DeploymentRoadmapPage />} />
-      <Route path="/admin/compliance" element={<ComplianceDashboardPage />} />
-      <Route path="/admin/whatsapp-api" element={<AdminWhatsAppApiPage />} />
+      <Route path="/admin/compliance" element={<L><ComplianceDashboardPage /></L>} />
+      <Route path="/admin/whatsapp-api" element={<L><AdminWhatsAppApiPage /></L>} />
       <Route path="/error/forbidden" element={<ForbiddenPage />} />
       <Route path="/error/rate-limited" element={<ForbiddenPage />} />
-      <Route path="/security-settings" element={<SecuritySettingsPage />} />
+      <Route path="/security-settings" element={<L><SecuritySettingsPage /></L>} />
       <Route path="/circulars" element={<CircularsPage />} />
       <Route path="/admin/circulars" element={<L><AdminCircularsPage /></L>} />
 
