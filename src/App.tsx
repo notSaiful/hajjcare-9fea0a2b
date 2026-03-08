@@ -209,11 +209,11 @@ function AppContent() {
       <Route path="/food-guide" element={<FoodGuidePage />} />
       <Route path="/food" element={<FoodGuidePage />} />
       <Route path="/help" element={<HealthHelpPage />} />
-      <Route path="/coordinator" element={<CoordinatorDashboardPage />} />
-      <Route path="/medical-alerts" element={<MedicalAlertsPage />} />
-      <Route path="/admin/roles" element={<AdminRolesPage />} />
-      <Route path="/admin/metrics" element={<EmergencyMetricsPage />} />
-      <Route path="/inspector" element={<InspectorDashboardPage />} />
+      <Route path="/coordinator" element={<L><CoordinatorDashboardPage /></L>} />
+      <Route path="/medical-alerts" element={<L><MedicalAlertsPage /></L>} />
+      <Route path="/admin/roles" element={<L><AdminRolesPage /></L>} />
+      <Route path="/admin/metrics" element={<L><EmergencyMetricsPage /></L>} />
+      <Route path="/inspector" element={<L><InspectorDashboardPage /></L>} />
       <Route path="/haj-inspectors" element={<HajInspectorsDirectoryPage />} />
       <Route path="/inspector-directory" element={<InspectorDirectoryPage />} />
       <Route path="/admin/inspectors" element={<L><AdminInspectorsPage /></L>} />
