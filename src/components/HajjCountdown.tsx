@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Kaaba } from "lucide-react";
+import { Landmark } from "lucide-react";
 
 const labels: Record<string, { title: string; days: string; hours: string; mins: string; secs: string }> = {
   en: { title: "Hajj 2026 Countdown", days: "Days", hours: "Hours", mins: "Min", secs: "Sec" },
