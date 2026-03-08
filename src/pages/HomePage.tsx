@@ -31,6 +31,13 @@ const HomePage = () => {
           {/* Hero Section */}
           <HeroSection />
 
+          {/* Hajj Countdown */}
+          <Suspense fallback={null}>
+            <section className="animate-fade-up" style={{ animationDelay: "40ms" }}>
+              <HajjCountdown />
+            </section>
+          </Suspense>
+
           {/* Dashboard Menu with Bismillah */}
           <section className="animate-fade-up" style={{ animationDelay: "80ms" }}>
             <DashboardMenu />
