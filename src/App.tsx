@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { LoginGate } from "@/components/LoginGate";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 // Handle dynamic import failures (stale cache, network issues)
 if (typeof window !== "undefined") {
