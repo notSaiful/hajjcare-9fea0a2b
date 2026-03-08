@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useEffect } from "react";
 
 export type Circular = {
   id: string;
@@ -51,6 +52,27 @@ export const useCirculars = () => {
   });
 
   const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const channel = supabase
+      .channel("hajj-circulars-changes")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "hajj_circulars",
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ["hajj-circulars"] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
 
   const markRead = useMutation({
     mutationFn: async (circularId: string) => {
