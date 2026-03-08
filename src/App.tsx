@@ -118,6 +118,7 @@ const InspectorDirectoryPage = lazy(() => import("./pages/InspectorDirectoryPage
 const AdminInspectorsPage = lazy(() => import("./pages/AdminInspectorsPage"));
 const HajiJoinGroupPage = lazy(() => import("./pages/HajiJoinGroupPage"));
 const HajiGroupDashboardPage = lazy(() => import("./pages/HajiGroupDashboardPage"));
+const ProfilePage = lazy(() => import("./pages/ProfilePage"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
