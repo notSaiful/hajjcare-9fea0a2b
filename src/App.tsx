@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { LoginGate } from "@/components/LoginGate";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 // Handle dynamic import failures (stale cache, network issues)
 if (typeof window !== "undefined") {
@@ -117,6 +118,7 @@ const InspectorDirectoryPage = lazy(() => import("./pages/InspectorDirectoryPage
 const AdminInspectorsPage = lazy(() => import("./pages/AdminInspectorsPage"));
 const HajiJoinGroupPage = lazy(() => import("./pages/HajiJoinGroupPage"));
 const HajiGroupDashboardPage = lazy(() => import("./pages/HajiGroupDashboardPage"));
+const ProfilePage = lazy(() => import("./pages/ProfilePage"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -207,11 +209,11 @@ function AppContent() {
       <Route path="/food-guide" element={<FoodGuidePage />} />
       <Route path="/food" element={<FoodGuidePage />} />
       <Route path="/help" element={<HealthHelpPage />} />
-      <Route path="/coordinator" element={<CoordinatorDashboardPage />} />
-      <Route path="/medical-alerts" element={<MedicalAlertsPage />} />
-      <Route path="/admin/roles" element={<AdminRolesPage />} />
-      <Route path="/admin/metrics" element={<EmergencyMetricsPage />} />
-      <Route path="/inspector" element={<InspectorDashboardPage />} />
+      <Route path="/coordinator" element={<L><CoordinatorDashboardPage /></L>} />
+      <Route path="/medical-alerts" element={<L><MedicalAlertsPage /></L>} />
+      <Route path="/admin/roles" element={<L><AdminRolesPage /></L>} />
+      <Route path="/admin/metrics" element={<L><EmergencyMetricsPage /></L>} />
+      <Route path="/inspector" element={<L><InspectorDashboardPage /></L>} />
       <Route path="/haj-inspectors" element={<HajInspectorsDirectoryPage />} />
       <Route path="/inspector-directory" element={<InspectorDirectoryPage />} />
       <Route path="/admin/inspectors" element={<L><AdminInspectorsPage /></L>} />
@@ -232,23 +234,23 @@ function AppContent() {
       <Route path="/payment" element={<PaymentPage />} />
       <Route path="/billing-history" element={<BillingHistoryPage />} />
       <Route path="/rewards" element={<RewardsPage />} />
-      <Route path="/admin/promo" element={<AdminPromoPage />} />
+      <Route path="/admin/promo" element={<L><AdminPromoPage /></L>} />
       <Route path="/sukoon-rd" element={<SukoonRdPage />} />
-      <Route path="/admin/operators" element={<AdminOperatorsPage />} />
-      <Route path="/admin/fraud-alerts" element={<AdminFraudAlertsPage />} />
-      <Route path="/admin/ai-dashboard" element={<AdminAIDashboardPage />} />
-      <Route path="/admin/sukoon-metrics" element={<SukoonTrackingMetricsPage />} />
-      <Route path="/admin/analytics" element={<AdminAnalyticsPage />} />
+      <Route path="/admin/operators" element={<L><AdminOperatorsPage /></L>} />
+      <Route path="/admin/fraud-alerts" element={<L><AdminFraudAlertsPage /></L>} />
+      <Route path="/admin/ai-dashboard" element={<L><AdminAIDashboardPage /></L>} />
+      <Route path="/admin/sukoon-metrics" element={<L><SukoonTrackingMetricsPage /></L>} />
+      <Route path="/admin/analytics" element={<L><AdminAnalyticsPage /></L>} />
       <Route path="/hajj-faq" element={<HajjFaqChatPage />} />
       <Route path="/hajj-wizard" element={<HajjQueryWizardPage />} />
-      <Route path="/command-center" element={<ResponderCommandPage />} />
-      <Route path="/national-command" element={<NationalCommandPage />} />
+      <Route path="/command-center" element={<L><ResponderCommandPage /></L>} />
+      <Route path="/national-command" element={<L><NationalCommandPage /></L>} />
       <Route path="/deployment-roadmap" element={<DeploymentRoadmapPage />} />
-      <Route path="/admin/compliance" element={<ComplianceDashboardPage />} />
-      <Route path="/admin/whatsapp-api" element={<AdminWhatsAppApiPage />} />
+      <Route path="/admin/compliance" element={<L><ComplianceDashboardPage /></L>} />
+      <Route path="/admin/whatsapp-api" element={<L><AdminWhatsAppApiPage /></L>} />
       <Route path="/error/forbidden" element={<ForbiddenPage />} />
       <Route path="/error/rate-limited" element={<ForbiddenPage />} />
-      <Route path="/security-settings" element={<SecuritySettingsPage />} />
+      <Route path="/security-settings" element={<L><SecuritySettingsPage /></L>} />
       <Route path="/circulars" element={<CircularsPage />} />
       <Route path="/admin/circulars" element={<L><AdminCircularsPage /></L>} />
 
@@ -259,27 +261,30 @@ function AppContent() {
       <Route path="/volunteer" element={<L><VolunteerPage /></L>} />
       <Route path="/admin/volunteers" element={<L><VolunteerDashboardPage /></L>} />
       <Route path="/admin/panel" element={<L><AdminControlPanelPage /></L>} />
+      <Route path="/profile" element={<L><ProfilePage /></L>} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <LanguageProvider>
-      <AuthProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Suspense fallback={<PageLoader />}>
-              <AppContent />
-            </Suspense>
-          </BrowserRouter>
-        </TooltipProvider>
-      </AuthProvider>
-    </LanguageProvider>
-  </QueryClientProvider>
+  <ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <LanguageProvider>
+        <AuthProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <Suspense fallback={<PageLoader />}>
+                <AppContent />
+              </Suspense>
+            </BrowserRouter>
+          </TooltipProvider>
+        </AuthProvider>
+      </LanguageProvider>
+    </QueryClientProvider>
+  </ErrorBoundary>
 );
 
 export default App;

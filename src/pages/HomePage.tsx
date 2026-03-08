@@ -13,6 +13,7 @@ const WelcomePromoDialog = lazy(() => import("@/components/WelcomePromoDialog").
 const OnboardingTour = lazy(() => import("@/components/OnboardingTour").then(m => ({ default: m.OnboardingTour })));
 const LocationPermissionFlow = lazy(() => import("@/components/LocationPermissionFlow").then(m => ({ default: m.LocationPermissionFlow })));
 const LocationReminderBanner = lazy(() => import("@/components/LocationReminderBanner").then(m => ({ default: m.LocationReminderBanner })));
+const HajjCountdown = lazy(() => import("@/components/HajjCountdown").then(m => ({ default: m.HajjCountdown })));
 
 const HomePage = () => {
   const { t, isRTL, language } = useLanguage();
@@ -29,6 +30,13 @@ const HomePage = () => {
         <div className="space-y-6 sm:space-y-8">
           {/* Hero Section */}
           <HeroSection />
+
+          {/* Hajj Countdown */}
+          <Suspense fallback={null}>
+            <section className="animate-fade-up" style={{ animationDelay: "40ms" }}>
+              <HajjCountdown />
+            </section>
+          </Suspense>
 
           {/* Dashboard Menu with Bismillah */}
           <section className="animate-fade-up" style={{ animationDelay: "80ms" }}>
@@ -67,6 +75,11 @@ const HomePage = () => {
       {/* Location reminder banner - non-intrusive */}
       <Suspense fallback={null}>
         <LocationReminderBanner />
+      </Suspense>
+
+      {/* Onboarding Tour for first-time users */}
+      <Suspense fallback={null}>
+        <OnboardingTour />
       </Suspense>
     </div>
   );
