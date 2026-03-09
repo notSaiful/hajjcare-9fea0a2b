@@ -317,7 +317,7 @@ const HealthHelpPage = () => {
       if (!session?.access_token) {
         toast({
           title: "Error",
-          description: "Please sign in to submit a health request",
+          description: "Please sign in to submit a request",
           variant: "destructive",
         });
         setIsSubmitting(false);
