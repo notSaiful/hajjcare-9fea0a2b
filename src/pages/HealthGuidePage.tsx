@@ -113,10 +113,10 @@ const HealthGuidePage = () => {
           ))}
         </div>
 
-        {/* Health Card Section */}
+        {/* Pilgrim Preparation Card Section */}
         <HealthCardSection />
 
-        {/* Medical Staff Section */}
+        {/* Support Staff Directory */}
         <MedicalStaffSection />
       </div>
     </MainLayout>
