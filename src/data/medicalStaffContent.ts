@@ -209,7 +209,7 @@ export const medicalStaffLabels: Record<string, LocalizedString> = {
     pa: "ਪੈਰਾਮੈਡਿਕਸ ਦੀ ਸੂਚੀ (ਹੱਜ 2026)",
   },
   sectionTitle: {
-    en: "Doctors & Paramedics",
+    en: "Support Staff Directory",
     ar: "الأطباء والمسعفون",
     ur: "ڈاکٹر اور پیرامیڈکس",
     hi: "डॉक्टर और पैरामेडिक्स",
