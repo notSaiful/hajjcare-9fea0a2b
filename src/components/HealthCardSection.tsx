@@ -32,7 +32,7 @@ const labels: Record<string, LocalizedString> = {
     pa: "ਘੱਟ ਗਿਣਤੀ ਮਾਮਲਿਆਂ ਦੇ ਮੰਤਰਾਲੇ ਦੁਆਰਾ ਜਾਰੀ ਅਧਿਕਾਰਤ ਸਕ੍ਰੀਨਿੰਗ ਦਸਤਾਵੇਜ਼",
   },
   whatIsIt: {
-    en: "What is the Health Card?",
+    en: "What is the Preparation Card?",
     ar: "ما هي البطاقة الصحية؟",
     ur: "ہیلتھ کارڈ کیا ہے؟",
     hi: "हेल्थ कार्ड क्या है?",
