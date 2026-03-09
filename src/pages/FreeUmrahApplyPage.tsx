@@ -367,6 +367,7 @@ const FreeUmrahApplyPage = () => {
           method: 'POST',
           headers: {
             'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
           },
           body: submitFormData,
         }
