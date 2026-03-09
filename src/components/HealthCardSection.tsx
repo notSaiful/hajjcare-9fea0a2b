@@ -45,7 +45,7 @@ const labels: Record<string, LocalizedString> = {
     pa: "ਹੈਲਥ ਕਾਰਡ ਕੀ ਹੈ?",
   },
   whatIsItDesc: {
-    en: "A mandatory medical screening booklet issued to every Haj pilgrim to assess physical fitness for the pilgrimage. It must be filled by a registered government medical officer and carried throughout the journey.",
+    en: "A mandatory screening booklet issued to every Haj pilgrim to assess readiness for the pilgrimage. It must be filled by a registered government officer and carried throughout the journey.",
     ar: "كتيب فحص طبي إلزامي يُصدر لكل حاج لتقييم اللياقة البدنية للحج. يجب أن يملأه طبيب حكومي مسجل ويُحمل طوال الرحلة.",
     ur: "حج کے لیے جسمانی تندرستی کا جائزہ لینے کے لیے ہر حاجی کو جاری کردہ لازمی طبی جانچ کتابچہ۔ یہ رجسٹرڈ سرکاری ڈاکٹر سے بھروانا ہے اور پوری سفر میں ساتھ رکھنا ہے۔",
     hi: "तीर्थयात्रा के लिए शारीरिक तंदुरुस्ती का आकलन करने के लिए हर हज यात्री को जारी की जाने वाली अनिवार्य चिकित्सा जांच पुस्तिका। इसे पंजीकृत सरकारी चिकित्सा अधिकारी द्वारा भरा जाना चाहिए और पूरी यात्रा में साथ रखना चाहिए।",
