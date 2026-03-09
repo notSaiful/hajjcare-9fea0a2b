@@ -269,7 +269,7 @@ const MedicalAlertsPage = () => {
   if (!isAuthenticated || !hasAnyCoordinatorRole) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4">
-        <UnauthorizedAlert requiredRole="any_staff" pageName="Emergency Alerts" />
+        <UnauthorizedAlert requiredRole="any_staff" pageName="Priority Alerts" />
       </div>
     );
   }
@@ -293,7 +293,7 @@ const MedicalAlertsPage = () => {
           
           <div className="flex items-center gap-2">
             <AlertTriangle className="w-5 h-5" />
-            <span className="font-bold text-lg">Emergency Alerts</span>
+            <span className="font-bold text-lg">Priority Alerts</span>
           </div>
 
           <div className="flex items-center gap-2">

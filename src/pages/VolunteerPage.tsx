@@ -23,7 +23,7 @@ const SKILLS = [
   { value: "family_update", label: "फैमिली अपडेट टीम", labelEn: "Family Update Team" },
   { value: "tech_support", label: "टेक्निकल सपोर्ट", labelEn: "Technical Support" },
   { value: "translation", label: "ट्रांसलेशन (Hindi/Urdu/English/Arabic)", labelEn: "Translation" },
-  { value: "medical", label: "मेडिकल बैकग्राउंड", labelEn: "Medical Background" },
+  { value: "medical", label: "केयर बैकग्राउंड", labelEn: "Care Background" },
   { value: "logistics", label: "लॉजिस्टिक्स / मैनेजमेंट", labelEn: "Logistics / Management" },
 ];
 

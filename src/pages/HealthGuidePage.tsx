@@ -12,8 +12,8 @@ const HealthGuidePage = () => {
   const { language } = useLanguage();
 
   const labels = {
-    title: { en: "Health Guide", ar: "دليل الصحة", ur: "صحت گائیڈ", hi: "स्वास्थ्य गाइड", ta: "உடல்நல வழிகாட்டி", te: "ఆరోగ్య గైడ్", mr: "आरोग्य मार्गदर्शक", bn: "স্বাস্থ্য গাইড", or: "ସ୍ୱାସ୍ଥ୍ୟ ଗାଇଡ୍", ml: "ആരോഗ്യ ഗൈഡ്", pa: "ਸਿਹਤ ਗਾਈਡ" },
-    subtitle: { en: "Stay healthy during your pilgrimage", ar: "حافظ على صحتك خلال الحج", ur: "حج کے دوران صحت مند رہیں", hi: "तीर्थयात्रा के दौरान स्वस्थ रहें", ta: "யாத்திரையின் போது ஆரோக்கியமாக இருங்கள்", te: "తీర్థయాత్ర సమయంలో ఆరోగ్యంగా ఉండండి", mr: "तीर्थयात्रेदरम्यान निरोगी राहा", bn: "তীর্থযাত্রার সময় সুস্থ থাকুন", or: "ତୀର୍ଥଯାତ୍ରା ସମୟରେ ସୁସ୍ଥ ରୁହନ୍ତୁ", ml: "തീർത്ഥാടനത്തിനിടെ ആരോഗ്യമായിരിക്കുക", pa: "ਤੀਰਥ ਯਾਤਰਾ ਦੌਰਾਨ ਸਿਹਤਮੰਦ ਰਹੋ" },
+    title: { en: "Travel Safety Guide", ar: "دليل سلامة السفر", ur: "سفر حفاظت گائیڈ", hi: "यात्रा सुरक्षा गाइड", ta: "பயண பாதுகாப்பு வழிகாட்டி", te: "ప్రయాణ భద్రత గైడ్", mr: "प्रवास सुरक्षा मार्गदर्शक", bn: "ভ্রমণ নিরাপত্তা গাইড", or: "ଯାତ୍ରା ସୁରକ୍ଷା ଗାଇଡ୍", ml: "യാത്രാ സുരക്ഷാ ഗൈഡ്", pa: "ਯਾਤਰਾ ਸੁਰੱਖਿਆ ਗਾਈਡ" },
+    subtitle: { en: "Stay prepared during your pilgrimage", ar: "كن مستعداً خلال حجك", ur: "حج کے دوران تیار رہیں", hi: "तीर्थयात्रा के दौरान तैयार रहें", ta: "யாத்திரையின் போது தயாராக இருங்கள்", te: "తీర్థయాత్ర సమయంలో సిద్ధంగా ఉండండి", mr: "तीर्थयात्रेदरम्यान तयार राहा", bn: "তীর্থযাত্রার সময় প্রস্তুত থাকুন", or: "ତୀର୍ଥଯାତ୍ରା ସମୟରେ ପ୍ରସ୍ତୁତ ରୁହନ୍ତୁ", ml: "തീർത്ഥാടനത്തിനിടെ തയ്യാറായിരിക്കുക", pa: "ਤੀਰਥ ਯਾਤਰਾ ਦੌਰਾਨ ਤਿਆਰ ਰਹੋ" },
   };
 
   const healthTopics = [
@@ -62,7 +62,7 @@ const HealthGuidePage = () => {
     },
     {
       icon: AlertTriangle,
-      title: { en: "When to Seek Help", ar: "متى تطلب المساعدة", ur: "مدد کب لینی چاہیے", hi: "मदद कब लें", tr: "Ne Zaman Yardım İstenmeli", ru: "Когда обращаться за помощью" },
+      title: { en: "When to Seek Assistance", ar: "متى تطلب المساعدة", ur: "مدد کب لینی چاہیے", hi: "मदद कब लें", tr: "Ne Zaman Yardım İstenmeli", ru: "Когда обращаться за помощью" },
       variant: "red" as const,
       tips: [
         { en: "Severe chest pain or difficulty breathing", ar: "ألم شديد في الصدر أو صعوبة في التنفس", ur: "شدید سینے میں درد یا سانس لینے میں دشواری", hi: "गंभीर सीने में दर्द या सांस लेने में कठिनाई", tr: "Şiddetli göğüs ağrısı veya nefes almada zorluk", ru: "Сильная боль в груди или затрудненное дыхание" },
@@ -81,7 +81,7 @@ const HealthGuidePage = () => {
           title={labels.title}
           subtitle={labels.subtitle}
           icon={Heart}
-          iconVariant="rose"
+          iconVariant="emerald"
         />
 
         <div className="space-y-4">
@@ -113,10 +113,10 @@ const HealthGuidePage = () => {
           ))}
         </div>
 
-        {/* Health Card Section */}
+        {/* Pilgrim Preparation Card Section */}
         <HealthCardSection />
 
-        {/* Medical Staff Section */}
+        {/* Support Staff Directory */}
         <MedicalStaffSection />
       </div>
     </MainLayout>
