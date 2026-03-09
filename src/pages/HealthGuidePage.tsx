@@ -81,7 +81,7 @@ const HealthGuidePage = () => {
           title={labels.title}
           subtitle={labels.subtitle}
           icon={Heart}
-          iconVariant="rose"
+          iconVariant="emerald"
         />
 
         <div className="space-y-4">
