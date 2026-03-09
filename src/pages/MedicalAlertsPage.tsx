@@ -269,7 +269,7 @@ const MedicalAlertsPage = () => {
   if (!isAuthenticated || !hasAnyCoordinatorRole) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4">
-        <UnauthorizedAlert requiredRole="any_staff" pageName="Emergency Alerts" />
+        <UnauthorizedAlert requiredRole="any_staff" pageName="Priority Alerts" />
       </div>
     );
   }
