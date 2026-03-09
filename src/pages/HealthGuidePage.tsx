@@ -62,7 +62,7 @@ const HealthGuidePage = () => {
     },
     {
       icon: AlertTriangle,
-      title: { en: "When to Seek Help", ar: "متى تطلب المساعدة", ur: "مدد کب لینی چاہیے", hi: "मदद कब लें", tr: "Ne Zaman Yardım İstenmeli", ru: "Когда обращаться за помощью" },
+      title: { en: "When to Seek Assistance", ar: "متى تطلب المساعدة", ur: "مدد کب لینی چاہیے", hi: "मदद कब लें", tr: "Ne Zaman Yardım İstenmeli", ru: "Когда обращаться за помощью" },
       variant: "red" as const,
       tips: [
         { en: "Severe chest pain or difficulty breathing", ar: "ألم شديد في الصدر أو صعوبة في التنفس", ur: "شدید سینے میں درد یا سانس لینے میں دشواری", hi: "गंभीर सीने में दर्द या सांस लेने में कठिनाई", tr: "Şiddetli göğüs ağrısı veya nefes almada zorluk", ru: "Сильная боль в груди или затрудненное дыхание" },
