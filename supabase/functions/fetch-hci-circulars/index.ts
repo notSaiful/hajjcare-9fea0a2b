@@ -72,9 +72,13 @@ serve(async (req) => {
     const regex2 = /href="((?:https?:\/\/hajcommittee\.gov\.in)?\/uploads\/circulars\/[^"]+)"[^>]*>\s*Circular\s*No\.?\s*(\d+)[^<]*?[|\-–]\s*([^<]+)/gi;
 
     let match;
-    for (const regex of [regex1, regex2, regex3]) {
+    for (const regex of [regex1, regex2]) {
       while ((match = regex.exec(html)) !== null) {
-        const url = match[1].trim();
+        let url = match[1].trim();
+        // Make relative URLs absolute
+        if (url.startsWith("/")) {
+          url = `https://hajcommittee.gov.in${url}`;
+        }
         const num = match[2].trim();
         const title = match[3].trim().replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
         const key = `Circular-${num}`;
