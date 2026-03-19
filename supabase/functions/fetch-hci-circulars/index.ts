@@ -45,17 +45,48 @@ serve(async (req) => {
     }
 
     const html = await response.text();
-
-    // Parse circulars from HTML
-    // Pattern: <a href="...circulars/...">Circular-XX | Title<sup>...</sup></a>
-    // The actual HTML uses "Circular-34 | Title" with pipe separator
-    const htmlCircularRegex = /<a[^>]*href="(https?:\/\/hajcommittee\.gov\.in\/uploads\/circulars\/[^"]+)"[^>]*>\s*Circular[- ]?No\.?\s*(\d+)\s*[\|\-–]\s*([^<]+)/gi;
-    const htmlCircularRegex2 = /<a[^>]*href="(https?:\/\/hajcommittee\.gov\.in\/uploads\/circulars\/[^"]+)"[^>]*>\s*Circular[- ](\d+)\s*[\|\-–]\s*([^<]+)/gi;
-
     console.log("HTML length:", html.length);
-    // Debug: check if we can find "Circular-" at all
-    const circularCount = (html.match(/Circular-\d+/g) || []).length;
-    console.log("Raw 'Circular-XX' matches in HTML:", circularCount);
+    console.log("HTML first 500 chars:", html.substring(0, 500));
+    
+    // Check if page contains circulars section at all
+    const hasCircularWord = html.includes("Circular");
+    const hasUploadsCirculars = html.includes("/uploads/circulars/");
+    console.log("Contains 'Circular':", hasCircularWord, "Contains '/uploads/circulars/':", hasUploadsCirculars);
+
+    // Debug: find a sample circular anchor
+    const sampleIdx = html.indexOf("Circular-");
+    if (sampleIdx >= 0) {
+      console.log("Sample around Circular-:", html.substring(Math.max(0, sampleIdx - 100), sampleIdx + 200));
+    }
+
+    // Parse circulars from HTML using multiple regex patterns
+    const foundCirculars: Array<{
+      circular_number: string;
+      title: string;
+      source_url: string;
+    }> = [];
+
+    // Pattern 1: Circular-XX | Title (most common)
+    const regex1 = /href="(https?:\/\/hajcommittee\.gov\.in\/uploads\/circulars\/[^"]+)"[^>]*>Circular-(\d+)\s*\|\s*([^<]+)/gi;
+    // Pattern 2: Circular No.XX
+    const regex2 = /href="(https?:\/\/hajcommittee\.gov\.in\/uploads\/circulars\/[^"]+)"[^>]*>Circular\s*No\.?\s*(\d+)[^<]*?[|\-–]\s*([^<]+)/gi;
+    // Pattern 3: Broader - just find all circular links  
+    const regex3 = /href="(https?:\/\/hajcommittee\.gov\.in\/uploads\/circulars\/[^"]+)"[^>]*>\s*Circular[- ]?(?:No\.?\s*)?(\d+)\s*[|\-–]\s*([^<]+)/gi;
+
+    let match;
+    for (const regex of [regex1, regex2, regex3]) {
+      while ((match = regex.exec(html)) !== null) {
+        const url = match[1].trim();
+        const num = match[2].trim();
+        const title = match[3].trim().replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
+        const key = `Circular-${num}`;
+        if (!foundCirculars.some(c => c.circular_number === key)) {
+          foundCirculars.push({ circular_number: key, title, source_url: decodeURIComponent(url) });
+        }
+      }
+    }
+    
+    console.log("Parsed circulars count:", foundCirculars.length);
 
     const foundCirculars: Array<{
       circular_number: string;
