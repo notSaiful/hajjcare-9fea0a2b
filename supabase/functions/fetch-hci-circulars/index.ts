@@ -47,8 +47,15 @@ serve(async (req) => {
     const html = await response.text();
 
     // Parse circulars from HTML
-    // Pattern: <li><a href="https://hajcommittee.gov.in/uploads/circulars/...">Circular-XX | Title<sup>...</sup></a></li>
-    const htmlCircularRegex = /<a[^>]*href="(https?:\/\/hajcommittee\.gov\.in\/uploads\/circulars\/[^"]+)"[^>]*>\s*Circular[- ]?(\d+)\s*[||\-–]\s*([^<]+)/gi;
+    // Pattern: <a href="...circulars/...">Circular-XX | Title<sup>...</sup></a>
+    // The actual HTML uses "Circular-34 | Title" with pipe separator
+    const htmlCircularRegex = /<a[^>]*href="(https?:\/\/hajcommittee\.gov\.in\/uploads\/circulars\/[^"]+)"[^>]*>\s*Circular[- ]?No\.?\s*(\d+)\s*[\|\-–]\s*([^<]+)/gi;
+    const htmlCircularRegex2 = /<a[^>]*href="(https?:\/\/hajcommittee\.gov\.in\/uploads\/circulars\/[^"]+)"[^>]*>\s*Circular[- ](\d+)\s*[\|\-–]\s*([^<]+)/gi;
+
+    console.log("HTML length:", html.length);
+    // Debug: check if we can find "Circular-" at all
+    const circularCount = (html.match(/Circular-\d+/g) || []).length;
+    console.log("Raw 'Circular-XX' matches in HTML:", circularCount);
 
     const foundCirculars: Array<{
       circular_number: string;
