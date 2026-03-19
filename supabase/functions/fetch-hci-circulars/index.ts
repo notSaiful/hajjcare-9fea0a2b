@@ -47,11 +47,8 @@ serve(async (req) => {
     const html = await response.text();
 
     // Parse circulars from HTML
-    // Pattern: Circular links with format "Circular-XX | Title" pointing to PDF
-    const circularRegex = /\[?Circular[- ]?(\d+)\s*[|\-]\s*([^\]<"]+?)(?:\s*!\[.*?\])?\]?\(?(https:\/\/hajcommittee\.gov\.in\/uploads\/circulars\/[^\s)"]+)/gi;
-    
-    // Also try a more HTML-focused regex for anchor tags
-    const htmlCircularRegex = /<a[^>]*href="(https:\/\/hajcommittee\.gov\.in\/uploads\/circulars\/[^"]+)"[^>]*>\s*Circular[- ]?(\d+)\s*[|\-–]\s*([^<]+)/gi;
+    // Pattern: <li><a href="https://hajcommittee.gov.in/uploads/circulars/...">Circular-XX | Title<sup>...</sup></a></li>
+    const htmlCircularRegex = /<a[^>]*href="(https?:\/\/hajcommittee\.gov\.in\/uploads\/circulars\/[^"]+)"[^>]*>\s*Circular[- ]?(\d+)\s*[||\-–]\s*([^<]+)/gi;
 
     const foundCirculars: Array<{
       circular_number: string;
@@ -59,31 +56,17 @@ serve(async (req) => {
       source_url: string;
     }> = [];
 
-    // Try markdown-style regex
     let match;
-    while ((match = circularRegex.exec(html)) !== null) {
-      const num = match[1].trim();
-      const title = match[2].trim().replace(/\s+/g, " ");
-      const url = match[3].trim().replace(/[)"\s]+$/, "");
-      foundCirculars.push({
-        circular_number: `Circular-${num}`,
-        title,
-        source_url: url,
-      });
-    }
-
-    // Try HTML anchor regex
     while ((match = htmlCircularRegex.exec(html)) !== null) {
       const url = match[1].trim();
       const num = match[2].trim();
-      const title = match[3].trim().replace(/<[^>]*>/g, "").replace(/\s+/g, " ");
+      const title = match[3].trim().replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
       const key = `Circular-${num}`;
-      // Don't add duplicates
       if (!foundCirculars.some(c => c.circular_number === key)) {
         foundCirculars.push({
           circular_number: key,
           title,
-          source_url: url,
+          source_url: decodeURIComponent(url),
         });
       }
     }
