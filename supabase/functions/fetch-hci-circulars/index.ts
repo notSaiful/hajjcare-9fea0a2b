@@ -88,33 +88,8 @@ serve(async (req) => {
     
     console.log("Parsed circulars count:", foundCirculars.length);
 
-    const foundCirculars: Array<{
-      circular_number: string;
-      title: string;
-      source_url: string;
-    }> = [];
 
-    let match;
-    // Try first regex (handles "Circular No.XX")
-    while ((match = htmlCircularRegex.exec(html)) !== null) {
-      const url = match[1].trim();
-      const num = match[2].trim();
-      const title = match[3].trim().replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
-      const key = `Circular-${num}`;
-      if (!foundCirculars.some(c => c.circular_number === key)) {
-        foundCirculars.push({ circular_number: key, title, source_url: decodeURIComponent(url) });
-      }
-    }
-    // Try second regex (handles "Circular-XX")
-    while ((match = htmlCircularRegex2.exec(html)) !== null) {
-      const url = match[1].trim();
-      const num = match[2].trim();
-      const title = match[3].trim().replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
-      const key = `Circular-${num}`;
-      if (!foundCirculars.some(c => c.circular_number === key)) {
-        foundCirculars.push({ circular_number: key, title, source_url: decodeURIComponent(url) });
-      }
-    }
+
 
     console.log(`Found ${foundCirculars.length} circulars on HCI website`);
 
