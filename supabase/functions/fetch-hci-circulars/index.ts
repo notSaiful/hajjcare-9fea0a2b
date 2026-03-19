@@ -66,12 +66,10 @@ serve(async (req) => {
       source_url: string;
     }> = [];
 
-    // Pattern 1: Circular-XX | Title (most common)
-    const regex1 = /href="(https?:\/\/hajcommittee\.gov\.in\/uploads\/circulars\/[^"]+)"[^>]*>Circular-(\d+)\s*\|\s*([^<]+)/gi;
+    // Pattern 1: Circular-XX | Title (most common) - handles both relative and absolute URLs
+    const regex1 = /href="((?:https?:\/\/hajcommittee\.gov\.in)?\/uploads\/circulars\/[^"]+)"[^>]*>\s*Circular-(\d+)\s*\|\s*([^<]+)/gi;
     // Pattern 2: Circular No.XX
-    const regex2 = /href="(https?:\/\/hajcommittee\.gov\.in\/uploads\/circulars\/[^"]+)"[^>]*>Circular\s*No\.?\s*(\d+)[^<]*?[|\-–]\s*([^<]+)/gi;
-    // Pattern 3: Broader - just find all circular links  
-    const regex3 = /href="(https?:\/\/hajcommittee\.gov\.in\/uploads\/circulars\/[^"]+)"[^>]*>\s*Circular[- ]?(?:No\.?\s*)?(\d+)\s*[|\-–]\s*([^<]+)/gi;
+    const regex2 = /href="((?:https?:\/\/hajcommittee\.gov\.in)?\/uploads\/circulars\/[^"]+)"[^>]*>\s*Circular\s*No\.?\s*(\d+)[^<]*?[|\-–]\s*([^<]+)/gi;
 
     let match;
     for (const regex of [regex1, regex2, regex3]) {
