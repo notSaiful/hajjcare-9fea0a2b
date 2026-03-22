@@ -15,6 +15,7 @@ const OnboardingTour = lazy(() => import("@/components/OnboardingTour").then(m =
 const LocationPermissionFlow = lazy(() => import("@/components/LocationPermissionFlow").then(m => ({ default: m.LocationPermissionFlow })));
 const LocationReminderBanner = lazy(() => import("@/components/LocationReminderBanner").then(m => ({ default: m.LocationReminderBanner })));
 const HajjCountdown = lazy(() => import("@/components/HajjCountdown").then(m => ({ default: m.HajjCountdown })));
+const AppDownloadStats = lazy(() => import("@/components/AppDownloadStats").then(m => ({ default: m.AppDownloadStats })));
 
 const HomePage = () => {
   const { t, isRTL, language } = useLanguage();
