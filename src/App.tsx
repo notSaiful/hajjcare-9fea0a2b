@@ -267,13 +267,6 @@ function AppContent() {
   );
 }
 
-// Analytics tracking wrapper
-function AnalyticsWrapper({ children }: { children: React.ReactNode }) {
-  const { useAppAnalytics } = require("@/hooks/useAppAnalytics");
-  useAppAnalytics();
-  return <>{children}</>;
-}
-
 const App = () => (
   <ErrorBoundary>
     <QueryClientProvider client={queryClient}>

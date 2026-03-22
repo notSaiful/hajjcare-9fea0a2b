@@ -5,6 +5,7 @@ import { HeroSection } from "@/components/HeroSection";
 import { DashboardMenu } from "@/components/DashboardMenu";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuthContext } from "@/contexts/AuthContext";
+import { useAppAnalytics } from "@/hooks/useAppAnalytics";
 
 // Lazy-load below-fold and non-critical components to reduce TTI
 const SukoonFamilyFeature = lazy(() => import("@/components/SukoonFamilyFeature"));
