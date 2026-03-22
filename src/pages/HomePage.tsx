@@ -21,6 +21,7 @@ const HomePage = () => {
   const { t, isRTL, language } = useLanguage();
   const { isAuthenticated, loading: authLoading } = useAuthContext();
   const navigate = useNavigate();
+  useAppAnalytics();
 
   return (
     <div className="min-h-screen bg-background" dir={isRTL ? "rtl" : "ltr"}>
