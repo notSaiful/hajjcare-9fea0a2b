@@ -53,6 +53,13 @@ const HomePage = () => {
             </section>
           </Suspense>
 
+          {/* App Download Stats */}
+          <Suspense fallback={null}>
+            <section className="animate-fade-up" style={{ animationDelay: "200ms" }}>
+              <AppDownloadStats />
+            </section>
+          </Suspense>
+
           {/* Auth prompt - only show after auth resolves */}
           {!authLoading && !isAuthenticated && (
             <section
