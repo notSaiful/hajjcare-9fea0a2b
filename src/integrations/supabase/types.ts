@@ -168,6 +168,30 @@ export type Database = {
         }
         Relationships: []
       }
+      app_analytics: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          user_agent: string | null
+          visitor_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          user_agent?: string | null
+          visitor_id: string
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          user_agent?: string | null
+          visitor_id?: string
+        }
+        Relationships: []
+      }
       applicants: {
         Row: {
           age: number
@@ -2700,6 +2724,14 @@ export type Database = {
       }
     }
     Views: {
+      app_stats: {
+        Row: {
+          pwa_installs: number | null
+          total_visits: number | null
+          unique_visitors: number | null
+        }
+        Relationships: []
+      }
       applicants_status_check: {
         Row: {
           application_id: string | null

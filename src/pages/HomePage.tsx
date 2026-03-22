@@ -5,6 +5,7 @@ import { HeroSection } from "@/components/HeroSection";
 import { DashboardMenu } from "@/components/DashboardMenu";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuthContext } from "@/contexts/AuthContext";
+import { useAppAnalytics } from "@/hooks/useAppAnalytics";
 
 // Lazy-load below-fold and non-critical components to reduce TTI
 const SukoonFamilyFeature = lazy(() => import("@/components/SukoonFamilyFeature"));
@@ -14,11 +15,13 @@ const OnboardingTour = lazy(() => import("@/components/OnboardingTour").then(m =
 const LocationPermissionFlow = lazy(() => import("@/components/LocationPermissionFlow").then(m => ({ default: m.LocationPermissionFlow })));
 const LocationReminderBanner = lazy(() => import("@/components/LocationReminderBanner").then(m => ({ default: m.LocationReminderBanner })));
 const HajjCountdown = lazy(() => import("@/components/HajjCountdown").then(m => ({ default: m.HajjCountdown })));
+const AppDownloadStats = lazy(() => import("@/components/AppDownloadStats").then(m => ({ default: m.AppDownloadStats })));
 
 const HomePage = () => {
   const { t, isRTL, language } = useLanguage();
   const { isAuthenticated, loading: authLoading } = useAuthContext();
   const navigate = useNavigate();
+  useAppAnalytics();
 
   return (
     <div className="min-h-screen bg-background" dir={isRTL ? "rtl" : "ltr"}>
@@ -47,6 +50,13 @@ const HomePage = () => {
           <Suspense fallback={null}>
             <section className="animate-fade-up" style={{ animationDelay: "160ms" }}>
               <SukoonFamilyFeature />
+            </section>
+          </Suspense>
+
+          {/* App Download Stats */}
+          <Suspense fallback={null}>
+            <section className="animate-fade-up" style={{ animationDelay: "200ms" }}>
+              <AppDownloadStats />
             </section>
           </Suspense>
 
