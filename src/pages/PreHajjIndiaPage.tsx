@@ -5,8 +5,10 @@ import { Card } from "@/components/ui/card";
 import { IconCircle } from "@/components/IconCircle";
 import { PRE_HAJJ_SECTIONS } from "@/data/preHajjIndiaContent";
 import { PreHajjNotifications } from "@/components/PreHajjNotifications";
-import { ChevronLeft, ChevronRight, Building2, Landmark, GraduationCap, UserCheck, Plane, ClipboardList, LucideIcon } from "lucide-react";
+import { ChevronLeft, ChevronRight, Building2, Landmark, GraduationCap, UserCheck, Plane, ClipboardList, HelpCircle, LucideIcon } from "lucide-react";
 import { TextToSpeechButton } from "@/components/TextToSpeechButton";
+import { PRE_HAJJ_FAQ } from "@/data/preHajjFaqContent";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 const iconMap: Record<string, LucideIcon> = {
   Building2,
