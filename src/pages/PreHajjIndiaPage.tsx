@@ -5,8 +5,10 @@ import { Card } from "@/components/ui/card";
 import { IconCircle } from "@/components/IconCircle";
 import { PRE_HAJJ_SECTIONS } from "@/data/preHajjIndiaContent";
 import { PreHajjNotifications } from "@/components/PreHajjNotifications";
-import { ChevronLeft, ChevronRight, Building2, Landmark, GraduationCap, UserCheck, Plane, ClipboardList, LucideIcon } from "lucide-react";
+import { ChevronLeft, ChevronRight, Building2, Landmark, GraduationCap, UserCheck, Plane, ClipboardList, HelpCircle, LucideIcon } from "lucide-react";
 import { TextToSpeechButton } from "@/components/TextToSpeechButton";
+import { PRE_HAJJ_FAQ } from "@/data/preHajjFaqContent";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 const iconMap: Record<string, LucideIcon> = {
   Building2,
@@ -111,6 +113,41 @@ const PreHajjIndiaPage = () => {
               </Card>
             );
           })}
+        </div>
+
+        {/* FAQ Section */}
+        <div className="mt-8">
+          <div className="flex items-center gap-3 mb-4">
+            <IconCircle icon={HelpCircle} size="md" variant="primary" />
+            <h2 className="text-xl font-bold text-foreground">
+              {language === "hi" ? "अक्सर पूछे जाने वाले सवाल (FAQ)" :
+               language === "ur" ? "اکثر پوچھے جانے والے سوالات (FAQ)" :
+               language === "ar" ? "الأسئلة الشائعة" :
+               "Frequently Asked Questions (FAQ)"}
+            </h2>
+          </div>
+          <Accordion type="single" collapsible className="space-y-2">
+            {PRE_HAJJ_FAQ.map((faq, index) => (
+              <AccordionItem key={index} value={`faq-${index}`} className="border rounded-lg px-4 bg-card">
+                <AccordionTrigger className="text-left text-foreground font-medium text-sm hover:no-underline gap-2">
+                  <span className="flex-1">
+                    {faq.question[language as string] || faq.question.en}
+                  </span>
+                </AccordionTrigger>
+                <AccordionContent className="text-muted-foreground text-sm leading-relaxed pb-4">
+                  <div className="flex items-start gap-2">
+                    <p className="flex-1">{faq.answer[language as string] || faq.answer.en}</p>
+                    <TextToSpeechButton
+                      text={`${faq.question[language as string] || faq.question.en}. ${faq.answer[language as string] || faq.answer.en}`}
+                      size="icon"
+                      variant="ghost"
+                      showLabel={false}
+                    />
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
         </div>
       </div>
     </MainLayout>
