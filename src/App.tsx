@@ -5,8 +5,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from "@/contexts/LanguageContext";
-import { AuthProvider } from "@/contexts/AuthContext";
-import { LoginGate } from "@/components/LoginGate";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 // Handle dynamic import failures (stale cache, network issues)
@@ -42,7 +40,7 @@ const RulesSectionPage = lazy(() => import("./pages/RulesSectionPage"));
 const FamilyViewPage = lazy(() => import("./pages/FamilyViewPage"));
 const FamilyDashboardPage = lazy(() => import("./pages/FamilyDashboardPage"));
 const MapPage = lazy(() => import("./pages/MapPage"));
-const AuthPage = lazy(() => import("./pages/AuthPage"));
+
 const FamilyPage = lazy(() => import("./pages/FamilyPage"));
 const UmrahGuidePage = lazy(() => import("./pages/UmrahGuidePage"));
 const UmrahDetailPage = lazy(() => import("./pages/UmrahDetailPage"));
@@ -141,10 +139,6 @@ const PageLoader = memo(() => (
 ));
 PageLoader.displayName = "PageLoader";
 
-/** Helper: wrap a page that requires login (Free Umrah, Volunteer, status checks) */
-function L({ children }: { children: React.ReactNode }) {
-  return <LoginGate>{children}</LoginGate>;
-}
 
 function useCriticalPreload() {
   useEffect(() => {
@@ -172,7 +166,7 @@ function AppContent() {
     <Routes>
       {/* Public routes */}
       <Route path="/" element={<LandingPage />} />
-      <Route path="/auth" element={<AuthPage />} />
+      
 
       {/* Public routes — open without login */}
       <Route path="/home" element={<HomePage />} />
@@ -209,18 +203,18 @@ function AppContent() {
       <Route path="/food-guide" element={<FoodGuidePage />} />
       <Route path="/food" element={<FoodGuidePage />} />
       <Route path="/help" element={<HealthHelpPage />} />
-      <Route path="/coordinator" element={<L><CoordinatorDashboardPage /></L>} />
-      <Route path="/medical-alerts" element={<L><MedicalAlertsPage /></L>} />
-      <Route path="/admin/roles" element={<L><AdminRolesPage /></L>} />
-      <Route path="/admin/metrics" element={<L><EmergencyMetricsPage /></L>} />
-      <Route path="/inspector" element={<L><InspectorDashboardPage /></L>} />
+      <Route path="/coordinator" element={<CoordinatorDashboardPage />} />
+      <Route path="/medical-alerts" element={<MedicalAlertsPage />} />
+      <Route path="/admin/roles" element={<AdminRolesPage />} />
+      <Route path="/admin/metrics" element={<EmergencyMetricsPage />} />
+      <Route path="/inspector" element={<InspectorDashboardPage />} />
       <Route path="/haj-inspectors" element={<HajInspectorsDirectoryPage />} />
       <Route path="/inspector-directory" element={<InspectorDirectoryPage />} />
-      <Route path="/admin/inspectors" element={<L><AdminInspectorsPage /></L>} />
+      <Route path="/admin/inspectors" element={<AdminInspectorsPage />} />
       <Route path="/inspector-group" element={<InspectorGroupManagePage />} />
         <Route path="/haj-inspector-register" element={<InspectorRegisterPage />} />
-        <Route path="/join-group" element={<L><HajiJoinGroupPage /></L>} />
-        <Route path="/my-hajj-group" element={<L><HajiGroupDashboardPage /></L>} />
+        <Route path="/join-group" element={<HajiJoinGroupPage />} />
+        <Route path="/my-hajj-group" element={<HajiGroupDashboardPage />} />
       <Route path="/shi-training" element={<ShiTrainingPage />} />
       <Route path="/hajj-progress" element={<FamilyProgressPage />} />
       <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
@@ -234,34 +228,33 @@ function AppContent() {
       <Route path="/payment" element={<PaymentPage />} />
       <Route path="/billing-history" element={<BillingHistoryPage />} />
       <Route path="/rewards" element={<RewardsPage />} />
-      <Route path="/admin/promo" element={<L><AdminPromoPage /></L>} />
+      <Route path="/admin/promo" element={<AdminPromoPage />} />
       <Route path="/sukoon-rd" element={<SukoonRdPage />} />
-      <Route path="/admin/operators" element={<L><AdminOperatorsPage /></L>} />
-      <Route path="/admin/fraud-alerts" element={<L><AdminFraudAlertsPage /></L>} />
-      <Route path="/admin/ai-dashboard" element={<L><AdminAIDashboardPage /></L>} />
-      <Route path="/admin/sukoon-metrics" element={<L><SukoonTrackingMetricsPage /></L>} />
-      <Route path="/admin/analytics" element={<L><AdminAnalyticsPage /></L>} />
+      <Route path="/admin/operators" element={<AdminOperatorsPage />} />
+      <Route path="/admin/fraud-alerts" element={<AdminFraudAlertsPage />} />
+      <Route path="/admin/ai-dashboard" element={<AdminAIDashboardPage />} />
+      <Route path="/admin/sukoon-metrics" element={<SukoonTrackingMetricsPage />} />
+      <Route path="/admin/analytics" element={<AdminAnalyticsPage />} />
       <Route path="/hajj-faq" element={<HajjFaqChatPage />} />
       <Route path="/hajj-wizard" element={<HajjQueryWizardPage />} />
-      <Route path="/command-center" element={<L><ResponderCommandPage /></L>} />
-      <Route path="/national-command" element={<L><NationalCommandPage /></L>} />
+      <Route path="/command-center" element={<ResponderCommandPage />} />
+      <Route path="/national-command" element={<NationalCommandPage />} />
       <Route path="/deployment-roadmap" element={<DeploymentRoadmapPage />} />
-      <Route path="/admin/compliance" element={<L><ComplianceDashboardPage /></L>} />
-      <Route path="/admin/whatsapp-api" element={<L><AdminWhatsAppApiPage /></L>} />
+      <Route path="/admin/compliance" element={<ComplianceDashboardPage />} />
+      <Route path="/admin/whatsapp-api" element={<AdminWhatsAppApiPage />} />
       <Route path="/error/forbidden" element={<ForbiddenPage />} />
       <Route path="/error/rate-limited" element={<ForbiddenPage />} />
-      <Route path="/security-settings" element={<L><SecuritySettingsPage /></L>} />
+      <Route path="/security-settings" element={<SecuritySettingsPage />} />
       <Route path="/circulars" element={<CircularsPage />} />
-      <Route path="/admin/circulars" element={<L><AdminCircularsPage /></L>} />
+      <Route path="/admin/circulars" element={<AdminCircularsPage />} />
 
-      {/* Login-gated routes — show dialog if not authenticated */}
-      <Route path="/free-umrah" element={<L><FreeUmrahApplyPage /></L>} />
-      <Route path="/free-umrah/status" element={<L><FreeUmrahStatusPage /></L>} />
-      <Route path="/admin/free-umrah" element={<L><FreeUmrahAdminPage /></L>} />
-      <Route path="/volunteer" element={<L><VolunteerPage /></L>} />
-      <Route path="/admin/volunteers" element={<L><VolunteerDashboardPage /></L>} />
-      <Route path="/admin/panel" element={<L><AdminControlPanelPage /></L>} />
-      <Route path="/profile" element={<L><ProfilePage /></L>} />
+      <Route path="/free-umrah" element={<FreeUmrahApplyPage />} />
+      <Route path="/free-umrah/status" element={<FreeUmrahStatusPage />} />
+      <Route path="/admin/free-umrah" element={<FreeUmrahAdminPage />} />
+      <Route path="/volunteer" element={<VolunteerPage />} />
+      <Route path="/admin/volunteers" element={<VolunteerDashboardPage />} />
+      <Route path="/admin/panel" element={<AdminControlPanelPage />} />
+      <Route path="/profile" element={<ProfilePage />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
@@ -271,17 +264,15 @@ const App = () => (
   <ErrorBoundary>
     <QueryClientProvider client={queryClient}>
       <LanguageProvider>
-        <AuthProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <Suspense fallback={<PageLoader />}>
-                <AppContent />
-              </Suspense>
-            </BrowserRouter>
-          </TooltipProvider>
-        </AuthProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Suspense fallback={<PageLoader />}>
+              <AppContent />
+            </Suspense>
+          </BrowserRouter>
+        </TooltipProvider>
       </LanguageProvider>
     </QueryClientProvider>
   </ErrorBoundary>
