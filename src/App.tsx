@@ -40,7 +40,7 @@ const RulesSectionPage = lazy(() => import("./pages/RulesSectionPage"));
 const FamilyViewPage = lazy(() => import("./pages/FamilyViewPage"));
 const FamilyDashboardPage = lazy(() => import("./pages/FamilyDashboardPage"));
 const MapPage = lazy(() => import("./pages/MapPage"));
-const AuthPage = lazy(() => import("./pages/AuthPage"));
+
 const FamilyPage = lazy(() => import("./pages/FamilyPage"));
 const UmrahGuidePage = lazy(() => import("./pages/UmrahGuidePage"));
 const UmrahDetailPage = lazy(() => import("./pages/UmrahDetailPage"));
