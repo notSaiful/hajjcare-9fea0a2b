@@ -1,5 +1,5 @@
 import { lazy, Suspense } from "react";
-import { useNavigate } from "react-router-dom";
+
 import { SimpleHeader } from "@/components/SimpleHeader";
 import { HeroSection } from "@/components/HeroSection";
 import { DashboardMenu } from "@/components/DashboardMenu";
