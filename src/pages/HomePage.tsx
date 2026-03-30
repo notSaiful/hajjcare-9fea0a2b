@@ -4,7 +4,6 @@ import { SimpleHeader } from "@/components/SimpleHeader";
 import { HeroSection } from "@/components/HeroSection";
 import { DashboardMenu } from "@/components/DashboardMenu";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useAuthContext } from "@/contexts/AuthContext";
 import { useAppAnalytics } from "@/hooks/useAppAnalytics";
 
 // Lazy-load below-fold and non-critical components to reduce TTI
@@ -19,8 +18,6 @@ const AppDownloadStats = lazy(() => import("@/components/AppDownloadStats").then
 
 const HomePage = () => {
   const { t, isRTL, language } = useLanguage();
-  const { isAuthenticated, loading: authLoading } = useAuthContext();
-  const navigate = useNavigate();
   useAppAnalytics();
 
   return (
@@ -60,20 +57,6 @@ const HomePage = () => {
             </section>
           </Suspense>
 
-          {/* Auth prompt - only show after auth resolves */}
-          {!authLoading && !isAuthenticated && (
-            <section
-              className="text-center pt-2 animate-fade-up"
-              style={{ animationDelay: "240ms" }}
-            >
-              <button
-                onClick={() => navigate("/auth")}
-                className="text-sm text-primary hover:text-primary/80 underline underline-offset-4 transition-colors duration-300"
-              >
-                {t("signIn")}
-              </button>
-            </section>
-          )}
         </div>
       </main>
 
