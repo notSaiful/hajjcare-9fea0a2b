@@ -337,6 +337,25 @@ export const menuSections: MenuSection[] = [
         colorClass: "icon-emerald",
       },
       {
+        id: "hajj-buildings",
+        icon: Building,
+        label: {
+          en: "Hajj Buildings",
+          ar: "مباني الحج",
+          ur: "حج عمارات",
+          hi: "हज भवन",
+          ta: "ஹஜ் கட்டிடங்கள்",
+          te: "హజ్ భవనాలు",
+          mr: "हज इमारती",
+          bn: "হজ ভবন",
+          or: "ହଜ ବିଲ୍ଡିଂ",
+          ml: "ഹജ്ജ് കെട്ടിടങ്ങൾ",
+          pa: "ਹੱਜ ਬਿਲਡਿੰਗ",
+        },
+        route: "/hajj-buildings",
+        colorClass: "icon-amber",
+      },
+      {
         id: "umrah",
         icon: Moon,
         label: {
