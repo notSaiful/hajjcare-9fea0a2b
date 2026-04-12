@@ -42,12 +42,12 @@ serve(async (req) => {
     const ELEVENLABS_API_KEY = Deno.env.get("ELEVENLABS_API_KEY");
     const ELEVENLABS_AGENT_ID = Deno.env.get("ELEVENLABS_AGENT_ID");
     
-    if (!ELEVENLABS_API_KEY) {
-      throw new Error("ELEVENLABS_API_KEY is not configured");
-    }
-
-    if (!ELEVENLABS_AGENT_ID) {
-      throw new Error("ELEVENLABS_AGENT_ID is not configured");
+    if (!ELEVENLABS_API_KEY || !ELEVENLABS_AGENT_ID) {
+      console.error("Missing ElevenLabs configuration");
+      return new Response(
+        JSON.stringify({ error: "Service temporarily unavailable" }),
+        { status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
     console.log("Fetching ElevenLabs conversation token for user:", user.id);
@@ -95,7 +95,7 @@ serve(async (req) => {
   } catch (error) {
     console.error("Error in elevenlabs-agent-token:", error);
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : "Unknown error" }),
+      JSON.stringify({ error: "Internal server error" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
