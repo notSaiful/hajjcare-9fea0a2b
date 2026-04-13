@@ -169,7 +169,7 @@ function AppContent() {
     <Routes>
       {/* Public routes */}
       <Route path="/" element={<LandingPage />} />
-      
+      <Route path="/auth" element={<AuthPage />} />
 
       {/* Public routes — open without login */}
       <Route path="/home" element={<HomePage />} />
