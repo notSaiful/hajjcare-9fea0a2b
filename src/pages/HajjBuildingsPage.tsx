@@ -214,24 +214,37 @@ const HajjBuildingsPage = () => {
           </p>
           <div className="grid gap-2">
             {makkahBuildingZones.map((z) => (
-              <button
+              <div
                 key={z.id}
-                className="flex items-center gap-3 bg-card border border-border rounded-xl p-3 text-left hover:shadow-sm transition-shadow w-full"
-                onClick={() => {
-                  setBuildingNumber(String(z.buildingStart));
-                  setSearchedNumber(z.buildingStart);
-                  setFoundZone(z);
-                }}
+                className="flex items-center gap-3 bg-card border border-border rounded-xl p-3 hover:shadow-sm transition-shadow w-full"
               >
-                <div className={`w-3 h-8 rounded-full ${z.color} flex-shrink-0`} />
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium text-sm leading-tight">{getZoneName(z)}</p>
-                  <p className="text-xs text-muted-foreground">{getAreaName(z)}</p>
-                </div>
-                <Badge variant="outline" className="text-xs font-mono flex-shrink-0">
-                  {z.buildingStart}–{z.buildingEnd}
-                </Badge>
-              </button>
+                <button
+                  className="flex items-center gap-3 flex-1 min-w-0 text-left"
+                  onClick={() => {
+                    setBuildingNumber(String(z.buildingStart));
+                    setSearchedNumber(z.buildingStart);
+                    setFoundZone(z);
+                  }}
+                >
+                  <div className={`w-3 h-8 rounded-full ${z.color} flex-shrink-0`} />
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-sm leading-tight">{getZoneName(z)}</p>
+                    <p className="text-xs text-muted-foreground">{getAreaName(z)}</p>
+                  </div>
+                  <Badge variant="outline" className="text-xs font-mono flex-shrink-0">
+                    {z.buildingStart}–{z.buildingEnd}
+                  </Badge>
+                </button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-8 w-8 flex-shrink-0 rounded-lg"
+                  onClick={() => openNavigationToZone(z)}
+                  title={t.openMap}
+                >
+                  <Navigation className="w-3.5 h-3.5 text-primary" />
+                </Button>
+              </div>
             ))}
           </div>
         </section>
