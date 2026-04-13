@@ -3,7 +3,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { SimpleHeader } from "@/components/SimpleHeader";
 import { hajjBuildings, emergencyContacts, type HajjBuilding } from "@/data/hajjBuildingsData";
 import { makkahBuildingZones, findZoneByBuildingNumber, type BuildingZone } from "@/data/hajjBuildingZones";
-import { Building, MapPin, Phone, Search, Stethoscope, Home, Landmark, Hash, Navigation, AlertCircle } from "lucide-react";
+import { Building, MapPin, Phone, Search, Stethoscope, Home, Landmark, Hash, Navigation, AlertCircle, ExternalLink } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -33,6 +33,7 @@ const HajjBuildingsPage = () => {
       findBtn: "Find Location", yourBuilding: "Your Building", zone: "Zone", area: "Area",
       buildingRange: "Building Range", notFound: "Building number not found. Please enter a number between 101-1880.",
       allZones: "All Makkah Building Zones", zoneNote: "Building numbers 101-1880 are Zone IDs, not actual building count.",
+      navigate: "Navigate", openMap: "Open in Google Maps",
     },
     hi: {
       title: "भारतीय हज भवन", subtitle: "मक्का और मदीना 2026", makkah: "मक्का", madinah: "मदीना", all: "सभी",
@@ -41,6 +42,7 @@ const HajjBuildingsPage = () => {
       findBtn: "लोकेशन खोजें", yourBuilding: "आपकी बिल्डिंग", zone: "ज़ोन", area: "इलाका",
       buildingRange: "बिल्डिंग रेंज", notFound: "बिल्डिंग नंबर नहीं मिला। कृपया 101-1880 के बीच नंबर डालें।",
       allZones: "मक्का के सभी बिल्डिंग ज़ोन", zoneNote: "बिल्डिंग नंबर 101-1880 सिर्फ ज़ोन पहचान के लिए हैं, बिल्डिंग की तादाद नहीं।",
+      navigate: "नेविगेट करें", openMap: "गूगल मैप में खोलें",
     },
     ur: {
       title: "انڈین حج عمارات", subtitle: "مکہ اور مدینہ 2026", makkah: "مکہ", madinah: "مدینہ", all: "سب",
@@ -49,6 +51,7 @@ const HajjBuildingsPage = () => {
       findBtn: "لوکیشن تلاش کریں", yourBuilding: "آپکی بلڈنگ", zone: "زون", area: "علاقہ",
       buildingRange: "بلڈنگ رینج", notFound: "بلڈنگ نمبر نہیں ملا۔ براہ کرم 101-1880 کے درمیان نمبر درج کریں۔",
       allZones: "مکہ کے تمام بلڈنگ زون", zoneNote: "بلڈنگ نمبر 101-1880 صرف زون کی پہچان کے لیے ہیں، عمارتوں کی تعداد نہیں۔",
+      navigate: "نیویگیٹ", openMap: "گوگل میپ میں کھولیں",
     },
     ar: {
       title: "مباني الحج الهندية", subtitle: "مكة والمدينة 2026", makkah: "مكة", madinah: "المدينة", all: "الكل",
@@ -57,10 +60,16 @@ const HajjBuildingsPage = () => {
       findBtn: "ابحث عن الموقع", yourBuilding: "مبناك", zone: "المنطقة", area: "الحي",
       buildingRange: "نطاق المباني", notFound: "رقم المبنى غير موجود. الرجاء إدخال رقم بين 101-1880.",
       allZones: "جميع مناطق مباني مكة", zoneNote: "أرقام المباني 101-1880 هي أرقام تعريف المنطقة فقط.",
+      navigate: "انتقال", openMap: "افتح في خرائط جوجل",
     },
   };
 
   const t = labels[lang as keyof typeof labels] || labels.en;
+
+  const openNavigationToZone = (zone: BuildingZone) => {
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${zone.lat},${zone.lng}&travelmode=walking`;
+    window.open(url, "_blank");
+  };
 
   const handleFindBuilding = () => {
     const num = parseInt(buildingNumber, 10);
@@ -154,7 +163,7 @@ const HajjBuildingsPage = () => {
 
           {/* Result */}
           {searchedNumber !== null && foundZone && (
-            <div className="bg-background border border-primary/30 rounded-xl p-4 space-y-2 animate-in fade-in slide-in-from-top-2">
+            <div className="bg-background border border-primary/30 rounded-xl p-4 space-y-3 animate-in fade-in slide-in-from-top-2">
               <div className="flex items-center gap-2">
                 <div className={`w-4 h-4 rounded-full ${foundZone.color}`} />
                 <span className="font-bold text-lg text-primary">#{searchedNumber}</span>
@@ -173,6 +182,15 @@ const HajjBuildingsPage = () => {
                 <MapPin className="w-3 h-3" />
                 {t.buildingRange}: {foundZone.buildingStart} – {foundZone.buildingEnd}
               </div>
+              <Button
+                onClick={() => openNavigationToZone(foundZone)}
+                className="w-full rounded-xl gap-2"
+                size="lg"
+              >
+                <Navigation className="w-4 h-4" />
+                {t.navigate}
+                <ExternalLink className="w-3 h-3 ml-auto opacity-60" />
+              </Button>
             </div>
           )}
 
@@ -196,24 +214,37 @@ const HajjBuildingsPage = () => {
           </p>
           <div className="grid gap-2">
             {makkahBuildingZones.map((z) => (
-              <button
+              <div
                 key={z.id}
-                className="flex items-center gap-3 bg-card border border-border rounded-xl p-3 text-left hover:shadow-sm transition-shadow w-full"
-                onClick={() => {
-                  setBuildingNumber(String(z.buildingStart));
-                  setSearchedNumber(z.buildingStart);
-                  setFoundZone(z);
-                }}
+                className="flex items-center gap-3 bg-card border border-border rounded-xl p-3 hover:shadow-sm transition-shadow w-full"
               >
-                <div className={`w-3 h-8 rounded-full ${z.color} flex-shrink-0`} />
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium text-sm leading-tight">{getZoneName(z)}</p>
-                  <p className="text-xs text-muted-foreground">{getAreaName(z)}</p>
-                </div>
-                <Badge variant="outline" className="text-xs font-mono flex-shrink-0">
-                  {z.buildingStart}–{z.buildingEnd}
-                </Badge>
-              </button>
+                <button
+                  className="flex items-center gap-3 flex-1 min-w-0 text-left"
+                  onClick={() => {
+                    setBuildingNumber(String(z.buildingStart));
+                    setSearchedNumber(z.buildingStart);
+                    setFoundZone(z);
+                  }}
+                >
+                  <div className={`w-3 h-8 rounded-full ${z.color} flex-shrink-0`} />
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-sm leading-tight">{getZoneName(z)}</p>
+                    <p className="text-xs text-muted-foreground">{getAreaName(z)}</p>
+                  </div>
+                  <Badge variant="outline" className="text-xs font-mono flex-shrink-0">
+                    {z.buildingStart}–{z.buildingEnd}
+                  </Badge>
+                </button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-8 w-8 flex-shrink-0 rounded-lg"
+                  onClick={() => openNavigationToZone(z)}
+                  title={t.openMap}
+                >
+                  <Navigation className="w-3.5 h-3.5 text-primary" />
+                </Button>
+              </div>
             ))}
           </div>
         </section>

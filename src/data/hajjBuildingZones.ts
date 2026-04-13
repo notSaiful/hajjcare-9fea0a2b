@@ -10,6 +10,8 @@ export interface BuildingZone {
   landmark: string;
   landmarkHi: string;
   color: string;
+  lat: number;
+  lng: number;
   isSpecial?: boolean;
   specialNote?: string;
 }
@@ -27,6 +29,8 @@ export const makkahBuildingZones: BuildingZone[] = [
     landmark: "Old Aziziya Area",
     landmarkHi: "पुरानी अज़ीज़िया इलाका",
     color: "bg-orange-500",
+    lat: 21.3991,
+    lng: 39.8375,
   },
   {
     id: "main-road-aziziyah",
@@ -40,6 +44,8 @@ export const makkahBuildingZones: BuildingZone[] = [
     landmark: "Main Road Aziziyah, New Location",
     landmarkHi: "मेन रोड अज़ीज़िया, नई लोकेशन",
     color: "bg-blue-500",
+    lat: 21.4015,
+    lng: 39.8350,
   },
   {
     id: "qatari-masjid",
@@ -53,6 +59,8 @@ export const makkahBuildingZones: BuildingZone[] = [
     landmark: "Near Qatari Masjid, New Location",
     landmarkHi: "कतरी मस्जिद के पास, नई लोकेशन",
     color: "bg-teal-500",
+    lat: 21.4030,
+    lng: 39.8340,
   },
   {
     id: "near-haram",
@@ -66,6 +74,8 @@ export const makkahBuildingZones: BuildingZone[] = [
     landmark: "Walking distance to Masjid al-Haram",
     landmarkHi: "मस्जिद अल-हरम से पैदल दूरी",
     color: "bg-green-600",
+    lat: 21.4195,
+    lng: 39.8265,
   },
   {
     id: "king-abdullah-kubri",
@@ -79,6 +89,8 @@ export const makkahBuildingZones: BuildingZone[] = [
     landmark: "King Abdullah Bridge to Jamarat Road (Mina Road)",
     landmarkHi: "किंग अब्दुल्ला ब्रिज से जमारात रोड (मीना रोड)",
     color: "bg-purple-500",
+    lat: 21.4135,
+    lng: 39.8730,
   },
   {
     id: "near-jamarat-bus",
@@ -92,6 +104,8 @@ export const makkahBuildingZones: BuildingZone[] = [
     landmark: "Near Jamarat Bus Station",
     landmarkHi: "जमारात बस स्टेशन के पास",
     color: "bg-pink-500",
+    lat: 21.4170,
+    lng: 39.8700,
   },
   {
     id: "al-khansa",
@@ -105,6 +119,8 @@ export const makkahBuildingZones: BuildingZone[] = [
     landmark: "Masjid Jinn Road",
     landmarkHi: "मस्जिद जिन्न रोड",
     color: "bg-yellow-600",
+    lat: 21.4260,
+    lng: 39.8255,
   },
   {
     id: "mahbas-al-jinn",
@@ -118,6 +134,8 @@ export const makkahBuildingZones: BuildingZone[] = [
     landmark: "Ajyad Road",
     landmarkHi: "अज्याद रोड",
     color: "bg-red-500",
+    lat: 21.4240,
+    lng: 39.8275,
   },
   {
     id: "rusefa-ibrahim",
@@ -131,6 +149,8 @@ export const makkahBuildingZones: BuildingZone[] = [
     landmark: "Ibrahim Khalil Road",
     landmarkHi: "इब्राहीम खलील रोड",
     color: "bg-indigo-500",
+    lat: 21.4150,
+    lng: 39.8230,
   },
   {
     id: "kudai-parking",
@@ -144,6 +164,8 @@ export const makkahBuildingZones: BuildingZone[] = [
     landmark: "Kudai Parking Area",
     landmarkHi: "कुदई पार्किंग इलाका",
     color: "bg-cyan-600",
+    lat: 21.4050,
+    lng: 39.8200,
   },
   {
     id: "batha-quresh",
@@ -157,6 +179,8 @@ export const makkahBuildingZones: BuildingZone[] = [
     landmark: "Batha Quresh Area",
     landmarkHi: "बठा कुरेश इलाका",
     color: "bg-lime-600",
+    lat: 21.4100,
+    lng: 39.8180,
   },
   {
     id: "jarwal-jed",
@@ -170,6 +194,8 @@ export const makkahBuildingZones: BuildingZone[] = [
     landmark: "Jarwal, Jeddah-Makkah Road",
     landmarkHi: "जरवल, जेद्दा-मक्का रोड",
     color: "bg-amber-600",
+    lat: 21.3920,
+    lng: 39.8100,
   },
   {
     id: "al-diyafah",
@@ -183,6 +209,8 @@ export const makkahBuildingZones: BuildingZone[] = [
     landmark: "Al Diyafah Area",
     landmarkHi: "अल दियाफ़ा इलाका",
     color: "bg-rose-500",
+    lat: 21.3950,
+    lng: 39.8150,
   },
   {
     id: "rusefah",
@@ -196,6 +224,8 @@ export const makkahBuildingZones: BuildingZone[] = [
     landmark: "Rusefah Area",
     landmarkHi: "रुसेफ़ा इलाका",
     color: "bg-violet-500",
+    lat: 21.4160,
+    lng: 39.8210,
   },
   {
     id: "al-naseem",
@@ -209,6 +239,8 @@ export const makkahBuildingZones: BuildingZone[] = [
     landmark: "Al Naseem Area",
     landmarkHi: "अल नसीम इलाका",
     color: "bg-emerald-600",
+    lat: 21.3880,
+    lng: 39.8320,
   },
 ];
 
