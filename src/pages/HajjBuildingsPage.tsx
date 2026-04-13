@@ -3,7 +3,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { SimpleHeader } from "@/components/SimpleHeader";
 import { hajjBuildings, emergencyContacts, type HajjBuilding } from "@/data/hajjBuildingsData";
 import { makkahBuildingZones, findZoneByBuildingNumber, type BuildingZone } from "@/data/hajjBuildingZones";
-import { Building, MapPin, Phone, Search, Stethoscope, Home, Landmark, Hash, Navigation, AlertCircle } from "lucide-react";
+import { Building, MapPin, Phone, Search, Stethoscope, Home, Landmark, Hash, Navigation, AlertCircle, ExternalLink } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -33,6 +33,7 @@ const HajjBuildingsPage = () => {
       findBtn: "Find Location", yourBuilding: "Your Building", zone: "Zone", area: "Area",
       buildingRange: "Building Range", notFound: "Building number not found. Please enter a number between 101-1880.",
       allZones: "All Makkah Building Zones", zoneNote: "Building numbers 101-1880 are Zone IDs, not actual building count.",
+      navigate: "Navigate", openMap: "Open in Google Maps",
     },
     hi: {
       title: "भारतीय हज भवन", subtitle: "मक्का और मदीना 2026", makkah: "मक्का", madinah: "मदीना", all: "सभी",
@@ -41,6 +42,7 @@ const HajjBuildingsPage = () => {
       findBtn: "लोकेशन खोजें", yourBuilding: "आपकी बिल्डिंग", zone: "ज़ोन", area: "इलाका",
       buildingRange: "बिल्डिंग रेंज", notFound: "बिल्डिंग नंबर नहीं मिला। कृपया 101-1880 के बीच नंबर डालें।",
       allZones: "मक्का के सभी बिल्डिंग ज़ोन", zoneNote: "बिल्डिंग नंबर 101-1880 सिर्फ ज़ोन पहचान के लिए हैं, बिल्डिंग की तादाद नहीं।",
+      navigate: "नेविगेट करें", openMap: "गूगल मैप में खोलें",
     },
     ur: {
       title: "انڈین حج عمارات", subtitle: "مکہ اور مدینہ 2026", makkah: "مکہ", madinah: "مدینہ", all: "سب",
@@ -49,6 +51,7 @@ const HajjBuildingsPage = () => {
       findBtn: "لوکیشن تلاش کریں", yourBuilding: "آپکی بلڈنگ", zone: "زون", area: "علاقہ",
       buildingRange: "بلڈنگ رینج", notFound: "بلڈنگ نمبر نہیں ملا۔ براہ کرم 101-1880 کے درمیان نمبر درج کریں۔",
       allZones: "مکہ کے تمام بلڈنگ زون", zoneNote: "بلڈنگ نمبر 101-1880 صرف زون کی پہچان کے لیے ہیں، عمارتوں کی تعداد نہیں۔",
+      navigate: "نیویگیٹ", openMap: "گوگل میپ میں کھولیں",
     },
     ar: {
       title: "مباني الحج الهندية", subtitle: "مكة والمدينة 2026", makkah: "مكة", madinah: "المدينة", all: "الكل",
@@ -57,6 +60,7 @@ const HajjBuildingsPage = () => {
       findBtn: "ابحث عن الموقع", yourBuilding: "مبناك", zone: "المنطقة", area: "الحي",
       buildingRange: "نطاق المباني", notFound: "رقم المبنى غير موجود. الرجاء إدخال رقم بين 101-1880.",
       allZones: "جميع مناطق مباني مكة", zoneNote: "أرقام المباني 101-1880 هي أرقام تعريف المنطقة فقط.",
+      navigate: "انتقال", openMap: "افتح في خرائط جوجل",
     },
   };
 
