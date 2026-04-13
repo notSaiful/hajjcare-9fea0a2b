@@ -163,7 +163,7 @@ const HajjBuildingsPage = () => {
 
           {/* Result */}
           {searchedNumber !== null && foundZone && (
-            <div className="bg-background border border-primary/30 rounded-xl p-4 space-y-2 animate-in fade-in slide-in-from-top-2">
+            <div className="bg-background border border-primary/30 rounded-xl p-4 space-y-3 animate-in fade-in slide-in-from-top-2">
               <div className="flex items-center gap-2">
                 <div className={`w-4 h-4 rounded-full ${foundZone.color}`} />
                 <span className="font-bold text-lg text-primary">#{searchedNumber}</span>
@@ -182,6 +182,15 @@ const HajjBuildingsPage = () => {
                 <MapPin className="w-3 h-3" />
                 {t.buildingRange}: {foundZone.buildingStart} – {foundZone.buildingEnd}
               </div>
+              <Button
+                onClick={() => openNavigationToZone(foundZone)}
+                className="w-full rounded-xl gap-2"
+                size="lg"
+              >
+                <Navigation className="w-4 h-4" />
+                {t.navigate}
+                <ExternalLink className="w-3 h-3 ml-auto opacity-60" />
+              </Button>
             </div>
           )}
 
