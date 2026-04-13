@@ -66,6 +66,11 @@ const HajjBuildingsPage = () => {
 
   const t = labels[lang as keyof typeof labels] || labels.en;
 
+  const openNavigationToZone = (zone: BuildingZone) => {
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${zone.lat},${zone.lng}&travelmode=walking`;
+    window.open(url, "_blank");
+  };
+
   const handleFindBuilding = () => {
     const num = parseInt(buildingNumber, 10);
     if (isNaN(num)) { setFoundZone(null); setSearchedNumber(null); return; }
