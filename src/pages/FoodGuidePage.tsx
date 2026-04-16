@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { MainLayout } from "@/components/MainLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { ArrowLeft, MapPin, Clock, Utensils, Heart, Store, Calendar, Search, ExternalLink, Navigation } from "lucide-react";
+import { ArrowLeft, MapPin, Clock, Utensils, Heart, Store, Calendar, Search, ExternalLink, Navigation, AlertTriangle, Info, ChefHat } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -44,6 +44,8 @@ const FoodGuidePage = () => {
       asr: "Asr Snack",
       iftar: "Iftar/Dinner",
       lateNight: "Late Night",
+      foodAwareness: "Food Rules",
+      foodAwarenessSubtitle: "Important food rules from Haj Committee of India for Hajj 2026",
     },
     ar: {
       title: "دليل الطعام",
@@ -72,6 +74,8 @@ const FoodGuidePage = () => {
       asr: "وجبة العصر",
       iftar: "الإفطار/العشاء",
       lateNight: "وجبة متأخرة",
+      foodAwareness: "قواعد الطعام",
+      foodAwarenessSubtitle: "قواعد الطعام المهمة من لجنة الحج الهندية لحج 2026",
     },
     ur: {
       title: "کھانے کی گائیڈ",
@@ -100,6 +104,8 @@ const FoodGuidePage = () => {
       asr: "عصر کا ناشتہ",
       iftar: "افطار/رات کا کھانا",
       lateNight: "رات کا کھانا",
+      foodAwareness: "کھانے کے قواعد",
+      foodAwarenessSubtitle: "حج 2026 کے لیے ہج کمیٹی آف انڈیا کے اہم کھانے کے قواعد",
     },
     hi: {
       title: "खाद्य गाइड",
@@ -128,6 +134,8 @@ const FoodGuidePage = () => {
       asr: "अस्र का नाश्ता",
       iftar: "इफ्तार/रात का खाना",
       lateNight: "देर रात का खाना",
+      foodAwareness: "खाने के नियम",
+      foodAwarenessSubtitle: "हज 2026 के लिए हज कमेटी ऑफ इंडिया के महत्वपूर्ण खाने के नियम",
     },
     ta: {
       title: "உணவு வழிகாட்டி",
@@ -156,6 +164,8 @@ const FoodGuidePage = () => {
       asr: "அஸர் சிற்றுண்டி",
       iftar: "இஃப்தார்/இரவு உணவு",
       lateNight: "இரவு நேர உணவு",
+      foodAwareness: "உணவு விதிகள்",
+      foodAwarenessSubtitle: "ஹஜ் 2026 க்கான ஹஜ் கமிட்டி ஆஃப் இந்தியாவின் முக்கிய உணவு விதிகள்",
     },
     te: {
       title: "ఆహార గైడ్",
@@ -184,6 +194,8 @@ const FoodGuidePage = () => {
       asr: "అస్ర్ స్నాక్",
       iftar: "ఇఫ్తార్/డిన్నర్",
       lateNight: "రాత్రి భోజనం",
+      foodAwareness: "ఆహార నియమాలు",
+      foodAwarenessSubtitle: "హజ్ 2026 కోసం హజ్ కమిటీ ఆఫ్ ఇండియా ముఖ్యమైన ఆహార నియమాలు",
     },
     mr: {
       title: "अन्न मार्गदर्शक",
@@ -212,6 +224,8 @@ const FoodGuidePage = () => {
       asr: "अस्र नाश्ता",
       iftar: "इफ्तार/रात्रीचे जेवण",
       lateNight: "उशिरा रात्रीचे जेवण",
+      foodAwareness: "अन्न नियम",
+      foodAwarenessSubtitle: "हज 2026 साठी हज कमिटी ऑफ इंडियाचे महत्त्वाचे अन्न नियम",
     },
     bn: {
       title: "খাদ্য গাইড",
@@ -240,6 +254,8 @@ const FoodGuidePage = () => {
       asr: "আসর স্ন্যাক",
       iftar: "ইফতার/রাতের খাবার",
       lateNight: "রাতের খাবার",
+      foodAwareness: "খাবারের নিয়ম",
+      foodAwarenessSubtitle: "হজ 2026 এর জন্য হজ কমিটি অফ ইন্ডিয়ার গুরুত্বপূর্ণ খাবারের নিয়ম",
     },
     or: {
       title: "ଖାଦ୍ୟ ଗାଇଡ୍",
@@ -268,6 +284,8 @@ const FoodGuidePage = () => {
       asr: "ଆସର ସ୍ନାକ୍ସ",
       iftar: "ଇଫ୍ତାର/ରାତ୍ରି ଭୋଜନ",
       lateNight: "ରାତ୍ରି ଭୋଜନ",
+      foodAwareness: "ଖାଦ୍ୟ ନିୟମ",
+      foodAwarenessSubtitle: "ହଜ 2026 ପାଇଁ ହଜ କମିଟି ଅଫ ଇଣ୍ଡିଆର ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ ଖାଦ୍ୟ ନିୟମ",
     },
     ml: {
       title: "ഭക്ഷണ ഗൈഡ്",
@@ -296,6 +314,8 @@ const FoodGuidePage = () => {
       asr: "അസർ സ്നാക്ക്",
       iftar: "ഇഫ്താർ/അത്താഴം",
       lateNight: "രാത്രി ഭക്ഷണം",
+      foodAwareness: "ഭക്ഷണ നിയമങ്ങൾ",
+      foodAwarenessSubtitle: "ഹജ് 2026 ന് ഹജ് കമ്മിറ്റി ഓഫ് ഇന്ത്യയുടെ പ്രധാന ഭക്ഷണ നിയമങ്ങൾ",
     },
     pa: {
       title: "ਭੋਜਨ ਗਾਈਡ",
@@ -324,6 +344,8 @@ const FoodGuidePage = () => {
       asr: "ਅਸਰ ਸਨੈਕ",
       iftar: "ਇਫ਼ਤਾਰ/ਰਾਤ ਦਾ ਖਾਣਾ",
       lateNight: "ਦੇਰ ਰਾਤ ਦਾ ਖਾਣਾ",
+      foodAwareness: "ਭੋਜਨ ਨਿਯਮ",
+      foodAwarenessSubtitle: "ਹੱਜ 2026 ਲਈ ਹੱਜ ਕਮੇਟੀ ਆਫ਼ ਇੰਡੀਆ ਦੇ ਮਹੱਤਵਪੂਰਨ ਭੋਜਨ ਨਿਯਮ",
     },
   };
 
@@ -668,8 +690,12 @@ const FoodGuidePage = () => {
         </div>
 
         <div className="container mx-auto px-4 pb-8">
-          <Tabs defaultValue="schedule" className="w-full">
-            <TabsList className="w-full grid grid-cols-4 mb-6">
+          <Tabs defaultValue="awareness" className="w-full">
+            <TabsList className="w-full grid grid-cols-5 mb-6">
+              <TabsTrigger value="awareness" className="text-xs sm:text-sm gap-1">
+                <AlertTriangle className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="hidden sm:inline">{t.foodAwareness}</span>
+              </TabsTrigger>
               <TabsTrigger value="schedule" className="text-xs sm:text-sm gap-1">
                 <Calendar className="w-3 h-3 sm:w-4 sm:h-4" />
                 <span className="hidden sm:inline">{t.mealSchedule}</span>
@@ -687,6 +713,178 @@ const FoodGuidePage = () => {
                 <span className="hidden sm:inline">{t.restaurantFinder}</span>
               </TabsTrigger>
             </TabsList>
+
+            {/* Food Awareness Tab */}
+            <TabsContent value="awareness" className="space-y-4">
+              <Card className="border-destructive/30 bg-destructive/5">
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center gap-2 text-destructive">
+                    <AlertTriangle className="w-5 h-5" />
+                    {t.foodAwareness} — Hajj 2026
+                  </CardTitle>
+                  <p className="text-sm text-muted-foreground">{t.foodAwarenessSubtitle}</p>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {/* Rule 10: Cooking Prohibited */}
+                  <div className="p-4 bg-destructive/10 rounded-xl border border-destructive/20">
+                    <div className="flex items-start gap-3">
+                      <span className="text-3xl">🚫</span>
+                      <div>
+                        <h3 className="font-bold text-foreground text-base">
+                          {language === "ur" ? "مکہ اور مدینہ میں کھانا بنانا سخت منع ہے" :
+                           language === "hi" ? "मक्का और मदीना में खाना बनाना सख्त मना है" :
+                           language === "ar" ? "الطبخ ممنوع منعاً باتاً في مكة والمدينة" :
+                           "Cooking is strictly prohibited in Makkah & Madinah"}
+                        </h3>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          {language === "ur" ? "بلڈنگ میں کسی بھی قسم کا چولہا، ہیٹر یا کوکنگ ڈیوائس استعمال کرنا منع ہے۔ آگ لگنے کا خطرہ ہے۔" :
+                           language === "hi" ? "बिल्डिंग में किसी भी तरह का चूल्हा, हीटर या कुकिंग डिवाइस इस्तेमाल करना मना है। आग लगने का खतरा है।" :
+                           language === "ar" ? "يمنع استخدام أي موقد أو سخان أو جهاز طبخ في المبنى. خطر الحريق." :
+                           "No stove, heater or cooking device is allowed inside buildings. Fire hazard risk."}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Rule 11: Catering Companies */}
+                  <div className="p-4 bg-muted/50 rounded-xl border border-border">
+                    <div className="flex items-start gap-3">
+                      <span className="text-3xl">🍱</span>
+                      <div>
+                        <h3 className="font-bold text-foreground text-base">
+                          {language === "ur" ? "مکہ اور مدینہ میں 80-100 کیٹرنگ کمپنیاں دستیاب ہیں" :
+                           language === "hi" ? "मक्का और मदीना में 80-100 कैटरिंग कंपनियां उपलब्ध हैं" :
+                           language === "ar" ? "80-100 شركة تموين متاحة في مكة والمدينة" :
+                           "80-100 catering companies available in Makkah & Madinah"}
+                        </h3>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          {language === "ur" ? "حج کمیٹی کے ذریعے منظور شدہ کیٹرنگ کمپنیاں کھانا فراہم کرتی ہیں۔" :
+                           language === "hi" ? "हज कमेटी द्वारा अनुमोदित कैटरिंग कंपनियां खाना प्रदान करती हैं।" :
+                           language === "ar" ? "شركات التموين المعتمدة من لجنة الحج توفر الوجبات." :
+                           "Approved catering companies provide meals as authorized by Haj Committee."}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Rule 13: Catering List from Inspector */}
+                  <div className="p-4 bg-muted/50 rounded-xl border border-border">
+                    <div className="flex items-start gap-3">
+                      <span className="text-3xl">📋</span>
+                      <div>
+                        <h3 className="font-bold text-foreground text-base">
+                          {language === "ur" ? "کیٹرنگ کمپنیوں کی فہرست راج حج انسپکٹر سے ملے گی" :
+                           language === "hi" ? "कैटरिंग कंपनियों की सूची राज्य हज इंस्पेक्टर से मिलेगी" :
+                           language === "ar" ? "ستحصل على قائمة شركات التموين من مفتش الحج" :
+                           "Catering company list will be provided by State Haj Inspector"}
+                        </h3>
+                        <ul className="text-sm text-muted-foreground mt-2 space-y-1">
+                          <li className="flex items-start gap-2">
+                            <span>✅</span>
+                            {language === "ur" ? "مینیو پر بات چیت کریں" :
+                             language === "hi" ? "मेन्यू पर चर्चा करें" :
+                             "Discuss menu options"}
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span>✅</span>
+                            {language === "ur" ? "فوڈ سپلائی و پیمنٹ نظام سمجھیں" :
+                             language === "hi" ? "फूड सप्लाई व पेमेंट नियम समझें" :
+                             "Understand food supply & payment rules"}
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span>✅</span>
+                            {language === "ur" ? "مطمئن ہونے کے بعد سروس لیں" :
+                             language === "hi" ? "संतुष्ट होने के बाद सेवा लें" :
+                             "Avail service only after satisfaction"}
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Rule 14: Alternative - Outside Food */}
+                  <div className="p-4 bg-primary/5 rounded-xl border border-primary/20">
+                    <div className="flex items-start gap-3">
+                      <span className="text-3xl">🏪</span>
+                      <div>
+                        <h3 className="font-bold text-foreground text-base">
+                          {language === "ur" ? "اگر کیٹرنگ نہیں لینا چاہتے" :
+                           language === "hi" ? "अगर कैटरिंग नहीं लेना चाहते" :
+                           language === "ar" ? "إذا كنت لا تريد خدمة التموين" :
+                           "If you don't want catering service"}
+                        </h3>
+                        <ul className="text-sm text-muted-foreground mt-2 space-y-1">
+                          <li className="flex items-start gap-2">
+                            <span>✅</span>
+                            {language === "ur" ? "باہر کے ہوٹل / فوڈ کورٹ سے کھانا لے سکتے ہیں" :
+                             language === "hi" ? "बाहर के होटल / फूड कोर्ट से खाना ले सकते हैं" :
+                             "You can eat from outside hotels / food courts"}
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Rule 12: State-wise Building Info */}
+                  <div className="p-4 bg-muted/50 rounded-xl border border-border">
+                    <div className="flex items-start gap-3">
+                      <span className="text-3xl">🏢</span>
+                      <div>
+                        <h3 className="font-bold text-foreground text-base">
+                          {language === "ur" ? "ریاستوار حاجیوں کے ٹھہرنے کی جانکاری" :
+                           language === "hi" ? "राज्यवार हाजियों के ठहरने की जानकारी" :
+                           language === "ar" ? "معلومات إقامة الحجاج حسب الولاية" :
+                           "State-wise pilgrim accommodation info"}
+                        </h3>
+                        <ul className="text-sm text-muted-foreground mt-2 space-y-1">
+                          <li className="flex items-start gap-2">
+                            <span>📍</span>
+                            {language === "ur" ? "بلڈنگ نمبر، ایریا کی معلومات دی جائے گی" :
+                             language === "hi" ? "बिल्डिंग नंबर, एरिया की जानकारी दी जाएगी" :
+                             "Building number & area details will be provided"}
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span>🍽️</span>
+                            {language === "ur" ? "پرائیویٹ کیٹررز بھی دستیاب ہوں گے" :
+                             language === "hi" ? "प्राइवेट कैटरर्स भी उपलब्ध होंगे" :
+                             "Private caterers will also be available"}
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Madinah specific */}
+                  <div className="p-4 bg-muted/50 rounded-xl border border-border">
+                    <div className="flex items-start gap-3">
+                      <span className="text-3xl">🕌</span>
+                      <div>
+                        <h3 className="font-bold text-foreground text-base">
+                          {language === "ur" ? "مدینہ میں کھانے کی سہولت" :
+                           language === "hi" ? "मदीना में खाने की सुविधा" :
+                           language === "ar" ? "تسهيلات الطعام في المدينة" :
+                           "Food facilities in Madinah"}
+                        </h3>
+                        <ul className="text-sm text-muted-foreground mt-2 space-y-1">
+                          <li className="flex items-start gap-2">
+                            <span>✅</span>
+                            {language === "ur" ? "زیادہ تر بلڈنگز مرکزیہ ایریا میں ہیں" :
+                             language === "hi" ? "ज्यादातर बिल्डिंग्स मरकज़िया एरिया में हैं" :
+                             "Most buildings are in Markaziya area"}
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span>✅</span>
+                            {language === "ur" ? "مسجد نبوی پیدل فاصلے پر — 5 وقت کی نماز آسانی سے ادا ہوگی" :
+                             language === "hi" ? "मस्जिद-ए-नबवी पैदल दूरी पर — 5 वक्त की नमाज़ आसानी से अदा होगी" :
+                             "Masjid-e-Nabawi is walking distance — 5 daily prayers easily accessible"}
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
 
             {/* Meal Schedule Tab */}
             <TabsContent value="schedule" className="space-y-4">
