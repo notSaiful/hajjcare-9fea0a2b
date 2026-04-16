@@ -104,6 +104,8 @@ const FoodGuidePage = () => {
       asr: "عصر کا ناشتہ",
       iftar: "افطار/رات کا کھانا",
       lateNight: "رات کا کھانا",
+      foodAwareness: "کھانے کے قواعد",
+      foodAwarenessSubtitle: "حج 2026 کے لیے ہج کمیٹی آف انڈیا کے اہم کھانے کے قواعد",
     },
     hi: {
       title: "खाद्य गाइड",
@@ -132,6 +134,8 @@ const FoodGuidePage = () => {
       asr: "अस्र का नाश्ता",
       iftar: "इफ्तार/रात का खाना",
       lateNight: "देर रात का खाना",
+      foodAwareness: "खाने के नियम",
+      foodAwarenessSubtitle: "हज 2026 के लिए हज कमेटी ऑफ इंडिया के महत्वपूर्ण खाने के नियम",
     },
     ta: {
       title: "உணவு வழிகாட்டி",
@@ -160,6 +164,8 @@ const FoodGuidePage = () => {
       asr: "அஸர் சிற்றுண்டி",
       iftar: "இஃப்தார்/இரவு உணவு",
       lateNight: "இரவு நேர உணவு",
+      foodAwareness: "உணவு விதிகள்",
+      foodAwarenessSubtitle: "ஹஜ் 2026 க்கான ஹஜ் கமிட்டி ஆஃப் இந்தியாவின் முக்கிய உணவு விதிகள்",
     },
     te: {
       title: "ఆహార గైడ్",
@@ -188,6 +194,8 @@ const FoodGuidePage = () => {
       asr: "అస్ర్ స్నాక్",
       iftar: "ఇఫ్తార్/డిన్నర్",
       lateNight: "రాత్రి భోజనం",
+      foodAwareness: "ఆహార నియమాలు",
+      foodAwarenessSubtitle: "హజ్ 2026 కోసం హజ్ కమిటీ ఆఫ్ ఇండియా ముఖ్యమైన ఆహార నియమాలు",
     },
     mr: {
       title: "अन्न मार्गदर्शक",
@@ -216,6 +224,8 @@ const FoodGuidePage = () => {
       asr: "अस्र नाश्ता",
       iftar: "इफ्तार/रात्रीचे जेवण",
       lateNight: "उशिरा रात्रीचे जेवण",
+      foodAwareness: "अन्न नियम",
+      foodAwarenessSubtitle: "हज 2026 साठी हज कमिटी ऑफ इंडियाचे महत्त्वाचे अन्न नियम",
     },
     bn: {
       title: "খাদ্য গাইড",
@@ -244,6 +254,8 @@ const FoodGuidePage = () => {
       asr: "আসর স্ন্যাক",
       iftar: "ইফতার/রাতের খাবার",
       lateNight: "রাতের খাবার",
+      foodAwareness: "খাবারের নিয়ম",
+      foodAwarenessSubtitle: "হজ 2026 এর জন্য হজ কমিটি অফ ইন্ডিয়ার গুরুত্বপূর্ণ খাবারের নিয়ম",
     },
     or: {
       title: "ଖାଦ୍ୟ ଗାଇଡ୍",
@@ -272,6 +284,8 @@ const FoodGuidePage = () => {
       asr: "ଆସର ସ୍ନାକ୍ସ",
       iftar: "ଇଫ୍ତାର/ରାତ୍ରି ଭୋଜନ",
       lateNight: "ରାତ୍ରି ଭୋଜନ",
+      foodAwareness: "ଖାଦ୍ୟ ନିୟମ",
+      foodAwarenessSubtitle: "ହଜ 2026 ପାଇଁ ହଜ କମିଟି ଅଫ ଇଣ୍ଡିଆର ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ ଖାଦ୍ୟ ନିୟମ",
     },
     ml: {
       title: "ഭക്ഷണ ഗൈഡ്",
@@ -300,6 +314,8 @@ const FoodGuidePage = () => {
       asr: "അസർ സ്നാക്ക്",
       iftar: "ഇഫ്താർ/അത്താഴം",
       lateNight: "രാത്രി ഭക്ഷണം",
+      foodAwareness: "ഭക്ഷണ നിയമങ്ങൾ",
+      foodAwarenessSubtitle: "ഹജ് 2026 ന് ഹജ് കമ്മിറ്റി ഓഫ് ഇന്ത്യയുടെ പ്രധാന ഭക്ഷണ നിയമങ്ങൾ",
     },
     pa: {
       title: "ਭੋਜਨ ਗਾਈਡ",
@@ -328,6 +344,8 @@ const FoodGuidePage = () => {
       asr: "ਅਸਰ ਸਨੈਕ",
       iftar: "ਇਫ਼ਤਾਰ/ਰਾਤ ਦਾ ਖਾਣਾ",
       lateNight: "ਦੇਰ ਰਾਤ ਦਾ ਖਾਣਾ",
+      foodAwareness: "ਭੋਜਨ ਨਿਯਮ",
+      foodAwarenessSubtitle: "ਹੱਜ 2026 ਲਈ ਹੱਜ ਕਮੇਟੀ ਆਫ਼ ਇੰਡੀਆ ਦੇ ਮਹੱਤਵਪੂਰਨ ਭੋਜਨ ਨਿਯਮ",
     },
   };
 
