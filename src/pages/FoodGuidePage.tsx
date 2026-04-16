@@ -690,8 +690,12 @@ const FoodGuidePage = () => {
         </div>
 
         <div className="container mx-auto px-4 pb-8">
-          <Tabs defaultValue="schedule" className="w-full">
-            <TabsList className="w-full grid grid-cols-4 mb-6">
+          <Tabs defaultValue="awareness" className="w-full">
+            <TabsList className="w-full grid grid-cols-5 mb-6">
+              <TabsTrigger value="awareness" className="text-xs sm:text-sm gap-1">
+                <AlertTriangle className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="hidden sm:inline">{t.foodAwareness}</span>
+              </TabsTrigger>
               <TabsTrigger value="schedule" className="text-xs sm:text-sm gap-1">
                 <Calendar className="w-3 h-3 sm:w-4 sm:h-4" />
                 <span className="hidden sm:inline">{t.mealSchedule}</span>
