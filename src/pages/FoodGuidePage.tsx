@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { MainLayout } from "@/components/MainLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { ArrowLeft, MapPin, Clock, Utensils, Heart, Store, Calendar, Search, ExternalLink, Navigation } from "lucide-react";
+import { ArrowLeft, MapPin, Clock, Utensils, Heart, Store, Calendar, Search, ExternalLink, Navigation, AlertTriangle, Info, ChefHat } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
