@@ -74,6 +74,8 @@ const FoodGuidePage = () => {
       asr: "وجبة العصر",
       iftar: "الإفطار/العشاء",
       lateNight: "وجبة متأخرة",
+      foodAwareness: "قواعد الطعام",
+      foodAwarenessSubtitle: "قواعد الطعام المهمة من لجنة الحج الهندية لحج 2026",
     },
     ur: {
       title: "کھانے کی گائیڈ",
