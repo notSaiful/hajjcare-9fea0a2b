@@ -44,6 +44,8 @@ const FoodGuidePage = () => {
       asr: "Asr Snack",
       iftar: "Iftar/Dinner",
       lateNight: "Late Night",
+      foodAwareness: "Food Rules",
+      foodAwarenessSubtitle: "Important food rules from Haj Committee of India for Hajj 2026",
     },
     ar: {
       title: "دليل الطعام",
