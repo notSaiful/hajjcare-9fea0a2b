@@ -16,6 +16,12 @@ export interface GovtService {
     email?: string;
     additionalNumbers?: { label: LocalizedString; number: string }[];
   };
+  mapLinks?: {
+    name: LocalizedString;
+    address: LocalizedString;
+    mapUrl: string;
+    phone?: string;
+  }[];
 }
 
 export const govtServicesPageContent = {
