@@ -16,6 +16,12 @@ export interface GovtService {
     email?: string;
     additionalNumbers?: { label: LocalizedString; number: string }[];
   };
+  mapLinks?: {
+    name: LocalizedString;
+    address: LocalizedString;
+    mapUrl: string;
+    phone?: string;
+  }[];
 }
 
 export const govtServicesPageContent = {
@@ -928,6 +934,168 @@ export const govtServices: GovtService[] = [
         ar: "ضع ملصقات على جميع ممتلكاتك مع الاسم والاتصال",
         ur: "اپنی تمام اشیاء پر نام اور رابطہ نمبر لکھیں",
         hi: "अपनी सभी वस्तुओं पर नाम और संपर्क लिखें",
+      } as LocalizedString,
+    ],
+  },
+  {
+    id: "haj-mission-office",
+    icon: "building",
+    title: {
+      en: "Indian Haj Mission Office (Makkah & Madinah)",
+      ar: "مكتب بعثة الحج الهندية (مكة والمدينة)",
+      ur: "ہندوستانی حج مشن آفس (مکہ اور مدینہ)",
+      hi: "भारतीय हज मिशन कार्यालय (मक्का और मदीना)",
+      ta: "இந்திய ஹஜ் மிஷன் அலுவலகம் (மக்கா மற்றும் மதீனா)",
+      te: "ఇండియన్ హజ్ మిషన్ కార్యాలయం (మక్కా & మదీనా)",
+      mr: "भारतीय हज मिशन कार्यालय (मक्का आणि मदीना)",
+      bn: "ভারতীয় হজ মিশন অফিস (মক্কা ও মদিনা)",
+      ml: "ഇന്ത്യൻ ഹജ്ജ് മിഷൻ ഓഫീസ് (മക്കയും മദീനയും)",
+      pa: "ਭਾਰਤੀ ਹੱਜ ਮਿਸ਼ਨ ਦਫ਼ਤਰ (ਮੱਕਾ ਅਤੇ ਮਦੀਨਾ)",
+      or: "ଭାରତୀୟ ହଜ ମିଶନ୍ ଅଫିସ୍ (ମକ୍କା ଏବଂ ମଦୀନା)",
+    } as LocalizedString,
+    description: {
+      en: "Official Government of India Haj Mission offices in Makkah and Madinah. Tap the map link to navigate directly via Google Maps for documents, complaints, lost passport, medical aid, and emergency support.",
+      ar: "مكاتب بعثة الحج الرسمية لحكومة الهند في مكة والمدينة. انقر على رابط الخريطة للتوجه مباشرة عبر خرائط جوجل.",
+      ur: "حکومت ہند کے سرکاری حج مشن آفسز مکہ اور مدینہ میں۔ دستاویزات، شکایات، گمشدہ پاسپورٹ، طبی امداد اور ایمرجنسی مدد کے لیے گوگل میپس پر براہ راست نیویگیٹ کرنے کے لیے میپ لنک پر ٹیپ کریں۔",
+      hi: "मक्का और मदीना में भारत सरकार के आधिकारिक हज मिशन कार्यालय। दस्तावेज़, शिकायत, खोया पासपोर्ट, चिकित्सा सहायता और आपातकालीन सहायता के लिए सीधे Google Maps पर नेविगेट करने के लिए मैप लिंक पर टैप करें।",
+    } as LocalizedString,
+    provider: "india",
+    eligibility: {
+      en: "All Indian Hajj pilgrims",
+      ar: "جميع حجاج الهند",
+      ur: "تمام ہندوستانی حج زائرین",
+      hi: "सभी भारतीय हज यात्री",
+    } as LocalizedString,
+    howToAccess: [
+      {
+        en: "Tap the Google Maps link below for the city you are in",
+        ar: "انقر على رابط خرائط جوجل أدناه للمدينة التي تتواجد فيها",
+        ur: "اپنے شہر کے لیے نیچے دیے گئے گوگل میپس لنک پر ٹیپ کریں",
+        hi: "जिस शहर में आप हैं उसके लिए नीचे दिए गए Google Maps लिंक पर टैप करें",
+      } as LocalizedString,
+      {
+        en: "Carry your passport, visa, and Haj ID card",
+        ar: "احمل جواز سفرك وتأشيرتك وبطاقة الحج",
+        ur: "اپنا پاسپورٹ، ویزا اور حج آئی ڈی کارڈ ساتھ رکھیں",
+        hi: "अपना पासपोर्ट, वीज़ा और हज आईडी कार्ड साथ रखें",
+      } as LocalizedString,
+      {
+        en: "Office hours: Generally 9 AM – 9 PM (24/7 emergency desk)",
+        ar: "ساعات العمل: 9 صباحاً - 9 مساءً (طوارئ على مدار الساعة)",
+        ur: "آفس اوقات: 9 صبح تا 9 شام (24/7 ایمرجنسی ڈیسک)",
+        hi: "कार्यालय समय: सुबह 9 बजे – रात 9 बजे (24/7 आपातकालीन डेस्क)",
+      } as LocalizedString,
+      {
+        en: "For urgent help, call the Indian Hajj Mission helpline first",
+        ar: "للمساعدة العاجلة، اتصل بخط المساعدة لبعثة الحج الهندية أولاً",
+        ur: "فوری مدد کے لیے، پہلے ہندوستانی حج مشن ہیلپ لائن پر کال کریں",
+        hi: "तत्काल मदद के लिए, पहले भारतीय हज मिशन हेल्पलाइन पर कॉल करें",
+      } as LocalizedString,
+    ],
+    locations: [
+      {
+        en: "Makkah Office: Indian Consulate Building, Aziziyah, Makkah",
+        ar: "مكتب مكة: مبنى القنصلية الهندية، العزيزية، مكة المكرمة",
+        ur: "مکہ آفس: انڈین قونصلیٹ بلڈنگ، عزیزیہ، مکہ مکرمہ",
+        hi: "मक्का कार्यालय: भारतीय वाणिज्य दूतावास भवन, अज़ीज़िया, मक्का",
+      } as LocalizedString,
+      {
+        en: "Madinah Office: Near Markaziyah area, close to Masjid an-Nabawi",
+        ar: "مكتب المدينة: بالقرب من المنطقة المركزية، قريب من المسجد النبوي",
+        ur: "مدینہ آفس: مرکزیہ علاقے کے قریب، مسجد نبوی کے نزدیک",
+        hi: "मदीना कार्यालय: मरकज़िया क्षेत्र के पास, मस्जिद अन-नबवी के नज़दीक",
+      } as LocalizedString,
+    ],
+    contactInfo: {
+      helpline: "+966-59-8889-400",
+      helplineLabel: {
+        en: "Indian Hajj Mission 24/7 Helpline",
+        ar: "خط مساعدة بعثة الحج الهندية على مدار الساعة",
+        ur: "ہندوستانی حج مشن 24/7 ہیلپ لائن",
+        hi: "भारतीय हज मिशन 24/7 हेल्पलाइन",
+      } as LocalizedString,
+      additionalNumbers: [
+        {
+          label: {
+            en: "Makkah Control Room",
+            ar: "غرفة تحكم مكة",
+            ur: "مکہ کنٹرول روم",
+            hi: "मक्का कंट्रोल रूम",
+          } as LocalizedString,
+          number: "+966-12-542-0019",
+        },
+        {
+          label: {
+            en: "Madinah Control Room",
+            ar: "غرفة تحكم المدينة",
+            ur: "مدینہ کنٹرول روم",
+            hi: "मदीना कंट्रोल रूम",
+          } as LocalizedString,
+          number: "+966-14-822-0033",
+        },
+        {
+          label: {
+            en: "Saudi Emergency",
+            ar: "الطوارئ السعودية",
+            ur: "سعودی ایمرجنسی",
+            hi: "सऊदी आपातकाल",
+          } as LocalizedString,
+          number: "911",
+        },
+      ],
+    },
+    mapLinks: [
+      {
+        name: {
+          en: "Indian Haj Mission – Makkah",
+          ar: "بعثة الحج الهندية - مكة",
+          ur: "انڈین حج مشن - مکہ",
+          hi: "भारतीय हज मिशन – मक्का",
+        } as LocalizedString,
+        address: {
+          en: "Aziziyah, Makkah, Saudi Arabia",
+          ar: "العزيزية، مكة المكرمة، المملكة العربية السعودية",
+          ur: "عزیزیہ، مکہ مکرمہ، سعودی عرب",
+          hi: "अज़ीज़िया, मक्का, सऊदी अरब",
+        } as LocalizedString,
+        mapUrl: "https://www.google.com/maps/search/?api=1&query=Indian+Haj+Mission+Makkah+Aziziyah",
+        phone: "+966-12-542-0019",
+      },
+      {
+        name: {
+          en: "Indian Haj Mission – Madinah",
+          ar: "بعثة الحج الهندية - المدينة المنورة",
+          ur: "انڈین حج مشن - مدینہ منورہ",
+          hi: "भारतीय हज मिशन – मदीना",
+        } as LocalizedString,
+        address: {
+          en: "Markaziyah, Madinah, Saudi Arabia",
+          ar: "المركزية، المدينة المنورة، المملكة العربية السعودية",
+          ur: "مرکزیہ، مدینہ منورہ، سعودی عرب",
+          hi: "मरकज़िया, मदीना, सऊदी अरब",
+        } as LocalizedString,
+        mapUrl: "https://www.google.com/maps/search/?api=1&query=Indian+Haj+Mission+Madinah+Markaziyah",
+        phone: "+966-14-822-0033",
+      },
+    ],
+    importantNotes: [
+      {
+        en: "Always carry a copy of your passport when visiting the office",
+        ar: "احمل دائماً نسخة من جواز سفرك عند زيارة المكتب",
+        ur: "آفس جاتے وقت ہمیشہ اپنے پاسپورٹ کی کاپی ساتھ رکھیں",
+        hi: "कार्यालय जाते समय हमेशा अपने पासपोर्ट की कॉपी साथ रखें",
+      } as LocalizedString,
+      {
+        en: "For lost passport, report immediately to the Mission office",
+        ar: "في حالة فقدان جواز السفر، أبلغ على الفور مكتب البعثة",
+        ur: "پاسپورٹ گم ہونے پر فوراً مشن آفس کو اطلاع دیں",
+        hi: "पासपोर्ट खो जाने पर तुरंत मिशन कार्यालय को सूचित करें",
+      } as LocalizedString,
+      {
+        en: "Free service – never pay any agent or middleman",
+        ar: "خدمة مجانية - لا تدفع أبداً لأي وكيل أو وسيط",
+        ur: "مفت سروس - کبھی کسی ایجنٹ یا بیچوان کو ادائیگی نہ کریں",
+        hi: "मुफ्त सेवा – किसी भी एजेंट या बिचौलिए को कभी भुगतान न करें",
       } as LocalizedString,
     ],
   },
