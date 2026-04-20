@@ -276,6 +276,53 @@ function ServiceCard({ service }: { service: GovtService }) {
           </div>
         )}
 
+        {/* Map Links - Direct Google Maps Navigation */}
+        {service.mapLinks && service.mapLinks.length > 0 && (
+          <div className="p-3 rounded-lg bg-green-500/5 border border-green-500/20 space-y-3">
+            <p className="text-xs font-medium text-green-700 flex items-center gap-2">
+              <MapPin className="h-3.5 w-3.5" />
+              {language === "ur" ? "گوگل میپس پر لوکیشن" :
+                language === "hi" ? "Google Maps पर स्थान" :
+                language === "ar" ? "الموقع على خرائط جوجل" :
+                "Location on Google Maps"}
+            </p>
+            {service.mapLinks.map((loc, idx) => (
+              <div key={idx} className="bg-background/60 rounded-md p-2.5 border border-green-500/10">
+                <p className="text-sm font-semibold text-foreground mb-0.5">
+                  {getLocalizedText(loc.name, language)}
+                </p>
+                <p className="text-xs text-muted-foreground mb-2">
+                  {getLocalizedText(loc.address, language)}
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  <a
+                    href={loc.mapUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-md bg-green-600 text-white hover:bg-green-700 transition-colors"
+                  >
+                    <MapPin className="h-3 w-3" />
+                    {language === "ur" ? "نیویگیٹ کریں" :
+                      language === "hi" ? "नेविगेट करें" :
+                      language === "ar" ? "التنقل" :
+                      "Navigate"}
+                  </a>
+                  {loc.phone && (
+                    <a
+                      href={`tel:${loc.phone}`}
+                      className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-md bg-blue-500/10 text-blue-700 hover:bg-blue-500/20 transition-colors"
+                      dir="ltr"
+                    >
+                      <PhoneCall className="h-3 w-3" />
+                      {loc.phone}
+                    </a>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
         {/* Need Help Button */}
         <Button 
           variant="outline" 
