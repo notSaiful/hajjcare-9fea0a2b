@@ -245,6 +245,37 @@ function ServiceCard({ service }: { service: GovtService }) {
           </div>
         )}
 
+        {/* Contact Information */}
+        {service.contactInfo && (
+          <div className="p-3 rounded-lg bg-blue-500/5 border border-blue-500/20">
+            <p className="text-xs font-medium text-blue-700 mb-2 flex items-center gap-2">
+              <PhoneCall className="h-3.5 w-3.5" />
+              {service.contactInfo.helplineLabel ? getLocalizedText(service.contactInfo.helplineLabel, language) : "हेल्पलाइन / Helpline"}
+            </p>
+            <div className="space-y-2">
+              {service.contactInfo.helpline && (
+                <a
+                  href={`tel:${service.contactInfo.helpline}`}
+                  className="flex items-center gap-2 text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors"
+                >
+                  <span className="bg-blue-500/10 px-2 py-1 rounded text-xs">24/7</span>
+                  <span dir="ltr">{service.contactInfo.helpline}</span>
+                </a>
+              )}
+              {service.contactInfo.additionalNumbers?.map((numberInfo, idx) => (
+                <a
+                  key={idx}
+                  href={`tel:${numberInfo.number}`}
+                  className="flex items-center justify-between text-sm text-blue-600 hover:text-blue-700 transition-colors"
+                >
+                  <span className="text-xs text-muted-foreground">{getLocalizedText(numberInfo.label, language)}</span>
+                  <span dir="ltr" className="font-medium">{numberInfo.number}</span>
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Need Help Button */}
         <Button 
           variant="outline" 
