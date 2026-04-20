@@ -3,6 +3,7 @@ import { lazy, Suspense } from "react";
 import { SimpleHeader } from "@/components/SimpleHeader";
 import { HeroSection } from "@/components/HeroSection";
 import { DashboardMenu } from "@/components/DashboardMenu";
+import { EmergencyMarqueeBar } from "@/components/EmergencyMarqueeBar";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAppAnalytics } from "@/hooks/useAppAnalytics";
 
@@ -22,6 +23,9 @@ const HomePage = () => {
 
   return (
     <div className="min-h-screen bg-background" dir={isRTL ? "rtl" : "ltr"}>
+      {/* Persistent emergency contacts ticker — always visible at top */}
+      <EmergencyMarqueeBar />
+
       {/* Header */}
       <SimpleHeader />
 

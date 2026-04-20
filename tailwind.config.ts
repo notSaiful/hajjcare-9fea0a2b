@@ -264,6 +264,10 @@ export default {
   				'50%': {
   					opacity: '0.88'
   				}
+  			},
+  			marquee: {
+  				'0%': { transform: 'translateX(0%)' },
+  				'100%': { transform: 'translateX(-50%)' }
   			}
   		},
   		animation: {
@@ -275,7 +279,8 @@ export default {
   			'ambient-shift': 'ambient-shift 30s ease-in-out infinite',
   			'ambient-glow': 'ambient-glow 25s ease-in-out infinite',
   			'ambient-drift': 'ambient-drift 40s ease-in-out infinite',
-  			'pulse-status': 'pulse-status 4s ease-in-out infinite'
+  			'pulse-status': 'pulse-status 4s ease-in-out infinite',
+  			marquee: 'marquee linear infinite'
   		}
   	}
   },
