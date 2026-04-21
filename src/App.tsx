@@ -120,6 +120,7 @@ const AdminInspectorsPage = lazy(() => import("./pages/AdminInspectorsPage"));
 const HajiJoinGroupPage = lazy(() => import("./pages/HajiJoinGroupPage"));
 const HajiGroupDashboardPage = lazy(() => import("./pages/HajiGroupDashboardPage"));
 const ProfilePage = lazy(() => import("./pages/ProfilePage"));
+const LostAndFoundPage = lazy(() => import("./pages/LostAndFoundPage"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -259,6 +260,7 @@ function AppContent() {
       <Route path="/admin/volunteers" element={<VolunteerDashboardPage />} />
       <Route path="/admin/panel" element={<AdminControlPanelPage />} />
       <Route path="/profile" element={<ProfilePage />} />
+      <Route path="/lost-and-found" element={<LostAndFoundPage />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

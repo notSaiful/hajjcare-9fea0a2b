@@ -32,6 +32,7 @@ import {
   Wallet,
   Sparkles,
   Bell,
+  Search,
   LucideIcon,
 } from "lucide-react";
 
@@ -430,6 +431,25 @@ export const menuSections: MenuSection[] = [
         },
         route: "/dua",
         colorClass: "icon-plum",
+      },
+      {
+        id: "lost-and-found",
+        icon: Search,
+        label: {
+          en: "Lost & Found",
+          ar: "المفقودات",
+          ur: "گم شدہ اور پایا گیا",
+          hi: "खोया और पाया",
+          ta: "தொலைந்தது & கிடைத்தது",
+          te: "పోగొట్టుకున్నవి",
+          mr: "हरवले व सापडले",
+          bn: "হারানো ও প্রাপ্ত",
+          or: "ହଜିଲା ଓ ମିଳିଲା",
+          ml: "നഷ്ടപ്പെട്ടത്",
+          pa: "ਗੁਆਚਿਆ ਅਤੇ ਮਿਲਿਆ",
+        },
+        route: "/lost-and-found",
+        colorClass: "icon-coral",
       },
     ],
   },
