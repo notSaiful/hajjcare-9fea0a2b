@@ -246,14 +246,11 @@ export function useInspectorPilgrims() {
     if (group) fetchPilgrims();
   }, [group, fetchPilgrims]);
 
-  // Realtime
+  // Polling fallback (Realtime disabled for inspector_pilgrims due to sensitive PII)
   useEffect(() => {
     if (!group) return;
-    const channel = supabase
-      .channel('inspector-pilgrims-rt')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'inspector_pilgrims', filter: `group_id=eq.${group.id}` }, () => fetchPilgrims())
-      .subscribe();
-    return () => { supabase.removeChannel(channel); };
+    const interval = setInterval(() => { fetchPilgrims(); }, 30000);
+    return () => clearInterval(interval);
   }, [group, fetchPilgrims]);
 
   return {
