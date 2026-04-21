@@ -32,6 +32,7 @@ import {
   Wallet,
   Sparkles,
   Bell,
+  Search,
   LucideIcon,
 } from "lucide-react";
 
