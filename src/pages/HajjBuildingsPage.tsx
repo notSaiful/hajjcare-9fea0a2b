@@ -23,6 +23,7 @@ const HajjBuildingsPage = () => {
   const [buildingNumber, setBuildingNumber] = useState("");
   const [foundZone, setFoundZone] = useState<BuildingZone | null>(null);
   const [searchedNumber, setSearchedNumber] = useState<number | null>(null);
+  const [hotelSearch, setHotelSearch] = useState("");
 
   const lang = (language === "hi" || language === "ur" || language === "ar") ? language : "en";
 
