@@ -1819,6 +1819,78 @@ export type Database = {
           },
         ]
       }
+      lost_and_found: {
+        Row: {
+          created_at: string
+          id: string
+          item_description: string | null
+          item_name: string | null
+          language: string | null
+          last_seen_at: string | null
+          last_seen_location: string
+          notes: string | null
+          person_age: number | null
+          person_description: string | null
+          person_gender: string | null
+          person_name: string | null
+          photo_url: string | null
+          report_type: string
+          reporter_mobile: string
+          reporter_name: string
+          reporter_whatsapp: string | null
+          status: string
+          updated_at: string
+          user_id: string | null
+          wearing_description: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          item_description?: string | null
+          item_name?: string | null
+          language?: string | null
+          last_seen_at?: string | null
+          last_seen_location: string
+          notes?: string | null
+          person_age?: number | null
+          person_description?: string | null
+          person_gender?: string | null
+          person_name?: string | null
+          photo_url?: string | null
+          report_type: string
+          reporter_mobile: string
+          reporter_name: string
+          reporter_whatsapp?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+          wearing_description?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          item_description?: string | null
+          item_name?: string | null
+          language?: string | null
+          last_seen_at?: string | null
+          last_seen_location?: string
+          notes?: string | null
+          person_age?: number | null
+          person_description?: string | null
+          person_gender?: string | null
+          person_name?: string | null
+          photo_url?: string | null
+          report_type?: string
+          reporter_mobile?: string
+          reporter_name?: string
+          reporter_whatsapp?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+          wearing_description?: string | null
+        }
+        Relationships: []
+      }
       member_link_requests: {
         Row: {
           created_at: string
