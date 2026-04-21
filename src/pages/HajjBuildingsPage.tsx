@@ -97,6 +97,10 @@ const HajjBuildingsPage = () => {
   const makkahBuildings = filtered.filter((b) => b.city === "makkah");
   const madinahBuildings = filtered.filter((b) => b.city === "madinah");
 
+  const filteredHotels = madinahHotels.filter((h) =>
+    !hotelSearch || h.name.toLowerCase().includes(hotelSearch.toLowerCase())
+  );
+
   const getZoneName = (z: BuildingZone) => lang === "hi" ? z.zoneNameHi : lang === "ur" ? z.zoneNameUr : z.zoneName;
   const getAreaName = (z: BuildingZone) => lang === "hi" ? z.areaHi : z.area;
 
