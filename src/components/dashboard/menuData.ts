@@ -451,6 +451,9 @@ export const menuSections: MenuSection[] = [
         route: "/lost-and-found",
         colorClass: "icon-coral",
       },
+    ],
+  },
+  // SECTION C – SPECIAL
   {
     id: "special",
     title: {
