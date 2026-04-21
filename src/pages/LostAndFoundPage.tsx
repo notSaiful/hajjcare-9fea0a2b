@@ -181,7 +181,7 @@ const LostAndFoundPage = () => {
       return;
     }
     try {
-      const compressed = await compressImage(file, { maxWidth: 1200, quality: 0.8 });
+      const compressed = await compressImage(file, 2);
       setPhotoFile(compressed);
       setPhotoPreview(URL.createObjectURL(compressed));
     } catch {
@@ -254,12 +254,13 @@ const LostAndFoundPage = () => {
       }
 
       const { data: { user } } = await supabase.auth.getUser();
-      const { error } = await supabase.from("lost_and_found").insert({
+      const insertPayload: any = {
         ...parsed.data,
         photo_url,
         language,
         user_id: user?.id ?? null,
-      });
+      };
+      const { error } = await supabase.from("lost_and_found").insert(insertPayload);
       if (error) throw error;
 
       toast({ title: t.get("success"), description: "" });
