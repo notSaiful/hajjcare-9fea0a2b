@@ -433,6 +433,25 @@ export const menuSections: MenuSection[] = [
         colorClass: "icon-plum",
       },
       {
+        id: "mashair-map",
+        icon: Map,
+        label: {
+          en: "Mashair Map",
+          ar: "خريطة المشاعر",
+          ur: "مشاعر کا نقشہ",
+          hi: "मशा'इर मानचित्र",
+          ta: "மஷாயிர் வரைபடம்",
+          te: "మషాయిర్ మ్యాప్",
+          mr: "मशाइर नकाशा",
+          bn: "মাশায়ির মানচিত্র",
+          or: "ମଶାୟିର ମାନଚିତ୍ର",
+          ml: "മഷാഇർ മാപ്പ്",
+          pa: "ਮਸ਼ਾਇਰ ਨਕਸ਼ਾ",
+        },
+        route: "/mashair-map",
+        colorClass: "icon-emerald",
+      },
+      {
         id: "lost-and-found",
         icon: Search,
         label: {
