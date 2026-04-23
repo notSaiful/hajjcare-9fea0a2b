@@ -83,11 +83,17 @@ export const SubGroupAdvisoryCard = () => {
     }
     setAcknowledged(true);
     setAcknowledgedAt(new Date().toISOString());
+    // Refresh aggregate count
+    fetchStats();
     toast({
       title: 'Acknowledged ✓',
       description: 'Your acknowledgment has been recorded with SHI Desk.',
     });
   };
+
+  const progressPct = totalInspectors > 0
+    ? Math.min(100, Math.round((ackCount / totalInspectors) * 100))
+    : 0;
 
   return (
     <Card className="border-2 border-amber-300 dark:border-amber-700 bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50 dark:from-amber-950/40 dark:via-yellow-950/30 dark:to-orange-950/40 shadow-md">
