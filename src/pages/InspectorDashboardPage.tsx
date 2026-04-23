@@ -26,6 +26,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import InspectorMyProfile from '@/components/inspector/InspectorMyProfile';
+import { SubGroupAdvisoryCard } from '@/components/inspector/SubGroupAdvisoryCard';
 import {
   Select,
   SelectContent,
