@@ -36,6 +36,11 @@ const HomePage = () => {
           {/* Hero Section */}
           <HeroSection />
 
+          {/* SHI Desk, Madinah — Official Advisory (with acknowledgment progress) */}
+          <section className="animate-fade-up" style={{ animationDelay: "20ms" }}>
+            <SubGroupAdvisoryCard />
+          </section>
+
           {/* Hajj Countdown */}
           <Suspense fallback={null}>
             <section className="animate-fade-up" style={{ animationDelay: "40ms" }}>
