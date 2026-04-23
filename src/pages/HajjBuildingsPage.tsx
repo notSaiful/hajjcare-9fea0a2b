@@ -1,10 +1,12 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { SimpleHeader } from "@/components/SimpleHeader";
 import { hajjBuildings, emergencyContacts, type HajjBuilding } from "@/data/hajjBuildingsData";
 import { makkahBuildingZones, findZoneByBuildingNumber, type BuildingZone } from "@/data/hajjBuildingZones";
 import { madinahHotels, getMadinahMapUrl } from "@/data/madinahHotels";
-import { Building, MapPin, Phone, Search, Stethoscope, Home, Landmark, Hash, Navigation, AlertCircle, ExternalLink, Hotel } from "lucide-react";
+import { getHotelLocation, formatDistance } from "@/data/madinahHotelCoords";
+import { Building, MapPin, Phone, Search, Stethoscope, Home, Landmark, Hash, Navigation, AlertCircle, ExternalLink, Hotel, Footprints, ArrowRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -321,6 +323,27 @@ const HajjBuildingsPage = () => {
               {madinahHotels.length} {t.hotelsCount}
             </Badge>
           </div>
+
+          {/* Link to dedicated full page */}
+          <Link
+            to="/madinah-hotels"
+            className="flex items-center justify-between gap-2 bg-card border border-emerald-500/30 rounded-xl p-3 hover:border-emerald-500 hover:shadow-sm transition-all"
+          >
+            <div className="flex items-center gap-2">
+              <MapPin className="w-4 h-4 text-emerald-600" />
+              <span className="text-xs font-semibold">
+                {lang === "hi"
+                  ? "लाइव मानचित्र पर सभी होटल देखें"
+                  : lang === "ur"
+                  ? "تمام ہوٹلز کو لائیو نقشے پر دیکھیں"
+                  : lang === "ar"
+                  ? "عرض جميع الفنادق على الخريطة الحية"
+                  : "View all hotels on the live map"}
+              </span>
+            </div>
+            <ArrowRight className={`w-4 h-4 text-emerald-600 ${isRTL ? "rotate-180" : ""}`} />
+          </Link>
+
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
@@ -334,6 +357,7 @@ const HajjBuildingsPage = () => {
             {filteredHotels.map((hotel) => {
               const url = getMadinahMapUrl(hotel);
               const verified = !!hotel.mapLink;
+              const loc = getHotelLocation(hotel);
               return (
                 <a
                   key={hotel.id}
@@ -351,6 +375,16 @@ const HajjBuildingsPage = () => {
                       Tashee: {hotel.madTashee} · {hotel.type}
                       {!verified && <span className="ml-1 opacity-60">· Search</span>}
                     </p>
+                    <div className="flex items-center gap-2 mt-0.5 text-[10px] text-foreground/75">
+                      <span className="inline-flex items-center gap-0.5">
+                        <MapPin className="w-2.5 h-2.5" />
+                        {formatDistance(loc.distanceFromHaramKm)}
+                      </span>
+                      <span className="inline-flex items-center gap-0.5">
+                        <Footprints className="w-2.5 h-2.5" />
+                        ~{loc.walkMinutes}m
+                      </span>
+                    </div>
                   </div>
                   <ExternalLink className="w-3 h-3 text-muted-foreground flex-shrink-0" />
                 </a>
