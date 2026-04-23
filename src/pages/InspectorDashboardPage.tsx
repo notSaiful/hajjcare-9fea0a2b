@@ -26,6 +26,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import InspectorMyProfile from '@/components/inspector/InspectorMyProfile';
+import { SubGroupAdvisoryCard } from '@/components/inspector/SubGroupAdvisoryCard';
 import {
   Select,
   SelectContent,
@@ -173,6 +174,9 @@ const InspectorDashboardPage = () => {
 
         {/* Section 1: My Profile */}
         <InspectorMyProfile />
+
+        {/* Official Advisory from SHI Desk, Madinah */}
+        <SubGroupAdvisoryCard />
 
         {/* Summary Card - matches txtSummary */}
         <Card className="bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950 dark:to-teal-950 border-emerald-200 dark:border-emerald-800">
