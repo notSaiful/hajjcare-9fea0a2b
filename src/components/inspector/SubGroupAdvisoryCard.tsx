@@ -162,6 +162,31 @@ export const SubGroupAdvisoryCard = () => {
           </p>
         </div>
 
+        {/* Acknowledgment Progress Indicator */}
+        <div className="bg-white/70 dark:bg-black/30 rounded-lg p-3 space-y-2 border border-amber-200/60 dark:border-amber-800/60">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-1.5 text-xs font-semibold text-amber-900 dark:text-amber-100">
+              <TrendingUp className="w-3.5 h-3.5" />
+              SHI Acknowledgment Progress
+            </div>
+            <div className="text-xs font-bold text-amber-800 dark:text-amber-200">
+              {ackCount} / {totalInspectors || '—'}
+            </div>
+          </div>
+          <Progress
+            value={progressPct}
+            className="h-2 bg-amber-100 dark:bg-amber-950/50 [&>div]:bg-gradient-to-r [&>div]:from-amber-500 [&>div]:to-emerald-500"
+          />
+          <div className="flex items-center justify-between text-[11px] text-amber-800/80 dark:text-amber-200/80">
+            <span>{progressPct}% acknowledged</span>
+            <span>
+              {totalInspectors > 0
+                ? `${totalInspectors - ackCount} pending`
+                : 'Awaiting registrations'}
+            </span>
+          </div>
+        </div>
+
         {/* Acknowledgment Button */}
         <div className="pt-2 border-t border-amber-200 dark:border-amber-800">
           {isLoading ? (
