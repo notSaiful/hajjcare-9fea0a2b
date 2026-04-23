@@ -2945,6 +2945,72 @@ export type Database = {
         }
         Relationships: []
       }
+      lost_and_found_public: {
+        Row: {
+          created_at: string | null
+          id: string | null
+          item_description: string | null
+          item_name: string | null
+          language: string | null
+          last_seen_at: string | null
+          last_seen_location: string | null
+          notes: string | null
+          person_age: number | null
+          person_description: string | null
+          person_gender: string | null
+          person_name: string | null
+          photo_url: string | null
+          report_type: string | null
+          reporter_name: string | null
+          status: string | null
+          updated_at: string | null
+          user_id: string | null
+          wearing_description: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string | null
+          item_description?: string | null
+          item_name?: string | null
+          language?: string | null
+          last_seen_at?: string | null
+          last_seen_location?: string | null
+          notes?: string | null
+          person_age?: number | null
+          person_description?: string | null
+          person_gender?: string | null
+          person_name?: string | null
+          photo_url?: string | null
+          report_type?: string | null
+          reporter_name?: string | null
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          wearing_description?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string | null
+          item_description?: string | null
+          item_name?: string | null
+          language?: string | null
+          last_seen_at?: string | null
+          last_seen_location?: string | null
+          notes?: string | null
+          person_age?: number | null
+          person_description?: string | null
+          person_gender?: string | null
+          person_name?: string | null
+          photo_url?: string | null
+          report_type?: string | null
+          reporter_name?: string | null
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          wearing_description?: string | null
+        }
+        Relationships: []
+      }
       profiles_limited: {
         Row: {
           created_at: string | null
@@ -3090,6 +3156,14 @@ export type Database = {
           total_inspectors: number
         }[]
       }
+      get_app_analytics_summary: {
+        Args: never
+        Returns: {
+          total_installs: number
+          total_visits: number
+          unique_visitors: number
+        }[]
+      }
       get_group_member_profile: {
         Args: { target_user_id: string }
         Returns: {
@@ -3100,7 +3174,6 @@ export type Database = {
           user_id: string
         }[]
       }
-      grant_demo_staff_roles: { Args: never; Returns: Json }
       has_active_consent: {
         Args: { p_purpose: string; p_user_id: string }
         Returns: boolean

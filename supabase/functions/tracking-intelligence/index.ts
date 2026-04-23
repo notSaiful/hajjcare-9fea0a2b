@@ -75,6 +75,30 @@ serve(async (req) => {
     );
 
     if (action === "analyze" && group_id) {
+      // AUTHORIZATION: caller must be a member of the group, or a coordinator/admin
+      const { data: membership } = await serviceClient
+        .from("group_members")
+        .select("id")
+        .eq("group_id", group_id)
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      const { data: callerRoles } = await serviceClient
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id);
+
+      const isStaff = callerRoles?.some((r: { role: string }) =>
+        ["admin", "coordinator"].includes(r.role)
+      );
+
+      if (!membership && !isStaff) {
+        return new Response(
+          JSON.stringify({ error: "Forbidden: not a member of this group" }),
+          { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
       // Get all member locations for the group
       const { data: locations } = await serviceClient
         .from("member_locations")
