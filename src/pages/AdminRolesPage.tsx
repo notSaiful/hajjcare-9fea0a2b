@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { UnauthorizedAlert } from '@/components/UnauthorizedAlert';
+import { RoleAssignByIdentifier } from '@/components/admin/RoleAssignByIdentifier';
 
 type AppRole = 'admin' | 'coordinator' | 'medical_staff' | 'user';
 
@@ -267,6 +268,9 @@ const AdminRolesPage: React.FC = () => {
             </CardContent>
           </Card>
         </div>
+
+        {/* Quick assign by email or user ID */}
+        <RoleAssignByIdentifier onAssigned={fetchData} />
 
         {/* Search */}
         <div className="relative">

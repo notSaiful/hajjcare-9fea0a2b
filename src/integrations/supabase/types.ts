@@ -3056,6 +3056,14 @@ export type Database = {
     }
     Functions: {
       apply_promo_code: { Args: { p_code: string }; Returns: Json }
+      assign_user_role: {
+        Args: {
+          p_identifier: string
+          p_role: Database["public"]["Enums"]["app_role"]
+          p_zone?: string
+        }
+        Returns: Json
+      }
       check_inspector_mobile_exists: {
         Args: { p_mobile: string }
         Returns: boolean
@@ -3111,6 +3119,15 @@ export type Database = {
           id: string
           invite_code: string
           name: string
+        }[]
+      }
+      lookup_user_for_role_assignment: {
+        Args: { p_identifier: string }
+        Returns: {
+          current_roles: Json
+          email: string
+          full_name: string
+          user_id: string
         }[]
       }
       lookup_user_id_by_phone: {
