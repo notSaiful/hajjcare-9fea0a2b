@@ -3,7 +3,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { SimpleHeader } from "@/components/SimpleHeader";
 import { hajjBuildings, emergencyContacts, type HajjBuilding } from "@/data/hajjBuildingsData";
 import { makkahBuildingZones, findZoneByBuildingNumber, type BuildingZone } from "@/data/hajjBuildingZones";
-import { madinahHotels } from "@/data/madinahHotels";
+import { madinahHotels, getMadinahMapUrl } from "@/data/madinahHotels";
 import { Building, MapPin, Phone, Search, Stethoscope, Home, Landmark, Hash, Navigation, AlertCircle, ExternalLink, Hotel } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -97,9 +97,15 @@ const HajjBuildingsPage = () => {
   const makkahBuildings = filtered.filter((b) => b.city === "makkah");
   const madinahBuildings = filtered.filter((b) => b.city === "madinah");
 
-  const filteredHotels = madinahHotels.filter((h) =>
-    !hotelSearch || h.name.toLowerCase().includes(hotelSearch.toLowerCase())
-  );
+  const filteredHotels = madinahHotels.filter((h) => {
+    if (!hotelSearch) return true;
+    const q = hotelSearch.toLowerCase();
+    return (
+      h.name.toLowerCase().includes(q) ||
+      String(h.code) === q ||
+      h.madTashee.includes(q)
+    );
+  });
 
   const getZoneName = (z: BuildingZone) => lang === "hi" ? z.zoneNameHi : lang === "ur" ? z.zoneNameUr : z.zoneName;
   const getAreaName = (z: BuildingZone) => lang === "hi" ? z.areaHi : z.area;
@@ -325,36 +331,37 @@ const HajjBuildingsPage = () => {
             />
           </div>
           <div className="grid gap-1.5 max-h-[420px] overflow-y-auto pr-1">
-            {filteredHotels.map((hotel) => (
-              hotel.mapLink ? (
+            {filteredHotels.map((hotel) => {
+              const url = getMadinahMapUrl(hotel);
+              const verified = !!hotel.mapLink;
+              return (
                 <a
                   key={hotel.id}
-                  href={hotel.mapLink}
+                  href={url}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 bg-card border border-border rounded-lg p-2.5 hover:border-emerald-500/50 hover:shadow-sm transition-all active:scale-[0.98]"
                 >
-                  <div className="w-7 h-7 rounded-lg bg-emerald-500/10 flex items-center justify-center flex-shrink-0">
-                    <MapPin className="w-3.5 h-3.5 text-emerald-600" />
-                  </div>
-                  <p className="font-medium text-xs flex-1 leading-tight truncate">{hotel.name}</p>
-                  <ExternalLink className="w-3 h-3 text-muted-foreground flex-shrink-0" />
-                </a>
-              ) : (
-                <div
-                  key={hotel.id}
-                  className="flex items-center gap-2 bg-muted/30 border border-border rounded-lg p-2.5 opacity-70"
-                >
-                  <div className="w-7 h-7 rounded-lg bg-muted flex items-center justify-center flex-shrink-0">
-                    <AlertCircle className="w-3.5 h-3.5 text-muted-foreground" />
+                  <div className="w-9 h-9 rounded-lg bg-emerald-500/10 flex items-center justify-center flex-shrink-0">
+                    <span className="text-[11px] font-bold text-emerald-700">#{hotel.code}</span>
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-xs leading-tight truncate">{hotel.name}</p>
-                    <p className="text-[10px] text-muted-foreground">{t.locUnavailable}</p>
+                    <p className="text-[10px] text-muted-foreground">
+                      Tashee: {hotel.madTashee} · {hotel.type}
+                      {!verified && <span className="ml-1 opacity-60">· Search</span>}
+                    </p>
                   </div>
-                </div>
-              )
-            ))}
+                  <ExternalLink className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+                </a>
+              );
+            })}
+            {filteredHotels.length === 0 && (
+              <div className="text-center text-xs text-muted-foreground py-6">
+                <AlertCircle className="w-4 h-4 mx-auto mb-1 opacity-60" />
+                No hotels found
+              </div>
+            )}
           </div>
           <p className="text-[10px] text-muted-foreground text-center pt-1 border-t border-border/50">
             {t.hotelsSource}
