@@ -4,6 +4,7 @@ import { SimpleHeader } from "@/components/SimpleHeader";
 import { HeroSection } from "@/components/HeroSection";
 import { DashboardMenu } from "@/components/DashboardMenu";
 import { EmergencyMarqueeBar } from "@/components/EmergencyMarqueeBar";
+import { SubGroupAdvisoryCard } from "@/components/inspector/SubGroupAdvisoryCard";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAppAnalytics } from "@/hooks/useAppAnalytics";
 
