@@ -357,6 +357,25 @@ export const menuSections: MenuSection[] = [
         colorClass: "icon-amber",
       },
       {
+        id: "madinah-hotels",
+        icon: Hotel,
+        label: {
+          en: "Madinah Hotels",
+          ar: "فنادق المدينة",
+          ur: "مدینہ ہوٹل",
+          hi: "मदीना होटल",
+          ta: "மதீனா ஹோட்டல்கள்",
+          te: "మదీనా హోటళ్లు",
+          mr: "मदीना हॉटेल्स",
+          bn: "মদিনা হোটেল",
+          or: "ମଦୀନା ହୋଟେଲ",
+          ml: "മദീന ഹോട്ടലുകൾ",
+          pa: "ਮਦੀਨਾ ਹੋਟਲ",
+        },
+        route: "/madinah-hotels",
+        colorClass: "icon-emerald",
+      },
+      {
         id: "umrah",
         icon: Moon,
         label: {

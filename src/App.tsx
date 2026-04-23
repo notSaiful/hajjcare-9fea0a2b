@@ -122,6 +122,7 @@ const HajiGroupDashboardPage = lazy(() => import("./pages/HajiGroupDashboardPage
 const ProfilePage = lazy(() => import("./pages/ProfilePage"));
 const LostAndFoundPage = lazy(() => import("./pages/LostAndFoundPage"));
 const MashairMapPage = lazy(() => import("./pages/MashairMapPage"));
+const MadinahHotelsPage = lazy(() => import("./pages/MadinahHotelsPage"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -263,6 +264,7 @@ function AppContent() {
       <Route path="/profile" element={<ProfilePage />} />
       <Route path="/lost-and-found" element={<LostAndFoundPage />} />
       <Route path="/mashair-map" element={<MashairMapPage />} />
+      <Route path="/madinah-hotels" element={<MadinahHotelsPage />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
