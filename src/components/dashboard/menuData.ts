@@ -9,6 +9,7 @@ import {
   GraduationCap,
   Bot,
   Building,
+  Hotel,
   MapPin,
   Moon,
   Landmark,
