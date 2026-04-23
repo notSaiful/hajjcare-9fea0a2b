@@ -137,18 +137,26 @@ export const StaffMenu = memo(function StaffMenu() {
 
   return (
     <section className="space-y-3 animate-fade-up" style={{ animationDelay: "100ms" }}>
-      <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide px-1">
-        {sectionLabel[language] || sectionLabel.en}
-      </h3>
+      <div className="flex items-center justify-between px-1">
+        <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+          {sectionLabel[language] || sectionLabel.en}
+        </h3>
+        <span className="text-[10px] font-semibold uppercase tracking-wider text-primary/80 bg-primary/10 rounded-full px-2 py-0.5">
+          {isAdmin ? "Admin" : isCoordinator ? "Coordinator" : "Inspector"}
+        </span>
+      </div>
       <div className="grid grid-cols-3 gap-3 sm:gap-4">
-        {items.map((item) => (
-          <DashboardMenuItem
-            key={item.id}
-            item={item}
-            language={language}
-            onNavigate={handleNavigate}
-          />
-        ))}
+        {items.map((item) => {
+          const requireAdmin = (item as { adminOnly?: boolean }).adminOnly === true;
+          return (
+            <DashboardMenuItem
+              key={item.id}
+              item={item}
+              language={language}
+              onNavigate={(route) => handleNavigate(route, requireAdmin)}
+            />
+          );
+        })}
       </div>
     </section>
   );
