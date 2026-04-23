@@ -175,6 +175,9 @@ const InspectorDashboardPage = () => {
         {/* Section 1: My Profile */}
         <InspectorMyProfile />
 
+        {/* Official Advisory from SHI Desk, Madinah */}
+        <SubGroupAdvisoryCard />
+
         {/* Summary Card - matches txtSummary */}
         <Card className="bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950 dark:to-teal-950 border-emerald-200 dark:border-emerald-800">
           <CardContent className="p-4">
