@@ -1,6 +1,6 @@
 import { memo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { ShieldCheck, Users, LayoutDashboard } from "lucide-react";
+import { ShieldCheck, Users, LayoutDashboard, BadgeCheck } from "lucide-react";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -36,16 +36,21 @@ export const StaffMenu = memo(function StaffMenu() {
   };
 
   const handleNavigate = useCallback(
-    (route: string, requireAdmin = false) => {
+    (route: string, opts: { requireAdmin?: boolean; requireInspector?: boolean } = {}) => {
       // Re-check authorisation at click time
       if (!isAuthenticated || !(isInspector || isAdmin || isCoordinator)) {
         const c = unauthorisedCopy[language] || unauthorisedCopy.en;
         toast({ title: c.title, description: c.desc, variant: "destructive" });
         return;
       }
-      if (requireAdmin && !isAdmin) {
+      if (opts.requireAdmin && !isAdmin) {
         const c = unauthorisedCopy[language] || unauthorisedCopy.en;
         toast({ title: c.title, description: "Admin role required.", variant: "destructive" });
+        return;
+      }
+      if (opts.requireInspector && !isInspector) {
+        const c = unauthorisedCopy[language] || unauthorisedCopy.en;
+        toast({ title: c.title, description: "SHI / Inspector role required.", variant: "destructive" });
         return;
       }
       if ("vibrate" in navigator) navigator.vibrate(10);
@@ -56,7 +61,31 @@ export const StaffMenu = memo(function StaffMenu() {
 
   if (isLoading || !canSeeInspectorTools) return null;
 
-  const items: Array<MenuItem & { adminOnly?: boolean }> = [
+  const items: Array<MenuItem & { adminOnly?: boolean; inspectorOnly?: boolean }> = [
+    ...(isInspector
+      ? [
+          {
+            id: "shi-my-profile",
+            icon: BadgeCheck,
+            label: {
+              en: "My SHI Profile",
+              ar: "ملفي كمفتش حج",
+              ur: "میرا ایس ایچ آئی پروفائل",
+              hi: "मेरा SHI प्रोफ़ाइल",
+              ta: "எனது SHI சுயவிவரம்",
+              te: "నా SHI ప్రొఫైల్",
+              mr: "माझे SHI प्रोफाइल",
+              bn: "আমার SHI প্রোফাইল",
+              or: "ମୋର SHI ପ୍ରୋଫାଇଲ",
+              ml: "എന്റെ SHI പ്രൊഫൈൽ",
+              pa: "ਮੇਰਾ SHI ਪ੍ਰੋਫਾਈਲ",
+            },
+            route: "/inspector-register",
+            colorClass: "icon-amber",
+            inspectorOnly: true,
+          } as MenuItem & { inspectorOnly: boolean },
+        ]
+      : []),
     {
       id: "sub-group-management",
       icon: Users,
@@ -147,13 +176,18 @@ export const StaffMenu = memo(function StaffMenu() {
       </div>
       <div className="grid grid-cols-3 gap-3 sm:gap-4">
         {items.map((item) => {
-          const requireAdmin = (item as { adminOnly?: boolean }).adminOnly === true;
+          const meta = item as { adminOnly?: boolean; inspectorOnly?: boolean };
           return (
             <DashboardMenuItem
               key={item.id}
               item={item}
               language={language}
-              onNavigate={(route) => handleNavigate(route, requireAdmin)}
+              onNavigate={(route) =>
+                handleNavigate(route, {
+                  requireAdmin: meta.adminOnly === true,
+                  requireInspector: meta.inspectorOnly === true,
+                })
+              }
             />
           );
         })}
