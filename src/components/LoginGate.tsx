@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { LoginRequiredDialog } from "@/components/LoginRequiredDialog";
@@ -7,17 +7,30 @@ import { Skeleton } from "@/components/ui/skeleton";
 /**
  * Wraps a page that requires authentication.
  * Instead of redirecting, shows a login dialog when unauthenticated.
+ * On cancel, navigates back (or home if no history) and does not re-open the dialog.
  */
 export function LoginGate({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, loading } = useAuthContext();
   const [showDialog, setShowDialog] = useState(false);
+  const dismissedRef = useRef(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!loading && !isAuthenticated) {
+    if (!loading && !isAuthenticated && !dismissedRef.current) {
       setShowDialog(true);
     }
   }, [loading, isAuthenticated]);
+
+  const handleCancel = () => {
+    dismissedRef.current = true;
+    setShowDialog(false);
+    // Try to go back; if no history, fallback to home
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate("/", { replace: true });
+    }
+  };
 
   if (loading) {
     return (
@@ -36,8 +49,8 @@ export function LoginGate({ children }: { children: React.ReactNode }) {
       <LoginRequiredDialog
         open={showDialog}
         onOpenChange={(open) => {
-          setShowDialog(open);
-          if (!open) navigate(-1);
+          if (!open) handleCancel();
+          else setShowDialog(true);
         }}
       />
     );
