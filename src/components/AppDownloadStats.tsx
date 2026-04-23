@@ -39,30 +39,14 @@ export function AppDownloadStats() {
 
   useEffect(() => {
     const loadStats = async () => {
-      // Total visits
-      const { count: totalVisits } = await supabase
-        .from("app_analytics")
-        .select("*", { count: "exact", head: true })
-        .eq("event_type", "visit");
-
-      // Unique visitors (distinct visitor_id)
-      const { data: visitorData } = await supabase
-        .from("app_analytics")
-        .select("visitor_id")
-        .eq("event_type", "visit")
-        .limit(10000);
-      const uniqueCount = new Set((visitorData ?? []).map((r: any) => r.visitor_id)).size;
-
-      // PWA installs
-      const { count: installs } = await supabase
-        .from("app_analytics")
-        .select("*", { count: "exact", head: true })
-        .eq("event_type", "pwa_install");
-
+      // Use safe aggregate function — no row-level data is exposed
+      const { data, error } = await supabase.rpc("get_app_analytics_summary");
+      if (error || !data || data.length === 0) return;
+      const row = data[0];
       setStats({
-        total_visits: totalVisits ?? 0,
-        unique_visitors: uniqueCount,
-        pwa_installs: installs ?? 0,
+        total_visits: Number(row.total_visits) || 0,
+        unique_visitors: Number(row.unique_visitors) || 0,
+        pwa_installs: Number(row.total_installs) || 0,
       });
     };
     loadStats().catch(console.error);

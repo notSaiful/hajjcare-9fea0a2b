@@ -60,8 +60,8 @@ interface LostFoundReport {
   last_seen_at: string | null;
   photo_url: string | null;
   reporter_name: string;
-  reporter_mobile: string;
-  reporter_whatsapp: string | null;
+  reporter_mobile?: string | null;
+  reporter_whatsapp?: string | null;
   notes: string | null;
   created_at: string;
 }
@@ -155,9 +155,14 @@ const LostAndFoundPage = () => {
 
   const fetchReports = async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from("lost_and_found")
-      .select("*")
+    // Authenticated users get full contact details from the base table.
+    // Anonymous users get a public-safe view (no phone/whatsapp) to protect reporter privacy.
+    const { data: { session } } = await supabase.auth.getSession();
+    const query = session
+      ? supabase.from("lost_and_found").select("*")
+      : supabase.from("lost_and_found_public").select("*");
+
+    const { data, error } = await query
       .in("status", ["open", "found"])
       .order("created_at", { ascending: false })
       .limit(100);
@@ -618,22 +623,30 @@ const LostAndFoundPage = () => {
                             <span className="truncate">{r.last_seen_location}</span>
                           </div>
                           <div className="flex flex-wrap gap-2 mt-3">
-                            <Button asChild size="sm" variant="outline" className="h-8">
-                              <a href={`tel:${r.reporter_mobile}`}>
-                                <Phone className="h-3 w-3 mr-1" />
-                                {t.get("contact")}
-                              </a>
-                            </Button>
-                            {r.reporter_whatsapp && (
-                              <Button asChild size="sm" variant="outline" className="h-8">
-                                <a
-                                  href={`https://wa.me/${r.reporter_whatsapp.replace(/\D/g, "")}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                >
-                                  WhatsApp
-                                </a>
-                              </Button>
+                            {r.reporter_mobile ? (
+                              <>
+                                <Button asChild size="sm" variant="outline" className="h-8">
+                                  <a href={`tel:${r.reporter_mobile}`}>
+                                    <Phone className="h-3 w-3 mr-1" />
+                                    {t.get("contact")}
+                                  </a>
+                                </Button>
+                                {r.reporter_whatsapp && (
+                                  <Button asChild size="sm" variant="outline" className="h-8">
+                                    <a
+                                      href={`https://wa.me/${r.reporter_whatsapp.replace(/\D/g, "")}`}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                    >
+                                      WhatsApp
+                                    </a>
+                                  </Button>
+                                )}
+                              </>
+                            ) : (
+                              <p className="text-xs text-muted-foreground italic">
+                                Sign in to view contact details
+                              </p>
                             )}
                           </div>
                         </div>
