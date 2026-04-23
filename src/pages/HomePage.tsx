@@ -5,6 +5,7 @@ import { HeroSection } from "@/components/HeroSection";
 import { DashboardMenu } from "@/components/DashboardMenu";
 import { EmergencyMarqueeBar } from "@/components/EmergencyMarqueeBar";
 import { SubGroupAdvisoryCard } from "@/components/inspector/SubGroupAdvisoryCard";
+import { StaffMenu } from "@/components/dashboard/StaffMenu";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAppAnalytics } from "@/hooks/useAppAnalytics";
 
@@ -47,6 +48,9 @@ const HomePage = () => {
               <HajjCountdown />
             </section>
           </Suspense>
+
+          {/* Staff-only tools (Inspector / Admin / Coordinator) */}
+          <StaffMenu />
 
           {/* Dashboard Menu with Bismillah */}
           <section className="animate-fade-up" style={{ animationDelay: "80ms" }}>
