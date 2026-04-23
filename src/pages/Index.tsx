@@ -6,6 +6,7 @@ import WelcomeScreen from "@/components/WelcomeScreen";
 import HajjMap from "@/components/HajjMap";
 import { VoiceAssistant } from "@/components/VoiceAssistant";
 import { EmergencySOS } from "@/components/EmergencySOS";
+import SubGroupAdvisoryCard from "@/components/inspector/SubGroupAdvisoryCard";
 import { useHajjChat } from "@/hooks/useHajjChat";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
