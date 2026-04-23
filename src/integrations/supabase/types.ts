@@ -1664,6 +1664,7 @@ export type Database = {
           risk_level: string
           state: string | null
           status: string
+          sub_group_id: string | null
           updated_at: string
           user_id: string | null
           wheelchair: boolean
@@ -1691,6 +1692,7 @@ export type Database = {
           risk_level?: string
           state?: string | null
           status?: string
+          sub_group_id?: string | null
           updated_at?: string
           user_id?: string | null
           wheelchair?: boolean
@@ -1718,6 +1720,7 @@ export type Database = {
           risk_level?: string
           state?: string | null
           status?: string
+          sub_group_id?: string | null
           updated_at?: string
           user_id?: string | null
           wheelchair?: boolean
@@ -1728,6 +1731,13 @@ export type Database = {
             columns: ["group_id"]
             isOneToOne: false
             referencedRelation: "inspector_pilgrim_groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inspector_pilgrims_sub_group_id_fkey"
+            columns: ["sub_group_id"]
+            isOneToOne: false
+            referencedRelation: "inspector_sub_groups"
             referencedColumns: ["id"]
           },
         ]
@@ -1788,6 +1798,54 @@ export type Database = {
           verified_by?: string | null
         }
         Relationships: []
+      }
+      inspector_sub_groups: {
+        Row: {
+          created_at: string
+          group_id: string
+          id: string
+          inspector_user_id: string
+          leader_pilgrim_id: string | null
+          name: string
+          notes: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          group_id: string
+          id?: string
+          inspector_user_id: string
+          leader_pilgrim_id?: string | null
+          name: string
+          notes?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          group_id?: string
+          id?: string
+          inspector_user_id?: string
+          leader_pilgrim_id?: string | null
+          name?: string
+          notes?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inspector_sub_groups_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "inspector_pilgrim_groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inspector_sub_groups_leader_pilgrim_id_fkey"
+            columns: ["leader_pilgrim_id"]
+            isOneToOne: false
+            referencedRelation: "inspector_pilgrims"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       khidmat_logs: {
         Row: {
@@ -2408,6 +2466,47 @@ export type Database = {
             columns: ["supervisor_id"]
             isOneToOne: false
             referencedRelation: "responder_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sub_group_checkins: {
+        Row: {
+          created_at: string
+          id: string
+          inspector_user_id: string
+          location: string
+          missing_pilgrim_ids: string[] | null
+          notes: string | null
+          status: string
+          sub_group_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          inspector_user_id: string
+          location: string
+          missing_pilgrim_ids?: string[] | null
+          notes?: string | null
+          status?: string
+          sub_group_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          inspector_user_id?: string
+          location?: string
+          missing_pilgrim_ids?: string[] | null
+          notes?: string | null
+          status?: string
+          sub_group_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sub_group_checkins_sub_group_id_fkey"
+            columns: ["sub_group_id"]
+            isOneToOne: false
+            referencedRelation: "inspector_sub_groups"
             referencedColumns: ["id"]
           },
         ]
