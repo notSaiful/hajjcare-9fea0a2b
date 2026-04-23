@@ -4,6 +4,7 @@ import { SimpleHeader } from "@/components/SimpleHeader";
 import { HeroSection } from "@/components/HeroSection";
 import { DashboardMenu } from "@/components/DashboardMenu";
 import { EmergencyMarqueeBar } from "@/components/EmergencyMarqueeBar";
+import { SubGroupAdvisoryCard } from "@/components/inspector/SubGroupAdvisoryCard";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAppAnalytics } from "@/hooks/useAppAnalytics";
 
@@ -34,6 +35,11 @@ const HomePage = () => {
         <div className="space-y-6 sm:space-y-8">
           {/* Hero Section */}
           <HeroSection />
+
+          {/* SHI Desk, Madinah — Official Advisory (with acknowledgment progress) */}
+          <section className="animate-fade-up" style={{ animationDelay: "20ms" }}>
+            <SubGroupAdvisoryCard />
+          </section>
 
           {/* Hajj Countdown */}
           <Suspense fallback={null}>
