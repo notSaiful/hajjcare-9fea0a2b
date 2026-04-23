@@ -36,8 +36,8 @@ const HajjBuildingsPage = () => {
       buildingRange: "Building Range", notFound: "Building number not found. Please enter a number between 101-1880.",
       allZones: "All Makkah Building Zones", zoneNote: "Building numbers 101-1880 are Zone IDs, not actual building count.",
       navigate: "Navigate", openMap: "Open in Google Maps",
-      madinahHotels: "Madinah Hotels 2026", searchHotel: "Search hotel name...", hotelsCount: "hotels", locUnavailable: "Location unavailable",
-      hotelsSource: "Source: CGI Jeddah – compiled by Mohammed Salman Khan",
+      madinahHotels: "Madinah Hotels 2026", searchHotel: "Search by name, code, or Tashee...", hotelsCount: "hotels", locUnavailable: "Location unavailable",
+      hotelsSource: "Source: Official MOH/CGI Jeddah list — 381 hotels in Madinah Markaziya",
     },
     hi: {
       title: "भारतीय हज भवन", subtitle: "मक्का और मदीना 2026", makkah: "मक्का", madinah: "मदीना", all: "सभी",
@@ -47,8 +47,8 @@ const HajjBuildingsPage = () => {
       buildingRange: "बिल्डिंग रेंज", notFound: "बिल्डिंग नंबर नहीं मिला। कृपया 101-1880 के बीच नंबर डालें।",
       allZones: "मक्का के सभी बिल्डिंग ज़ोन", zoneNote: "बिल्डिंग नंबर 101-1880 सिर्फ ज़ोन पहचान के लिए हैं, बिल्डिंग की तादाद नहीं।",
       navigate: "नेविगेट करें", openMap: "गूगल मैप में खोलें",
-      madinahHotels: "मदीना होटल 2026", searchHotel: "होटल का नाम खोजें...", hotelsCount: "होटल", locUnavailable: "लोकेशन उपलब्ध नहीं",
-      hotelsSource: "स्रोत: CGI जेद्दा – मोहम्मद सलमान खान द्वारा संकलित",
+      madinahHotels: "मदीना होटल 2026", searchHotel: "नाम, कोड, या तशी से खोजें...", hotelsCount: "होटल", locUnavailable: "लोकेशन उपलब्ध नहीं",
+      hotelsSource: "स्रोत: आधिकारिक MOH/CGI जेद्दा सूची — मदीना मरकज़िया में 381 होटल",
     },
     ur: {
       title: "انڈین حج عمارات", subtitle: "مکہ اور مدینہ 2026", makkah: "مکہ", madinah: "مدینہ", all: "سب",
@@ -58,8 +58,8 @@ const HajjBuildingsPage = () => {
       buildingRange: "بلڈنگ رینج", notFound: "بلڈنگ نمبر نہیں ملا۔ براہ کرم 101-1880 کے درمیان نمبر درج کریں۔",
       allZones: "مکہ کے تمام بلڈنگ زون", zoneNote: "بلڈنگ نمبر 101-1880 صرف زون کی پہچان کے لیے ہیں، عمارتوں کی تعداد نہیں۔",
       navigate: "نیویگیٹ", openMap: "گوگل میپ میں کھولیں",
-      madinahHotels: "مدینہ ہوٹل 2026", searchHotel: "ہوٹل کا نام تلاش کریں...", hotelsCount: "ہوٹل", locUnavailable: "لوکیشن دستیاب نہیں",
-      hotelsSource: "ماخذ: CGI جدہ – محمد سلمان خان کی جانب سے مرتب",
+      madinahHotels: "مدینہ ہوٹل 2026", searchHotel: "نام، کوڈ، یا تشی سے تلاش کریں...", hotelsCount: "ہوٹل", locUnavailable: "لوکیشن دستیاب نہیں",
+      hotelsSource: "ماخذ: آفیشل MOH/CGI جدہ فہرست — مدینہ مرکزیہ میں 381 ہوٹل",
     },
     ar: {
       title: "مباني الحج الهندية", subtitle: "مكة والمدينة 2026", makkah: "مكة", madinah: "المدينة", all: "الكل",
@@ -69,8 +69,8 @@ const HajjBuildingsPage = () => {
       buildingRange: "نطاق المباني", notFound: "رقم المبنى غير موجود. الرجاء إدخال رقم بين 101-1880.",
       allZones: "جميع مناطق مباني مكة", zoneNote: "أرقام المباني 101-1880 هي أرقام تعريف المنطقة فقط.",
       navigate: "انتقال", openMap: "افتح في خرائط جوجل",
-      madinahHotels: "فنادق المدينة 2026", searchHotel: "ابحث عن اسم الفندق...", hotelsCount: "فنادق", locUnavailable: "الموقع غير متوفر",
-      hotelsSource: "المصدر: CGI جدة – إعداد محمد سلمان خان",
+      madinahHotels: "فنادق المدينة 2026", searchHotel: "ابحث بالاسم أو الرقم أو التشي...", hotelsCount: "فنادق", locUnavailable: "الموقع غير متوفر",
+      hotelsSource: "المصدر: قائمة MOH/CGI جدة الرسمية — 381 فندقًا في مركزية المدينة",
     },
   };
 
