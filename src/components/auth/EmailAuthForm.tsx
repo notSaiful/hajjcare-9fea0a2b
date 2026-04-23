@@ -37,7 +37,8 @@ interface EmailAuthFormProps {
 }
 
 export function EmailAuthForm({ onSuccess }: EmailAuthFormProps) {
-  const [isSignUp, setIsSignUp] = useState(false);
+  const isSignUp = false;
+  const setIsSignUp = (_: boolean) => {};
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -219,16 +220,7 @@ export function EmailAuthForm({ onSuccess }: EmailAuthFormProps) {
         </Button>
       </form>
 
-      {/* Toggle */}
-      <div className="text-center pt-1">
-        <button
-          type="button"
-          onClick={() => { setIsSignUp(!isSignUp); setErrors({}); }}
-          className="text-sm text-primary hover:text-primary/80 underline underline-offset-4 transition-colors"
-        >
-          {isSignUp ? t.haveAccount : t.noAccount}
-        </button>
-      </div>
+      {/* Sign-up disabled — sign-in only */}
 
       {/* Consent Review Modal - only for signup */}
       <Dialog open={showConsentModal} onOpenChange={(v) => { if (!v) setConsentAgreed(false); setShowConsentModal(v); }}>
