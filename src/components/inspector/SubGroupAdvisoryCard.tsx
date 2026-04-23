@@ -1,14 +1,81 @@
+import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Megaphone, Users, MapPin, Shield, MessageCircle, HandHeart } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Megaphone, Users, MapPin, Shield, MessageCircle, HandHeart, CheckCircle2, Loader2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/hooks/use-toast';
+import { format } from 'date-fns';
+
+const ADVISORY_KEY = 'shi_madinah_subgroup_advisory_2026';
 
 /**
  * Official advisory from SHI Desk, Madinah.
- * Reminds Haj State Inspectors to form sub-groups with volunteer leaders
- * for coordinated movement to Makkah, Mina, Muzdalifah and Arafat.
- * No personal details of leaders are displayed — only responsibilities.
+ * Includes an "I understand" acknowledgment that records the inspector's
+ * confirmation in the advisory_acknowledgments table.
  */
 export const SubGroupAdvisoryCard = () => {
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [acknowledged, setAcknowledged] = useState(false);
+  const [acknowledgedAt, setAcknowledgedAt] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Check existing acknowledgment
+  useEffect(() => {
+    if (!user) {
+      setIsLoading(false);
+      return;
+    }
+    let mounted = true;
+    (async () => {
+      const { data } = await (supabase as any)
+        .from('advisory_acknowledgments')
+        .select('acknowledged_at')
+        .eq('user_id', user.id)
+        .eq('advisory_key', ADVISORY_KEY)
+        .maybeSingle();
+      if (mounted && data) {
+        setAcknowledged(true);
+        setAcknowledgedAt(data.acknowledged_at);
+      }
+      if (mounted) setIsLoading(false);
+    })();
+    return () => { mounted = false; };
+  }, [user]);
+
+  const handleAcknowledge = async () => {
+    if (!user) {
+      toast({
+        title: 'Sign in required',
+        description: 'Please sign in to acknowledge this advisory.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    setIsSubmitting(true);
+    const { error } = await (supabase as any)
+      .from('advisory_acknowledgments')
+      .insert({
+        user_id: user.id,
+        advisory_key: ADVISORY_KEY,
+        user_agent: navigator.userAgent,
+      });
+    setIsSubmitting(false);
+    if (error) {
+      toast({ title: 'Failed to record', description: error.message, variant: 'destructive' });
+      return;
+    }
+    setAcknowledged(true);
+    setAcknowledgedAt(new Date().toISOString());
+    toast({
+      title: 'Acknowledged ✓',
+      description: 'Your acknowledgment has been recorded with SHI Desk.',
+    });
+  };
+
   return (
     <Card className="border-2 border-amber-300 dark:border-amber-700 bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50 dark:from-amber-950/40 dark:via-yellow-950/30 dark:to-orange-950/40 shadow-md">
       <CardContent className="p-4 space-y-3">
@@ -74,6 +141,44 @@ export const SubGroupAdvisoryCard = () => {
             This will greatly help in maintaining discipline, avoiding confusion, and ensuring
             everyone's safety, especially during crowded and critical times.
           </p>
+        </div>
+
+        {/* Acknowledgment Button */}
+        <div className="pt-2 border-t border-amber-200 dark:border-amber-800">
+          {isLoading ? (
+            <Button disabled variant="outline" className="w-full">
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" /> Loading...
+            </Button>
+          ) : acknowledged ? (
+            <div className="flex items-center justify-center gap-2 bg-emerald-100 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-200 rounded-lg p-3 text-sm font-medium">
+              <CheckCircle2 className="w-5 h-5" />
+              <div className="text-center">
+                <div>Acknowledged</div>
+                {acknowledgedAt && (
+                  <div className="text-[11px] font-normal opacity-80">
+                    {format(new Date(acknowledgedAt), "dd MMM yyyy, hh:mm a")}
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            <Button
+              onClick={handleAcknowledge}
+              disabled={isSubmitting || !user}
+              className="w-full bg-amber-600 hover:bg-amber-700 text-white font-semibold h-11"
+            >
+              {isSubmitting ? (
+                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Recording...</>
+              ) : (
+                <><CheckCircle2 className="w-4 h-4 mr-2" /> I understand</>
+              )}
+            </Button>
+          )}
+          {!user && !isLoading && (
+            <p className="text-[11px] text-center text-muted-foreground mt-2">
+              Sign in to record your acknowledgment
+            </p>
+          )}
         </div>
       </CardContent>
     </Card>

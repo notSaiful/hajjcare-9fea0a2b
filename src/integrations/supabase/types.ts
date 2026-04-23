@@ -47,6 +47,30 @@ export type Database = {
         }
         Relationships: []
       }
+      advisory_acknowledgments: {
+        Row: {
+          acknowledged_at: string
+          advisory_key: string
+          id: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          acknowledged_at?: string
+          advisory_key: string
+          id?: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          acknowledged_at?: string
+          advisory_key?: string
+          id?: string
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       ai_feedback: {
         Row: {
           created_at: string
