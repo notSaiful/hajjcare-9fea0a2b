@@ -2976,6 +2976,13 @@ export type Database = {
           invite_code: string
         }[]
       }
+      get_advisory_ack_stats: {
+        Args: { p_advisory_key: string }
+        Returns: {
+          acknowledged_count: number
+          total_inspectors: number
+        }[]
+      }
       get_group_member_profile: {
         Args: { target_user_id: string }
         Returns: {

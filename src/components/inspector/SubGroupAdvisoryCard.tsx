@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Megaphone, Users, MapPin, Shield, MessageCircle, HandHeart, CheckCircle2, Loader2 } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
+import { Megaphone, Users, MapPin, Shield, MessageCircle, HandHeart, CheckCircle2, Loader2, TrendingUp } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
@@ -22,29 +23,41 @@ export const SubGroupAdvisoryCard = () => {
   const [acknowledgedAt, setAcknowledgedAt] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [ackCount, setAckCount] = useState<number>(0);
+  const [totalInspectors, setTotalInspectors] = useState<number>(0);
 
-  // Check existing acknowledgment
-  useEffect(() => {
-    if (!user) {
-      setIsLoading(false);
-      return;
+  // Fetch acknowledgment stats (public via RPC)
+  const fetchStats = useCallback(async () => {
+    const { data, error } = await (supabase as any).rpc('get_advisory_ack_stats', {
+      p_advisory_key: ADVISORY_KEY,
+    });
+    if (!error && data && data.length > 0) {
+      setAckCount(Number(data[0].acknowledged_count) || 0);
+      setTotalInspectors(Number(data[0].total_inspectors) || 0);
     }
+  }, []);
+
+  // Check existing acknowledgment + load stats
+  useEffect(() => {
     let mounted = true;
     (async () => {
-      const { data } = await (supabase as any)
-        .from('advisory_acknowledgments')
-        .select('acknowledged_at')
-        .eq('user_id', user.id)
-        .eq('advisory_key', ADVISORY_KEY)
-        .maybeSingle();
-      if (mounted && data) {
-        setAcknowledged(true);
-        setAcknowledgedAt(data.acknowledged_at);
+      await fetchStats();
+      if (user) {
+        const { data } = await (supabase as any)
+          .from('advisory_acknowledgments')
+          .select('acknowledged_at')
+          .eq('user_id', user.id)
+          .eq('advisory_key', ADVISORY_KEY)
+          .maybeSingle();
+        if (mounted && data) {
+          setAcknowledged(true);
+          setAcknowledgedAt(data.acknowledged_at);
+        }
       }
       if (mounted) setIsLoading(false);
     })();
     return () => { mounted = false; };
-  }, [user]);
+  }, [user, fetchStats]);
 
   const handleAcknowledge = async () => {
     if (!user) {
@@ -70,11 +83,17 @@ export const SubGroupAdvisoryCard = () => {
     }
     setAcknowledged(true);
     setAcknowledgedAt(new Date().toISOString());
+    // Refresh aggregate count
+    fetchStats();
     toast({
       title: 'Acknowledged ✓',
       description: 'Your acknowledgment has been recorded with SHI Desk.',
     });
   };
+
+  const progressPct = totalInspectors > 0
+    ? Math.min(100, Math.round((ackCount / totalInspectors) * 100))
+    : 0;
 
   return (
     <Card className="border-2 border-amber-300 dark:border-amber-700 bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50 dark:from-amber-950/40 dark:via-yellow-950/30 dark:to-orange-950/40 shadow-md">
@@ -141,6 +160,31 @@ export const SubGroupAdvisoryCard = () => {
             This will greatly help in maintaining discipline, avoiding confusion, and ensuring
             everyone's safety, especially during crowded and critical times.
           </p>
+        </div>
+
+        {/* Acknowledgment Progress Indicator */}
+        <div className="bg-white/70 dark:bg-black/30 rounded-lg p-3 space-y-2 border border-amber-200/60 dark:border-amber-800/60">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-1.5 text-xs font-semibold text-amber-900 dark:text-amber-100">
+              <TrendingUp className="w-3.5 h-3.5" />
+              SHI Acknowledgment Progress
+            </div>
+            <div className="text-xs font-bold text-amber-800 dark:text-amber-200">
+              {ackCount} / {totalInspectors || '—'}
+            </div>
+          </div>
+          <Progress
+            value={progressPct}
+            className="h-2 bg-amber-100 dark:bg-amber-950/50 [&>div]:bg-gradient-to-r [&>div]:from-amber-500 [&>div]:to-emerald-500"
+          />
+          <div className="flex items-center justify-between text-[11px] text-amber-800/80 dark:text-amber-200/80">
+            <span>{progressPct}% acknowledged</span>
+            <span>
+              {totalInspectors > 0
+                ? `${totalInspectors - ackCount} pending`
+                : 'Awaiting registrations'}
+            </span>
+          </div>
         </div>
 
         {/* Acknowledgment Button */}
