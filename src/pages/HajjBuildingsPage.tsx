@@ -3,7 +3,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { SimpleHeader } from "@/components/SimpleHeader";
 import { hajjBuildings, emergencyContacts, type HajjBuilding } from "@/data/hajjBuildingsData";
 import { makkahBuildingZones, findZoneByBuildingNumber, type BuildingZone } from "@/data/hajjBuildingZones";
-import { madinahHotels } from "@/data/madinahHotels";
+import { madinahHotels, getMadinahMapUrl } from "@/data/madinahHotels";
 import { Building, MapPin, Phone, Search, Stethoscope, Home, Landmark, Hash, Navigation, AlertCircle, ExternalLink, Hotel } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -36,8 +36,8 @@ const HajjBuildingsPage = () => {
       buildingRange: "Building Range", notFound: "Building number not found. Please enter a number between 101-1880.",
       allZones: "All Makkah Building Zones", zoneNote: "Building numbers 101-1880 are Zone IDs, not actual building count.",
       navigate: "Navigate", openMap: "Open in Google Maps",
-      madinahHotels: "Madinah Hotels 2026", searchHotel: "Search hotel name...", hotelsCount: "hotels", locUnavailable: "Location unavailable",
-      hotelsSource: "Source: CGI Jeddah – compiled by Mohammed Salman Khan",
+      madinahHotels: "Madinah Hotels 2026", searchHotel: "Search by name, code, or Tashee...", hotelsCount: "hotels", locUnavailable: "Location unavailable",
+      hotelsSource: "Source: Official MOH/CGI Jeddah list — 381 hotels in Madinah Markaziya",
     },
     hi: {
       title: "भारतीय हज भवन", subtitle: "मक्का और मदीना 2026", makkah: "मक्का", madinah: "मदीना", all: "सभी",
@@ -47,8 +47,8 @@ const HajjBuildingsPage = () => {
       buildingRange: "बिल्डिंग रेंज", notFound: "बिल्डिंग नंबर नहीं मिला। कृपया 101-1880 के बीच नंबर डालें।",
       allZones: "मक्का के सभी बिल्डिंग ज़ोन", zoneNote: "बिल्डिंग नंबर 101-1880 सिर्फ ज़ोन पहचान के लिए हैं, बिल्डिंग की तादाद नहीं।",
       navigate: "नेविगेट करें", openMap: "गूगल मैप में खोलें",
-      madinahHotels: "मदीना होटल 2026", searchHotel: "होटल का नाम खोजें...", hotelsCount: "होटल", locUnavailable: "लोकेशन उपलब्ध नहीं",
-      hotelsSource: "स्रोत: CGI जेद्दा – मोहम्मद सलमान खान द्वारा संकलित",
+      madinahHotels: "मदीना होटल 2026", searchHotel: "नाम, कोड, या तशी से खोजें...", hotelsCount: "होटल", locUnavailable: "लोकेशन उपलब्ध नहीं",
+      hotelsSource: "स्रोत: आधिकारिक MOH/CGI जेद्दा सूची — मदीना मरकज़िया में 381 होटल",
     },
     ur: {
       title: "انڈین حج عمارات", subtitle: "مکہ اور مدینہ 2026", makkah: "مکہ", madinah: "مدینہ", all: "سب",
@@ -58,8 +58,8 @@ const HajjBuildingsPage = () => {
       buildingRange: "بلڈنگ رینج", notFound: "بلڈنگ نمبر نہیں ملا۔ براہ کرم 101-1880 کے درمیان نمبر درج کریں۔",
       allZones: "مکہ کے تمام بلڈنگ زون", zoneNote: "بلڈنگ نمبر 101-1880 صرف زون کی پہچان کے لیے ہیں، عمارتوں کی تعداد نہیں۔",
       navigate: "نیویگیٹ", openMap: "گوگل میپ میں کھولیں",
-      madinahHotels: "مدینہ ہوٹل 2026", searchHotel: "ہوٹل کا نام تلاش کریں...", hotelsCount: "ہوٹل", locUnavailable: "لوکیشن دستیاب نہیں",
-      hotelsSource: "ماخذ: CGI جدہ – محمد سلمان خان کی جانب سے مرتب",
+      madinahHotels: "مدینہ ہوٹل 2026", searchHotel: "نام، کوڈ، یا تشی سے تلاش کریں...", hotelsCount: "ہوٹل", locUnavailable: "لوکیشن دستیاب نہیں",
+      hotelsSource: "ماخذ: آفیشل MOH/CGI جدہ فہرست — مدینہ مرکزیہ میں 381 ہوٹل",
     },
     ar: {
       title: "مباني الحج الهندية", subtitle: "مكة والمدينة 2026", makkah: "مكة", madinah: "المدينة", all: "الكل",
@@ -69,8 +69,8 @@ const HajjBuildingsPage = () => {
       buildingRange: "نطاق المباني", notFound: "رقم المبنى غير موجود. الرجاء إدخال رقم بين 101-1880.",
       allZones: "جميع مناطق مباني مكة", zoneNote: "أرقام المباني 101-1880 هي أرقام تعريف المنطقة فقط.",
       navigate: "انتقال", openMap: "افتح في خرائط جوجل",
-      madinahHotels: "فنادق المدينة 2026", searchHotel: "ابحث عن اسم الفندق...", hotelsCount: "فنادق", locUnavailable: "الموقع غير متوفر",
-      hotelsSource: "المصدر: CGI جدة – إعداد محمد سلمان خان",
+      madinahHotels: "فنادق المدينة 2026", searchHotel: "ابحث بالاسم أو الرقم أو التشي...", hotelsCount: "فنادق", locUnavailable: "الموقع غير متوفر",
+      hotelsSource: "المصدر: قائمة MOH/CGI جدة الرسمية — 381 فندقًا في مركزية المدينة",
     },
   };
 
@@ -97,9 +97,15 @@ const HajjBuildingsPage = () => {
   const makkahBuildings = filtered.filter((b) => b.city === "makkah");
   const madinahBuildings = filtered.filter((b) => b.city === "madinah");
 
-  const filteredHotels = madinahHotels.filter((h) =>
-    !hotelSearch || h.name.toLowerCase().includes(hotelSearch.toLowerCase())
-  );
+  const filteredHotels = madinahHotels.filter((h) => {
+    if (!hotelSearch) return true;
+    const q = hotelSearch.toLowerCase();
+    return (
+      h.name.toLowerCase().includes(q) ||
+      String(h.code) === q ||
+      h.madTashee.includes(q)
+    );
+  });
 
   const getZoneName = (z: BuildingZone) => lang === "hi" ? z.zoneNameHi : lang === "ur" ? z.zoneNameUr : z.zoneName;
   const getAreaName = (z: BuildingZone) => lang === "hi" ? z.areaHi : z.area;
@@ -325,36 +331,37 @@ const HajjBuildingsPage = () => {
             />
           </div>
           <div className="grid gap-1.5 max-h-[420px] overflow-y-auto pr-1">
-            {filteredHotels.map((hotel) => (
-              hotel.mapLink ? (
+            {filteredHotels.map((hotel) => {
+              const url = getMadinahMapUrl(hotel);
+              const verified = !!hotel.mapLink;
+              return (
                 <a
                   key={hotel.id}
-                  href={hotel.mapLink}
+                  href={url}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 bg-card border border-border rounded-lg p-2.5 hover:border-emerald-500/50 hover:shadow-sm transition-all active:scale-[0.98]"
                 >
-                  <div className="w-7 h-7 rounded-lg bg-emerald-500/10 flex items-center justify-center flex-shrink-0">
-                    <MapPin className="w-3.5 h-3.5 text-emerald-600" />
-                  </div>
-                  <p className="font-medium text-xs flex-1 leading-tight truncate">{hotel.name}</p>
-                  <ExternalLink className="w-3 h-3 text-muted-foreground flex-shrink-0" />
-                </a>
-              ) : (
-                <div
-                  key={hotel.id}
-                  className="flex items-center gap-2 bg-muted/30 border border-border rounded-lg p-2.5 opacity-70"
-                >
-                  <div className="w-7 h-7 rounded-lg bg-muted flex items-center justify-center flex-shrink-0">
-                    <AlertCircle className="w-3.5 h-3.5 text-muted-foreground" />
+                  <div className="w-9 h-9 rounded-lg bg-emerald-500/10 flex items-center justify-center flex-shrink-0">
+                    <span className="text-[11px] font-bold text-emerald-700">#{hotel.code}</span>
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-xs leading-tight truncate">{hotel.name}</p>
-                    <p className="text-[10px] text-muted-foreground">{t.locUnavailable}</p>
+                    <p className="text-[10px] text-muted-foreground">
+                      Tashee: {hotel.madTashee} · {hotel.type}
+                      {!verified && <span className="ml-1 opacity-60">· Search</span>}
+                    </p>
                   </div>
-                </div>
-              )
-            ))}
+                  <ExternalLink className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+                </a>
+              );
+            })}
+            {filteredHotels.length === 0 && (
+              <div className="text-center text-xs text-muted-foreground py-6">
+                <AlertCircle className="w-4 h-4 mx-auto mb-1 opacity-60" />
+                No hotels found
+              </div>
+            )}
           </div>
           <p className="text-[10px] text-muted-foreground text-center pt-1 border-t border-border/50">
             {t.hotelsSource}
