@@ -6,6 +6,7 @@ import { DashboardMenu } from "@/components/DashboardMenu";
 import { EmergencyMarqueeBar } from "@/components/EmergencyMarqueeBar";
 import { SubGroupAdvisoryCard } from "@/components/inspector/SubGroupAdvisoryCard";
 import { StaffMenu } from "@/components/dashboard/StaffMenu";
+import { StaffAccessHint } from "@/components/dashboard/StaffAccessHint";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAppAnalytics } from "@/hooks/useAppAnalytics";
 
@@ -51,6 +52,9 @@ const HomePage = () => {
 
           {/* Staff-only tools (Inspector / Admin / Coordinator) */}
           <StaffMenu />
+
+          {/* Hint shown to signed-in non-staff explaining required role */}
+          <StaffAccessHint />
 
           {/* Dashboard Menu with Bismillah */}
           <section className="animate-fade-up" style={{ animationDelay: "80ms" }}>
