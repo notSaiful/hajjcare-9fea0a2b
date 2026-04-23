@@ -23,29 +23,41 @@ export const SubGroupAdvisoryCard = () => {
   const [acknowledgedAt, setAcknowledgedAt] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [ackCount, setAckCount] = useState<number>(0);
+  const [totalInspectors, setTotalInspectors] = useState<number>(0);
 
-  // Check existing acknowledgment
-  useEffect(() => {
-    if (!user) {
-      setIsLoading(false);
-      return;
+  // Fetch acknowledgment stats (public via RPC)
+  const fetchStats = useCallback(async () => {
+    const { data, error } = await (supabase as any).rpc('get_advisory_ack_stats', {
+      p_advisory_key: ADVISORY_KEY,
+    });
+    if (!error && data && data.length > 0) {
+      setAckCount(Number(data[0].acknowledged_count) || 0);
+      setTotalInspectors(Number(data[0].total_inspectors) || 0);
     }
+  }, []);
+
+  // Check existing acknowledgment + load stats
+  useEffect(() => {
     let mounted = true;
     (async () => {
-      const { data } = await (supabase as any)
-        .from('advisory_acknowledgments')
-        .select('acknowledged_at')
-        .eq('user_id', user.id)
-        .eq('advisory_key', ADVISORY_KEY)
-        .maybeSingle();
-      if (mounted && data) {
-        setAcknowledged(true);
-        setAcknowledgedAt(data.acknowledged_at);
+      await fetchStats();
+      if (user) {
+        const { data } = await (supabase as any)
+          .from('advisory_acknowledgments')
+          .select('acknowledged_at')
+          .eq('user_id', user.id)
+          .eq('advisory_key', ADVISORY_KEY)
+          .maybeSingle();
+        if (mounted && data) {
+          setAcknowledged(true);
+          setAcknowledgedAt(data.acknowledged_at);
+        }
       }
       if (mounted) setIsLoading(false);
     })();
     return () => { mounted = false; };
-  }, [user]);
+  }, [user, fetchStats]);
 
   const handleAcknowledge = async () => {
     if (!user) {
