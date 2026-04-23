@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Megaphone, Users, MapPin, Shield, MessageCircle, HandHeart, CheckCircle2, Loader2 } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
+import { Megaphone, Users, MapPin, Shield, MessageCircle, HandHeart, CheckCircle2, Loader2, TrendingUp } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
