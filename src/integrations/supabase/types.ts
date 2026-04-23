@@ -3100,6 +3100,7 @@ export type Database = {
           user_id: string
         }[]
       }
+      grant_demo_staff_roles: { Args: never; Returns: Json }
       has_active_consent: {
         Args: { p_purpose: string; p_user_id: string }
         Returns: boolean
