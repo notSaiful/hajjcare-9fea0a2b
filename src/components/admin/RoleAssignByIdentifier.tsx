@@ -122,7 +122,8 @@ export const RoleAssignByIdentifier: React.FC<{ onAssigned?: () => void }> = ({ 
     try {
       const { data, error } = await supabase.rpc('assign_user_role', {
         p_identifier: lookup.user_id,
-        p_role: selectedRole,
+        // Cast: enum may not yet include 'inspector' in generated types
+        p_role: selectedRole as never,
         p_zone: selectedZone === 'none' ? null : selectedZone,
       });
 
