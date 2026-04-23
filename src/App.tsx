@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { InspectorOnlyRoute } from "@/components/InspectorOnlyRoute";
 
 // Handle dynamic import failures (stale cache, network issues)
 if (typeof window !== "undefined") {
@@ -219,7 +220,22 @@ function AppContent() {
       <Route path="/inspector-directory" element={<InspectorDirectoryPage />} />
       <Route path="/admin/inspectors" element={<AdminInspectorsPage />} />
       <Route path="/inspector-group" element={<InspectorGroupManagePage />} />
-        <Route path="/haj-inspector-register" element={<InspectorRegisterPage />} />
+        <Route
+          path="/haj-inspector-register"
+          element={
+            <InspectorOnlyRoute>
+              <InspectorRegisterPage />
+            </InspectorOnlyRoute>
+          }
+        />
+        <Route
+          path="/inspector-register"
+          element={
+            <InspectorOnlyRoute>
+              <InspectorRegisterPage />
+            </InspectorOnlyRoute>
+          }
+        />
         <Route path="/join-group" element={<HajiJoinGroupPage />} />
         <Route path="/my-hajj-group" element={<HajiGroupDashboardPage />} />
       <Route path="/shi-training" element={<ShiTrainingPage />} />
