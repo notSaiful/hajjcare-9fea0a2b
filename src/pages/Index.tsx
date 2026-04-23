@@ -34,6 +34,11 @@ const Index = () => {
 
       {/* Main Content */}
       <main className="flex-1 pt-14 pb-28 sm:pb-32">
+        {/* SHI Desk Advisory - always visible */}
+        <div className="container max-w-3xl mx-auto px-3 sm:px-4 pt-2">
+          <SubGroupAdvisoryCard />
+        </div>
+
         {hasMessages ? (
           <div className="relative">
             {/* Map Card and Emergency SOS */}
