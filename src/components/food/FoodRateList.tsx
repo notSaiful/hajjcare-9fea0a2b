@@ -254,10 +254,10 @@ export function FoodRateList({ language }: Props) {
       )}
 
       {/* Tips */}
-      <Card className="border-emerald-500/30 bg-emerald-500/5">
+      <Card className="border-primary/30 bg-primary/5">
         <CardContent className="p-4 space-y-2">
           <div className="flex items-center gap-2 font-semibold text-sm">
-            <TrendingUp className="w-4 h-4 text-emerald-600" />
+            <TrendingUp className="w-4 h-4 text-primary" />
             Paise bachane ke tips
           </div>
           <ul className="text-xs text-muted-foreground space-y-1.5 list-disc pl-5">
