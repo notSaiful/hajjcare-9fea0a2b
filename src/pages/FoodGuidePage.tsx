@@ -913,6 +913,11 @@ const FoodGuidePage = () => {
               </Card>
             </TabsContent>
 
+            {/* Rate List Tab */}
+            <TabsContent value="rates" className="space-y-4">
+              <FoodRateList language={language} />
+            </TabsContent>
+
             {/* Meal Schedule Tab */}
             <TabsContent value="schedule" className="space-y-4">
               <Card className="border-primary/20">
