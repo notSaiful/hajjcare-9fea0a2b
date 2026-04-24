@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { MainLayout } from "@/components/MainLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { ArrowLeft, MapPin, Clock, Utensils, Heart, Store, Calendar, Search, ExternalLink, Navigation, AlertTriangle, Info, ChefHat } from "lucide-react";
+import { ArrowLeft, MapPin, Clock, Utensils, Heart, Store, Calendar, Search, ExternalLink, Navigation, AlertTriangle, Info, ChefHat, IndianRupee } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { FoodRateList } from "@/components/food/FoodRateList";
 import foodGuideImage from "@/assets/food-guide-pilgrims.jpeg";
 
 const FoodGuidePage = () => {
@@ -713,24 +714,28 @@ const FoodGuidePage = () => {
 
         <div className="container mx-auto px-4 pb-8">
           <Tabs defaultValue="awareness" className="w-full">
-            <TabsList className="w-full grid grid-cols-5 mb-6">
-              <TabsTrigger value="awareness" className="text-xs sm:text-sm gap-1">
+            <TabsList className="w-full grid grid-cols-3 sm:grid-cols-6 mb-6 h-auto">
+              <TabsTrigger value="awareness" className="text-xs sm:text-sm gap-1 py-2">
                 <AlertTriangle className="w-3 h-3 sm:w-4 sm:h-4" />
                 <span className="hidden sm:inline">{t.foodAwareness}</span>
               </TabsTrigger>
-              <TabsTrigger value="schedule" className="text-xs sm:text-sm gap-1">
+              <TabsTrigger value="rates" className="text-xs sm:text-sm gap-1 py-2">
+                <IndianRupee className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="hidden sm:inline">{(t as any).rateList || "Rates"}</span>
+              </TabsTrigger>
+              <TabsTrigger value="schedule" className="text-xs sm:text-sm gap-1 py-2">
                 <Calendar className="w-3 h-3 sm:w-4 sm:h-4" />
                 <span className="hidden sm:inline">{t.mealSchedule}</span>
               </TabsTrigger>
-              <TabsTrigger value="free" className="text-xs sm:text-sm gap-1">
+              <TabsTrigger value="free" className="text-xs sm:text-sm gap-1 py-2">
                 <Heart className="w-3 h-3 sm:w-4 sm:h-4" />
                 <span className="hidden sm:inline">{t.freeFoodTitle}</span>
               </TabsTrigger>
-              <TabsTrigger value="stores" className="text-xs sm:text-sm gap-1">
+              <TabsTrigger value="stores" className="text-xs sm:text-sm gap-1 py-2">
                 <Store className="w-3 h-3 sm:w-4 sm:h-4" />
                 <span className="hidden sm:inline">{t.foodStoresTitle}</span>
               </TabsTrigger>
-              <TabsTrigger value="restaurants" className="text-xs sm:text-sm gap-1">
+              <TabsTrigger value="restaurants" className="text-xs sm:text-sm gap-1 py-2">
                 <Search className="w-3 h-3 sm:w-4 sm:h-4" />
                 <span className="hidden sm:inline">{t.restaurantFinder}</span>
               </TabsTrigger>
