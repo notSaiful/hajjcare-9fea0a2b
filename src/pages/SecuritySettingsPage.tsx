@@ -13,7 +13,7 @@ const labels = {
 };
 
 const SecuritySettingsPage = () => {
-  const { loading, isAuthenticated } = useAuth();
+  const { loading } = useAuth();
   const { language, isRTL } = useLanguage();
   const navigate = useNavigate();
   const t = labels[language as keyof typeof labels] || labels.en;
@@ -24,11 +24,6 @@ const SecuritySettingsPage = () => {
         <Loader2 className="w-6 h-6 animate-spin text-primary" />
       </div>
     );
-  }
-
-  if (!isAuthenticated) {
-    navigate("/auth");
-    return null;
   }
 
   return (

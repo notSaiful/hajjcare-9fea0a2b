@@ -20,7 +20,6 @@ import logo from "@/assets/logo.jpeg";
 const SELECTABLE_STAGES: HajjStage[] = ["kaaba", "safa_marwa", "mina", "arafat", "muzdalifah", "jamarat", "outside"];
 
 const FamilyPage = () => {
-  const { isAuthenticated, loading: authLoading } = useAuth();
   const { t, isRTL, language } = useLanguage();
   const { group, memberLocations, memberId, updateLocation } = useFamilyGroup();
   const { lat, lng, stage, stageInfo, isLoading: locationLoading } = useHajjLocation();
@@ -34,12 +33,6 @@ const FamilyPage = () => {
   // Determine active stage (manual override or GPS-detected)
   const activeStage = isTestMode && manualStage ? manualStage : stage;
   const activeStageInfo = HAJJ_STAGES[activeStage];
-
-  useEffect(() => {
-    if (!authLoading && !isAuthenticated) {
-      navigate("/auth");
-    }
-  }, [isAuthenticated, authLoading, navigate]);
 
   // Update location for family group (uses active stage)
   useEffect(() => {

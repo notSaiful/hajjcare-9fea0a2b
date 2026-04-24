@@ -25,23 +25,16 @@ import { ArrowLeft, ArrowRight, Users, Shield, Loader2, Radio } from "lucide-rea
  */
 const FamilyProgressPage = () => {
   const { language, isRTL } = useLanguage();
-  const { isAuthenticated, loading: authLoading } = useAuth();
   const { group, members, memberLocations, memberId, isLoading } = useFamilyGroup();
   const navigate = useNavigate();
   const [isLive, setIsLive] = useState(true);
   
   const labels = PROGRESS_LABELS[language] || PROGRESS_LABELS.en;
 
-  useEffect(() => {
-    if (!authLoading && !isAuthenticated) {
-      navigate("/auth");
-    }
-  }, [isAuthenticated, authLoading, navigate]);
-
   // Realtime is handled by useFamilyGroup hook - no polling needed
   // The hook subscribes to member_locations changes and updates memberLocations state
 
-  if (authLoading || isLoading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
