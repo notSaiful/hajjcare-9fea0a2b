@@ -46,6 +46,8 @@ const FoodGuidePage = () => {
       lateNight: "Late Night",
       foodAwareness: "Food Rules",
       foodAwarenessSubtitle: "Important food rules from Haj Committee of India for Hajj 2026",
+      rateList: "Rate List",
+      rateListSubtitle: "Market prices of food items in Makkah & Madinah",
     },
     ar: {
       title: "دليل الطعام",
@@ -76,6 +78,8 @@ const FoodGuidePage = () => {
       lateNight: "وجبة متأخرة",
       foodAwareness: "قواعد الطعام",
       foodAwarenessSubtitle: "قواعد الطعام المهمة من لجنة الحج الهندية لحج 2026",
+      rateList: "قائمة الأسعار",
+      rateListSubtitle: "أسعار السوق للمواد الغذائية في مكة والمدينة",
     },
     ur: {
       title: "کھانے کی گائیڈ",
@@ -106,6 +110,8 @@ const FoodGuidePage = () => {
       lateNight: "رات کا کھانا",
       foodAwareness: "کھانے کے قواعد",
       foodAwarenessSubtitle: "حج 2026 کے لیے ہج کمیٹی آف انڈیا کے اہم کھانے کے قواعد",
+      rateList: "ریٹ لسٹ",
+      rateListSubtitle: "مکہ و مدینہ میں کھانے کی اشیاء کے بازار ریٹ",
     },
     hi: {
       title: "खाद्य गाइड",
@@ -136,6 +142,8 @@ const FoodGuidePage = () => {
       lateNight: "देर रात का खाना",
       foodAwareness: "खाने के नियम",
       foodAwarenessSubtitle: "हज 2026 के लिए हज कमेटी ऑफ इंडिया के महत्वपूर्ण खाने के नियम",
+      rateList: "रेट लिस्ट",
+      rateListSubtitle: "मक्का और मदीना में खाने की चीज़ों के बाज़ार भाव",
     },
     ta: {
       title: "உணவு வழிகாட்டி",
@@ -166,6 +174,8 @@ const FoodGuidePage = () => {
       lateNight: "இரவு நேர உணவு",
       foodAwareness: "உணவு விதிகள்",
       foodAwarenessSubtitle: "ஹஜ் 2026 க்கான ஹஜ் கமிட்டி ஆஃப் இந்தியாவின் முக்கிய உணவு விதிகள்",
+      rateList: "விலை பட்டியல்",
+      rateListSubtitle: "மக்கா & மதீனாவில் உணவுப் பொருட்களின் சந்தை விலை",
     },
     te: {
       title: "ఆహార గైడ్",
@@ -196,6 +206,8 @@ const FoodGuidePage = () => {
       lateNight: "రాత్రి భోజనం",
       foodAwareness: "ఆహార నియమాలు",
       foodAwarenessSubtitle: "హజ్ 2026 కోసం హజ్ కమిటీ ఆఫ్ ఇండియా ముఖ్యమైన ఆహార నియమాలు",
+      rateList: "ధరల జాబితా",
+      rateListSubtitle: "మక్కా & మదీనాలో ఆహార వస్తువుల మార్కెట్ ధరలు",
     },
     mr: {
       title: "अन्न मार्गदर्शक",
@@ -226,6 +238,8 @@ const FoodGuidePage = () => {
       lateNight: "उशिरा रात्रीचे जेवण",
       foodAwareness: "अन्न नियम",
       foodAwarenessSubtitle: "हज 2026 साठी हज कमिटी ऑफ इंडियाचे महत्त्वाचे अन्न नियम",
+      rateList: "दर सूची",
+      rateListSubtitle: "मक्का व मदीनामध्ये अन्नपदार्थांचे बाजारभाव",
     },
     bn: {
       title: "খাদ্য গাইড",
@@ -256,6 +270,8 @@ const FoodGuidePage = () => {
       lateNight: "রাতের খাবার",
       foodAwareness: "খাবারের নিয়ম",
       foodAwarenessSubtitle: "হজ 2026 এর জন্য হজ কমিটি অফ ইন্ডিয়ার গুরুত্বপূর্ণ খাবারের নিয়ম",
+      rateList: "রেট তালিকা",
+      rateListSubtitle: "মক্কা ও মদিনায় খাবারের বাজার দাম",
     },
     or: {
       title: "ଖାଦ୍ୟ ଗାଇଡ୍",
@@ -286,6 +302,8 @@ const FoodGuidePage = () => {
       lateNight: "ରାତ୍ରି ଭୋଜନ",
       foodAwareness: "ଖାଦ୍ୟ ନିୟମ",
       foodAwarenessSubtitle: "ହଜ 2026 ପାଇଁ ହଜ କମିଟି ଅଫ ଇଣ୍ଡିଆର ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ ଖାଦ୍ୟ ନିୟମ",
+      rateList: "ଦର ତାଲିକା",
+      rateListSubtitle: "ମକ୍କା ଓ ମଦୀନାରେ ଖାଦ୍ୟ ସାମଗ୍ରୀର ବଜାର ଦର",
     },
     ml: {
       title: "ഭക്ഷണ ഗൈഡ്",
@@ -316,6 +334,8 @@ const FoodGuidePage = () => {
       lateNight: "രാത്രി ഭക്ഷണം",
       foodAwareness: "ഭക്ഷണ നിയമങ്ങൾ",
       foodAwarenessSubtitle: "ഹജ് 2026 ന് ഹജ് കമ്മിറ്റി ഓഫ് ഇന്ത്യയുടെ പ്രധാന ഭക്ഷണ നിയമങ്ങൾ",
+      rateList: "നിരക്ക് പട്ടിക",
+      rateListSubtitle: "മക്കയിലും മദീനയിലും ഭക്ഷ്യവസ്തുക്കളുടെ വിപണി വില",
     },
     pa: {
       title: "ਭੋਜਨ ਗਾਈਡ",
@@ -346,6 +366,8 @@ const FoodGuidePage = () => {
       lateNight: "ਦੇਰ ਰਾਤ ਦਾ ਖਾਣਾ",
       foodAwareness: "ਭੋਜਨ ਨਿਯਮ",
       foodAwarenessSubtitle: "ਹੱਜ 2026 ਲਈ ਹੱਜ ਕਮੇਟੀ ਆਫ਼ ਇੰਡੀਆ ਦੇ ਮਹੱਤਵਪੂਰਨ ਭੋਜਨ ਨਿਯਮ",
+      rateList: "ਰੇਟ ਲਿਸਟ",
+      rateListSubtitle: "ਮੱਕਾ ਤੇ ਮਦੀਨਾ ਵਿੱਚ ਖਾਣੇ ਦੀਆਂ ਕੀਮਤਾਂ",
     },
   };
 
