@@ -61,13 +61,8 @@ const FamilyPage = () => {
     }
   };
 
-  if (authLoading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
-      </div>
-    );
-  }
+  // Auth is optional — render the page directly. Child components show login prompts where needed.
+
 
   const otherMembers = memberLocations.filter(l => l.member_id !== memberId);
 
