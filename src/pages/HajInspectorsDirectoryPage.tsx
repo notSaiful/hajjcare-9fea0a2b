@@ -72,8 +72,8 @@ const HajInspectorsDirectoryPage = () => {
       filtered = filtered.filter(i => {
         // Pure-number query → match exact building numbers in Makkah/Madinah strings
         if (isPureNumber) {
-          const makkahNums = i.makkahBuilding?.match(/\d{1,4}/g) ?? [];
-          const madinahNums = i.madinahBuilding?.match(/\d{1,4}/g) ?? [];
+          const makkahNums: string[] = i.makkahBuilding?.match(/\d{1,4}/g) ?? [];
+          const madinahNums: string[] = i.madinahBuilding?.match(/\d{1,4}/g) ?? [];
           if (makkahNums.includes(query) || madinahNums.includes(query)) return true;
         }
         return (
