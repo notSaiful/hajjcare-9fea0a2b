@@ -8,6 +8,7 @@ import { InspectorNetworkRow } from "@/components/inspector/InspectorNetworkRow"
 import { Search, Network, ExternalLink, X, Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useInspectorFavorites } from "@/hooks/useInspectorFavorites";
+import { useInspectorOverrides } from "@/hooks/useInspectorOverrides";
 
 const PREVIEW_COUNT = 8;
 
