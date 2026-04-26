@@ -3,8 +3,10 @@ import { SimpleHeader } from '@/components/SimpleHeader';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { HAJ_INSPECTORS, getStateStats } from '@/data/hajInspectorsData';
-import { Search, Award, MessageCircle, ExternalLink, UserPlus, Users, ClipboardList } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { HAJ_INSPECTORS, getStateStats, type HajInspector } from '@/data/hajInspectorsData';
+import { hajjBusPoints } from '@/data/hajjBusPoints';
+import { Search, Award, MessageCircle, ExternalLink, UserPlus, Users, ClipboardList, SlidersHorizontal, X } from 'lucide-react';
 import { StateSelector } from '@/components/StateSelector';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { InspectorStatsCard } from '@/components/inspector/InspectorStatsCard';
@@ -13,23 +15,55 @@ import { useNavigate } from 'react-router-dom';
 
 const WHATSAPP_GROUP_LINK = 'https://chat.whatsapp.com/LdH4cHBImrWIAwX2wv83Xz?mode=gi_t';
 
+// Set of building numbers known to be "(U)" updated late additions.
+const UPDATED_BUILDING_NUMBERS = new Set<number>(
+  hajjBusPoints.filter((b) => b.isUpdated).flatMap((b) => b.buildings)
+);
+
+// Inspector counts as "updated assignment" if their Makkah building string
+// either contains "(U)" or references a known updated building number.
+const hasUpdatedAssignment = (i: HajInspector): boolean => {
+  const m = i.makkahBuilding;
+  if (!m) return false;
+  if (/\(U\)/i.test(m)) return true;
+  const nums = m.match(/\d{2,4}/g);
+  if (!nums) return false;
+  return nums.some((n) => UPDATED_BUILDING_NUMBERS.has(parseInt(n, 10)));
+};
+
+type CityFilter = 'all' | 'makkah' | 'madinah';
+type AssignmentFilter = 'all' | 'updated';
+
 const HajInspectorsDirectoryPage = () => {
   const { language } = useLanguage();
   const navigate = useNavigate();
   const [selectedState, setSelectedState] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [cityFilter, setCityFilter] = useState<CityFilter>('all');
+  const [assignmentFilter, setAssignmentFilter] = useState<AssignmentFilter>('all');
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
   // Filter inspectors
   const filteredInspectors = useMemo(() => {
     let filtered = HAJ_INSPECTORS;
-    
+
     if (selectedState) {
       filtered = filtered.filter(i => i.state.toLowerCase() === selectedState.toLowerCase());
     }
-    
+
+    if (cityFilter === 'makkah') {
+      filtered = filtered.filter(i => !!i.makkahBuilding);
+    } else if (cityFilter === 'madinah') {
+      filtered = filtered.filter(i => !!i.madinahBuilding);
+    }
+
+    if (assignmentFilter === 'updated') {
+      filtered = filtered.filter(hasUpdatedAssignment);
+    }
+
     if (searchQuery) {
       const query = searchQuery.toLowerCase().trim();
-      filtered = filtered.filter(i => 
+      filtered = filtered.filter(i =>
         i.name.toLowerCase().includes(query) ||
         i.fatherName.toLowerCase().includes(query) ||
         i.id.includes(query) ||
@@ -40,9 +74,17 @@ const HajInspectorsDirectoryPage = () => {
         (i.madinahBuilding?.toLowerCase().includes(query) ?? false)
       );
     }
-    
+
     return filtered;
-  }, [selectedState, searchQuery]);
+  }, [selectedState, searchQuery, cityFilter, assignmentFilter]);
+
+  const activeFilterCount =
+    (cityFilter !== 'all' ? 1 : 0) + (assignmentFilter !== 'all' ? 1 : 0);
+
+  const clearAdvancedFilters = () => {
+    setCityFilter('all');
+    setAssignmentFilter('all');
+  };
 
   // Stats for selected state or all
   const stats = useMemo(() => {
@@ -83,6 +125,15 @@ const HajInspectorsDirectoryPage = () => {
       contactInfo: 'Contact',
       buildingInfo: 'Posting / Building',
       contactPending: 'Contact and building details will be updated soon.',
+      filters: 'Filters',
+      advancedFilters: 'Advanced Filters',
+      city: 'City',
+      allCities: 'All',
+      makkah: 'Makkah',
+      madinah: 'Madinah',
+      assignment: 'Assignment',
+      onlyUpdated: 'Only updated (U)',
+      clearFilters: 'Clear filters',
     },
     ar: {
       title: 'مفتشو الحج 2026',
@@ -110,6 +161,15 @@ const HajInspectorsDirectoryPage = () => {
       contactInfo: 'الاتصال',
       buildingInfo: 'المبنى / الموقع',
       contactPending: 'سيتم تحديث بيانات الاتصال والمبنى قريباً.',
+      filters: 'فلاتر',
+      advancedFilters: 'فلاتر متقدمة',
+      city: 'المدينة',
+      allCities: 'الكل',
+      makkah: 'مكة',
+      madinah: 'المدينة المنورة',
+      assignment: 'التعيين',
+      onlyUpdated: 'المحدّثة فقط (U)',
+      clearFilters: 'مسح الفلاتر',
     },
     ur: {
       title: 'حج انسپکٹرز 2026',
@@ -137,6 +197,15 @@ const HajInspectorsDirectoryPage = () => {
       contactInfo: 'رابطہ',
       buildingInfo: 'پوسٹنگ / بلڈنگ',
       contactPending: 'رابطہ اور بلڈنگ کی تفصیلات جلد اپ ڈیٹ ہوں گی۔',
+      filters: 'فلٹرز',
+      advancedFilters: 'ایڈوانسڈ فلٹرز',
+      city: 'شہر',
+      allCities: 'سب',
+      makkah: 'مکہ',
+      madinah: 'مدینہ',
+      assignment: 'تقرری',
+      onlyUpdated: 'صرف اپڈیٹڈ (U)',
+      clearFilters: 'فلٹرز صاف کریں',
     },
     hi: {
       title: 'हज इंस्पेक्टर 2026',
@@ -164,6 +233,15 @@ const HajInspectorsDirectoryPage = () => {
       contactInfo: 'संपर्क',
       buildingInfo: 'पोस्टिंग / बिल्डिंग',
       contactPending: 'संपर्क और बिल्डिंग की जानकारी जल्द अपडेट होगी।',
+      filters: 'फ़िल्टर',
+      advancedFilters: 'एडवांस फ़िल्टर',
+      city: 'शहर',
+      allCities: 'सभी',
+      makkah: 'मक्का',
+      madinah: 'मदीना',
+      assignment: 'पोस्टिंग',
+      onlyUpdated: 'केवल अपडेटेड (U)',
+      clearFilters: 'फ़िल्टर साफ़ करें',
     },
   };
 
@@ -214,7 +292,7 @@ const HajInspectorsDirectoryPage = () => {
             onValueChange={setSelectedState}
             placeholder={t.selectState}
           />
-          
+
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
@@ -224,6 +302,129 @@ const HajInspectorsDirectoryPage = () => {
               className="pl-9"
             />
           </div>
+
+          {/* Advanced Filters toggle */}
+          <div className="flex items-center justify-between gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setShowAdvanced((s) => !s)}
+              className="h-9"
+            >
+              <SlidersHorizontal className="w-4 h-4 mr-1.5" />
+              {t.advancedFilters}
+              {activeFilterCount > 0 && (
+                <Badge variant="secondary" className="ml-2 h-5 px-1.5 text-[10px]">
+                  {activeFilterCount}
+                </Badge>
+              )}
+            </Button>
+            {activeFilterCount > 0 && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={clearAdvancedFilters}
+                className="h-9 text-muted-foreground"
+              >
+                <X className="w-3.5 h-3.5 mr-1" />
+                {t.clearFilters}
+              </Button>
+            )}
+          </div>
+
+          {showAdvanced && (
+            <Card className="border-dashed">
+              <CardContent className="p-3 space-y-3">
+                {/* City filter */}
+                <div>
+                  <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1.5">
+                    {t.city}
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {([
+                      { v: 'all' as const, label: t.allCities },
+                      { v: 'makkah' as const, label: t.makkah },
+                      { v: 'madinah' as const, label: t.madinah },
+                    ]).map((opt) => (
+                      <Button
+                        key={opt.v}
+                        type="button"
+                        size="sm"
+                        variant={cityFilter === opt.v ? 'default' : 'outline'}
+                        onClick={() => setCityFilter(opt.v)}
+                        className="h-8 text-xs"
+                      >
+                        {opt.label}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Assignment filter */}
+                <div>
+                  <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1.5">
+                    {t.assignment}
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant={assignmentFilter === 'all' ? 'default' : 'outline'}
+                      onClick={() => setAssignmentFilter('all')}
+                      className="h-8 text-xs"
+                    >
+                      {t.allCities}
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant={assignmentFilter === 'updated' ? 'default' : 'outline'}
+                      onClick={() => setAssignmentFilter('updated')}
+                      className={`h-8 text-xs ${
+                        assignmentFilter === 'updated'
+                          ? 'bg-amber-500 hover:bg-amber-600'
+                          : 'border-amber-300 text-amber-700 dark:text-amber-400 dark:border-amber-700'
+                      }`}
+                    >
+                      ⚠️ {t.onlyUpdated}
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Active filter chips */}
+          {activeFilterCount > 0 && (
+            <div className="flex flex-wrap gap-1.5">
+              {cityFilter !== 'all' && (
+                <Badge variant="secondary" className="gap-1">
+                  {t.city}: {cityFilter === 'makkah' ? t.makkah : t.madinah}
+                  <button
+                    type="button"
+                    onClick={() => setCityFilter('all')}
+                    aria-label="Remove city filter"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </Badge>
+              )}
+              {assignmentFilter === 'updated' && (
+                <Badge className="gap-1 bg-amber-500 hover:bg-amber-600">
+                  ⚠️ {t.onlyUpdated}
+                  <button
+                    type="button"
+                    onClick={() => setAssignmentFilter('all')}
+                    aria-label="Remove assignment filter"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </Badge>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Results Count */}
