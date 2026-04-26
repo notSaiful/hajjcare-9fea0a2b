@@ -45,6 +45,7 @@ const HajInspectorsDirectoryPage = () => {
   const [cityFilter, setCityFilter] = useState<CityFilter>('all');
   const [assignmentFilter, setAssignmentFilter] = useState<AssignmentFilter>('all');
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [viewMode, setViewMode] = useState<ViewMode>('cards');
 
   // Filter inspectors
   const filteredInspectors = useMemo(() => {
