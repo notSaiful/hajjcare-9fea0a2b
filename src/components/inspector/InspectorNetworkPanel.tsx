@@ -35,8 +35,10 @@ export const InspectorNetworkPanel = () => {
   const [query, setQuery] = useState("");
   const [stateFilter, setStateFilter] = useState<string>("");
   const [showAll, setShowAll] = useState(false);
+  const [addOpen, setAddOpen] = useState(false);
   const { favorites, isFavorite } = useInspectorFavorites();
   const { overrides, applyOverride } = useInspectorOverrides();
+  const { custom } = useCustomInspectors();
 
   const filtered = useMemo(() => {
     const normalize = (s: string) =>
@@ -44,8 +46,9 @@ export const InspectorNetworkPanel = () => {
     const q = query.trim();
     const nq = normalize(q);
 
-    // Apply user overrides first so search and display reflect edits
-    const merged = HAJ_INSPECTORS.map(applyOverride);
+    // Custom (user-added) inspectors first, then official records.
+    // Apply user overrides so search and display reflect edits.
+    const merged = [...custom, ...HAJ_INSPECTORS].map(applyOverride);
 
     const matched = merged.filter((i) => {
       if (stateFilter && i.state.toLowerCase() !== stateFilter.toLowerCase()) {
