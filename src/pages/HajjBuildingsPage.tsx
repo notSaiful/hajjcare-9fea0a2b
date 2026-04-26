@@ -40,8 +40,9 @@ const HajjBuildingsPage = () => {
       buildingRange: "Building Range", notFound: "Building number not found. Please enter a number between 101-1880.",
       allZones: "All Makkah Building Zones", zoneNote: "Building numbers 101-1880 are Zone IDs, not actual building count.",
       navigate: "Navigate", openMap: "Open in Google Maps",
-      busPoint: "Bus Point", branch: "Branch", busPointTitle: "Bus Point & Branch",
-      uWarning: "(U) = Updated / Late addition. Same bus service & branch as the original list — only an administrative marker.",
+      busPoint: "Bus Point", branch: "Branch", branchName: "Branch Name", busPointTitle: "Bus Point & Branch",
+      uBadge: "UPDATED MAPPING",
+      uWarning: "(U) = Updated / Late addition. Same bus service & branch as the original list — only an administrative marker. Confirm with your inspector before boarding.",
       noBusPoint: "No bus point mapping found for this building yet. Check with your inspector or branch office.",
       madinahHotels: "Madinah Hotels 2026", searchHotel: "Search by name, code, or Tashee...", hotelsCount: "hotels", locUnavailable: "Location unavailable",
       hotelsSource: "Source: Official MOH/CGI Jeddah list — 381 hotels in Madinah Markaziya",
@@ -54,8 +55,9 @@ const HajjBuildingsPage = () => {
       buildingRange: "बिल्डिंग रेंज", notFound: "बिल्डिंग नंबर नहीं मिला। कृपया 101-1880 के बीच नंबर डालें।",
       allZones: "मक्का के सभी बिल्डिंग ज़ोन", zoneNote: "बिल्डिंग नंबर 101-1880 सिर्फ ज़ोन पहचान के लिए हैं, बिल्डिंग की तादाद नहीं।",
       navigate: "नेविगेट करें", openMap: "गूगल मैप में खोलें",
-      busPoint: "बस पॉइंट", branch: "ब्रांच", busPointTitle: "बस पॉइंट और ब्रांच",
-      uWarning: "(U) = बाद में जोड़ा गया। बस सेवा और ब्रांच वही रहेगी जो असली लिस्ट की है — सिर्फ रिकॉर्ड का निशान है।",
+      busPoint: "बस पॉइंट", branch: "ब्रांच", branchName: "ब्रांच नाम", busPointTitle: "बस पॉइंट और ब्रांच",
+      uBadge: "अपडेटेड मैपिंग",
+      uWarning: "(U) = बाद में जोड़ा गया। बस सेवा और ब्रांच वही रहेगी जो असली लिस्ट की है — सिर्फ रिकॉर्ड का निशान है। बस में बैठने से पहले अपने इंस्पेक्टर से पुष्टि करें।",
       noBusPoint: "इस बिल्डिंग के लिए बस पॉइंट अभी मैप नहीं है। अपने इंस्पेक्टर या ब्रांच ऑफिस से पुष्टि करें।",
       madinahHotels: "मदीना होटल 2026", searchHotel: "नाम, कोड, या तशी से खोजें...", hotelsCount: "होटल", locUnavailable: "लोकेशन उपलब्ध नहीं",
       hotelsSource: "स्रोत: आधिकारिक MOH/CGI जेद्दा सूची — मदीना मरकज़िया में 381 होटल",
@@ -68,8 +70,9 @@ const HajjBuildingsPage = () => {
       buildingRange: "بلڈنگ رینج", notFound: "بلڈنگ نمبر نہیں ملا۔ براہ کرم 101-1880 کے درمیان نمبر درج کریں۔",
       allZones: "مکہ کے تمام بلڈنگ زون", zoneNote: "بلڈنگ نمبر 101-1880 صرف زون کی پہچان کے لیے ہیں، عمارتوں کی تعداد نہیں۔",
       navigate: "نیویگیٹ", openMap: "گوگل میپ میں کھولیں",
-      busPoint: "بس پوائنٹ", branch: "برانچ", busPointTitle: "بس پوائنٹ اور برانچ",
-      uWarning: "(U) = بعد میں شامل کی گئی۔ بس سروس اور برانچ وہی ہیں جو اصل فہرست کی ہیں — صرف ریکارڈ کا نشان ہے۔",
+      busPoint: "بس پوائنٹ", branch: "برانچ", branchName: "برانچ کا نام", busPointTitle: "بس پوائنٹ اور برانچ",
+      uBadge: "اپڈیٹڈ میپنگ",
+      uWarning: "(U) = بعد میں شامل کی گئی۔ بس سروس اور برانچ وہی ہیں جو اصل فہرست کی ہیں — صرف ریکارڈ کا نشان ہے۔ بس میں سوار ہونے سے پہلے انسپکٹر سے تصدیق کریں۔",
       noBusPoint: "اس بلڈنگ کے لیے بس پوائنٹ ابھی میپ نہیں ہے۔ اپنے انسپکٹر یا برانچ آفس سے تصدیق کریں۔",
       madinahHotels: "مدینہ ہوٹل 2026", searchHotel: "نام، کوڈ، یا تشی سے تلاش کریں...", hotelsCount: "ہوٹل", locUnavailable: "لوکیشن دستیاب نہیں",
       hotelsSource: "ماخذ: آفیشل MOH/CGI جدہ فہرست — مدینہ مرکزیہ میں 381 ہوٹل",
@@ -82,8 +85,9 @@ const HajjBuildingsPage = () => {
       buildingRange: "نطاق المباني", notFound: "رقم المبنى غير موجود. الرجاء إدخال رقم بين 101-1880.",
       allZones: "جميع مناطق مباني مكة", zoneNote: "أرقام المباني 101-1880 هي أرقام تعريف المنطقة فقط.",
       navigate: "انتقال", openMap: "افتح في خرائط جوجل",
-      busPoint: "نقطة الحافلة", branch: "الفرع", busPointTitle: "نقطة الحافلة والفرع",
-      uWarning: "(U) = إضافة لاحقة. نفس خدمة الحافلة والفرع كالقائمة الأصلية — مجرد علامة إدارية.",
+      busPoint: "نقطة الحافلة", branch: "الفرع", branchName: "اسم الفرع", busPointTitle: "نقطة الحافلة والفرع",
+      uBadge: "تحديث الربط",
+      uWarning: "(U) = إضافة لاحقة. نفس خدمة الحافلة والفرع كالقائمة الأصلية — مجرد علامة إدارية. تأكد من المفتش قبل ركوب الحافلة.",
       noBusPoint: "لا يوجد ربط لنقطة حافلة لهذا المبنى بعد. تأكد مع المفتش أو مكتب الفرع.",
       madinahHotels: "فنادق المدينة 2026", searchHotel: "ابحث بالاسم أو الرقم أو التشي...", hotelsCount: "فنادق", locUnavailable: "الموقع غير متوفر",
       hotelsSource: "المصدر: قائمة MOH/CGI جدة الرسمية — 381 فندقًا في مركزية المدينة",
@@ -231,65 +235,90 @@ const HajjBuildingsPage = () => {
             </div>
           )}
 
-          {/* Bus Point / Branch result */}
-          {searchedNumber !== null && (
-            <div className="bg-background border border-amber-500/30 rounded-xl p-4 space-y-3 animate-in fade-in slide-in-from-top-2">
-              <h3 className="text-sm font-bold flex items-center gap-2">
-                <div className="w-7 h-7 rounded-full bg-amber-500/10 flex items-center justify-center">
-                  <Bus className="w-4 h-4 text-amber-600" />
-                </div>
-                {t.busPointTitle}
-              </h3>
+          {/* Bus Point / Branch result — second card */}
+          {searchedNumber !== null && (() => {
+            const hasUpdated = busMatches.some((m) => m.entry.isUpdated);
+            return (
+              <div
+                className={`bg-background rounded-xl p-4 space-y-3 animate-in fade-in slide-in-from-top-2 border-2 ${
+                  hasUpdated ? "border-amber-500" : "border-amber-500/30"
+                }`}
+              >
+                <h3 className="text-sm font-bold flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-full bg-amber-500/10 flex items-center justify-center">
+                    <Bus className="w-4 h-4 text-amber-600" />
+                  </div>
+                  {t.busPointTitle}
+                  {searchedNumber !== null && (
+                    <span className="ml-auto font-mono text-xs text-muted-foreground">
+                      #{searchedNumber}
+                    </span>
+                  )}
+                </h3>
 
-              {busMatches.length > 0 ? (
-                <div className="space-y-2">
-                  {busMatches.map((m, idx) => (
-                    <div
-                      key={`${m.entry.busPoint}-${idx}`}
-                      className={`rounded-lg border p-3 space-y-2 ${
-                        m.entry.isUpdated
-                          ? "border-amber-500/40 bg-amber-500/5"
-                          : "border-border bg-muted/30"
-                      }`}
-                    >
-                      <div className="flex items-center justify-between gap-2 flex-wrap">
-                        <div className="flex items-center gap-2">
-                          <Badge
-                            variant={m.entry.isUpdated ? "default" : "secondary"}
-                            className={`font-mono text-xs ${
-                              m.entry.isUpdated ? "bg-amber-500 hover:bg-amber-500" : ""
-                            }`}
-                          >
-                            {t.busPoint}: {m.entry.busPoint}
-                          </Badge>
-                          {m.entry.isUpdated && (
-                            <Badge variant="outline" className="text-[10px] border-amber-500/40 text-amber-700">
-                              U
-                            </Badge>
-                          )}
-                        </div>
-                        <span className="text-xs text-muted-foreground">
-                          {t.branch}: <span className="font-semibold text-foreground">{m.entry.branchNumber}</span>
-                        </span>
-                      </div>
-                      <p className="text-sm font-medium">{m.entry.branchName}</p>
-                      {m.entry.isUpdated && (
-                        <div className="flex items-start gap-1.5 text-[11px] text-amber-700 bg-amber-500/10 rounded-md p-2">
-                          <Info className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
-                          <span>{t.uWarning}</span>
-                        </div>
-                      )}
+                {/* Top warning banner if any match is updated */}
+                {hasUpdated && (
+                  <div className="flex items-start gap-2 bg-amber-500/15 border border-amber-500/50 rounded-lg p-2.5">
+                    <AlertCircle className="w-4 h-4 text-amber-700 mt-0.5 flex-shrink-0" />
+                    <div className="space-y-1">
+                      <p className="text-xs font-bold text-amber-800 uppercase tracking-wide">
+                        ⚠️ {t.uBadge}
+                      </p>
+                      <p className="text-[11px] text-amber-800 leading-relaxed">{t.uWarning}</p>
                     </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="flex items-start gap-2 text-xs text-muted-foreground bg-muted/40 rounded-lg p-2.5">
-                  <AlertCircle className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
-                  <p>{t.noBusPoint}</p>
-                </div>
-              )}
-            </div>
-          )}
+                  </div>
+                )}
+
+                {busMatches.length > 0 ? (
+                  <div className="space-y-2">
+                    {busMatches.map((m, idx) => (
+                      <div
+                        key={`${m.entry.busPoint}-${idx}`}
+                        className={`rounded-lg border p-3 space-y-2.5 ${
+                          m.entry.isUpdated
+                            ? "border-amber-500/60 bg-amber-500/5"
+                            : "border-border bg-muted/30"
+                        }`}
+                      >
+                        {m.entry.isUpdated && (
+                          <Badge className="bg-amber-500 hover:bg-amber-500 text-white text-[10px] font-bold uppercase tracking-wider">
+                            (U) {t.uBadge}
+                          </Badge>
+                        )}
+                        <div className="grid grid-cols-2 gap-3 text-sm">
+                          <div>
+                            <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-medium">
+                              {t.busPoint}
+                            </p>
+                            <p className="font-mono font-bold text-base text-amber-700">
+                              {m.entry.busPoint}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-medium">
+                              {t.branch}
+                            </p>
+                            <p className="font-semibold text-base">{m.entry.branchNumber}</p>
+                          </div>
+                          <div className="col-span-2">
+                            <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-medium">
+                              {t.branchName}
+                            </p>
+                            <p className="font-semibold text-sm">{m.entry.branchName}</p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex items-start gap-2 text-xs text-muted-foreground bg-muted/40 rounded-lg p-2.5">
+                    <AlertCircle className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
+                    <p>{t.noBusPoint}</p>
+                  </div>
+                )}
+              </div>
+            );
+          })()}
 
           {searchedNumber !== null && !foundZone && (
             <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-3 flex items-start gap-2">
