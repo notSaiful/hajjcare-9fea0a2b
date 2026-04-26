@@ -67,16 +67,26 @@ const HajInspectorsDirectoryPage = () => {
 
     if (searchQuery) {
       const query = searchQuery.toLowerCase().trim();
-      filtered = filtered.filter(i =>
-        i.name.toLowerCase().includes(query) ||
-        i.fatherName.toLowerCase().includes(query) ||
-        i.id.includes(query) ||
-        (i.coverNumber?.toLowerCase().includes(query) ?? false) ||
-        (i.indianMobile?.includes(query) ?? false) ||
-        (i.ksaMobile?.includes(query) ?? false) ||
-        (i.makkahBuilding?.toLowerCase().includes(query) ?? false) ||
-        (i.madinahBuilding?.toLowerCase().includes(query) ?? false)
-      );
+      const isPureNumber = /^\d{1,4}$/.test(query);
+
+      filtered = filtered.filter(i => {
+        // Pure-number query → match exact building numbers in Makkah/Madinah strings
+        if (isPureNumber) {
+          const makkahNums = i.makkahBuilding?.match(/\d{1,4}/g) ?? [];
+          const madinahNums = i.madinahBuilding?.match(/\d{1,4}/g) ?? [];
+          if (makkahNums.includes(query) || madinahNums.includes(query)) return true;
+        }
+        return (
+          i.name.toLowerCase().includes(query) ||
+          i.fatherName.toLowerCase().includes(query) ||
+          i.id.includes(query) ||
+          (i.coverNumber?.toLowerCase().includes(query) ?? false) ||
+          (i.indianMobile?.includes(query) ?? false) ||
+          (i.ksaMobile?.includes(query) ?? false) ||
+          (i.makkahBuilding?.toLowerCase().includes(query) ?? false) ||
+          (i.madinahBuilding?.toLowerCase().includes(query) ?? false)
+        );
+      });
     }
 
     return filtered;
