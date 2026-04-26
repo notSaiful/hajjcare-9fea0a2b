@@ -48,10 +48,26 @@ type DupePreview = {
 };
 
 export const ImportInspectorsDialog = ({ open, onOpenChange }: Props) => {
-  const { addManyInspectors } = useCustomInspectors();
+  const { addManyInspectors, findDuplicate } = useCustomInspectors();
   const [text, setText] = useState("");
   const [preview, setPreview] = useState<ParseResult | null>(null);
+  const [strategy, setStrategy] = useState<DuplicateStrategy>("skip");
   const fileRef = useRef<HTMLInputElement>(null);
+
+  // Pre-compute duplicates whenever the parsed preview changes.
+  const dupes: DupePreview[] = useMemo(() => {
+    if (!preview) return [];
+    const out: DupePreview[] = [];
+    for (const input of preview.inspectors) {
+      const match = findDuplicate(input);
+      if (match) out.push({ input, match });
+    }
+    return out;
+  }, [preview, findDuplicate]);
+
+  const newCount = (preview?.inspectors.length ?? 0) - dupes.length;
+  const updatableCount = dupes.filter((d) => d.match.isCustom).length;
+  const officialDupeCount = dupes.length - updatableCount;
 
   const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -85,13 +101,16 @@ export const ImportInspectorsDialog = ({ open, onOpenChange }: Props) => {
       setPreview(parsed);
       return;
     }
-    const created = addManyInspectors(parsed.inspectors);
+    const summary = addManyInspectors(parsed.inspectors, strategy);
+    const parts: string[] = [];
+    if (summary.added.length) parts.push(`${summary.added.length} added`);
+    if (summary.updated.length) parts.push(`${summary.updated.length} updated`);
+    if (summary.skipped.length)
+      parts.push(`${summary.skipped.length} duplicate${summary.skipped.length === 1 ? "" : "s"} skipped`);
+    if (parsed.skipped > 0) parts.push(`${parsed.skipped} invalid skipped`);
     toast({
-      title: `Imported ${created.length} inspector${created.length === 1 ? "" : "s"}`,
-      description:
-        parsed.skipped > 0
-          ? `${parsed.skipped} row(s) skipped (missing name or state).`
-          : "Saved to this device.",
+      title: summary.added.length || summary.updated.length ? "Import complete" : "No changes",
+      description: parts.join(" · ") || "Nothing to do.",
     });
     handleReset();
     onOpenChange(false);
@@ -100,6 +119,7 @@ export const ImportInspectorsDialog = ({ open, onOpenChange }: Props) => {
   const handleReset = () => {
     setText("");
     setPreview(null);
+    setStrategy("skip");
   };
 
   const loadSample = (sample: string) => {
