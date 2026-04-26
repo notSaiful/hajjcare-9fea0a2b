@@ -40,8 +40,11 @@ export const InspectorNetworkRow = ({
   translations: t,
 }: InspectorNetworkRowProps) => {
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const [editOpen, setEditOpen] = useState(false);
   const { isFavorite, toggleFavorite } = useInspectorFavorites();
+  const { hasOverride } = useInspectorOverrides();
   const favorited = isFavorite(inspector.id);
+  const edited = hasOverride(inspector.id);
 
   const handleToggleFavorite = () => {
     const nowFav = toggleFavorite(inspector.id);
