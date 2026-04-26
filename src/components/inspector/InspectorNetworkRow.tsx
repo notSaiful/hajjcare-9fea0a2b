@@ -37,6 +37,16 @@ export const InspectorNetworkRow = ({
   translations: t,
 }: InspectorNetworkRowProps) => {
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const { isFavorite, toggleFavorite } = useInspectorFavorites();
+  const favorited = isFavorite(inspector.id);
+
+  const handleToggleFavorite = () => {
+    const nowFav = toggleFavorite(inspector.id);
+    toast({
+      title: nowFav ? "Added to favorites" : "Removed from favorites",
+      description: inspector.name,
+    });
+  };
 
   const copyToClipboard = async (value: string, key: string, label: string) => {
     try {
