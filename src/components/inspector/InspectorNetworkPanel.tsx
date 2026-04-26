@@ -96,15 +96,26 @@ export const InspectorNetworkPanel = () => {
             <Network className="w-5 h-5 text-primary" />
             Inspector Network
           </h2>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-xs h-7"
-            onClick={() => navigate("/haj-inspectors")}
-          >
-            Open full directory
-            <ExternalLink className="w-3 h-3 ml-1" />
-          </Button>
+          <div className="flex items-center gap-1">
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-xs h-7"
+              onClick={() => setAddOpen(true)}
+            >
+              <UserPlus className="w-3 h-3 mr-1" />
+              Add
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-xs h-7"
+              onClick={() => navigate("/haj-inspectors")}
+            >
+              Open full directory
+              <ExternalLink className="w-3 h-3 ml-1" />
+            </Button>
+          </div>
         </div>
 
         <p className="text-xs text-muted-foreground -mt-1">
