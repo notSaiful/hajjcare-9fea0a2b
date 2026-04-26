@@ -5,10 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { HAJ_INSPECTORS, INSPECTOR_STATES } from "@/data/hajInspectorsData";
 import { InspectorNetworkRow } from "@/components/inspector/InspectorNetworkRow";
-import { Search, Network, ExternalLink, X, Star } from "lucide-react";
+import { Search, Network, ExternalLink, X, Star, UserPlus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useInspectorFavorites } from "@/hooks/useInspectorFavorites";
 import { useInspectorOverrides } from "@/hooks/useInspectorOverrides";
+import { useCustomInspectors } from "@/hooks/useCustomInspectors";
+import { AddInspectorDialog } from "@/components/inspector/AddInspectorDialog";
 
 const PREVIEW_COUNT = 8;
 
