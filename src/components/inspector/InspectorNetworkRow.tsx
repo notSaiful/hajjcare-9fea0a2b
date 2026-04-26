@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
 import { useInspectorFavorites } from "@/hooks/useInspectorFavorites";
 import { useInspectorOverrides } from "@/hooks/useInspectorOverrides";
+import { isCustomInspectorId } from "@/hooks/useCustomInspectors";
 import { InspectorEditDialog } from "@/components/inspector/InspectorEditDialog";
 
 const buildWaLink = (phone: string) =>
