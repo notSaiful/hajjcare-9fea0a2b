@@ -112,6 +112,18 @@ const HajInspectorsDirectoryPage = () => {
     return { total: HAJ_INSPECTORS.length, selected, waitlisted, male, female };
   }, [selectedState]);
 
+  // Top 6 states by inspector count for quick-chip switching
+  const topStates = useMemo(() => {
+    const counts = new Map<string, number>();
+    HAJ_INSPECTORS.forEach(i => {
+      counts.set(i.state, (counts.get(i.state) ?? 0) + 1);
+    });
+    return Array.from(counts.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 6)
+      .map(([state, count]) => ({ state, count }));
+  }, []);
+
   const translations: Record<string, Record<string, string>> = {
     en: {
       title: 'Haj Inspectors 2026',
