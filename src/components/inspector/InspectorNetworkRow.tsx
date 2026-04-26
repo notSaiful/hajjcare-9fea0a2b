@@ -10,9 +10,13 @@ import {
   IdCard,
   Copy,
   Check,
+  Link2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
+
+const buildWaLink = (phone: string) =>
+  `https://wa.me/${phone.replace(/[^\d+]/g, "").replace(/^\+/, "")}`;
 
 interface InspectorNetworkRowProps {
   inspector: HajInspector;
