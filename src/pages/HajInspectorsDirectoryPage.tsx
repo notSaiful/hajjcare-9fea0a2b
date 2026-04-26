@@ -28,11 +28,16 @@ const HajInspectorsDirectoryPage = () => {
     }
     
     if (searchQuery) {
-      const query = searchQuery.toLowerCase();
+      const query = searchQuery.toLowerCase().trim();
       filtered = filtered.filter(i => 
         i.name.toLowerCase().includes(query) ||
         i.fatherName.toLowerCase().includes(query) ||
-        i.id.includes(query)
+        i.id.includes(query) ||
+        (i.coverNumber?.toLowerCase().includes(query) ?? false) ||
+        (i.indianMobile?.includes(query) ?? false) ||
+        (i.ksaMobile?.includes(query) ?? false) ||
+        (i.makkahBuilding?.toLowerCase().includes(query) ?? false) ||
+        (i.madinahBuilding?.toLowerCase().includes(query) ?? false)
       );
     }
     
