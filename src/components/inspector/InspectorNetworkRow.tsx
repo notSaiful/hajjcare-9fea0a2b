@@ -11,9 +11,11 @@ import {
   Copy,
   Check,
   Link2,
+  Star,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
+import { useInspectorFavorites } from "@/hooks/useInspectorFavorites";
 
 const buildWaLink = (phone: string) =>
   `https://wa.me/${phone.replace(/[^\d+]/g, "").replace(/^\+/, "")}`;
@@ -35,6 +37,16 @@ export const InspectorNetworkRow = ({
   translations: t,
 }: InspectorNetworkRowProps) => {
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const { isFavorite, toggleFavorite } = useInspectorFavorites();
+  const favorited = isFavorite(inspector.id);
+
+  const handleToggleFavorite = () => {
+    const nowFav = toggleFavorite(inspector.id);
+    toast({
+      title: nowFav ? "Added to favorites" : "Removed from favorites",
+      description: inspector.name,
+    });
+  };
 
   const copyToClipboard = async (value: string, key: string, label: string) => {
     try {
@@ -51,7 +63,12 @@ export const InspectorNetworkRow = ({
   const hasBuilding = inspector.makkahBuilding || inspector.madinahBuilding;
 
   return (
-    <div className="rounded-lg border bg-card p-3 space-y-2">
+    <div
+      className={cn(
+        "rounded-lg border bg-card p-3 space-y-2",
+        favorited && "border-amber-300 dark:border-amber-700 bg-amber-50/40 dark:bg-amber-950/20"
+      )}
+    >
       {/* Top row: name + state */}
       <div className="flex items-start gap-2.5">
         <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
@@ -85,6 +102,23 @@ export const InspectorNetworkRow = ({
             <span className="truncate">{inspector.state}</span>
           </div>
         </div>
+        <button
+          type="button"
+          onClick={handleToggleFavorite}
+          className={cn(
+            "h-7 w-7 rounded-md border flex items-center justify-center transition-colors shrink-0",
+            favorited
+              ? "border-amber-400 bg-amber-100 text-amber-600 hover:bg-amber-200 dark:bg-amber-900/40 dark:border-amber-700"
+              : "border-border bg-background text-muted-foreground hover:bg-accent"
+          )}
+          aria-label={favorited ? "Remove from favorites" : "Add to favorites"}
+          aria-pressed={favorited}
+          title={favorited ? "Remove from favorites" : "Add to favorites"}
+        >
+          <Star
+            className={cn("w-4 h-4", favorited && "fill-amber-500 text-amber-500")}
+          />
+        </button>
       </div>
 
       {/* Compact contact + building grid */}

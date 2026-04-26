@@ -5,8 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { HAJ_INSPECTORS, INSPECTOR_STATES } from "@/data/hajInspectorsData";
 import { InspectorNetworkRow } from "@/components/inspector/InspectorNetworkRow";
-import { Search, Network, ExternalLink, X } from "lucide-react";
+import { Search, Network, ExternalLink, X, Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useInspectorFavorites } from "@/hooks/useInspectorFavorites";
 
 const PREVIEW_COUNT = 8;
 
@@ -31,6 +32,7 @@ export const InspectorNetworkPanel = () => {
   const [query, setQuery] = useState("");
   const [stateFilter, setStateFilter] = useState<string>("");
   const [showAll, setShowAll] = useState(false);
+  const { favorites, isFavorite } = useInspectorFavorites();
 
   const filtered = useMemo(() => {
     const normalize = (s: string) =>
@@ -38,7 +40,7 @@ export const InspectorNetworkPanel = () => {
     const q = query.trim();
     const nq = normalize(q);
 
-    return HAJ_INSPECTORS.filter((i) => {
+    const matched = HAJ_INSPECTORS.filter((i) => {
       if (stateFilter && i.state.toLowerCase() !== stateFilter.toLowerCase()) {
         return false;
       }
@@ -59,7 +61,19 @@ export const InspectorNetworkPanel = () => {
       const normHay = normalize(haystack);
       return normHay.includes(nq);
     });
-  }, [query, stateFilter]);
+
+    // Pin favorites to the top, preserving original order within each group
+    return [...matched].sort((a, b) => {
+      const af = isFavorite(a.id) ? 1 : 0;
+      const bf = isFavorite(b.id) ? 1 : 0;
+      return bf - af;
+    });
+  }, [query, stateFilter, favorites, isFavorite]);
+
+  const favoriteCount = useMemo(
+    () => filtered.filter((i) => isFavorite(i.id)).length,
+    [filtered, isFavorite]
+  );
 
   const visible = showAll ? filtered : filtered.slice(0, PREVIEW_COUNT);
 
@@ -140,9 +154,20 @@ export const InspectorNetworkPanel = () => {
 
         {/* Result count */}
         <div className="flex items-center justify-between text-xs text-muted-foreground">
-          <span>
-            {filtered.length} inspector{filtered.length === 1 ? "" : "s"}
-            {stateFilter && ` • ${stateFilter}`}
+          <span className="flex items-center gap-2 flex-wrap">
+            <span>
+              {filtered.length} inspector{filtered.length === 1 ? "" : "s"}
+              {stateFilter && ` • ${stateFilter}`}
+            </span>
+            {favoriteCount > 0 && (
+              <Badge
+                variant="outline"
+                className="text-[10px] border-amber-300 text-amber-700 dark:text-amber-300 dark:border-amber-700 gap-1"
+              >
+                <Star className="w-3 h-3 fill-amber-500 text-amber-500" />
+                {favoriteCount} favorite{favoriteCount === 1 ? "" : "s"}
+              </Badge>
+            )}
           </span>
           {!showAll && filtered.length > PREVIEW_COUNT && (
             <Badge variant="outline" className="text-[10px]">
@@ -158,13 +183,27 @@ export const InspectorNetworkPanel = () => {
               No inspectors match your filters.
             </div>
           ) : (
-            visible.map((inspector) => (
-              <InspectorNetworkRow
-                key={inspector.id}
-                inspector={inspector}
-                translations={NETWORK_T}
-              />
-            ))
+            visible.map((inspector, idx) => {
+              const fav = isFavorite(inspector.id);
+              const prevFav =
+                idx > 0 ? isFavorite(visible[idx - 1].id) : true;
+              const showDivider = !fav && prevFav && idx > 0;
+              return (
+                <div key={inspector.id}>
+                  {showDivider && (
+                    <div className="flex items-center gap-2 py-1.5 text-[10px] uppercase tracking-wide text-muted-foreground">
+                      <div className="flex-1 h-px bg-border" />
+                      All inspectors
+                      <div className="flex-1 h-px bg-border" />
+                    </div>
+                  )}
+                  <InspectorNetworkRow
+                    inspector={inspector}
+                    translations={NETWORK_T}
+                  />
+                </div>
+              );
+            })
           )}
         </div>
 
