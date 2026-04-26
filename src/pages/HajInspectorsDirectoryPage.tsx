@@ -67,14 +67,27 @@ const HajInspectorsDirectoryPage = () => {
 
     if (searchQuery) {
       const query = searchQuery.toLowerCase().trim();
-      const isPureNumber = /^\d{1,4}$/.test(query);
+
+      // Normalize building tokens: strip spaces/hyphens, lowercase.
+      // "216-A" → "216a", "216 a" → "216a", "216A" → "216a"
+      const normalize = (s: string) => s.toLowerCase().replace(/[\s\-]+/g, '');
+      const normQuery = normalize(query);
+
+      // Token regex matches multi-part building IDs like 216, 216A, 216-A, 216 A
+      const TOKEN_RE = /\d{1,4}\s*-?\s*[a-z]?/gi;
+      const isBuildingLike = /^\d{1,4}\s*-?\s*[a-z]?$/i.test(query);
 
       filtered = filtered.filter(i => {
-        // Pure-number query → match exact building numbers in Makkah/Madinah strings
-        if (isPureNumber) {
-          const makkahNums: string[] = i.makkahBuilding?.match(/\d{1,4}/g) ?? [];
-          const madinahNums: string[] = i.madinahBuilding?.match(/\d{1,4}/g) ?? [];
-          if (makkahNums.includes(query) || madinahNums.includes(query)) return true;
+        // Building-like query → match normalized tokens in Makkah/Madinah strings
+        if (isBuildingLike) {
+          const makkahTokens = (i.makkahBuilding?.match(TOKEN_RE) ?? []).map(normalize);
+          const madinahTokens = (i.madinahBuilding?.match(TOKEN_RE) ?? []).map(normalize);
+          if (
+            makkahTokens.includes(normQuery) ||
+            madinahTokens.includes(normQuery)
+          ) {
+            return true;
+          }
         }
         return (
           i.name.toLowerCase().includes(query) ||

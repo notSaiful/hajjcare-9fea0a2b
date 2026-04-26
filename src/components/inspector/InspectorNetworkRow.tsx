@@ -10,9 +10,13 @@ import {
   IdCard,
   Copy,
   Check,
+  Link2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
+
+const buildWaLink = (phone: string) =>
+  `https://wa.me/${phone.replace(/[^\d+]/g, "").replace(/^\+/, "")}`;
 
 interface InspectorNetworkRowProps {
   inspector: HajInspector;
@@ -123,7 +127,7 @@ export const InspectorNetworkRow = ({
                   <Phone className="w-3 h-3" />
                 </a>
                 <a
-                  href={`https://wa.me/${sanitizePhone(inspector.indianMobile).replace(/^\+/, "")}`}
+                  href={buildWaLink(inspector.indianMobile)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="h-6 w-6 rounded-md border border-emerald-300 dark:border-emerald-700 flex items-center justify-center hover:bg-accent"
@@ -131,6 +135,24 @@ export const InspectorNetworkRow = ({
                 >
                   <MessageCircle className="w-3 h-3 text-emerald-600" />
                 </a>
+                <button
+                  type="button"
+                  onClick={() =>
+                    copyToClipboard(
+                      buildWaLink(inspector.indianMobile!),
+                      `in-wa-${inspector.id}`,
+                      `${t.indianMobile || "Indian"} WhatsApp link`
+                    )
+                  }
+                  className="h-6 w-6 rounded-md border border-emerald-300 dark:border-emerald-700 flex items-center justify-center hover:bg-accent"
+                  aria-label="Copy Indian WhatsApp link"
+                >
+                  {copiedKey === `in-wa-${inspector.id}` ? (
+                    <Check className="w-3 h-3 text-emerald-600" />
+                  ) : (
+                    <Link2 className="w-3 h-3 text-emerald-600" />
+                  )}
+                </button>
               </div>
             </div>
           )}
@@ -172,7 +194,7 @@ export const InspectorNetworkRow = ({
                   <Phone className="w-3 h-3" />
                 </a>
                 <a
-                  href={`https://wa.me/${sanitizePhone(inspector.ksaMobile).replace(/^\+/, "")}`}
+                  href={buildWaLink(inspector.ksaMobile)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="h-6 w-6 rounded-md border border-emerald-300 dark:border-emerald-700 flex items-center justify-center hover:bg-accent"
@@ -180,6 +202,24 @@ export const InspectorNetworkRow = ({
                 >
                   <MessageCircle className="w-3 h-3 text-emerald-600" />
                 </a>
+                <button
+                  type="button"
+                  onClick={() =>
+                    copyToClipboard(
+                      buildWaLink(inspector.ksaMobile!),
+                      `ksa-wa-${inspector.id}`,
+                      `${t.ksaMobile || "KSA"} WhatsApp link`
+                    )
+                  }
+                  className="h-6 w-6 rounded-md border border-emerald-300 dark:border-emerald-700 flex items-center justify-center hover:bg-accent"
+                  aria-label="Copy KSA WhatsApp link"
+                >
+                  {copiedKey === `ksa-wa-${inspector.id}` ? (
+                    <Check className="w-3 h-3 text-emerald-600" />
+                  ) : (
+                    <Link2 className="w-3 h-3 text-emerald-600" />
+                  )}
+                </button>
               </div>
             </div>
           )}
