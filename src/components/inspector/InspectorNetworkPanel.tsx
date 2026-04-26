@@ -5,12 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { HAJ_INSPECTORS, INSPECTOR_STATES } from "@/data/hajInspectorsData";
 import { InspectorNetworkRow } from "@/components/inspector/InspectorNetworkRow";
-import { Search, Network, ExternalLink, X, Star, UserPlus } from "lucide-react";
+import { Search, Network, ExternalLink, X, Star, UserPlus, Upload } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useInspectorFavorites } from "@/hooks/useInspectorFavorites";
 import { useInspectorOverrides } from "@/hooks/useInspectorOverrides";
 import { useCustomInspectors } from "@/hooks/useCustomInspectors";
 import { AddInspectorDialog } from "@/components/inspector/AddInspectorDialog";
+import { ImportInspectorsDialog } from "@/components/inspector/ImportInspectorsDialog";
 
 const PREVIEW_COUNT = 8;
 
@@ -36,6 +37,7 @@ export const InspectorNetworkPanel = () => {
   const [stateFilter, setStateFilter] = useState<string>("");
   const [showAll, setShowAll] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
   const { favorites, isFavorite } = useInspectorFavorites();
   const { overrides, applyOverride } = useInspectorOverrides();
   const { custom } = useCustomInspectors();
@@ -105,6 +107,15 @@ export const InspectorNetworkPanel = () => {
             >
               <UserPlus className="w-3 h-3 mr-1" />
               Add
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-xs h-7"
+              onClick={() => setImportOpen(true)}
+            >
+              <Upload className="w-3 h-3 mr-1" />
+              Import
             </Button>
             <Button
               variant="ghost"
@@ -243,6 +254,7 @@ export const InspectorNetworkPanel = () => {
         )}
       </CardContent>
       <AddInspectorDialog open={addOpen} onOpenChange={setAddOpen} />
+      <ImportInspectorsDialog open={importOpen} onOpenChange={setImportOpen} />
     </Card>
   );
 };
