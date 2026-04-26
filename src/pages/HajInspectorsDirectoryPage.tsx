@@ -6,12 +6,15 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { HAJ_INSPECTORS, getStateStats, type HajInspector } from '@/data/hajInspectorsData';
 import { hajjBusPoints } from '@/data/hajjBusPoints';
-import { Search, Award, MessageCircle, ExternalLink, UserPlus, Users, ClipboardList, SlidersHorizontal, X } from 'lucide-react';
+import { Search, Award, MessageCircle, ExternalLink, UserPlus, Users, ClipboardList, SlidersHorizontal, X, LayoutGrid, Network } from 'lucide-react';
 import { StateSelector } from '@/components/StateSelector';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { InspectorStatsCard } from '@/components/inspector/InspectorStatsCard';
 import { StateGroupedInspectors } from '@/components/inspector/StateGroupedInspectors';
+import { InspectorNetworkRow } from '@/components/inspector/InspectorNetworkRow';
 import { useNavigate } from 'react-router-dom';
+
+type ViewMode = 'cards' | 'network';
 
 const WHATSAPP_GROUP_LINK = 'https://chat.whatsapp.com/LdH4cHBImrWIAwX2wv83Xz?mode=gi_t';
 
