@@ -28,6 +28,7 @@ import { cn } from '@/lib/utils';
 import InspectorMyProfile from '@/components/inspector/InspectorMyProfile';
 import { SubGroupAdvisoryCard } from '@/components/inspector/SubGroupAdvisoryCard';
 import { SubGroupManager } from '@/components/inspector/SubGroupManager';
+import { InspectorNetworkPanel } from '@/components/inspector/InspectorNetworkPanel';
 import {
   Select,
   SelectContent,
@@ -181,6 +182,9 @@ const InspectorDashboardPage = () => {
 
         {/* Sub-Group Coordination — create sub-groups, assign leaders, do movement check-ins */}
         <SubGroupManager />
+
+        {/* Inspector Network — find colleagues, copy Indian/KSA numbers in one tap */}
+        <InspectorNetworkPanel />
 
         {/* Summary Card - matches txtSummary */}
         <Card className="bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950 dark:to-teal-950 border-emerald-200 dark:border-emerald-800">
