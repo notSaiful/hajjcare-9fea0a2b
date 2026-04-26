@@ -146,6 +146,24 @@ export const InspectorNetworkRow = ({
                 </div>
               </div>
               <div className="flex gap-1 shrink-0">
+                <button
+                  type="button"
+                  onClick={() =>
+                    copyToClipboard(
+                      inspector.ksaMobile!,
+                      `ksa-${inspector.id}`,
+                      t.ksaMobile || "KSA Mobile"
+                    )
+                  }
+                  className="h-6 w-6 rounded-md border flex items-center justify-center hover:bg-accent"
+                  aria-label="Copy KSA mobile"
+                >
+                  {copiedKey === `ksa-${inspector.id}` ? (
+                    <Check className="w-3 h-3 text-emerald-600" />
+                  ) : (
+                    <Copy className="w-3 h-3" />
+                  )}
+                </button>
                 <a
                   href={`tel:${sanitizePhone(inspector.ksaMobile)}`}
                   className="h-6 w-6 rounded-md border flex items-center justify-center hover:bg-accent"
