@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -11,7 +11,16 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { useCustomInspectors } from "@/hooks/useCustomInspectors";
+import {
+  RadioGroup,
+  RadioGroupItem,
+} from "@/components/ui/radio-group";
+import {
+  useCustomInspectors,
+  type DuplicateMatch,
+  type DuplicateStrategy,
+  type NewInspectorInput,
+} from "@/hooks/useCustomInspectors";
 import { toast } from "@/hooks/use-toast";
 import {
   parseInspectorImport,
@@ -19,18 +28,46 @@ import {
   SAMPLE_JSON,
   type ParseResult,
 } from "@/lib/inspectorImportParser";
-import { Upload, FileUp, ClipboardPaste, AlertCircle, CheckCircle2 } from "lucide-react";
+import {
+  Upload,
+  FileUp,
+  ClipboardPaste,
+  AlertCircle,
+  CheckCircle2,
+  Copy,
+} from "lucide-react";
 
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
+type DupePreview = {
+  input: NewInspectorInput;
+  match: DuplicateMatch;
+};
+
 export const ImportInspectorsDialog = ({ open, onOpenChange }: Props) => {
-  const { addManyInspectors } = useCustomInspectors();
+  const { addManyInspectors, findDuplicate } = useCustomInspectors();
   const [text, setText] = useState("");
   const [preview, setPreview] = useState<ParseResult | null>(null);
+  const [strategy, setStrategy] = useState<DuplicateStrategy>("skip");
   const fileRef = useRef<HTMLInputElement>(null);
+
+  // Pre-compute duplicates whenever the parsed preview changes.
+  const dupes: DupePreview[] = useMemo(() => {
+    if (!preview) return [];
+    const out: DupePreview[] = [];
+    for (const input of preview.inspectors) {
+      const match = findDuplicate(input);
+      if (match) out.push({ input, match });
+    }
+    return out;
+  }, [preview, findDuplicate]);
+
+  const newCount = (preview?.inspectors.length ?? 0) - dupes.length;
+  const updatableCount = dupes.filter((d) => d.match.isCustom).length;
+  const officialDupeCount = dupes.length - updatableCount;
 
   const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -64,13 +101,16 @@ export const ImportInspectorsDialog = ({ open, onOpenChange }: Props) => {
       setPreview(parsed);
       return;
     }
-    const created = addManyInspectors(parsed.inspectors);
+    const summary = addManyInspectors(parsed.inspectors, strategy);
+    const parts: string[] = [];
+    if (summary.added.length) parts.push(`${summary.added.length} added`);
+    if (summary.updated.length) parts.push(`${summary.updated.length} updated`);
+    if (summary.skipped.length)
+      parts.push(`${summary.skipped.length} duplicate${summary.skipped.length === 1 ? "" : "s"} skipped`);
+    if (parsed.skipped > 0) parts.push(`${parsed.skipped} invalid skipped`);
     toast({
-      title: `Imported ${created.length} inspector${created.length === 1 ? "" : "s"}`,
-      description:
-        parsed.skipped > 0
-          ? `${parsed.skipped} row(s) skipped (missing name or state).`
-          : "Saved to this device.",
+      title: summary.added.length || summary.updated.length ? "Import complete" : "No changes",
+      description: parts.join(" · ") || "Nothing to do.",
     });
     handleReset();
     onOpenChange(false);
@@ -79,6 +119,7 @@ export const ImportInspectorsDialog = ({ open, onOpenChange }: Props) => {
   const handleReset = () => {
     setText("");
     setPreview(null);
+    setStrategy("skip");
   };
 
   const loadSample = (sample: string) => {
@@ -163,24 +204,36 @@ export const ImportInspectorsDialog = ({ open, onOpenChange }: Props) => {
 
           {/* Preview / Validation */}
           {preview && (
-            <div className="rounded-md border border-border bg-muted/30 p-2.5 space-y-1.5">
-              <div className="flex items-center gap-2 text-xs">
+            <div className="rounded-md border border-border bg-muted/30 p-2.5 space-y-2">
+              <div className="flex items-center gap-2 text-xs flex-wrap">
                 {preview.inspectors.length > 0 ? (
                   <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                 ) : (
                   <AlertCircle className="w-4 h-4 text-destructive" />
                 )}
                 <span className="font-medium">
-                  {preview.inspectors.length} ready to import
+                  {preview.inspectors.length} parsed
                 </span>
+                {newCount > 0 && (
+                  <Badge className="text-[10px]" variant="secondary">
+                    {newCount} new
+                  </Badge>
+                )}
+                {dupes.length > 0 && (
+                  <Badge className="text-[10px] gap-1" variant="outline">
+                    <Copy className="w-3 h-3" />
+                    {dupes.length} duplicate{dupes.length === 1 ? "" : "s"}
+                  </Badge>
+                )}
                 {preview.skipped > 0 && (
                   <Badge variant="outline" className="text-[10px]">
-                    {preview.skipped} skipped
+                    {preview.skipped} invalid
                   </Badge>
                 )}
               </div>
+
               {preview.errors.length > 0 && (
-                <ul className="text-[11px] text-destructive space-y-0.5 max-h-24 overflow-y-auto">
+                <ul className="text-[11px] text-destructive space-y-0.5 max-h-20 overflow-y-auto">
                   {preview.errors.slice(0, 6).map((e, i) => (
                     <li key={i}>• {e}</li>
                   ))}
@@ -189,7 +242,59 @@ export const ImportInspectorsDialog = ({ open, onOpenChange }: Props) => {
                   )}
                 </ul>
               )}
-              {preview.inspectors.length > 0 && (
+
+              {/* Duplicate handling */}
+              {dupes.length > 0 && (
+                <div className="rounded border border-border/60 bg-background/60 p-2 space-y-1.5">
+                  <div className="text-[11px] font-medium">
+                    Duplicates already on this device:
+                  </div>
+                  <ul className="text-[11px] text-muted-foreground space-y-0.5 max-h-24 overflow-y-auto">
+                    {dupes.slice(0, 5).map((d, i) => (
+                      <li key={i}>
+                        • <strong>{d.input.name}</strong> · {d.input.state}{" "}
+                        <span className="text-[10px]">
+                          ({d.match.reason}
+                          {!d.match.isCustom && ", official"})
+                        </span>
+                      </li>
+                    ))}
+                    {dupes.length > 5 && <li>+ {dupes.length - 5} more…</li>}
+                  </ul>
+                  <RadioGroup
+                    value={strategy}
+                    onValueChange={(v) => setStrategy(v as DuplicateStrategy)}
+                    className="gap-1 pt-1"
+                  >
+                    <label className="flex items-start gap-2 text-[11px] cursor-pointer">
+                      <RadioGroupItem value="skip" id="dup-skip" className="mt-0.5" />
+                      <span>
+                        <strong>Skip duplicates</strong> — only add{" "}
+                        {newCount} new entries.
+                      </span>
+                    </label>
+                    <label className="flex items-start gap-2 text-[11px] cursor-pointer">
+                      <RadioGroupItem
+                        value="update"
+                        id="dup-update"
+                        className="mt-0.5"
+                      />
+                      <span>
+                        <strong>Update my entries</strong> — overwrite{" "}
+                        {updatableCount} of my added inspectors with new values.
+                        {officialDupeCount > 0 && (
+                          <em className="block text-muted-foreground">
+                            {officialDupeCount} match official records and will
+                            be skipped.
+                          </em>
+                        )}
+                      </span>
+                    </label>
+                  </RadioGroup>
+                </div>
+              )}
+
+              {preview.inspectors.length > 0 && dupes.length === 0 && (
                 <div className="text-[11px] text-muted-foreground">
                   First: <strong>{preview.inspectors[0].name}</strong> ·{" "}
                   {preview.inspectors[0].state}
