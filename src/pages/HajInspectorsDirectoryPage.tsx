@@ -3,8 +3,10 @@ import { SimpleHeader } from '@/components/SimpleHeader';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { HAJ_INSPECTORS, getStateStats } from '@/data/hajInspectorsData';
-import { Search, Award, MessageCircle, ExternalLink, UserPlus, Users, ClipboardList } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { HAJ_INSPECTORS, getStateStats, type HajInspector } from '@/data/hajInspectorsData';
+import { hajjBusPoints } from '@/data/hajjBusPoints';
+import { Search, Award, MessageCircle, ExternalLink, UserPlus, Users, ClipboardList, SlidersHorizontal, X } from 'lucide-react';
 import { StateSelector } from '@/components/StateSelector';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { InspectorStatsCard } from '@/components/inspector/InspectorStatsCard';
@@ -12,6 +14,25 @@ import { StateGroupedInspectors } from '@/components/inspector/StateGroupedInspe
 import { useNavigate } from 'react-router-dom';
 
 const WHATSAPP_GROUP_LINK = 'https://chat.whatsapp.com/LdH4cHBImrWIAwX2wv83Xz?mode=gi_t';
+
+// Set of building numbers known to be "(U)" updated late additions.
+const UPDATED_BUILDING_NUMBERS = new Set<number>(
+  hajjBusPoints.filter((b) => b.isUpdated).flatMap((b) => b.buildings)
+);
+
+// Inspector counts as "updated assignment" if their Makkah building string
+// either contains "(U)" or references a known updated building number.
+const hasUpdatedAssignment = (i: HajInspector): boolean => {
+  const m = i.makkahBuilding;
+  if (!m) return false;
+  if (/\(U\)/i.test(m)) return true;
+  const nums = m.match(/\d{2,4}/g);
+  if (!nums) return false;
+  return nums.some((n) => UPDATED_BUILDING_NUMBERS.has(parseInt(n, 10)));
+};
+
+type CityFilter = 'all' | 'makkah' | 'madinah';
+type AssignmentFilter = 'all' | 'updated';
 
 const HajInspectorsDirectoryPage = () => {
   const { language } = useLanguage();
