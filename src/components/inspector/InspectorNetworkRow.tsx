@@ -93,17 +93,26 @@ export const InspectorNetworkRow = ({
                 {inspector.coverNumber}
               </span>
             )}
-            <Badge
-              variant={inspector.result === "Selected" ? "default" : "secondary"}
-              className={cn(
-                "text-[10px] h-4 px-1.5",
-                inspector.result === "Selected"
-                  ? "bg-emerald-500 hover:bg-emerald-600"
-                  : "bg-amber-500 hover:bg-amber-600"
-              )}
-            >
-              {inspector.result === "Selected" ? t.selected : t.waitlisted}
-            </Badge>
+            {isCustom ? (
+              <Badge
+                variant="outline"
+                className="text-[10px] h-4 px-1.5 border-primary/40 text-primary"
+              >
+                Added by you
+              </Badge>
+            ) : (
+              <Badge
+                variant={inspector.result === "Selected" ? "default" : "secondary"}
+                className={cn(
+                  "text-[10px] h-4 px-1.5",
+                  inspector.result === "Selected"
+                    ? "bg-emerald-500 hover:bg-emerald-600"
+                    : "bg-amber-500 hover:bg-amber-600"
+                )}
+              >
+                {inspector.result === "Selected" ? t.selected : t.waitlisted}
+              </Badge>
+            )}
           </div>
           <div className="flex items-center gap-1 text-[11px] text-muted-foreground mt-0.5">
             <MapPin className="w-3 h-3 shrink-0" />
