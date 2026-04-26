@@ -12,10 +12,13 @@ import {
   Check,
   Link2,
   Star,
+  Pencil,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
 import { useInspectorFavorites } from "@/hooks/useInspectorFavorites";
+import { useInspectorOverrides } from "@/hooks/useInspectorOverrides";
+import { InspectorEditDialog } from "@/components/inspector/InspectorEditDialog";
 
 const buildWaLink = (phone: string) =>
   `https://wa.me/${phone.replace(/[^\d+]/g, "").replace(/^\+/, "")}`;
