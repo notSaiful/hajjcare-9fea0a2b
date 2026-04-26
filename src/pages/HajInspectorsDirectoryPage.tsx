@@ -331,6 +331,34 @@ const HajInspectorsDirectoryPage = () => {
             placeholder={t.selectState}
           />
 
+          {/* Quick state chips — one-tap state switching */}
+          <div className="flex flex-wrap gap-1.5">
+            <Button
+              type="button"
+              size="sm"
+              variant={selectedState === '' ? 'default' : 'outline'}
+              onClick={() => setSelectedState('')}
+              className="h-7 px-2.5 text-xs"
+            >
+              {t.allStates}
+            </Button>
+            {topStates.map(({ state, count }) => (
+              <Button
+                key={state}
+                type="button"
+                size="sm"
+                variant={selectedState === state ? 'default' : 'outline'}
+                onClick={() =>
+                  setSelectedState(selectedState === state ? '' : state)
+                }
+                className="h-7 px-2.5 text-xs"
+              >
+                {state}
+                <span className="ml-1 opacity-60">{count}</span>
+              </Button>
+            ))}
+          </div>
+
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
