@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,6 +14,8 @@ import {
   Building2,
   IdCard,
   MapPin,
+  Copy,
+  Check,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -20,6 +23,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { toast } from "@/hooks/use-toast";
 
 interface InspectorCardProps {
   inspector: HajInspector;
@@ -31,6 +35,19 @@ interface InspectorCardProps {
 const sanitizePhone = (p: string) => p.replace(/[^\d+]/g, "");
 
 export const InspectorCard = ({ inspector, isExpanded, onToggle, translations: t }: InspectorCardProps) => {
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
+
+  const copyNumber = async (value: string, key: string, label: string) => {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopiedKey(key);
+      toast({ title: `${label} copied`, description: value });
+      setTimeout(() => setCopiedKey((k) => (k === key ? null : k)), 1500);
+    } catch {
+      toast({ title: "Copy failed", description: "Please copy manually." });
+    }
+  };
+
   const hasContact = inspector.indianMobile || inspector.ksaMobile;
   const hasBuilding = inspector.makkahBuilding || inspector.madinahBuilding;
 
