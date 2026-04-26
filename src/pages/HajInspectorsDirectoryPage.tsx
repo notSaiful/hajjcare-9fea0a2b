@@ -6,12 +6,15 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { HAJ_INSPECTORS, getStateStats, type HajInspector } from '@/data/hajInspectorsData';
 import { hajjBusPoints } from '@/data/hajjBusPoints';
-import { Search, Award, MessageCircle, ExternalLink, UserPlus, Users, ClipboardList, SlidersHorizontal, X } from 'lucide-react';
+import { Search, Award, MessageCircle, ExternalLink, UserPlus, Users, ClipboardList, SlidersHorizontal, X, LayoutGrid, Network } from 'lucide-react';
 import { StateSelector } from '@/components/StateSelector';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { InspectorStatsCard } from '@/components/inspector/InspectorStatsCard';
 import { StateGroupedInspectors } from '@/components/inspector/StateGroupedInspectors';
+import { InspectorNetworkRow } from '@/components/inspector/InspectorNetworkRow';
 import { useNavigate } from 'react-router-dom';
+
+type ViewMode = 'cards' | 'network';
 
 const WHATSAPP_GROUP_LINK = 'https://chat.whatsapp.com/LdH4cHBImrWIAwX2wv83Xz?mode=gi_t';
 
@@ -42,6 +45,7 @@ const HajInspectorsDirectoryPage = () => {
   const [cityFilter, setCityFilter] = useState<CityFilter>('all');
   const [assignmentFilter, setAssignmentFilter] = useState<AssignmentFilter>('all');
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [viewMode, setViewMode] = useState<ViewMode>('cards');
 
   // Filter inspectors
   const filteredInspectors = useMemo(() => {
@@ -134,6 +138,9 @@ const HajInspectorsDirectoryPage = () => {
       assignment: 'Assignment',
       onlyUpdated: 'Only updated (U)',
       clearFilters: 'Clear filters',
+      viewCards: 'Cards',
+      viewNetwork: 'Network',
+      networkHint: 'Quick lookup view — find any inspector at a glance',
     },
     ar: {
       title: 'مفتشو الحج 2026',
@@ -170,6 +177,9 @@ const HajInspectorsDirectoryPage = () => {
       assignment: 'التعيين',
       onlyUpdated: 'المحدّثة فقط (U)',
       clearFilters: 'مسح الفلاتر',
+      viewCards: 'بطاقات',
+      viewNetwork: 'شبكة',
+      networkHint: 'عرض البحث السريع — ابحث عن أي مفتش بسرعة',
     },
     ur: {
       title: 'حج انسپکٹرز 2026',
@@ -206,6 +216,9 @@ const HajInspectorsDirectoryPage = () => {
       assignment: 'تقرری',
       onlyUpdated: 'صرف اپڈیٹڈ (U)',
       clearFilters: 'فلٹرز صاف کریں',
+      viewCards: 'کارڈز',
+      viewNetwork: 'نیٹ ورک',
+      networkHint: 'فوری تلاش کا ویو — کسی بھی انسپکٹر کو ایک نظر میں ڈھونڈیں',
     },
     hi: {
       title: 'हज इंस्पेक्टर 2026',
@@ -242,6 +255,9 @@ const HajInspectorsDirectoryPage = () => {
       assignment: 'पोस्टिंग',
       onlyUpdated: 'केवल अपडेटेड (U)',
       clearFilters: 'फ़िल्टर साफ़ करें',
+      viewCards: 'कार्ड',
+      viewNetwork: 'नेटवर्क',
+      networkHint: 'तुरंत खोज दृश्य — किसी भी इंस्पेक्टर को एक नज़र में ढूंढें',
     },
   };
 
@@ -427,19 +443,60 @@ const HajInspectorsDirectoryPage = () => {
           )}
         </div>
 
-        {/* Results Count */}
-        <div className="text-sm text-muted-foreground">
-          {filteredInspectors.length} {t.total.toLowerCase()} {selectedState && `• ${selectedState}`}
+        {/* Results header + view toggle */}
+        <div className="flex items-center justify-between gap-2 flex-wrap">
+          <div className="text-sm text-muted-foreground">
+            {filteredInspectors.length} {t.total.toLowerCase()}{' '}
+            {selectedState && `• ${selectedState}`}
+          </div>
+          <div className="inline-flex rounded-md border bg-muted/40 p-0.5">
+            <Button
+              type="button"
+              size="sm"
+              variant={viewMode === 'cards' ? 'default' : 'ghost'}
+              onClick={() => setViewMode('cards')}
+              className="h-7 px-2.5 text-xs"
+            >
+              <LayoutGrid className="w-3.5 h-3.5 mr-1" />
+              {t.viewCards}
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant={viewMode === 'network' ? 'default' : 'ghost'}
+              onClick={() => setViewMode('network')}
+              className="h-7 px-2.5 text-xs"
+            >
+              <Network className="w-3.5 h-3.5 mr-1" />
+              {t.viewNetwork}
+            </Button>
+          </div>
         </div>
 
-        {/* Inspector List - Grouped by State */}
+        {viewMode === 'network' && (
+          <div className="text-[11px] text-muted-foreground italic -mt-2">
+            {t.networkHint}
+          </div>
+        )}
+
+        {/* Inspector List */}
         <div className="pb-20">
           {filteredInspectors.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               {t.noResults}
             </div>
+          ) : viewMode === 'network' ? (
+            <div className="space-y-2">
+              {filteredInspectors.map((inspector) => (
+                <InspectorNetworkRow
+                  key={inspector.id}
+                  inspector={inspector}
+                  translations={t}
+                />
+              ))}
+            </div>
           ) : (
-            <StateGroupedInspectors 
+            <StateGroupedInspectors
               inspectors={filteredInspectors}
               selectedState={selectedState}
               translations={t}
