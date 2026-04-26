@@ -5,10 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { HAJ_INSPECTORS, INSPECTOR_STATES } from "@/data/hajInspectorsData";
 import { InspectorNetworkRow } from "@/components/inspector/InspectorNetworkRow";
-import { Search, Network, ExternalLink, X, Star } from "lucide-react";
+import { Search, Network, ExternalLink, X, Star, UserPlus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useInspectorFavorites } from "@/hooks/useInspectorFavorites";
 import { useInspectorOverrides } from "@/hooks/useInspectorOverrides";
+import { useCustomInspectors } from "@/hooks/useCustomInspectors";
+import { AddInspectorDialog } from "@/components/inspector/AddInspectorDialog";
 
 const PREVIEW_COUNT = 8;
 
@@ -33,8 +35,10 @@ export const InspectorNetworkPanel = () => {
   const [query, setQuery] = useState("");
   const [stateFilter, setStateFilter] = useState<string>("");
   const [showAll, setShowAll] = useState(false);
+  const [addOpen, setAddOpen] = useState(false);
   const { favorites, isFavorite } = useInspectorFavorites();
   const { overrides, applyOverride } = useInspectorOverrides();
+  const { custom } = useCustomInspectors();
 
   const filtered = useMemo(() => {
     const normalize = (s: string) =>
@@ -42,8 +46,9 @@ export const InspectorNetworkPanel = () => {
     const q = query.trim();
     const nq = normalize(q);
 
-    // Apply user overrides first so search and display reflect edits
-    const merged = HAJ_INSPECTORS.map(applyOverride);
+    // Custom (user-added) inspectors first, then official records.
+    // Apply user overrides so search and display reflect edits.
+    const merged = [...custom, ...HAJ_INSPECTORS].map(applyOverride);
 
     const matched = merged.filter((i) => {
       if (stateFilter && i.state.toLowerCase() !== stateFilter.toLowerCase()) {
@@ -73,7 +78,7 @@ export const InspectorNetworkPanel = () => {
       const bf = isFavorite(b.id) ? 1 : 0;
       return bf - af;
     });
-  }, [query, stateFilter, favorites, isFavorite, overrides, applyOverride]);
+  }, [query, stateFilter, favorites, isFavorite, overrides, applyOverride, custom]);
 
   const favoriteCount = useMemo(
     () => filtered.filter((i) => isFavorite(i.id)).length,
@@ -91,15 +96,26 @@ export const InspectorNetworkPanel = () => {
             <Network className="w-5 h-5 text-primary" />
             Inspector Network
           </h2>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-xs h-7"
-            onClick={() => navigate("/haj-inspectors")}
-          >
-            Open full directory
-            <ExternalLink className="w-3 h-3 ml-1" />
-          </Button>
+          <div className="flex items-center gap-1">
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-xs h-7"
+              onClick={() => setAddOpen(true)}
+            >
+              <UserPlus className="w-3 h-3 mr-1" />
+              Add
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-xs h-7"
+              onClick={() => navigate("/haj-inspectors")}
+            >
+              Open full directory
+              <ExternalLink className="w-3 h-3 ml-1" />
+            </Button>
+          </div>
         </div>
 
         <p className="text-xs text-muted-foreground -mt-1">
@@ -226,6 +242,7 @@ export const InspectorNetworkPanel = () => {
           </Button>
         )}
       </CardContent>
+      <AddInspectorDialog open={addOpen} onOpenChange={setAddOpen} />
     </Card>
   );
 };

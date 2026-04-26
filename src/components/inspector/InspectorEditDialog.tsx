@@ -15,8 +15,12 @@ import {
   useInspectorOverrides,
   type InspectorEditableFields,
 } from "@/hooks/useInspectorOverrides";
+import {
+  useCustomInspectors,
+  isCustomInspectorId,
+} from "@/hooks/useCustomInspectors";
 import { toast } from "@/hooks/use-toast";
-import { RotateCcw, Save } from "lucide-react";
+import { RotateCcw, Save, Trash2 } from "lucide-react";
 
 interface InspectorEditDialogProps {
   inspector: HajInspector;
@@ -48,6 +52,8 @@ export const InspectorEditDialog = ({
   onOpenChange,
 }: InspectorEditDialogProps) => {
   const { setOverride, clearOverride, hasOverride } = useInspectorOverrides();
+  const { removeInspector } = useCustomInspectors();
+  const isCustom = isCustomInspectorId(inspector.id);
   const [form, setForm] = useState<FormState>(() => toForm(inspector));
 
   // Reset form when opening for a different inspector
@@ -77,11 +83,23 @@ export const InspectorEditDialog = ({
     onOpenChange(false);
   };
 
+  const handleDelete = () => {
+    clearOverride(inspector.id);
+    removeInspector(inspector.id);
+    toast({
+      title: "Inspector removed",
+      description: `${inspector.name} — removed from your network.`,
+    });
+    onOpenChange(false);
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-base">Edit inspector details</DialogTitle>
+          <DialogTitle className="text-base">
+            {isCustom ? "Edit added inspector" : "Edit inspector details"}
+          </DialogTitle>
           <DialogDescription className="text-xs">
             {inspector.name} • {inspector.state}
             <br />
@@ -163,17 +181,30 @@ export const InspectorEditDialog = ({
         </div>
 
         <DialogFooter className="flex-row justify-between sm:justify-between gap-2">
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={handleReset}
-            disabled={!hasOverride(inspector.id)}
-            className="text-xs"
-          >
-            <RotateCcw className="w-3.5 h-3.5 mr-1" />
-            Reset
-          </Button>
+          {isCustom ? (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={handleDelete}
+              className="text-xs text-destructive hover:text-destructive"
+            >
+              <Trash2 className="w-3.5 h-3.5 mr-1" />
+              Delete
+            </Button>
+          ) : (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={handleReset}
+              disabled={!hasOverride(inspector.id)}
+              className="text-xs"
+            >
+              <RotateCcw className="w-3.5 h-3.5 mr-1" />
+              Reset
+            </Button>
+          )}
           <div className="flex gap-2">
             <Button
               type="button"
