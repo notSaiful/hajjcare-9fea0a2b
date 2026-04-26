@@ -181,17 +181,30 @@ export const InspectorEditDialog = ({
         </div>
 
         <DialogFooter className="flex-row justify-between sm:justify-between gap-2">
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={handleReset}
-            disabled={!hasOverride(inspector.id)}
-            className="text-xs"
-          >
-            <RotateCcw className="w-3.5 h-3.5 mr-1" />
-            Reset
-          </Button>
+          {isCustom ? (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={handleDelete}
+              className="text-xs text-destructive hover:text-destructive"
+            >
+              <Trash2 className="w-3.5 h-3.5 mr-1" />
+              Delete
+            </Button>
+          ) : (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={handleReset}
+              disabled={!hasOverride(inspector.id)}
+              className="text-xs"
+            >
+              <RotateCcw className="w-3.5 h-3.5 mr-1" />
+              Reset
+            </Button>
+          )}
           <div className="flex gap-2">
             <Button
               type="button"
