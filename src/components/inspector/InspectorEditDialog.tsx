@@ -52,6 +52,8 @@ export const InspectorEditDialog = ({
   onOpenChange,
 }: InspectorEditDialogProps) => {
   const { setOverride, clearOverride, hasOverride } = useInspectorOverrides();
+  const { removeInspector } = useCustomInspectors();
+  const isCustom = isCustomInspectorId(inspector.id);
   const [form, setForm] = useState<FormState>(() => toForm(inspector));
 
   // Reset form when opening for a different inspector
@@ -81,11 +83,23 @@ export const InspectorEditDialog = ({
     onOpenChange(false);
   };
 
+  const handleDelete = () => {
+    clearOverride(inspector.id);
+    removeInspector(inspector.id);
+    toast({
+      title: "Inspector removed",
+      description: `${inspector.name} — removed from your network.`,
+    });
+    onOpenChange(false);
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-base">Edit inspector details</DialogTitle>
+          <DialogTitle className="text-base">
+            {isCustom ? "Edit added inspector" : "Edit inspector details"}
+          </DialogTitle>
           <DialogDescription className="text-xs">
             {inspector.name} • {inspector.state}
             <br />
