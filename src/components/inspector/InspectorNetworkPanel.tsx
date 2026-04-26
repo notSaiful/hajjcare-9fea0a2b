@@ -154,9 +154,20 @@ export const InspectorNetworkPanel = () => {
 
         {/* Result count */}
         <div className="flex items-center justify-between text-xs text-muted-foreground">
-          <span>
-            {filtered.length} inspector{filtered.length === 1 ? "" : "s"}
-            {stateFilter && ` • ${stateFilter}`}
+          <span className="flex items-center gap-2 flex-wrap">
+            <span>
+              {filtered.length} inspector{filtered.length === 1 ? "" : "s"}
+              {stateFilter && ` • ${stateFilter}`}
+            </span>
+            {favoriteCount > 0 && (
+              <Badge
+                variant="outline"
+                className="text-[10px] border-amber-300 text-amber-700 dark:text-amber-300 dark:border-amber-700 gap-1"
+              >
+                <Star className="w-3 h-3 fill-amber-500 text-amber-500" />
+                {favoriteCount} favorite{favoriteCount === 1 ? "" : "s"}
+              </Badge>
+            )}
           </span>
           {!showAll && filtered.length > PREVIEW_COUNT && (
             <Badge variant="outline" className="text-[10px]">
@@ -172,13 +183,27 @@ export const InspectorNetworkPanel = () => {
               No inspectors match your filters.
             </div>
           ) : (
-            visible.map((inspector) => (
-              <InspectorNetworkRow
-                key={inspector.id}
-                inspector={inspector}
-                translations={NETWORK_T}
-              />
-            ))
+            visible.map((inspector, idx) => {
+              const fav = isFavorite(inspector.id);
+              const prevFav =
+                idx > 0 ? isFavorite(visible[idx - 1].id) : true;
+              const showDivider = !fav && prevFav && idx > 0;
+              return (
+                <div key={inspector.id}>
+                  {showDivider && (
+                    <div className="flex items-center gap-2 py-1.5 text-[10px] uppercase tracking-wide text-muted-foreground">
+                      <div className="flex-1 h-px bg-border" />
+                      All inspectors
+                      <div className="flex-1 h-px bg-border" />
+                    </div>
+                  )}
+                  <InspectorNetworkRow
+                    inspector={inspector}
+                    translations={NETWORK_T}
+                  />
+                </div>
+              );
+            })
           )}
         </div>
 
