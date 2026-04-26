@@ -39,18 +39,31 @@ const HajInspectorsDirectoryPage = () => {
   const navigate = useNavigate();
   const [selectedState, setSelectedState] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [cityFilter, setCityFilter] = useState<CityFilter>('all');
+  const [assignmentFilter, setAssignmentFilter] = useState<AssignmentFilter>('all');
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
   // Filter inspectors
   const filteredInspectors = useMemo(() => {
     let filtered = HAJ_INSPECTORS;
-    
+
     if (selectedState) {
       filtered = filtered.filter(i => i.state.toLowerCase() === selectedState.toLowerCase());
     }
-    
+
+    if (cityFilter === 'makkah') {
+      filtered = filtered.filter(i => !!i.makkahBuilding);
+    } else if (cityFilter === 'madinah') {
+      filtered = filtered.filter(i => !!i.madinahBuilding);
+    }
+
+    if (assignmentFilter === 'updated') {
+      filtered = filtered.filter(hasUpdatedAssignment);
+    }
+
     if (searchQuery) {
       const query = searchQuery.toLowerCase().trim();
-      filtered = filtered.filter(i => 
+      filtered = filtered.filter(i =>
         i.name.toLowerCase().includes(query) ||
         i.fatherName.toLowerCase().includes(query) ||
         i.id.includes(query) ||
@@ -61,9 +74,17 @@ const HajInspectorsDirectoryPage = () => {
         (i.madinahBuilding?.toLowerCase().includes(query) ?? false)
       );
     }
-    
+
     return filtered;
-  }, [selectedState, searchQuery]);
+  }, [selectedState, searchQuery, cityFilter, assignmentFilter]);
+
+  const activeFilterCount =
+    (cityFilter !== 'all' ? 1 : 0) + (assignmentFilter !== 'all' ? 1 : 0);
+
+  const clearAdvancedFilters = () => {
+    setCityFilter('all');
+    setAssignmentFilter('all');
+  };
 
   // Stats for selected state or all
   const stats = useMemo(() => {
