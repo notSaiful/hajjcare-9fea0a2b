@@ -443,19 +443,60 @@ const HajInspectorsDirectoryPage = () => {
           )}
         </div>
 
-        {/* Results Count */}
-        <div className="text-sm text-muted-foreground">
-          {filteredInspectors.length} {t.total.toLowerCase()} {selectedState && `• ${selectedState}`}
+        {/* Results header + view toggle */}
+        <div className="flex items-center justify-between gap-2 flex-wrap">
+          <div className="text-sm text-muted-foreground">
+            {filteredInspectors.length} {t.total.toLowerCase()}{' '}
+            {selectedState && `• ${selectedState}`}
+          </div>
+          <div className="inline-flex rounded-md border bg-muted/40 p-0.5">
+            <Button
+              type="button"
+              size="sm"
+              variant={viewMode === 'cards' ? 'default' : 'ghost'}
+              onClick={() => setViewMode('cards')}
+              className="h-7 px-2.5 text-xs"
+            >
+              <LayoutGrid className="w-3.5 h-3.5 mr-1" />
+              {t.viewCards}
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant={viewMode === 'network' ? 'default' : 'ghost'}
+              onClick={() => setViewMode('network')}
+              className="h-7 px-2.5 text-xs"
+            >
+              <Network className="w-3.5 h-3.5 mr-1" />
+              {t.viewNetwork}
+            </Button>
+          </div>
         </div>
 
-        {/* Inspector List - Grouped by State */}
+        {viewMode === 'network' && (
+          <div className="text-[11px] text-muted-foreground italic -mt-2">
+            {t.networkHint}
+          </div>
+        )}
+
+        {/* Inspector List */}
         <div className="pb-20">
           {filteredInspectors.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               {t.noResults}
             </div>
+          ) : viewMode === 'network' ? (
+            <div className="space-y-2">
+              {filteredInspectors.map((inspector) => (
+                <InspectorNetworkRow
+                  key={inspector.id}
+                  inspector={inspector}
+                  translations={t}
+                />
+              ))}
+            </div>
           ) : (
-            <StateGroupedInspectors 
+            <StateGroupedInspectors
               inspectors={filteredInspectors}
               selectedState={selectedState}
               translations={t}
