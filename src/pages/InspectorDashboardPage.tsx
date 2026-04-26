@@ -28,6 +28,7 @@ import { cn } from '@/lib/utils';
 import InspectorMyProfile from '@/components/inspector/InspectorMyProfile';
 import { SubGroupAdvisoryCard } from '@/components/inspector/SubGroupAdvisoryCard';
 import { SubGroupManager } from '@/components/inspector/SubGroupManager';
+import { InspectorNetworkPanel } from '@/components/inspector/InspectorNetworkPanel';
 import {
   Select,
   SelectContent,
