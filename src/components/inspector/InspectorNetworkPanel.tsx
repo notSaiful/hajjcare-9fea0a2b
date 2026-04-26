@@ -34,6 +34,7 @@ export const InspectorNetworkPanel = () => {
   const [stateFilter, setStateFilter] = useState<string>("");
   const [showAll, setShowAll] = useState(false);
   const { favorites, isFavorite } = useInspectorFavorites();
+  const { overrides, applyOverride } = useInspectorOverrides();
 
   const filtered = useMemo(() => {
     const normalize = (s: string) =>
