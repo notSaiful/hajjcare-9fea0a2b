@@ -1,7 +1,28 @@
 import { useCallback, useEffect, useState } from "react";
-import type { HajInspector } from "@/data/hajInspectorsData";
+import { HAJ_INSPECTORS, type HajInspector } from "@/data/hajInspectorsData";
 
 const STORAGE_KEY = "hajcare:custom-inspectors";
+
+/** Normalize a string for fuzzy duplicate matching (case + whitespace + punctuation insensitive). */
+const norm = (s?: string) =>
+  (s ?? "").toLowerCase().replace(/[\s\-_./#()]+/g, "").trim();
+
+export type DuplicateStrategy = "skip" | "update";
+
+export type DuplicateMatch = {
+  /** id of the existing record (custom or official) */
+  existingId: string;
+  /** which field caused the match */
+  reason: "name+state" | "cover" | "name+state+cover";
+  /** true if the existing record is a user-added custom one (updatable) */
+  isCustom: boolean;
+};
+
+export type ImportSummary = {
+  added: HajInspector[];
+  updated: HajInspector[];
+  skipped: Array<{ input: NewInspectorInput; match: DuplicateMatch }>;
+};
 
 /** Prefix used to identify user-added inspectors (vs official records). */
 export const CUSTOM_INSPECTOR_PREFIX = "custom-";
