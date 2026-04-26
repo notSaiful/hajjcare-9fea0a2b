@@ -15,8 +15,12 @@ import {
   useInspectorOverrides,
   type InspectorEditableFields,
 } from "@/hooks/useInspectorOverrides";
+import {
+  useCustomInspectors,
+  isCustomInspectorId,
+} from "@/hooks/useCustomInspectors";
 import { toast } from "@/hooks/use-toast";
-import { RotateCcw, Save } from "lucide-react";
+import { RotateCcw, Save, Trash2 } from "lucide-react";
 
 interface InspectorEditDialogProps {
   inspector: HajInspector;
