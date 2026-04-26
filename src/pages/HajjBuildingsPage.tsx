@@ -4,9 +4,10 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { SimpleHeader } from "@/components/SimpleHeader";
 import { hajjBuildings, emergencyContacts, type HajjBuilding } from "@/data/hajjBuildingsData";
 import { makkahBuildingZones, findZoneByBuildingNumber, type BuildingZone } from "@/data/hajjBuildingZones";
+import { findBusPointsForBuilding, type BusPointMatch } from "@/data/hajjBusPoints";
 import { madinahHotels, getMadinahMapUrl } from "@/data/madinahHotels";
 import { getHotelLocation, formatDistance } from "@/data/madinahHotelCoords";
-import { Building, MapPin, Phone, Search, Stethoscope, Home, Landmark, Hash, Navigation, AlertCircle, ExternalLink, Hotel, Footprints, ArrowRight } from "lucide-react";
+import { Building, Bus, MapPin, Phone, Search, Stethoscope, Home, Landmark, Hash, Navigation, AlertCircle, ExternalLink, Hotel, Footprints, ArrowRight, Info } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -25,6 +26,7 @@ const HajjBuildingsPage = () => {
   const [buildingNumber, setBuildingNumber] = useState("");
   const [foundZone, setFoundZone] = useState<BuildingZone | null>(null);
   const [searchedNumber, setSearchedNumber] = useState<number | null>(null);
+  const [busMatches, setBusMatches] = useState<BusPointMatch[]>([]);
   const [hotelSearch, setHotelSearch] = useState("");
 
   const lang = (language === "hi" || language === "ur" || language === "ar") ? language : "en";
@@ -38,6 +40,9 @@ const HajjBuildingsPage = () => {
       buildingRange: "Building Range", notFound: "Building number not found. Please enter a number between 101-1880.",
       allZones: "All Makkah Building Zones", zoneNote: "Building numbers 101-1880 are Zone IDs, not actual building count.",
       navigate: "Navigate", openMap: "Open in Google Maps",
+      busPoint: "Bus Point", branch: "Branch", busPointTitle: "Bus Point & Branch",
+      uWarning: "(U) = Updated / Late addition. Same bus service & branch as the original list — only an administrative marker.",
+      noBusPoint: "No bus point mapping found for this building yet. Check with your inspector or branch office.",
       madinahHotels: "Madinah Hotels 2026", searchHotel: "Search by name, code, or Tashee...", hotelsCount: "hotels", locUnavailable: "Location unavailable",
       hotelsSource: "Source: Official MOH/CGI Jeddah list — 381 hotels in Madinah Markaziya",
     },
@@ -49,6 +54,9 @@ const HajjBuildingsPage = () => {
       buildingRange: "बिल्डिंग रेंज", notFound: "बिल्डिंग नंबर नहीं मिला। कृपया 101-1880 के बीच नंबर डालें।",
       allZones: "मक्का के सभी बिल्डिंग ज़ोन", zoneNote: "बिल्डिंग नंबर 101-1880 सिर्फ ज़ोन पहचान के लिए हैं, बिल्डिंग की तादाद नहीं।",
       navigate: "नेविगेट करें", openMap: "गूगल मैप में खोलें",
+      busPoint: "बस पॉइंट", branch: "ब्रांच", busPointTitle: "बस पॉइंट और ब्रांच",
+      uWarning: "(U) = बाद में जोड़ा गया। बस सेवा और ब्रांच वही रहेगी जो असली लिस्ट की है — सिर्फ रिकॉर्ड का निशान है।",
+      noBusPoint: "इस बिल्डिंग के लिए बस पॉइंट अभी मैप नहीं है। अपने इंस्पेक्टर या ब्रांच ऑफिस से पुष्टि करें।",
       madinahHotels: "मदीना होटल 2026", searchHotel: "नाम, कोड, या तशी से खोजें...", hotelsCount: "होटल", locUnavailable: "लोकेशन उपलब्ध नहीं",
       hotelsSource: "स्रोत: आधिकारिक MOH/CGI जेद्दा सूची — मदीना मरकज़िया में 381 होटल",
     },
@@ -60,6 +68,9 @@ const HajjBuildingsPage = () => {
       buildingRange: "بلڈنگ رینج", notFound: "بلڈنگ نمبر نہیں ملا۔ براہ کرم 101-1880 کے درمیان نمبر درج کریں۔",
       allZones: "مکہ کے تمام بلڈنگ زون", zoneNote: "بلڈنگ نمبر 101-1880 صرف زون کی پہچان کے لیے ہیں، عمارتوں کی تعداد نہیں۔",
       navigate: "نیویگیٹ", openMap: "گوگل میپ میں کھولیں",
+      busPoint: "بس پوائنٹ", branch: "برانچ", busPointTitle: "بس پوائنٹ اور برانچ",
+      uWarning: "(U) = بعد میں شامل کی گئی۔ بس سروس اور برانچ وہی ہیں جو اصل فہرست کی ہیں — صرف ریکارڈ کا نشان ہے۔",
+      noBusPoint: "اس بلڈنگ کے لیے بس پوائنٹ ابھی میپ نہیں ہے۔ اپنے انسپکٹر یا برانچ آفس سے تصدیق کریں۔",
       madinahHotels: "مدینہ ہوٹل 2026", searchHotel: "نام، کوڈ، یا تشی سے تلاش کریں...", hotelsCount: "ہوٹل", locUnavailable: "لوکیشن دستیاب نہیں",
       hotelsSource: "ماخذ: آفیشل MOH/CGI جدہ فہرست — مدینہ مرکزیہ میں 381 ہوٹل",
     },
@@ -71,6 +82,9 @@ const HajjBuildingsPage = () => {
       buildingRange: "نطاق المباني", notFound: "رقم المبنى غير موجود. الرجاء إدخال رقم بين 101-1880.",
       allZones: "جميع مناطق مباني مكة", zoneNote: "أرقام المباني 101-1880 هي أرقام تعريف المنطقة فقط.",
       navigate: "انتقال", openMap: "افتح في خرائط جوجل",
+      busPoint: "نقطة الحافلة", branch: "الفرع", busPointTitle: "نقطة الحافلة والفرع",
+      uWarning: "(U) = إضافة لاحقة. نفس خدمة الحافلة والفرع كالقائمة الأصلية — مجرد علامة إدارية.",
+      noBusPoint: "لا يوجد ربط لنقطة حافلة لهذا المبنى بعد. تأكد مع المفتش أو مكتب الفرع.",
       madinahHotels: "فنادق المدينة 2026", searchHotel: "ابحث بالاسم أو الرقم أو التشي...", hotelsCount: "فنادق", locUnavailable: "الموقع غير متوفر",
       hotelsSource: "المصدر: قائمة MOH/CGI جدة الرسمية — 381 فندقًا في مركزية المدينة",
     },
@@ -85,9 +99,10 @@ const HajjBuildingsPage = () => {
 
   const handleFindBuilding = () => {
     const num = parseInt(buildingNumber, 10);
-    if (isNaN(num)) { setFoundZone(null); setSearchedNumber(null); return; }
+    if (isNaN(num)) { setFoundZone(null); setSearchedNumber(null); setBusMatches([]); return; }
     setSearchedNumber(num);
     setFoundZone(findZoneByBuildingNumber(num));
+    setBusMatches(findBusPointsForBuilding(num));
   };
 
   const filtered = hajjBuildings.filter((b) => {
@@ -213,6 +228,66 @@ const HajjBuildingsPage = () => {
                 {t.navigate}
                 <ExternalLink className="w-3 h-3 ml-auto opacity-60" />
               </Button>
+            </div>
+          )}
+
+          {/* Bus Point / Branch result */}
+          {searchedNumber !== null && (
+            <div className="bg-background border border-amber-500/30 rounded-xl p-4 space-y-3 animate-in fade-in slide-in-from-top-2">
+              <h3 className="text-sm font-bold flex items-center gap-2">
+                <div className="w-7 h-7 rounded-full bg-amber-500/10 flex items-center justify-center">
+                  <Bus className="w-4 h-4 text-amber-600" />
+                </div>
+                {t.busPointTitle}
+              </h3>
+
+              {busMatches.length > 0 ? (
+                <div className="space-y-2">
+                  {busMatches.map((m, idx) => (
+                    <div
+                      key={`${m.entry.busPoint}-${idx}`}
+                      className={`rounded-lg border p-3 space-y-2 ${
+                        m.entry.isUpdated
+                          ? "border-amber-500/40 bg-amber-500/5"
+                          : "border-border bg-muted/30"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-2 flex-wrap">
+                        <div className="flex items-center gap-2">
+                          <Badge
+                            variant={m.entry.isUpdated ? "default" : "secondary"}
+                            className={`font-mono text-xs ${
+                              m.entry.isUpdated ? "bg-amber-500 hover:bg-amber-500" : ""
+                            }`}
+                          >
+                            {t.busPoint}: {m.entry.busPoint}
+                          </Badge>
+                          {m.entry.isUpdated && (
+                            <Badge variant="outline" className="text-[10px] border-amber-500/40 text-amber-700">
+                              U
+                            </Badge>
+                          )}
+                        </div>
+                        <span className="text-xs text-muted-foreground">
+                          {t.branch}: <span className="font-semibold text-foreground">{m.entry.branchNumber}</span>
+                        </span>
+                      </div>
+                      <p className="text-sm font-medium">{m.entry.branchName}</p>
+                      {m.entry.isUpdated && (
+                        <div className="flex items-start gap-1.5 text-[11px] text-amber-700 bg-amber-500/10 rounded-md p-2">
+                          <Info className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
+                          <span>{t.uWarning}</span>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="flex items-start gap-2 text-xs text-muted-foreground bg-muted/40 rounded-lg p-2.5">
+                  <AlertCircle className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
+                  <p>{t.noBusPoint}</p>
+                </div>
+              )}
             </div>
           )}
 
