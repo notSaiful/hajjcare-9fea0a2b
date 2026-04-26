@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -11,7 +11,16 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { useCustomInspectors } from "@/hooks/useCustomInspectors";
+import {
+  RadioGroup,
+  RadioGroupItem,
+} from "@/components/ui/radio-group";
+import {
+  useCustomInspectors,
+  type DuplicateMatch,
+  type DuplicateStrategy,
+  type NewInspectorInput,
+} from "@/hooks/useCustomInspectors";
 import { toast } from "@/hooks/use-toast";
 import {
   parseInspectorImport,
@@ -19,12 +28,24 @@ import {
   SAMPLE_JSON,
   type ParseResult,
 } from "@/lib/inspectorImportParser";
-import { Upload, FileUp, ClipboardPaste, AlertCircle, CheckCircle2 } from "lucide-react";
+import {
+  Upload,
+  FileUp,
+  ClipboardPaste,
+  AlertCircle,
+  CheckCircle2,
+  Copy,
+} from "lucide-react";
 
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
+
+type DupePreview = {
+  input: NewInspectorInput;
+  match: DuplicateMatch;
+};
 
 export const ImportInspectorsDialog = ({ open, onOpenChange }: Props) => {
   const { addManyInspectors } = useCustomInspectors();
