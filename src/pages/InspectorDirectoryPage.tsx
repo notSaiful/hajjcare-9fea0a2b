@@ -29,7 +29,11 @@ import {
   Building2,
   Stethoscope,
   ClipboardList,
+  Copy,
+  Check,
 } from "lucide-react";
+import { toast } from "sonner";
+
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useHajInspectors, HajInspectorRecord } from "@/hooks/useHajInspectors";
 import { INSPECTOR_STATES } from "@/data/hajInspectorsData";
