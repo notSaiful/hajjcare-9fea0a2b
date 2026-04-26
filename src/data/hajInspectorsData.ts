@@ -10,6 +10,12 @@ export interface HajInspector {
   result: 'Selected' | 'Waitlisted';
   quota: string;
   category: string;
+  // Optional contact + posting details (filled later from official lists)
+  coverNumber?: string;
+  indianMobile?: string;
+  ksaMobile?: string;
+  makkahBuilding?: string;
+  madinahBuilding?: string;
 }
 
 export const HAJ_INSPECTORS: HajInspector[] = [
@@ -18,7 +24,7 @@ export const HAJ_INSPECTORS: HajInspector[] = [
   { id: '25110503111044', name: 'MOHAMMED RAFIQUE', fatherName: 'NALAKATH RASHEED', gender: 'Male', state: 'Andaman and Nicobar Islands', cbtMarks: 137, interviewMarks: 26, totalMarks: 163, result: 'Waitlisted', quota: '50% Open Quota', category: 'Fresher' },
 
   // Andhra Pradesh
-  { id: '25103002103512', name: 'MASTAN VALI', fatherName: 'SHAIK JOHN SAHEB', gender: 'Male', state: 'Andhra Pradesh', cbtMarks: 146, interviewMarks: 48, totalMarks: 194, result: 'Selected', quota: '50% Open Quota', category: 'Repeater' },
+  { id: '25103002103512', name: 'MASTAN VALI', fatherName: 'SHAIK JOHN SAHEB', gender: 'Male', state: 'Andhra Pradesh', cbtMarks: 146, interviewMarks: 48, totalMarks: 194, result: 'Selected', quota: '50% Open Quota', category: 'Repeater', coverNumber: 'AP-001', indianMobile: '+91 9876543210', ksaMobile: '+966 501234567', makkahBuilding: 'Building 216, Azizia (Branch 5)', madinahBuilding: 'Building 504, Markaziya' },
   { id: '25101602103538', name: 'ATAULLA', fatherName: 'KAREEMULLA SHAIK', gender: 'Male', state: 'Andhra Pradesh', cbtMarks: 140, interviewMarks: 46, totalMarks: 186, result: 'Selected', quota: '50% Open Quota', category: 'Fresher' },
   { id: '25102102104111', name: 'MOHAMMED AAQIB RAHMAN', fatherName: 'MOHAMMED HABEEB UR RAHMAN', gender: 'Male', state: 'Andhra Pradesh', cbtMarks: 143, interviewMarks: 41, totalMarks: 184, result: 'Selected', quota: '50% Open Quota', category: 'Fresher' },
   { id: '25102802103333', name: 'USMAN PASHA', fatherName: 'HUSSAIN PASHA SHAIK', gender: 'Male', state: 'Andhra Pradesh', cbtMarks: 139, interviewMarks: 45, totalMarks: 184, result: 'Selected', quota: '50% Open Quota', category: 'Fresher' },

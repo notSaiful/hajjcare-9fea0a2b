@@ -28,11 +28,16 @@ const HajInspectorsDirectoryPage = () => {
     }
     
     if (searchQuery) {
-      const query = searchQuery.toLowerCase();
+      const query = searchQuery.toLowerCase().trim();
       filtered = filtered.filter(i => 
         i.name.toLowerCase().includes(query) ||
         i.fatherName.toLowerCase().includes(query) ||
-        i.id.includes(query)
+        i.id.includes(query) ||
+        (i.coverNumber?.toLowerCase().includes(query) ?? false) ||
+        (i.indianMobile?.includes(query) ?? false) ||
+        (i.ksaMobile?.includes(query) ?? false) ||
+        (i.makkahBuilding?.toLowerCase().includes(query) ?? false) ||
+        (i.madinahBuilding?.toLowerCase().includes(query) ?? false)
       );
     }
     
@@ -56,7 +61,7 @@ const HajInspectorsDirectoryPage = () => {
       title: 'Haj Inspectors 2026',
       subtitle: 'Selected candidates grouped by State',
       selectState: 'Select State',
-      searchPlaceholder: 'Search by name or ID...',
+      searchPlaceholder: 'Search by name, ID, cover #, mobile or building...',
       selected: 'Selected',
       waitlisted: 'Waitlisted',
       total: 'Total',
@@ -70,12 +75,20 @@ const HajInspectorsDirectoryPage = () => {
       quota: 'Quota',
       noResults: 'No inspectors found matching your criteria',
       allStates: 'All States',
+      coverNumber: 'Cover #',
+      indianMobile: 'Indian Mobile',
+      ksaMobile: 'KSA Mobile',
+      makkahBuilding: 'Makkah Building',
+      madinahBuilding: 'Madinah Building',
+      contactInfo: 'Contact',
+      buildingInfo: 'Posting / Building',
+      contactPending: 'Contact and building details will be updated soon.',
     },
     ar: {
       title: 'مفتشو الحج 2026',
       subtitle: 'المرشحون المختارون مصنفون حسب الولاية',
       selectState: 'اختر الولاية',
-      searchPlaceholder: 'البحث بالاسم أو الرقم...',
+      searchPlaceholder: 'ابحث بالاسم، الرقم، رقم الغلاف، الجوال أو المبنى...',
       selected: 'مختار',
       waitlisted: 'قائمة الانتظار',
       total: 'المجموع',
@@ -89,12 +102,20 @@ const HajInspectorsDirectoryPage = () => {
       quota: 'الحصة',
       noResults: 'لم يتم العثور على مفتشين',
       allStates: 'جميع الولايات',
+      coverNumber: 'رقم الغلاف',
+      indianMobile: 'جوال هندي',
+      ksaMobile: 'جوال سعودي',
+      makkahBuilding: 'مبنى مكة',
+      madinahBuilding: 'مبنى المدينة',
+      contactInfo: 'الاتصال',
+      buildingInfo: 'المبنى / الموقع',
+      contactPending: 'سيتم تحديث بيانات الاتصال والمبنى قريباً.',
     },
     ur: {
       title: 'حج انسپکٹرز 2026',
       subtitle: 'ریاست کے لحاظ سے منتخب امیدوار',
       selectState: 'ریاست منتخب کریں',
-      searchPlaceholder: 'نام یا آئی ڈی سے تلاش کریں...',
+      searchPlaceholder: 'نام، آئی ڈی، کور نمبر، موبائل یا عمارت سے تلاش...',
       selected: 'منتخب',
       waitlisted: 'انتظار کی فہرست',
       total: 'کل',
@@ -108,12 +129,20 @@ const HajInspectorsDirectoryPage = () => {
       quota: 'کوٹہ',
       noResults: 'کوئی انسپکٹر نہیں ملا',
       allStates: 'تمام ریاستیں',
+      coverNumber: 'کور نمبر',
+      indianMobile: 'انڈین موبائل',
+      ksaMobile: 'KSA موبائل',
+      makkahBuilding: 'مکہ بلڈنگ',
+      madinahBuilding: 'مدینہ بلڈنگ',
+      contactInfo: 'رابطہ',
+      buildingInfo: 'پوسٹنگ / بلڈنگ',
+      contactPending: 'رابطہ اور بلڈنگ کی تفصیلات جلد اپ ڈیٹ ہوں گی۔',
     },
     hi: {
       title: 'हज इंस्पेक्टर 2026',
       subtitle: 'राज्य के अनुसार चयनित उम्मीदवार',
       selectState: 'राज्य चुनें',
-      searchPlaceholder: 'नाम या आईडी से खोजें...',
+      searchPlaceholder: 'नाम, ID, कवर #, मोबाइल या बिल्डिंग से खोजें...',
       selected: 'चयनित',
       waitlisted: 'प्रतीक्षा सूची',
       total: 'कुल',
@@ -127,6 +156,14 @@ const HajInspectorsDirectoryPage = () => {
       quota: 'कोटा',
       noResults: 'कोई इंस्पेक्टर नहीं मिला',
       allStates: 'सभी राज्य',
+      coverNumber: 'कवर नंबर',
+      indianMobile: 'भारतीय मोबाइल',
+      ksaMobile: 'KSA मोबाइल',
+      makkahBuilding: 'मक्का बिल्डिंग',
+      madinahBuilding: 'मदीना बिल्डिंग',
+      contactInfo: 'संपर्क',
+      buildingInfo: 'पोस्टिंग / बिल्डिंग',
+      contactPending: 'संपर्क और बिल्डिंग की जानकारी जल्द अपडेट होगी।',
     },
   };
 
