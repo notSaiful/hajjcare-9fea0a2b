@@ -242,6 +242,7 @@ export const InspectorNetworkPanel = () => {
           </Button>
         )}
       </CardContent>
+      <AddInspectorDialog open={addOpen} onOpenChange={setAddOpen} />
     </Card>
   );
 };
