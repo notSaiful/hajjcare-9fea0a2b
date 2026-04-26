@@ -124,6 +124,19 @@ export const InspectorCard = ({ inspector, isExpanded, onToggle, translations: t
                       <div className="text-sm font-medium truncate">{inspector.indianMobile}</div>
                     </div>
                     <div className="flex gap-1.5 shrink-0">
+                      <Button
+                        size="icon"
+                        variant="outline"
+                        className="h-8 w-8"
+                        onClick={() => copyNumber(inspector.indianMobile!, `in-${inspector.id}`, t.indianMobile || 'Indian Mobile')}
+                        aria-label="Copy Indian mobile"
+                      >
+                        {copiedKey === `in-${inspector.id}` ? (
+                          <Check className="w-3.5 h-3.5 text-emerald-600" />
+                        ) : (
+                          <Copy className="w-3.5 h-3.5" />
+                        )}
+                      </Button>
                       <Button asChild size="icon" variant="outline" className="h-8 w-8">
                         <a href={`tel:${sanitizePhone(inspector.indianMobile)}`} aria-label="Call">
                           <Phone className="w-3.5 h-3.5" />
@@ -150,6 +163,19 @@ export const InspectorCard = ({ inspector, isExpanded, onToggle, translations: t
                       <div className="text-sm font-medium truncate">{inspector.ksaMobile}</div>
                     </div>
                     <div className="flex gap-1.5 shrink-0">
+                      <Button
+                        size="icon"
+                        variant="outline"
+                        className="h-8 w-8"
+                        onClick={() => copyNumber(inspector.ksaMobile!, `ksa-${inspector.id}`, t.ksaMobile || 'KSA Mobile')}
+                        aria-label="Copy KSA mobile"
+                      >
+                        {copiedKey === `ksa-${inspector.id}` ? (
+                          <Check className="w-3.5 h-3.5 text-emerald-600" />
+                        ) : (
+                          <Copy className="w-3.5 h-3.5" />
+                        )}
+                      </Button>
                       <Button asChild size="icon" variant="outline" className="h-8 w-8">
                         <a href={`tel:${sanitizePhone(inspector.ksaMobile)}`} aria-label="Call">
                           <Phone className="w-3.5 h-3.5" />
@@ -168,6 +194,7 @@ export const InspectorCard = ({ inspector, isExpanded, onToggle, translations: t
                     </div>
                   </div>
                 )}
+
               </div>
             )}
 
