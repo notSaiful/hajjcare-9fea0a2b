@@ -42,7 +42,10 @@ export const InspectorNetworkPanel = () => {
     const q = query.trim();
     const nq = normalize(q);
 
-    const matched = HAJ_INSPECTORS.filter((i) => {
+    // Apply user overrides first so search and display reflect edits
+    const merged = HAJ_INSPECTORS.map(applyOverride);
+
+    const matched = merged.filter((i) => {
       if (stateFilter && i.state.toLowerCase() !== stateFilter.toLowerCase()) {
         return false;
       }
@@ -70,7 +73,7 @@ export const InspectorNetworkPanel = () => {
       const bf = isFavorite(b.id) ? 1 : 0;
       return bf - af;
     });
-  }, [query, stateFilter, favorites, isFavorite]);
+  }, [query, stateFilter, favorites, isFavorite, overrides, applyOverride]);
 
   const favoriteCount = useMemo(
     () => filtered.filter((i) => isFavorite(i.id)).length,
