@@ -325,6 +325,12 @@ export const InspectorNetworkRow = ({
             "Contact and building details will be updated soon."}
         </div>
       )}
+
+      <InspectorEditDialog
+        inspector={inspector}
+        open={editOpen}
+        onOpenChange={setEditOpen}
+      />
     </div>
   );
 };
