@@ -78,7 +78,7 @@ export const InspectorNetworkPanel = () => {
       const bf = isFavorite(b.id) ? 1 : 0;
       return bf - af;
     });
-  }, [query, stateFilter, favorites, isFavorite, overrides, applyOverride]);
+  }, [query, stateFilter, favorites, isFavorite, overrides, applyOverride, custom]);
 
   const favoriteCount = useMemo(
     () => filtered.filter((i) => isFavorite(i.id)).length,
