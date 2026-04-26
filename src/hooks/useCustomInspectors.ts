@@ -99,5 +99,36 @@ export const useCustomInspectors = () => {
     [custom, persist]
   );
 
-  return { custom, addInspector, removeInspector };
+  const addManyInspectors = useCallback(
+    (inputs: NewInspectorInput[]): HajInspector[] => {
+      const created: HajInspector[] = inputs.map((input, idx) => {
+        const id = `${CUSTOM_INSPECTOR_PREFIX}${Date.now()}-${idx}-${Math.random()
+          .toString(36)
+          .slice(2, 8)}`;
+        return {
+          id,
+          name: input.name.trim(),
+          fatherName: cleanStr(input.fatherName) ?? "—",
+          gender: input.gender ?? "Male",
+          state: input.state.trim(),
+          cbtMarks: 0,
+          interviewMarks: 0,
+          totalMarks: 0,
+          result: "Selected",
+          quota: "Added by user",
+          category: "Custom",
+          coverNumber: cleanStr(input.coverNumber),
+          indianMobile: cleanStr(input.indianMobile),
+          ksaMobile: cleanStr(input.ksaMobile),
+          makkahBuilding: cleanStr(input.makkahBuilding),
+          madinahBuilding: cleanStr(input.madinahBuilding),
+        };
+      });
+      persist([...created, ...custom]);
+      return created;
+    },
+    [custom, persist]
+  );
+
+  return { custom, addInspector, addManyInspectors, removeInspector };
 };
