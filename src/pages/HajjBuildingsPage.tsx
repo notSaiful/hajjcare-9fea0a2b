@@ -235,65 +235,90 @@ const HajjBuildingsPage = () => {
             </div>
           )}
 
-          {/* Bus Point / Branch result */}
-          {searchedNumber !== null && (
-            <div className="bg-background border border-amber-500/30 rounded-xl p-4 space-y-3 animate-in fade-in slide-in-from-top-2">
-              <h3 className="text-sm font-bold flex items-center gap-2">
-                <div className="w-7 h-7 rounded-full bg-amber-500/10 flex items-center justify-center">
-                  <Bus className="w-4 h-4 text-amber-600" />
-                </div>
-                {t.busPointTitle}
-              </h3>
+          {/* Bus Point / Branch result — second card */}
+          {searchedNumber !== null && (() => {
+            const hasUpdated = busMatches.some((m) => m.entry.isUpdated);
+            return (
+              <div
+                className={`bg-background rounded-xl p-4 space-y-3 animate-in fade-in slide-in-from-top-2 border-2 ${
+                  hasUpdated ? "border-amber-500" : "border-amber-500/30"
+                }`}
+              >
+                <h3 className="text-sm font-bold flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-full bg-amber-500/10 flex items-center justify-center">
+                    <Bus className="w-4 h-4 text-amber-600" />
+                  </div>
+                  {t.busPointTitle}
+                  {searchedNumber !== null && (
+                    <span className="ml-auto font-mono text-xs text-muted-foreground">
+                      #{searchedNumber}
+                    </span>
+                  )}
+                </h3>
 
-              {busMatches.length > 0 ? (
-                <div className="space-y-2">
-                  {busMatches.map((m, idx) => (
-                    <div
-                      key={`${m.entry.busPoint}-${idx}`}
-                      className={`rounded-lg border p-3 space-y-2 ${
-                        m.entry.isUpdated
-                          ? "border-amber-500/40 bg-amber-500/5"
-                          : "border-border bg-muted/30"
-                      }`}
-                    >
-                      <div className="flex items-center justify-between gap-2 flex-wrap">
-                        <div className="flex items-center gap-2">
-                          <Badge
-                            variant={m.entry.isUpdated ? "default" : "secondary"}
-                            className={`font-mono text-xs ${
-                              m.entry.isUpdated ? "bg-amber-500 hover:bg-amber-500" : ""
-                            }`}
-                          >
-                            {t.busPoint}: {m.entry.busPoint}
-                          </Badge>
-                          {m.entry.isUpdated && (
-                            <Badge variant="outline" className="text-[10px] border-amber-500/40 text-amber-700">
-                              U
-                            </Badge>
-                          )}
-                        </div>
-                        <span className="text-xs text-muted-foreground">
-                          {t.branch}: <span className="font-semibold text-foreground">{m.entry.branchNumber}</span>
-                        </span>
-                      </div>
-                      <p className="text-sm font-medium">{m.entry.branchName}</p>
-                      {m.entry.isUpdated && (
-                        <div className="flex items-start gap-1.5 text-[11px] text-amber-700 bg-amber-500/10 rounded-md p-2">
-                          <Info className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
-                          <span>{t.uWarning}</span>
-                        </div>
-                      )}
+                {/* Top warning banner if any match is updated */}
+                {hasUpdated && (
+                  <div className="flex items-start gap-2 bg-amber-500/15 border border-amber-500/50 rounded-lg p-2.5">
+                    <AlertCircle className="w-4 h-4 text-amber-700 mt-0.5 flex-shrink-0" />
+                    <div className="space-y-1">
+                      <p className="text-xs font-bold text-amber-800 uppercase tracking-wide">
+                        ⚠️ {t.uBadge}
+                      </p>
+                      <p className="text-[11px] text-amber-800 leading-relaxed">{t.uWarning}</p>
                     </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="flex items-start gap-2 text-xs text-muted-foreground bg-muted/40 rounded-lg p-2.5">
-                  <AlertCircle className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
-                  <p>{t.noBusPoint}</p>
-                </div>
-              )}
-            </div>
-          )}
+                  </div>
+                )}
+
+                {busMatches.length > 0 ? (
+                  <div className="space-y-2">
+                    {busMatches.map((m, idx) => (
+                      <div
+                        key={`${m.entry.busPoint}-${idx}`}
+                        className={`rounded-lg border p-3 space-y-2.5 ${
+                          m.entry.isUpdated
+                            ? "border-amber-500/60 bg-amber-500/5"
+                            : "border-border bg-muted/30"
+                        }`}
+                      >
+                        {m.entry.isUpdated && (
+                          <Badge className="bg-amber-500 hover:bg-amber-500 text-white text-[10px] font-bold uppercase tracking-wider">
+                            (U) {t.uBadge}
+                          </Badge>
+                        )}
+                        <div className="grid grid-cols-2 gap-3 text-sm">
+                          <div>
+                            <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-medium">
+                              {t.busPoint}
+                            </p>
+                            <p className="font-mono font-bold text-base text-amber-700">
+                              {m.entry.busPoint}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-medium">
+                              {t.branch}
+                            </p>
+                            <p className="font-semibold text-base">{m.entry.branchNumber}</p>
+                          </div>
+                          <div className="col-span-2">
+                            <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-medium">
+                              {t.branchName}
+                            </p>
+                            <p className="font-semibold text-sm">{m.entry.branchName}</p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex items-start gap-2 text-xs text-muted-foreground bg-muted/40 rounded-lg p-2.5">
+                    <AlertCircle className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
+                    <p>{t.noBusPoint}</p>
+                  </div>
+                )}
+              </div>
+            );
+          })()}
 
           {searchedNumber !== null && !foundZone && (
             <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-3 flex items-start gap-2">
