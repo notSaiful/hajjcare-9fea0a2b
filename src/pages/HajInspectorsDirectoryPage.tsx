@@ -292,7 +292,7 @@ const HajInspectorsDirectoryPage = () => {
             onValueChange={setSelectedState}
             placeholder={t.selectState}
           />
-          
+
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
@@ -302,6 +302,129 @@ const HajInspectorsDirectoryPage = () => {
               className="pl-9"
             />
           </div>
+
+          {/* Advanced Filters toggle */}
+          <div className="flex items-center justify-between gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setShowAdvanced((s) => !s)}
+              className="h-9"
+            >
+              <SlidersHorizontal className="w-4 h-4 mr-1.5" />
+              {t.advancedFilters}
+              {activeFilterCount > 0 && (
+                <Badge variant="secondary" className="ml-2 h-5 px-1.5 text-[10px]">
+                  {activeFilterCount}
+                </Badge>
+              )}
+            </Button>
+            {activeFilterCount > 0 && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={clearAdvancedFilters}
+                className="h-9 text-muted-foreground"
+              >
+                <X className="w-3.5 h-3.5 mr-1" />
+                {t.clearFilters}
+              </Button>
+            )}
+          </div>
+
+          {showAdvanced && (
+            <Card className="border-dashed">
+              <CardContent className="p-3 space-y-3">
+                {/* City filter */}
+                <div>
+                  <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1.5">
+                    {t.city}
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {([
+                      { v: 'all' as const, label: t.allCities },
+                      { v: 'makkah' as const, label: t.makkah },
+                      { v: 'madinah' as const, label: t.madinah },
+                    ]).map((opt) => (
+                      <Button
+                        key={opt.v}
+                        type="button"
+                        size="sm"
+                        variant={cityFilter === opt.v ? 'default' : 'outline'}
+                        onClick={() => setCityFilter(opt.v)}
+                        className="h-8 text-xs"
+                      >
+                        {opt.label}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Assignment filter */}
+                <div>
+                  <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1.5">
+                    {t.assignment}
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant={assignmentFilter === 'all' ? 'default' : 'outline'}
+                      onClick={() => setAssignmentFilter('all')}
+                      className="h-8 text-xs"
+                    >
+                      {t.allCities}
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant={assignmentFilter === 'updated' ? 'default' : 'outline'}
+                      onClick={() => setAssignmentFilter('updated')}
+                      className={`h-8 text-xs ${
+                        assignmentFilter === 'updated'
+                          ? 'bg-amber-500 hover:bg-amber-600'
+                          : 'border-amber-300 text-amber-700 dark:text-amber-400 dark:border-amber-700'
+                      }`}
+                    >
+                      ⚠️ {t.onlyUpdated}
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Active filter chips */}
+          {activeFilterCount > 0 && (
+            <div className="flex flex-wrap gap-1.5">
+              {cityFilter !== 'all' && (
+                <Badge variant="secondary" className="gap-1">
+                  {t.city}: {cityFilter === 'makkah' ? t.makkah : t.madinah}
+                  <button
+                    type="button"
+                    onClick={() => setCityFilter('all')}
+                    aria-label="Remove city filter"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </Badge>
+              )}
+              {assignmentFilter === 'updated' && (
+                <Badge className="gap-1 bg-amber-500 hover:bg-amber-600">
+                  ⚠️ {t.onlyUpdated}
+                  <button
+                    type="button"
+                    onClick={() => setAssignmentFilter('all')}
+                    aria-label="Remove assignment filter"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </Badge>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Results Count */}
