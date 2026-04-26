@@ -430,25 +430,63 @@ const InspectorProfileCard = ({
             {/* Call & WhatsApp buttons */}
             <div className="flex gap-2 flex-wrap">
               {inspector.mobile && (
-                <Button
-                  onClick={() => onCall(inspector.mobile!)}
-                  variant="default"
-                  className="flex-1"
-                >
-                  <Phone className="w-4 h-4 mr-2" />
-                  {labels.call}
-                </Button>
+                <>
+                  <Button
+                    onClick={() => onCall(inspector.mobile!)}
+                    variant="default"
+                    className="flex-1 min-w-[100px]"
+                  >
+                    <Phone className="w-4 h-4 mr-2" />
+                    {labels.call}
+                  </Button>
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    onClick={async () => {
+                      try {
+                        await navigator.clipboard.writeText(inspector.mobile!);
+                        toast.success(`Mobile copied: ${inspector.mobile}`);
+                      } catch {
+                        toast.error("Copy failed");
+                      }
+                    }}
+                    aria-label="Copy mobile number"
+                    title="Copy mobile number"
+                  >
+                    <Copy className="w-4 h-4" />
+                  </Button>
+                </>
               )}
               {whatsappNumber && (
-                <Button
-                  onClick={() => onWhatsApp(whatsappNumber, inspector.name)}
-                  variant="outline"
-                  className="flex-1 border-emerald-300 text-emerald-700 hover:bg-emerald-50"
-                >
-                  <MessageCircle className="w-4 h-4 mr-2" />
-                  {labels.whatsapp}
-                </Button>
+                <>
+                  <Button
+                    onClick={() => onWhatsApp(whatsappNumber, inspector.name)}
+                    variant="outline"
+                    className="flex-1 min-w-[100px] border-emerald-300 text-emerald-700 hover:bg-emerald-50"
+                  >
+                    <MessageCircle className="w-4 h-4 mr-2" />
+                    {labels.whatsapp}
+                  </Button>
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    className="border-emerald-300 text-emerald-700 hover:bg-emerald-50"
+                    onClick={async () => {
+                      try {
+                        await navigator.clipboard.writeText(whatsappNumber);
+                        toast.success(`WhatsApp number copied: ${whatsappNumber}`);
+                      } catch {
+                        toast.error("Copy failed");
+                      }
+                    }}
+                    aria-label="Copy WhatsApp number"
+                    title="Copy WhatsApp number"
+                  >
+                    <Copy className="w-4 h-4" />
+                  </Button>
+                </>
               )}
+
             </div>
           </div>
         )}
