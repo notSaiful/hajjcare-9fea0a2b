@@ -1,6 +1,6 @@
+import { useState } from "react";
 import { HajInspector } from "@/data/hajInspectorsData";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   User,
   MapPin,
@@ -8,8 +8,11 @@ import {
   MessageCircle,
   Building2,
   IdCard,
+  Copy,
+  Check,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { toast } from "@/hooks/use-toast";
 
 interface InspectorNetworkRowProps {
   inspector: HajInspector;
@@ -27,6 +30,19 @@ export const InspectorNetworkRow = ({
   inspector,
   translations: t,
 }: InspectorNetworkRowProps) => {
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
+
+  const copyToClipboard = async (value: string, key: string, label: string) => {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopiedKey(key);
+      toast({ title: `${label} copied`, description: value });
+      setTimeout(() => setCopiedKey((k) => (k === key ? null : k)), 1500);
+    } catch {
+      toast({ title: "Copy failed", description: "Please copy manually." });
+    }
+  };
+
   const hasContact = inspector.indianMobile || inspector.ksaMobile;
   const hasBuilding = inspector.makkahBuilding || inspector.madinahBuilding;
 
@@ -81,6 +97,24 @@ export const InspectorNetworkRow = ({
                 </div>
               </div>
               <div className="flex gap-1 shrink-0">
+                <button
+                  type="button"
+                  onClick={() =>
+                    copyToClipboard(
+                      inspector.indianMobile!,
+                      `in-${inspector.id}`,
+                      t.indianMobile || "Indian Mobile"
+                    )
+                  }
+                  className="h-6 w-6 rounded-md border flex items-center justify-center hover:bg-accent"
+                  aria-label="Copy Indian mobile"
+                >
+                  {copiedKey === `in-${inspector.id}` ? (
+                    <Check className="w-3 h-3 text-emerald-600" />
+                  ) : (
+                    <Copy className="w-3 h-3" />
+                  )}
+                </button>
                 <a
                   href={`tel:${sanitizePhone(inspector.indianMobile)}`}
                   className="h-6 w-6 rounded-md border flex items-center justify-center hover:bg-accent"
@@ -112,6 +146,24 @@ export const InspectorNetworkRow = ({
                 </div>
               </div>
               <div className="flex gap-1 shrink-0">
+                <button
+                  type="button"
+                  onClick={() =>
+                    copyToClipboard(
+                      inspector.ksaMobile!,
+                      `ksa-${inspector.id}`,
+                      t.ksaMobile || "KSA Mobile"
+                    )
+                  }
+                  className="h-6 w-6 rounded-md border flex items-center justify-center hover:bg-accent"
+                  aria-label="Copy KSA mobile"
+                >
+                  {copiedKey === `ksa-${inspector.id}` ? (
+                    <Check className="w-3 h-3 text-emerald-600" />
+                  ) : (
+                    <Copy className="w-3 h-3" />
+                  )}
+                </button>
                 <a
                   href={`tel:${sanitizePhone(inspector.ksaMobile)}`}
                   className="h-6 w-6 rounded-md border flex items-center justify-center hover:bg-accent"

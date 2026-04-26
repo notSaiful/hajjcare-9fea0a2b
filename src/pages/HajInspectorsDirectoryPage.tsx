@@ -67,16 +67,26 @@ const HajInspectorsDirectoryPage = () => {
 
     if (searchQuery) {
       const query = searchQuery.toLowerCase().trim();
-      filtered = filtered.filter(i =>
-        i.name.toLowerCase().includes(query) ||
-        i.fatherName.toLowerCase().includes(query) ||
-        i.id.includes(query) ||
-        (i.coverNumber?.toLowerCase().includes(query) ?? false) ||
-        (i.indianMobile?.includes(query) ?? false) ||
-        (i.ksaMobile?.includes(query) ?? false) ||
-        (i.makkahBuilding?.toLowerCase().includes(query) ?? false) ||
-        (i.madinahBuilding?.toLowerCase().includes(query) ?? false)
-      );
+      const isPureNumber = /^\d{1,4}$/.test(query);
+
+      filtered = filtered.filter(i => {
+        // Pure-number query → match exact building numbers in Makkah/Madinah strings
+        if (isPureNumber) {
+          const makkahNums: string[] = i.makkahBuilding?.match(/\d{1,4}/g) ?? [];
+          const madinahNums: string[] = i.madinahBuilding?.match(/\d{1,4}/g) ?? [];
+          if (makkahNums.includes(query) || madinahNums.includes(query)) return true;
+        }
+        return (
+          i.name.toLowerCase().includes(query) ||
+          i.fatherName.toLowerCase().includes(query) ||
+          i.id.includes(query) ||
+          (i.coverNumber?.toLowerCase().includes(query) ?? false) ||
+          (i.indianMobile?.includes(query) ?? false) ||
+          (i.ksaMobile?.includes(query) ?? false) ||
+          (i.makkahBuilding?.toLowerCase().includes(query) ?? false) ||
+          (i.madinahBuilding?.toLowerCase().includes(query) ?? false)
+        );
+      });
     }
 
     return filtered;
@@ -101,6 +111,18 @@ const HajInspectorsDirectoryPage = () => {
     const female = HAJ_INSPECTORS.filter(i => i.gender === 'Female').length;
     return { total: HAJ_INSPECTORS.length, selected, waitlisted, male, female };
   }, [selectedState]);
+
+  // Top 6 states by inspector count for quick-chip switching
+  const topStates = useMemo(() => {
+    const counts = new Map<string, number>();
+    HAJ_INSPECTORS.forEach(i => {
+      counts.set(i.state, (counts.get(i.state) ?? 0) + 1);
+    });
+    return Array.from(counts.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 6)
+      .map(([state, count]) => ({ state, count }));
+  }, []);
 
   const translations: Record<string, Record<string, string>> = {
     en: {
@@ -308,6 +330,34 @@ const HajInspectorsDirectoryPage = () => {
             onValueChange={setSelectedState}
             placeholder={t.selectState}
           />
+
+          {/* Quick state chips — one-tap state switching */}
+          <div className="flex flex-wrap gap-1.5">
+            <Button
+              type="button"
+              size="sm"
+              variant={selectedState === '' ? 'default' : 'outline'}
+              onClick={() => setSelectedState('')}
+              className="h-7 px-2.5 text-xs"
+            >
+              {t.allStates}
+            </Button>
+            {topStates.map(({ state, count }) => (
+              <Button
+                key={state}
+                type="button"
+                size="sm"
+                variant={selectedState === state ? 'default' : 'outline'}
+                onClick={() =>
+                  setSelectedState(selectedState === state ? '' : state)
+                }
+                className="h-7 px-2.5 text-xs"
+              >
+                {state}
+                <span className="ml-1 opacity-60">{count}</span>
+              </Button>
+            ))}
+          </div>
 
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
