@@ -32,6 +32,7 @@ export const InspectorNetworkPanel = () => {
   const [query, setQuery] = useState("");
   const [stateFilter, setStateFilter] = useState<string>("");
   const [showAll, setShowAll] = useState(false);
+  const { favorites, isFavorite } = useInspectorFavorites();
 
   const filtered = useMemo(() => {
     const normalize = (s: string) =>
@@ -39,7 +40,7 @@ export const InspectorNetworkPanel = () => {
     const q = query.trim();
     const nq = normalize(q);
 
-    return HAJ_INSPECTORS.filter((i) => {
+    const matched = HAJ_INSPECTORS.filter((i) => {
       if (stateFilter && i.state.toLowerCase() !== stateFilter.toLowerCase()) {
         return false;
       }
@@ -60,7 +61,19 @@ export const InspectorNetworkPanel = () => {
       const normHay = normalize(haystack);
       return normHay.includes(nq);
     });
-  }, [query, stateFilter]);
+
+    // Pin favorites to the top, preserving original order within each group
+    return [...matched].sort((a, b) => {
+      const af = isFavorite(a.id) ? 1 : 0;
+      const bf = isFavorite(b.id) ? 1 : 0;
+      return bf - af;
+    });
+  }, [query, stateFilter, favorites, isFavorite]);
+
+  const favoriteCount = useMemo(
+    () => filtered.filter((i) => isFavorite(i.id)).length,
+    [filtered, isFavorite]
+  );
 
   const visible = showAll ? filtered : filtered.slice(0, PREVIEW_COUNT);
 
