@@ -12,10 +12,13 @@ import {
   Check,
   Link2,
   Star,
+  Pencil,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
 import { useInspectorFavorites } from "@/hooks/useInspectorFavorites";
+import { useInspectorOverrides } from "@/hooks/useInspectorOverrides";
+import { InspectorEditDialog } from "@/components/inspector/InspectorEditDialog";
 
 const buildWaLink = (phone: string) =>
   `https://wa.me/${phone.replace(/[^\d+]/g, "").replace(/^\+/, "")}`;
@@ -37,8 +40,11 @@ export const InspectorNetworkRow = ({
   translations: t,
 }: InspectorNetworkRowProps) => {
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const [editOpen, setEditOpen] = useState(false);
   const { isFavorite, toggleFavorite } = useInspectorFavorites();
+  const { hasOverride } = useInspectorOverrides();
   const favorited = isFavorite(inspector.id);
+  const edited = hasOverride(inspector.id);
 
   const handleToggleFavorite = () => {
     const nowFav = toggleFavorite(inspector.id);
@@ -102,24 +108,49 @@ export const InspectorNetworkRow = ({
             <span className="truncate">{inspector.state}</span>
           </div>
         </div>
-        <button
-          type="button"
-          onClick={handleToggleFavorite}
-          className={cn(
-            "h-7 w-7 rounded-md border flex items-center justify-center transition-colors shrink-0",
-            favorited
-              ? "border-amber-400 bg-amber-100 text-amber-600 hover:bg-amber-200 dark:bg-amber-900/40 dark:border-amber-700"
-              : "border-border bg-background text-muted-foreground hover:bg-accent"
-          )}
-          aria-label={favorited ? "Remove from favorites" : "Add to favorites"}
-          aria-pressed={favorited}
-          title={favorited ? "Remove from favorites" : "Add to favorites"}
-        >
-          <Star
-            className={cn("w-4 h-4", favorited && "fill-amber-500 text-amber-500")}
-          />
-        </button>
+        <div className="flex flex-col gap-1 shrink-0">
+          <button
+            type="button"
+            onClick={handleToggleFavorite}
+            className={cn(
+              "h-7 w-7 rounded-md border flex items-center justify-center transition-colors",
+              favorited
+                ? "border-amber-400 bg-amber-100 text-amber-600 hover:bg-amber-200 dark:bg-amber-900/40 dark:border-amber-700"
+                : "border-border bg-background text-muted-foreground hover:bg-accent"
+            )}
+            aria-label={favorited ? "Remove from favorites" : "Add to favorites"}
+            aria-pressed={favorited}
+            title={favorited ? "Remove from favorites" : "Add to favorites"}
+          >
+            <Star
+              className={cn("w-4 h-4", favorited && "fill-amber-500 text-amber-500")}
+            />
+          </button>
+          <button
+            type="button"
+            onClick={() => setEditOpen(true)}
+            className={cn(
+              "h-7 w-7 rounded-md border flex items-center justify-center transition-colors",
+              edited
+                ? "border-primary/40 bg-primary/10 text-primary hover:bg-primary/20"
+                : "border-border bg-background text-muted-foreground hover:bg-accent"
+            )}
+            aria-label="Edit inspector details"
+            title={edited ? "Edited on this device — tap to update" : "Edit details"}
+          >
+            <Pencil className="w-3.5 h-3.5" />
+          </button>
+        </div>
       </div>
+
+      {edited && (
+        <div className="pl-10 -mt-1">
+          <span className="inline-flex items-center gap-1 text-[10px] text-primary bg-primary/10 px-1.5 py-0.5 rounded">
+            <Pencil className="w-2.5 h-2.5" />
+            Edited on this device
+          </span>
+        </div>
+      )}
 
       {/* Compact contact + building grid */}
       {(hasContact || hasBuilding) && (
@@ -294,6 +325,12 @@ export const InspectorNetworkRow = ({
             "Contact and building details will be updated soon."}
         </div>
       )}
+
+      <InspectorEditDialog
+        inspector={inspector}
+        open={editOpen}
+        onOpenChange={setEditOpen}
+      />
     </div>
   );
 };

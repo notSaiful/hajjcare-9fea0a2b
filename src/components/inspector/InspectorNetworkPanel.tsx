@@ -8,6 +8,7 @@ import { InspectorNetworkRow } from "@/components/inspector/InspectorNetworkRow"
 import { Search, Network, ExternalLink, X, Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useInspectorFavorites } from "@/hooks/useInspectorFavorites";
+import { useInspectorOverrides } from "@/hooks/useInspectorOverrides";
 
 const PREVIEW_COUNT = 8;
 
@@ -33,6 +34,7 @@ export const InspectorNetworkPanel = () => {
   const [stateFilter, setStateFilter] = useState<string>("");
   const [showAll, setShowAll] = useState(false);
   const { favorites, isFavorite } = useInspectorFavorites();
+  const { overrides, applyOverride } = useInspectorOverrides();
 
   const filtered = useMemo(() => {
     const normalize = (s: string) =>
@@ -40,7 +42,10 @@ export const InspectorNetworkPanel = () => {
     const q = query.trim();
     const nq = normalize(q);
 
-    const matched = HAJ_INSPECTORS.filter((i) => {
+    // Apply user overrides first so search and display reflect edits
+    const merged = HAJ_INSPECTORS.map(applyOverride);
+
+    const matched = merged.filter((i) => {
       if (stateFilter && i.state.toLowerCase() !== stateFilter.toLowerCase()) {
         return false;
       }
@@ -68,7 +73,7 @@ export const InspectorNetworkPanel = () => {
       const bf = isFavorite(b.id) ? 1 : 0;
       return bf - af;
     });
-  }, [query, stateFilter, favorites, isFavorite]);
+  }, [query, stateFilter, favorites, isFavorite, overrides, applyOverride]);
 
   const favoriteCount = useMemo(
     () => filtered.filter((i) => isFavorite(i.id)).length,
