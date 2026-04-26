@@ -10,6 +10,12 @@ export interface HajInspector {
   result: 'Selected' | 'Waitlisted';
   quota: string;
   category: string;
+  // Optional contact + posting details (filled later from official lists)
+  coverNumber?: string;
+  indianMobile?: string;
+  ksaMobile?: string;
+  makkahBuilding?: string;
+  madinahBuilding?: string;
 }
 
 export const HAJ_INSPECTORS: HajInspector[] = [
