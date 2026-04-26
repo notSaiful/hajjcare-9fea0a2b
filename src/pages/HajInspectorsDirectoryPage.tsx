@@ -138,6 +138,9 @@ const HajInspectorsDirectoryPage = () => {
       assignment: 'Assignment',
       onlyUpdated: 'Only updated (U)',
       clearFilters: 'Clear filters',
+      viewCards: 'Cards',
+      viewNetwork: 'Network',
+      networkHint: 'Quick lookup view — find any inspector at a glance',
     },
     ar: {
       title: 'مفتشو الحج 2026',
@@ -174,6 +177,9 @@ const HajInspectorsDirectoryPage = () => {
       assignment: 'التعيين',
       onlyUpdated: 'المحدّثة فقط (U)',
       clearFilters: 'مسح الفلاتر',
+      viewCards: 'بطاقات',
+      viewNetwork: 'شبكة',
+      networkHint: 'عرض البحث السريع — ابحث عن أي مفتش بسرعة',
     },
     ur: {
       title: 'حج انسپکٹرز 2026',
@@ -210,6 +216,9 @@ const HajInspectorsDirectoryPage = () => {
       assignment: 'تقرری',
       onlyUpdated: 'صرف اپڈیٹڈ (U)',
       clearFilters: 'فلٹرز صاف کریں',
+      viewCards: 'کارڈز',
+      viewNetwork: 'نیٹ ورک',
+      networkHint: 'فوری تلاش کا ویو — کسی بھی انسپکٹر کو ایک نظر میں ڈھونڈیں',
     },
     hi: {
       title: 'हज इंस्पेक्टर 2026',
@@ -246,6 +255,9 @@ const HajInspectorsDirectoryPage = () => {
       assignment: 'पोस्टिंग',
       onlyUpdated: 'केवल अपडेटेड (U)',
       clearFilters: 'फ़िल्टर साफ़ करें',
+      viewCards: 'कार्ड',
+      viewNetwork: 'नेटवर्क',
+      networkHint: 'तुरंत खोज दृश्य — किसी भी इंस्पेक्टर को एक नज़र में ढूंढें',
     },
   };
 
