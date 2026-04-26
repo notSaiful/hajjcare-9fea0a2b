@@ -99,9 +99,10 @@ const HajjBuildingsPage = () => {
 
   const handleFindBuilding = () => {
     const num = parseInt(buildingNumber, 10);
-    if (isNaN(num)) { setFoundZone(null); setSearchedNumber(null); return; }
+    if (isNaN(num)) { setFoundZone(null); setSearchedNumber(null); setBusMatches([]); return; }
     setSearchedNumber(num);
     setFoundZone(findZoneByBuildingNumber(num));
+    setBusMatches(findBusPointsForBuilding(num));
   };
 
   const filtered = hajjBuildings.filter((b) => {
