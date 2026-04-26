@@ -46,6 +46,7 @@ export const InspectorNetworkRow = ({
   const { hasOverride } = useInspectorOverrides();
   const favorited = isFavorite(inspector.id);
   const edited = hasOverride(inspector.id);
+  const isCustom = isCustomInspectorId(inspector.id);
 
   const handleToggleFavorite = () => {
     const nowFav = toggleFavorite(inspector.id);
