@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { HajInspector, getStateStats, INSPECTOR_STATES } from "@/data/hajInspectorsData";
+import { HajInspector, getStateStats, INDIA_STATES_AND_UTS } from "@/data/hajInspectorsData";
 import { InspectorCard } from "./InspectorCard";
 import { Badge } from "@/components/ui/badge";
 import { ChevronDown, ChevronRight, MapPin, Users } from "lucide-react";
