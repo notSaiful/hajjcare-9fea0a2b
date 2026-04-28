@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { HAJ_INSPECTORS, type HajInspector } from "@/data/hajInspectorsData";
 
 const STORAGE_KEY = "hajcare:custom-inspectors";
+const CHANGE_EVENT = "hajcare:custom-inspectors-changed";
 
 /** Normalize a string for fuzzy duplicate matching (case + whitespace + punctuation insensitive). */
 const norm = (s?: string) =>
@@ -68,11 +69,16 @@ export const useCustomInspectors = () => {
   const [custom, setCustom] = useState<HajInspector[]>(() => readCustom());
 
   useEffect(() => {
-    const handler = (e: StorageEvent) => {
-      if (e.key === STORAGE_KEY) setCustom(readCustom());
+    const refresh = () => setCustom(readCustom());
+    const storageHandler = (e: StorageEvent) => {
+      if (e.key === STORAGE_KEY) refresh();
     };
-    window.addEventListener("storage", handler);
-    return () => window.removeEventListener("storage", handler);
+    window.addEventListener("storage", storageHandler);
+    window.addEventListener(CHANGE_EVENT, refresh);
+    return () => {
+      window.removeEventListener("storage", storageHandler);
+      window.removeEventListener(CHANGE_EVENT, refresh);
+    };
   }, []);
 
   const persist = useCallback((next: HajInspector[]) => {
@@ -81,6 +87,11 @@ export const useCustomInspectors = () => {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
     } catch {
       // ignore quota errors
+    }
+    try {
+      window.dispatchEvent(new Event(CHANGE_EVENT));
+    } catch {
+      // ignore
     }
   }, []);
 
