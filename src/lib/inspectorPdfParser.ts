@@ -189,6 +189,9 @@ export function parseInspectorRows(rawText: string, state = "Kerala"): ParsedRow
   return rows;
 }
 
+/** @deprecated Use parseInspectorRows — handles Kerala, Delhi, and similar HCOI layouts. */
+export const parseKeralaInspectorRows = parseInspectorRows;
+
 /** Build a TS literal you can paste straight into hajInspectorsData.ts. */
 export function rowsToTsSnippet(rows: ParsedRow[]): string {
   const esc = (s?: string) => (s ?? "").replace(/'/g, "\\'");
