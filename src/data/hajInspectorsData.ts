@@ -55,6 +55,36 @@ export const HAJ_INSPECTORS: HajInspector[] = [
   { id: '25102501104384', name: 'DILWAR HUSSAIN', fatherName: 'HUSSAIN', gender: 'Male', state: 'Assam', cbtMarks: 124, interviewMarks: 28, totalMarks: 152, result: 'Selected', quota: '20% Reserved Quota', category: 'Fresher with Haj' },
   { id: '25102701106412', name: 'MOFIZ UDDIN CHOUDHURY', fatherName: 'CHOUDHURY', gender: 'Male', state: 'Assam', cbtMarks: 122, interviewMarks: 26, totalMarks: 148, result: 'Selected', quota: '20% Reserved Quota', category: 'Fresher with Haj' },
 
+  // Bihar (Full official list — Annexure-I, dated 03 Jan 2026)
+  // Selected
+  { id: '25102204106406', name: 'MOHAMMAD FIRDOUSH', fatherName: 'SHEKH SIKANDAR', gender: 'Male', state: 'Bihar', cbtMarks: 144, interviewMarks: 41, totalMarks: 185, result: 'Selected', quota: '50% Open Quota', category: 'Fresher' },
+  { id: '25110304110470', name: 'ISHTIYAQUE AHMAD', fatherName: 'MD ASHFAQUE AHMAD', gender: 'Male', state: 'Bihar', cbtMarks: 136, interviewMarks: 42, totalMarks: 178, result: 'Selected', quota: '50% Open Quota', category: 'Fresher' },
+  { id: '25111304111385', name: 'AQUEEL', fatherName: 'MUSHTAQUE AHMAD', gender: 'Male', state: 'Bihar', cbtMarks: 136, interviewMarks: 40, totalMarks: 176, result: 'Selected', quota: '50% Open Quota', category: 'Fresher' },
+  { id: '25110204106789', name: 'MOHAMMAD MANAZIR', fatherName: 'MUZAFFAR IQBAL', gender: 'Male', state: 'Bihar', cbtMarks: 133, interviewMarks: 43, totalMarks: 176, result: 'Selected', quota: '50% Open Quota', category: 'Fresher' },
+  { id: '25110704105945', name: 'Naushad Abdul Gaffar', fatherName: 'Abdul Gaffar', gender: 'Male', state: 'Bihar', cbtMarks: 135, interviewMarks: 40, totalMarks: 175, result: 'Selected', quota: '50% Open Quota', category: 'Fresher' },
+  { id: '25102804103391', name: 'MOHD', fatherName: 'MANZOOR ALAM', gender: 'Male', state: 'Bihar', cbtMarks: 131, interviewMarks: 44, totalMarks: 175, result: 'Selected', quota: '50% Open Quota', category: 'Fresher' },
+  { id: '25110104106614', name: 'IMRAN ALAM', fatherName: 'AMRE AJAM', gender: 'Male', state: 'Bihar', cbtMarks: 134, interviewMarks: 40, totalMarks: 174, result: 'Selected', quota: '50% Open Quota', category: 'Fresher' },
+  { id: '25110704111426', name: 'ZAFAR', fatherName: 'MD MOBIN ANSARI', gender: 'Male', state: 'Bihar', cbtMarks: 128, interviewMarks: 45, totalMarks: 173, result: 'Selected', quota: '50% Open Quota', category: 'Fresher' },
+  { id: '25110204109474', name: 'MOHAMMAD ZUBAIR', fatherName: 'MD NASIM HAIDER', gender: 'Male', state: 'Bihar', cbtMarks: 138, interviewMarks: 32, totalMarks: 170, result: 'Selected', quota: '50% Open Quota', category: 'Fresher' },
+  { id: '25103104103827', name: 'NIYAZ', fatherName: 'WASI AHMAD', gender: 'Male', state: 'Bihar', cbtMarks: 130, interviewMarks: 25, totalMarks: 155, result: 'Selected', quota: '25% Reserved Quota', category: 'Repeater' },
+  { id: '25110304110704', name: 'RANA BAKHTEYAR', fatherName: 'ABUL QUASIM', gender: 'Male', state: 'Bihar', cbtMarks: 128, interviewMarks: 26, totalMarks: 154, result: 'Selected', quota: '25% Reserved Quota', category: 'Repeater' },
+  { id: '25102304103615', name: 'ASIF IMAM', fatherName: 'MURTAZA HASAN', gender: 'Male', state: 'Bihar', cbtMarks: 121, interviewMarks: 30, totalMarks: 151, result: 'Selected', quota: '25% Reserved Quota', category: 'Repeater' },
+  { id: '25102504103536', name: 'FAISAL', fatherName: 'Mohammad Khurshid Alam', gender: 'Male', state: 'Bihar', cbtMarks: 115, interviewMarks: 25, totalMarks: 140, result: 'Selected', quota: '25% Reserved Quota', category: 'Repeater' },
+  { id: '25110315108923', name: 'SHAHID', fatherName: 'MD SAJJAD ALAM', gender: 'Male', state: 'Bihar', cbtMarks: 133, interviewMarks: 27, totalMarks: 160, result: 'Selected', quota: '20% Reserved Quota', category: 'Fresher with Haj' },
+  { id: '25110104104635', name: 'MD SHADAB', fatherName: 'Md Moin Uddin', gender: 'Male', state: 'Bihar', cbtMarks: 124, interviewMarks: 28, totalMarks: 152, result: 'Selected', quota: '20% Reserved Quota', category: 'Fresher with Haj' },
+  { id: '25110204108136', name: 'MOHAMMAD SARFARAZ', fatherName: 'MOHAMMAD ATIQUR RAHMAN', gender: 'Male', state: 'Bihar', cbtMarks: 80, interviewMarks: 46, totalMarks: 126, result: 'Selected', quota: '20% Reserved Quota', category: 'Fresher with Haj' },
+  // Waitlisted
+  { id: '25101704103934', name: 'SOBANUL', fatherName: 'MAKHDOOM SHARFUL HAQUE', gender: 'Male', state: 'Bihar', cbtMarks: 134, interviewMarks: 35, totalMarks: 169, result: 'Waitlisted', quota: '50% Open Quota', category: 'Fresher' },
+  { id: '25110204107159', name: 'MD', fatherName: 'MD ALAUDDIN', gender: 'Male', state: 'Bihar', cbtMarks: 133, interviewMarks: 35, totalMarks: 168, result: 'Waitlisted', quota: '50% Open Quota', category: 'Fresher' },
+  { id: '25110304106272', name: 'SHAHJAHAN ANSARI', fatherName: 'MD HAMZA ANSARI', gender: 'Male', state: 'Bihar', cbtMarks: 128, interviewMarks: 40, totalMarks: 168, result: 'Waitlisted', quota: '50% Open Quota', category: 'Fresher' },
+  { id: '25110309110914', name: 'MOHD IRFAN', fatherName: 'Mohd hafizur Rehman', gender: 'Male', state: 'Bihar', cbtMarks: 140, interviewMarks: 27, totalMarks: 167, result: 'Waitlisted', quota: '50% Open Quota', category: 'Fresher' },
+  { id: '25110304110639', name: 'MOHAMMAD', fatherName: 'MOHAMMAD ZAMIRUDDIN', gender: 'Male', state: 'Bihar', cbtMarks: 134, interviewMarks: 33, totalMarks: 167, result: 'Waitlisted', quota: '50% Open Quota', category: 'Fresher' },
+  { id: '25111004111132', name: 'MD SAJJAD', fatherName: 'Md Anwar Husain', gender: 'Male', state: 'Bihar', cbtMarks: 139, interviewMarks: 26, totalMarks: 165, result: 'Waitlisted', quota: '50% Open Quota', category: 'Fresher' },
+  { id: '25110304110634', name: 'MOHAMMAD WAJEED', fatherName: 'MOHAMMAD IZRAIL MANSOORI', gender: 'Male', state: 'Bihar', cbtMarks: 111, interviewMarks: 27, totalMarks: 138, result: 'Waitlisted', quota: '25% Reserved Quota', category: 'Repeater' },
+  { id: '25080703101080233', name: 'IMTEYAZ AHMAD', fatherName: 'MD WAIZUL HAQUE', gender: 'Male', state: 'Bihar', cbtMarks: 108, interviewMarks: 26, totalMarks: 134, result: 'Waitlisted', quota: '25% Reserved Quota', category: 'Repeater' },
+  { id: '25101904105026', name: 'AHMAD EQUBAL', fatherName: 'MD YUNUS ASHRAF', gender: 'Male', state: 'Bihar', cbtMarks: 105, interviewMarks: 26, totalMarks: 131, result: 'Waitlisted', quota: '25% Reserved Quota', category: 'Repeater' },
+  { id: '25102904106913', name: 'HASRAT', fatherName: 'Late Abdul Wadood', gender: 'Female', state: 'Bihar', cbtMarks: 85, interviewMarks: 25, totalMarks: 110, result: 'Waitlisted', quota: '25% Reserved Quota', category: 'Repeater' },
+
   // Rajasthan
   { id: '25102725106607', name: 'MOHAMMED AARIF', fatherName: 'MOHAMMED HUSSAIN', gender: 'Male', state: 'Rajasthan', cbtMarks: 140, interviewMarks: 45, totalMarks: 185, result: 'Selected', quota: '50% Open Quota', category: 'Fresher' },
   { id: '25103125109108', name: 'MEHBOOB', fatherName: 'MEHPHOOL KHAN', gender: 'Male', state: 'Rajasthan', cbtMarks: 139, interviewMarks: 45, totalMarks: 184, result: 'Selected', quota: '50% Open Quota', category: 'Fresher' },
