@@ -1,0 +1,6 @@
+Annexure-I
+Application Id Name Father Name Gender State CBT Interview Total Result Quota Category
+25101817104981 SHAREEF KOYILATH IMBICHIYALI Male Kerala 143 46 189 Selected 50% Open Quota Fresher without Haj
+25102109110234 RASHID MOHAMMED KUNHI Male Kerala 138 40 178 Selected 50% Open Quota Repeater (SHI/Deputationist)
+25103109104567 AYESHA ABDUL RAHMAN Female Kerala 130 42 172 Selected 25% Reserved Quota Fresher with Haj
+25104509101122 NOUFAL CHEKKUTTY HAMZA Male Kerala 125 38 163 WL 5% Reserved Quota SHC/Waqf Board Employee

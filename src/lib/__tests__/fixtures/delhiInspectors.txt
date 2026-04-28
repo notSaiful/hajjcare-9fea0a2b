@@ -1,0 +1,12 @@
+337588/2026/HCOI
+Annexure-I
+Sr. Group Id Application Category Applicant Name Father Name Gender State CBT Marks Interview Marks Total Marks Result Selection/Waitlist Quota
+1 25110109107400 Fresher without Haj / with Haj before 2019 ANEES Mohd Haneef Male Delhi 142 45 187 Selected 50 % Open Quota
+2 25102909108769 Repeater (SHI/Deputationist) SALEEM SARFARAZ AHMED Male Delhi 140 42 182 Selected 50 % Open Quota
+5 25102909107146 Fresher without Haj / with Haj before 2019 MOHAMMAD MANZAR HUSAIN MOHAMMAD KAUSAR QADRI Male Delhi 135 45 180 Selected 50 % Open Quota
+10 25103009104726 Fresher without Haj / with Haj before 2019 Maimoona Abdul Kareem Female Delhi 135 40 175 Selected 50 % Open Quota
+20 25103009108701 SHC/Waqf Board Employee TABISH ZIA ZIA ULLAH Male Delhi 128 45 173 Selected 5% Reserved Quota
+21 25110209109744 Fresher without Haj / with Haj before 2019 MOHD MOHD YAQEEN Male Delhi 136 38 174 WL-1 50 % Open Quota
+27 25103028104744 Fresher without Haj / with Haj before 2019 LUBNA SADIQ Mohammad Sadiq Female Delhi 133 40 173 WL-7 50 % Open Quota
+1
+File No. HCOI28-006600350/21/2024-HCOI
