@@ -12,6 +12,8 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { InspectorStatsCard } from '@/components/inspector/InspectorStatsCard';
 import { StateGroupedInspectors } from '@/components/inspector/StateGroupedInspectors';
 import { InspectorNetworkRow } from '@/components/inspector/InspectorNetworkRow';
+import { useInspectorOverrides } from '@/hooks/useInspectorOverrides';
+import { useCustomInspectors } from '@/hooks/useCustomInspectors';
 import { useNavigate } from 'react-router-dom';
 
 type ViewMode = 'cards' | 'network';
@@ -47,9 +49,18 @@ const HajInspectorsDirectoryPage = () => {
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>('cards');
 
+  const { overrides, applyOverride } = useInspectorOverrides();
+  const { custom } = useCustomInspectors();
+
+  // Merge official + custom inspectors and apply per-device overrides
+  const allInspectors = useMemo(
+    () => [...custom, ...HAJ_INSPECTORS].map(applyOverride),
+    [custom, applyOverride, overrides]
+  );
+
   // Filter inspectors
   const filteredInspectors = useMemo(() => {
-    let filtered = HAJ_INSPECTORS;
+    let filtered = allInspectors;
 
     if (selectedState) {
       filtered = filtered.filter(i => i.state.toLowerCase() === selectedState.toLowerCase());
@@ -103,7 +114,7 @@ const HajInspectorsDirectoryPage = () => {
     }
 
     return filtered;
-  }, [selectedState, searchQuery, cityFilter, assignmentFilter]);
+  }, [allInspectors, selectedState, searchQuery, cityFilter, assignmentFilter]);
 
   const activeFilterCount =
     (cityFilter !== 'all' ? 1 : 0) + (assignmentFilter !== 'all' ? 1 : 0);
