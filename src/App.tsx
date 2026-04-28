@@ -119,6 +119,7 @@ const AdminControlPanelPage = lazy(() => import("./pages/AdminControlPanelPage")
 const InspectorGroupManagePage = lazy(() => import("./pages/InspectorGroupManagePage"));
 const InspectorDirectoryPage = lazy(() => import("./pages/InspectorDirectoryPage"));
 const AdminInspectorsPage = lazy(() => import("./pages/AdminInspectorsPage"));
+const AdminInspectorUploadPage = lazy(() => import("./pages/AdminInspectorUploadPage"));
 const HajiJoinGroupPage = lazy(() => import("./pages/HajiJoinGroupPage"));
 const HajiGroupDashboardPage = lazy(() => import("./pages/HajiGroupDashboardPage"));
 const ProfilePage = lazy(() => import("./pages/ProfilePage"));
@@ -220,6 +221,7 @@ function AppContent() {
       <Route path="/haj-inspectors" element={<HajInspectorsDirectoryPage />} />
       <Route path="/inspector-directory" element={<InspectorDirectoryPage />} />
       <Route path="/admin/inspectors" element={<AdminInspectorsPage />} />
+      <Route path="/admin/inspectors/upload" element={<AdminInspectorUploadPage />} />
       <Route path="/inspector-group" element={<InspectorGroupManagePage />} />
         <Route
           path="/haj-inspector-register"
