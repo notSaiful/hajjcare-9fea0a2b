@@ -17,7 +17,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Plus, Pencil, Trash2, Search, UserCheck, Loader2 } from "lucide-react";
+import { Plus, Pencil, Trash2, Search, UserCheck, Loader2, Upload } from "lucide-react";
+import { Link } from "react-router-dom";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -220,9 +221,16 @@ const AdminInspectorsPage = () => {
             <UserCheck className="w-5 h-5 text-primary" />
             Manage Haj Inspectors
           </h1>
-          <Button onClick={openAdd} size="sm">
-            <Plus className="w-4 h-4 mr-1" /> Add
-          </Button>
+          <div className="flex gap-2">
+            <Button asChild size="sm" variant="outline">
+              <Link to="/admin/inspectors/upload">
+                <Upload className="w-4 h-4 mr-1" /> Upload PDF
+              </Link>
+            </Button>
+            <Button onClick={openAdd} size="sm">
+              <Plus className="w-4 h-4 mr-1" /> Add
+            </Button>
+          </div>
         </div>
 
         <div className="relative">
