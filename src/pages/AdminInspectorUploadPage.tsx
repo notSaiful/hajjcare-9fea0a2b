@@ -12,7 +12,7 @@ import { useUserRole } from "@/hooks/useUserRole";
 import { ForbiddenError } from "@/components/ForbiddenError";
 import {
   extractPdfText,
-  parseKeralaInspectorRows,
+  parseInspectorRows,
   rowsToTsSnippet,
   type ParsedRow,
 } from "@/lib/inspectorPdfParser";
@@ -47,7 +47,7 @@ const AdminInspectorUploadPage = () => {
     try {
       const text = await extractPdfText(file);
       setRawText(text);
-      const parsed = parseKeralaInspectorRows(text, state);
+      const parsed = parseInspectorRows(text, state);
       setRows(parsed);
       if (parsed.length === 0) {
         toast.warning("No inspector rows detected — check the PDF format");
@@ -93,8 +93,9 @@ const AdminInspectorUploadPage = () => {
             Upload Inspector List (PDF)
           </h1>
           <p className="text-sm text-muted-foreground">
-            Drop in an official Hajj inspector PDF. The parser extracts rows and
-            adds them to your device's inspector dataset.
+            Drop in an official Hajj inspector PDF (Delhi, Kerala, or other
+            HCOI Annexure-I layouts). The parser extracts rows and adds them
+            to your device's inspector dataset.
           </p>
         </div>
 
