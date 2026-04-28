@@ -94,3 +94,5 @@ verify_jwt = false
 
 [functions.inspector-register]
 verify_jwt = false
+[functions.inspector-ocr]
+verify_jwt = false
