@@ -299,6 +299,7 @@ const App = () => (
               <Suspense fallback={<PageLoader />}>
                 <AppContent />
               </Suspense>
+              <DevRoleSwitcher />
             </BrowserRouter>
           </TooltipProvider>
         </AuthProvider>
