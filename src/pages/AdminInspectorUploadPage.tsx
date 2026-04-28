@@ -93,8 +93,9 @@ const AdminInspectorUploadPage = () => {
             Upload Inspector List (PDF)
           </h1>
           <p className="text-sm text-muted-foreground">
-            Drop in an official Hajj inspector PDF. The parser extracts rows and
-            adds them to your device's inspector dataset.
+            Drop in an official Hajj inspector PDF (Delhi, Kerala, or other
+            HCOI Annexure-I layouts). The parser extracts rows and adds them
+            to your device's inspector dataset.
           </p>
         </div>
 
