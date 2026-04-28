@@ -60,8 +60,10 @@ export const StateGroupedInspectors = ({
           </Badge>
         </div>
         {stateInspectors.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground">
-            {t.noResults}
+          <div className="text-center py-8 text-muted-foreground text-sm">
+            The official HCOI Annexure-I inspector list for{" "}
+            <span className="font-medium text-foreground">{selectedState}</span>{" "}
+            has not been uploaded yet.
           </div>
         ) : (
           stateInspectors.map((inspector) => (
