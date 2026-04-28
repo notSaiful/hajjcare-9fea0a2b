@@ -29,6 +29,7 @@ import InspectorMyProfile from '@/components/inspector/InspectorMyProfile';
 import { SubGroupAdvisoryCard } from '@/components/inspector/SubGroupAdvisoryCard';
 import { SubGroupManager } from '@/components/inspector/SubGroupManager';
 import { InspectorNetworkPanel } from '@/components/inspector/InspectorNetworkPanel';
+import { IHPOMadinahDeskPanel } from '@/components/inspector/IHPOMadinahDeskPanel';
 import {
   Select,
   SelectContent,
@@ -182,6 +183,9 @@ const InspectorDashboardPage = () => {
 
         {/* Sub-Group Coordination — create sub-groups, assign leaders, do movement check-ins */}
         <SubGroupManager />
+
+        {/* IHPO Madinah Desk Directory — quick-access desk numbers for HAJ 2026 */}
+        <IHPOMadinahDeskPanel />
 
         {/* Inspector Network — find colleagues, copy Indian/KSA numbers in one tap */}
         <InspectorNetworkPanel />
