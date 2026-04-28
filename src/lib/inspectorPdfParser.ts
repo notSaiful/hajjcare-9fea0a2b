@@ -79,26 +79,42 @@ export function parseKeralaInspectorRows(rawText: string, state = "Kerala"): Par
     .map((l) => l.trim())
     .filter(Boolean);
 
-  // Merge continuation lines into the most recent row that started with an ID.
+  // Merge continuation lines into the most recent row.
+  // A row "starts" when it contains a 14-digit Application/Group ID,
+  // either at the very beginning (Kerala) or after a small Sr. number (Delhi).
   const merged: string[] = [];
+  const startsRow = (l: string) =>
+    /^\d{12,16}\b/.test(l) || /^\d{1,4}\s+\d{12,16}\b/.test(l);
   for (const line of rawLines) {
-    if (/^\d{12,16}\b/.test(line)) {
+    if (startsRow(line)) {
       merged.push(line);
     } else if (merged.length > 0) {
-      // Skip obvious page headers / footers
       if (/^page\s+\d+/i.test(line)) continue;
       if (/application\s*id/i.test(line) && /name/i.test(line)) continue;
+      if (/^annexure/i.test(line)) continue;
       merged[merged.length - 1] += " " + line;
     }
   }
 
   const rows: ParsedRow[] = [];
 
-  for (const line of merged) {
+  for (let line of merged) {
+    // Strip leading Delhi-style Sr. number (e.g. "12 25110...")
+    line = line.replace(/^\d{1,4}\s+(?=\d{12,16}\b)/, "");
+
     const idMatch = line.match(/^(\d{12,16})\s+(.*)$/);
     if (!idMatch) continue;
     const applicationId = idMatch[1];
     let rest = idMatch[2];
+
+    // Delhi format: Application Category appears right after the ID, before the name.
+    // Kerala format: Category appears at the very end (after Quota).
+    let categoryFromHead = "";
+    const headCat = rest.match(CATEGORY_RE);
+    if (headCat && headCat.index !== undefined && headCat.index < 80) {
+      categoryFromHead = headCat[0];
+      rest = (rest.slice(0, headCat.index) + " " + rest.slice(headCat.index + headCat[0].length)).trim();
+    }
 
     // Pull gender
     const genderMatch = rest.match(/\b(Male|Female)\b/i);
@@ -106,7 +122,6 @@ export function parseKeralaInspectorRows(rawText: string, state = "Kerala"): Par
     const gender = (genderMatch[1][0].toUpperCase() +
       genderMatch[1].slice(1).toLowerCase()) as "Male" | "Female";
 
-    // Split into pre-gender (NAME + FATHER) and post-gender (state + marks + ...)
     const preGender = rest.slice(0, genderMatch.index!).trim();
     const postGender = rest.slice(genderMatch.index! + genderMatch[0].length).trim();
 
@@ -116,16 +131,14 @@ export function parseKeralaInspectorRows(rawText: string, state = "Kerala"): Par
     let interviewMarks: number | undefined;
     let totalMarks: number | undefined;
     let afterMarks = postGender;
-    let beforeMarks = "";
     if (marksMatch) {
       cbtMarks = +marksMatch[1];
       interviewMarks = +marksMatch[2];
       totalMarks = +marksMatch[3];
-      beforeMarks = postGender.slice(0, marksMatch.index!).trim();
       afterMarks = postGender.slice(marksMatch.index! + marksMatch[0].length).trim();
     }
 
-    // Detect result
+    // Detect result (Selected, Waitlisted, WL, WL-1, WL 2 ...)
     const resultMatch = afterMarks.match(RESULT_RE);
     let result: "Selected" | "Waitlisted" = "Selected";
     let afterResult = afterMarks;
@@ -137,23 +150,18 @@ export function parseKeralaInspectorRows(rawText: string, state = "Kerala"): Par
 
     // Quota — usually ends with "Quota"
     let quota = "";
-    let category = "";
+    let categoryFromTail = "";
     const quotaMatch = afterResult.match(/^(.*?Quota)\s*(.*)$/i);
     if (quotaMatch) {
       quota = quotaMatch[1].trim();
-      category = quotaMatch[2].trim();
+      categoryFromTail = quotaMatch[2].trim();
     } else {
-      category = afterResult.trim();
+      categoryFromTail = afterResult.trim();
     }
 
-    // Normalize category labels
-    if (/fresher\s*without\s*haj/i.test(category)) category = "Fresher";
-    else if (/fresher\s*with\s*haj/i.test(category)) category = "Fresher with Haj";
-    else if (/repeater/i.test(category)) category = "Repeater";
-    else if (/shc|waqf/i.test(category)) category = "SHC/Waqf Employee";
+    const category = normalizeCategory(categoryFromHead || categoryFromTail);
 
-    // Split preGender → NAME + FATHER NAME using ALL-CAPS heuristic.
-    // Tokens are usually CAPS; the boundary is unknown — fall back to halving.
+    // Split preGender → NAME + FATHER NAME using halving heuristic.
     const tokens = preGender.split(/\s+/).filter(Boolean);
     let name = preGender;
     let fatherName = "";
@@ -161,11 +169,6 @@ export function parseKeralaInspectorRows(rawText: string, state = "Kerala"): Par
       const half = Math.ceil(tokens.length / 2);
       name = tokens.slice(0, half).join(" ");
       fatherName = tokens.slice(half).join(" ");
-    }
-
-    // Strip leftover state mentions from beforeMarks (defensive)
-    if (beforeMarks && new RegExp(state, "i").test(beforeMarks)) {
-      // already accounted for
     }
 
     rows.push({
