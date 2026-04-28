@@ -12,7 +12,7 @@ import { useUserRole } from "@/hooks/useUserRole";
 import { ForbiddenError } from "@/components/ForbiddenError";
 import {
   extractPdfText,
-  parseKeralaInspectorRows,
+  parseInspectorRows,
   rowsToTsSnippet,
   type ParsedRow,
 } from "@/lib/inspectorPdfParser";
