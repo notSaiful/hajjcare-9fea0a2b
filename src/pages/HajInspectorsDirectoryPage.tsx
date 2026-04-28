@@ -12,6 +12,8 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { InspectorStatsCard } from '@/components/inspector/InspectorStatsCard';
 import { StateGroupedInspectors } from '@/components/inspector/StateGroupedInspectors';
 import { InspectorNetworkRow } from '@/components/inspector/InspectorNetworkRow';
+import { useInspectorOverrides } from '@/hooks/useInspectorOverrides';
+import { useCustomInspectors } from '@/hooks/useCustomInspectors';
 import { useNavigate } from 'react-router-dom';
 
 type ViewMode = 'cards' | 'network';
