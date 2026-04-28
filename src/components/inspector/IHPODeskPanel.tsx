@@ -11,6 +11,7 @@ import {
   Check,
   MessageCircle,
   Building2,
+  Pencil,
 } from "lucide-react";
 import type { IHPODesk } from "@/data/ihpoMadinahDesks";
 import { useToast } from "@/hooks/use-toast";
@@ -22,8 +23,12 @@ const formatKsa = (mobile: string) => `${KSA_PREFIX} ${mobile}`;
 interface IHPODeskPanelProps {
   /** City label shown in the header, e.g. "Madinah" or "Makkah" */
   city: string;
-  /** Desk roster for this city */
+  /** Desk roster for this city (overrides already applied) */
   desks: IHPODesk[];
+  /** When true, show an Edit button (admins only) */
+  canEdit?: boolean;
+  /** Click handler for the Edit button */
+  onEdit?: () => void;
 }
 
 /**
@@ -34,7 +39,12 @@ interface IHPODeskPanelProps {
  * Numbers are Saudi mobiles — dialled with +966 automatically. Entries with
  * an empty `mobile` are rendered as "Number pending" and disable Call/WhatsApp.
  */
-export const IHPODeskPanel = ({ city, desks }: IHPODeskPanelProps) => {
+export const IHPODeskPanel = ({
+  city,
+  desks,
+  canEdit = false,
+  onEdit,
+}: IHPODeskPanelProps) => {
   const [query, setQuery] = useState("");
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const { toast } = useToast();
