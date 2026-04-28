@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { HajInspector, getStateStats, INSPECTOR_STATES } from "@/data/hajInspectorsData";
+import { HajInspector, getStateStats, INDIA_STATES_AND_UTS } from "@/data/hajInspectorsData";
 import { InspectorCard } from "./InspectorCard";
 import { Badge } from "@/components/ui/badge";
 import { ChevronDown, ChevronRight, MapPin, Users } from "lucide-react";
@@ -60,8 +60,10 @@ export const StateGroupedInspectors = ({
           </Badge>
         </div>
         {stateInspectors.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground">
-            {t.noResults}
+          <div className="text-center py-8 text-muted-foreground text-sm">
+            The official HCOI Annexure-I inspector list for{" "}
+            <span className="font-medium text-foreground">{selectedState}</span>{" "}
+            has not been uploaded yet.
           </div>
         ) : (
           stateInspectors.map((inspector) => (
@@ -80,7 +82,14 @@ export const StateGroupedInspectors = ({
     );
   }
 
-  // Show all states in accordion
+  // Show all canonical Indian states + UTs in the accordion. Regions
+  // whose official HCOI Annexure-I list has not yet been imported show
+  // an "Awaiting official list" message instead of inspector cards.
+  const allRegions = useMemo(() => {
+    const fromData = Object.keys(groupedByState);
+    return [...new Set([...INDIA_STATES_AND_UTS, ...fromData])].sort();
+  }, [groupedByState]);
+
   return (
     <Accordion 
       type="multiple" 
@@ -88,8 +97,10 @@ export const StateGroupedInspectors = ({
       onValueChange={setExpandedStates}
       className="space-y-2"
     >
-      {Object.entries(groupedByState).map(([state, stateInspectors]) => {
+      {allRegions.map((state) => {
+        const stateInspectors = groupedByState[state] ?? [];
         const stateStats = getStateStats(state);
+        const isEmpty = stateInspectors.length === 0;
         return (
           <AccordionItem 
             key={state} 
@@ -98,20 +109,32 @@ export const StateGroupedInspectors = ({
           >
             <AccordionTrigger className="px-4 py-3 hover:no-underline hover:bg-muted/50">
               <div className="flex items-center gap-3 w-full pr-2">
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                  <MapPin className="w-4 h-4 text-primary" />
+                <div className={cn(
+                  "w-8 h-8 rounded-full flex items-center justify-center shrink-0",
+                  isEmpty ? "bg-muted" : "bg-primary/10"
+                )}>
+                  <MapPin className={cn(
+                    "w-4 h-4",
+                    isEmpty ? "text-muted-foreground" : "text-primary"
+                  )} />
                 </div>
                 <div className="flex-1 text-left">
                   <h3 className="font-semibold text-foreground">{state}</h3>
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <Users className="w-3 h-3" />
-                    <span>{stateStats.total} inspectors</span>
-                    <span>•</span>
-                    <span className="text-emerald-600">{stateStats.selected} selected</span>
-                    {stateStats.waitlisted > 0 && (
+                    {isEmpty ? (
+                      <span className="italic">Awaiting official list</span>
+                    ) : (
                       <>
+                        <Users className="w-3 h-3" />
+                        <span>{stateStats.total} inspectors</span>
                         <span>•</span>
-                        <span className="text-amber-600">{stateStats.waitlisted} waitlisted</span>
+                        <span className="text-emerald-600">{stateStats.selected} selected</span>
+                        {stateStats.waitlisted > 0 && (
+                          <>
+                            <span>•</span>
+                            <span className="text-amber-600">{stateStats.waitlisted} waitlisted</span>
+                          </>
+                        )}
                       </>
                     )}
                   </div>
@@ -120,17 +143,27 @@ export const StateGroupedInspectors = ({
             </AccordionTrigger>
             <AccordionContent className="px-4 pb-4">
               <div className="space-y-3 pt-2">
-                {stateInspectors.map((inspector) => (
-                  <InspectorCard
-                    key={inspector.id}
-                    inspector={inspector}
-                    isExpanded={expandedInspectorId === inspector.id}
-                    onToggle={() => setExpandedInspectorId(
-                      expandedInspectorId === inspector.id ? null : inspector.id
-                    )}
-                    translations={t}
-                  />
-                ))}
+                {isEmpty ? (
+                  <div className="text-sm text-muted-foreground bg-muted/40 rounded-md p-3 leading-relaxed">
+                    The official HCOI Annexure-I inspector list for{" "}
+                    <span className="font-medium text-foreground">{state}</span>{" "}
+                    has not been published yet, or has not been uploaded to
+                    Haj Care. As soon as it is released, the names will appear
+                    here automatically.
+                  </div>
+                ) : (
+                  stateInspectors.map((inspector) => (
+                    <InspectorCard
+                      key={inspector.id}
+                      inspector={inspector}
+                      isExpanded={expandedInspectorId === inspector.id}
+                      onToggle={() => setExpandedInspectorId(
+                        expandedInspectorId === inspector.id ? null : inspector.id
+                      )}
+                      translations={t}
+                    />
+                  ))
+                )}
               </div>
             </AccordionContent>
           </AccordionItem>

@@ -678,8 +678,59 @@ export const HAJ_INSPECTORS: HajInspector[] = [
   { id: '25102522106897', name: 'SHAIKH BASIR AHAMAD', fatherName: 'SK NESAR AHAMAD', gender: 'Male', state: 'Odisha', cbtMarks: 136, interviewMarks: 30, totalMarks: 166, result: 'Waitlisted', quota: '50% Open Quota', category: 'Fresher' },
 ];
 
-// Get unique states from data
-export const INSPECTOR_STATES = [...new Set(HAJ_INSPECTORS.map(i => i.state))].sort();
+// Canonical list of all 28 Indian states + 8 Union Territories.
+// Used so the directory & filters always show every region of Bharat,
+// even when the official HCOI Annexure-I list for that region has not
+// yet been uploaded via the Admin Inspector Upload page.
+export const INDIA_STATES_AND_UTS: string[] = [
+  // States (28)
+  'Andhra Pradesh',
+  'Arunachal Pradesh',
+  'Assam',
+  'Bihar',
+  'Chhattisgarh',
+  'Goa',
+  'Gujarat',
+  'Haryana',
+  'Himachal Pradesh',
+  'Jharkhand',
+  'Karnataka',
+  'Kerala',
+  'Madhya Pradesh',
+  'Maharashtra',
+  'Manipur',
+  'Meghalaya',
+  'Mizoram',
+  'Nagaland',
+  'Odisha',
+  'Punjab',
+  'Rajasthan',
+  'Sikkim',
+  'Tamil Nadu',
+  'Telangana',
+  'Tripura',
+  'Uttar Pradesh',
+  'Uttarakhand',
+  'West Bengal',
+  // Union Territories (8)
+  'Andaman and Nicobar Islands',
+  'Chandigarh',
+  'Dadra and Nagar Haveli and Daman and Diu',
+  'Delhi',
+  'Jammu and Kashmir',
+  'Ladakh',
+  'Lakshadweep',
+  'Puducherry',
+];
+
+// Union of canonical regions and any region present in the dataset
+// (kept as a safety net in case future imports use a different label).
+export const INSPECTOR_STATES = [
+  ...new Set([
+    ...INDIA_STATES_AND_UTS,
+    ...HAJ_INSPECTORS.map(i => i.state),
+  ]),
+].sort();
 
 // Stats per state
 export const getStateStats = (state: string) => {
@@ -690,3 +741,7 @@ export const getStateStats = (state: string) => {
   const female = inspectors.filter(i => i.gender === 'Female').length;
   return { total: inspectors.length, selected, waitlisted, male, female };
 };
+
+// Whether a region's official list has been imported yet
+export const hasOfficialList = (state: string): boolean =>
+  HAJ_INSPECTORS.some(i => i.state === state);
