@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import type { HajInspector } from "@/data/hajInspectorsData";
 
 const STORAGE_KEY = "hajcare:inspector-overrides";
+const CHANGE_EVENT = "hajcare:inspector-overrides-changed";
 
 export type InspectorEditableFields = Pick<
   HajInspector,
@@ -38,11 +39,16 @@ export const useInspectorOverrides = () => {
   );
 
   useEffect(() => {
-    const handler = (e: StorageEvent) => {
-      if (e.key === STORAGE_KEY) setOverrides(readOverrides());
+    const refresh = () => setOverrides(readOverrides());
+    const storageHandler = (e: StorageEvent) => {
+      if (e.key === STORAGE_KEY) refresh();
     };
-    window.addEventListener("storage", handler);
-    return () => window.removeEventListener("storage", handler);
+    window.addEventListener("storage", storageHandler);
+    window.addEventListener(CHANGE_EVENT, refresh);
+    return () => {
+      window.removeEventListener("storage", storageHandler);
+      window.removeEventListener(CHANGE_EVENT, refresh);
+    };
   }, []);
 
   const persist = useCallback((next: InspectorOverrides) => {
@@ -51,6 +57,12 @@ export const useInspectorOverrides = () => {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
     } catch {
       // ignore quota errors
+    }
+    // Notify other hook instances in the same tab to re-read
+    try {
+      window.dispatchEvent(new Event(CHANGE_EVENT));
+    } catch {
+      // ignore
     }
   }, []);
 
