@@ -47,7 +47,7 @@ const AdminInspectorUploadPage = () => {
     try {
       const text = await extractPdfText(file);
       setRawText(text);
-      const parsed = parseKeralaInspectorRows(text, state);
+      const parsed = parseInspectorRows(text, state);
       setRows(parsed);
       if (parsed.length === 0) {
         toast.warning("No inspector rows detected — check the PDF format");
