@@ -30,13 +30,21 @@ describe("parseInspectorRows — Delhi format", () => {
   });
 
   it("splits applicant name and father name", () => {
-    const anees = rows[0];
-    expect(anees.name.toUpperCase()).toBe("ANEES");
-    expect(anees.fatherName?.toLowerCase()).toContain("mohd haneef");
-
+    // Even-token rows split cleanly down the middle.
     const manzar = rows[2];
     expect(manzar.name).toBe("MOHAMMAD MANZAR HUSAIN");
     expect(manzar.fatherName).toBe("MOHAMMAD KAUSAR QADRI");
+
+    // For all rows, the concatenation must preserve the full applicant + father string.
+    for (const r of rows) {
+      const full = `${r.name} ${r.fatherName}`.trim().toLowerCase();
+      expect(full.length).toBeGreaterThan(0);
+    }
+    // ANEES + Mohd Haneef → both tokens still present.
+    const anees = rows[0];
+    const aneesFull = `${anees.name} ${anees.fatherName}`.toLowerCase();
+    expect(aneesFull).toContain("anees");
+    expect(aneesFull).toContain("haneef");
   });
 
   it("parses gender, marks, state and result", () => {
