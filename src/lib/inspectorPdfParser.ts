@@ -49,7 +49,19 @@ export async function extractPdfText(file: File): Promise<string> {
 const isAllCaps = (s: string) =>
   /[A-Z]/.test(s) && s === s.toUpperCase() && !/\d/.test(s);
 
-const RESULT_RE = /\b(Selected|Waitlisted|WL|Wait\s*list(?:ed)?)\b/i;
+const RESULT_RE = /\b(Selected|Waitlisted|WL[\s-]?\d*|Wait\s*list(?:ed)?)\b/i;
+
+// Application Category strings used in HCOI PDFs (Kerala, Delhi, etc.)
+const CATEGORY_RE =
+  /(Fresher\s+without\s+Haj(?:\s*\/\s*with\s+Haj\s+before\s+\d{4})?|Fresher\s+with\s+Haj|Repeater\s*\(?\s*SHI\s*\/?\s*Deputationist\s*\)?|SHC\s*\/?\s*Waqf\s+Board\s+Employee|SHC\s*\/?\s*Waqf\s+Employee)/i;
+
+const normalizeCategory = (raw: string): string => {
+  if (/fresher\s+without\s+haj/i.test(raw)) return "Fresher";
+  if (/fresher\s+with\s+haj/i.test(raw)) return "Fresher with Haj";
+  if (/repeater/i.test(raw)) return "Repeater";
+  if (/shc|waqf/i.test(raw)) return "SHC/Waqf Employee";
+  return raw.trim();
+};
 
 /**
  * Parse Kerala-style inspector list lines into structured rows.
