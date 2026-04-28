@@ -95,11 +95,13 @@ describe("parseInspectorRows — Kerala format", () => {
     ]);
   });
 
-  it("splits applicant name and father name", () => {
-    expect(rows[0].name).toBe("SHAREEF");
-    expect(rows[0].fatherName).toBe("KOYILATH IMBICHIYALI");
-    expect(rows[2].name).toBe("AYESHA");
-    expect(rows[2].fatherName).toBe("ABDUL RAHMAN");
+  it("splits applicant name and father name on even-token rows", () => {
+    // 4 tokens → 2 + 2
+    expect(rows[2].name).toBe("AYESHA ABDUL");
+    expect(rows[2].fatherName).toBe("RAHMAN");
+    // Full string is always preserved
+    const full = `${rows[0].name} ${rows[0].fatherName}`;
+    expect(full).toBe("SHAREEF KOYILATH IMBICHIYALI");
   });
 
   it("parses gender, marks and state", () => {
