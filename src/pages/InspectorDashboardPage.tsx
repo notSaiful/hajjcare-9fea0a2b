@@ -30,6 +30,7 @@ import { SubGroupAdvisoryCard } from '@/components/inspector/SubGroupAdvisoryCar
 import { SubGroupManager } from '@/components/inspector/SubGroupManager';
 import { InspectorNetworkPanel } from '@/components/inspector/InspectorNetworkPanel';
 import { IHPOMadinahDeskPanel } from '@/components/inspector/IHPOMadinahDeskPanel';
+import { IHPOMakkahDeskPanel } from '@/components/inspector/IHPOMakkahDeskPanel';
 import {
   Select,
   SelectContent,
@@ -186,6 +187,9 @@ const InspectorDashboardPage = () => {
 
         {/* IHPO Madinah Desk Directory — quick-access desk numbers for HAJ 2026 */}
         <IHPOMadinahDeskPanel />
+
+        {/* IHPO Makkah Desk Directory — quick-access desk numbers for HAJ 2026 */}
+        <IHPOMakkahDeskPanel />
 
         {/* Inspector Network — find colleagues, copy Indian/KSA numbers in one tap */}
         <InspectorNetworkPanel />
