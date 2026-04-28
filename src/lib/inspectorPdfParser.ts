@@ -73,7 +73,7 @@ const normalizeCategory = (raw: string): string => {
  * The parser is lenient: it scans line by line, joins continuation lines
  * (lines without a leading 14-digit id), and uses regexes to pull fields.
  */
-export function parseKeralaInspectorRows(rawText: string, state = "Kerala"): ParsedRow[] {
+export function parseInspectorRows(rawText: string, state = "Kerala"): ParsedRow[] {
   const rawLines = rawText
     .split(/\r?\n/)
     .map((l) => l.trim())
