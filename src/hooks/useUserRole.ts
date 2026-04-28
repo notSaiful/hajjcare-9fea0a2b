@@ -3,6 +3,23 @@ import { supabase } from '@/integrations/supabase/client';
 
 type AppRole = 'admin' | 'coordinator' | 'medical_staff' | 'inspector' | 'user';
 
+// Dev/preview-only role override. Stored in localStorage as a comma list,
+// e.g. "admin,inspector". Cleared by the DevRoleSwitcher widget.
+const DEV_ROLE_KEY = 'dev:roleOverride';
+const isPreviewEnv = () => {
+  if (typeof window === 'undefined') return false;
+  if (import.meta.env.DEV) return true;
+  const h = window.location.hostname;
+  return h.includes('lovable.app') || h.includes('lovableproject.com') || h === 'localhost';
+};
+const readOverride = (): AppRole[] | null => {
+  if (!isPreviewEnv() || typeof window === 'undefined') return null;
+  const raw = localStorage.getItem(DEV_ROLE_KEY);
+  if (!raw) return null;
+  const parts = raw.split(',').map((s) => s.trim()).filter(Boolean) as AppRole[];
+  return parts.length ? parts : null;
+};
+
 interface UserRole {
   role: AppRole;
   zone: string | null;
@@ -17,7 +34,21 @@ export const useUserRole = () => {
   const [isInspector, setIsInspector] = useState(false);
 
   useEffect(() => {
+    const applyOverrideIfAny = (): boolean => {
+      const ov = readOverride();
+      if (!ov) return false;
+      const userRoles = ov.map((role) => ({ role, zone: null }));
+      setRoles(userRoles);
+      setIsCoordinator(ov.includes('coordinator'));
+      setIsAdmin(ov.includes('admin'));
+      setIsMedicalStaff(ov.includes('medical_staff'));
+      setIsInspector(ov.includes('inspector'));
+      setIsLoading(false);
+      return true;
+    };
+
     const fetchRoles = async () => {
+      if (applyOverrideIfAny()) return;
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) {
@@ -59,7 +90,23 @@ export const useUserRole = () => {
       fetchRoles();
     });
 
-    return () => subscription.unsubscribe();
+    // React to dev role overrides changing in another tab or via the switcher
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === DEV_ROLE_KEY) fetchRoles();
+    };
+    const onCustom = () => fetchRoles();
+    if (typeof window !== 'undefined') {
+      window.addEventListener('storage', onStorage);
+      window.addEventListener('dev:role-override-changed', onCustom);
+    }
+
+    return () => {
+      subscription.unsubscribe();
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('storage', onStorage);
+        window.removeEventListener('dev:role-override-changed', onCustom);
+      }
+    };
   }, []);
 
   const hasAnyCoordinatorRole = isCoordinator || isAdmin || isMedicalStaff || isInspector;

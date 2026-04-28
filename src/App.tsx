@@ -8,6 +8,7 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { InspectorOnlyRoute } from "@/components/InspectorOnlyRoute";
+import { DevRoleSwitcher } from "@/components/dev/DevRoleSwitcher";
 
 // Handle dynamic import failures (stale cache, network issues)
 if (typeof window !== "undefined") {
@@ -298,6 +299,7 @@ const App = () => (
               <Suspense fallback={<PageLoader />}>
                 <AppContent />
               </Suspense>
+              <DevRoleSwitcher />
             </BrowserRouter>
           </TooltipProvider>
         </AuthProvider>
