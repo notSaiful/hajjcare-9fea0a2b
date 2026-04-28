@@ -103,9 +103,24 @@ export const IHPODeskPanel = ({
               HAJ 2026 • Saudi numbers (auto-prefixed with +966)
             </p>
           </div>
-          <Badge variant="outline" className="text-[10px] shrink-0">
-            {desks.length} desks
-          </Badge>
+          <div className="flex items-center gap-2 shrink-0">
+            <Badge variant="outline" className="text-[10px]">
+              {desks.length} desks
+            </Badge>
+            {canEdit && (
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                className="h-7 px-2 text-[11px]"
+                onClick={onEdit}
+                aria-label={`Edit ${city} desk numbers`}
+              >
+                <Pencil className="w-3 h-3 mr-1" />
+                Edit
+              </Button>
+            )}
+          </div>
         </div>
 
         {pendingCount > 0 && (
