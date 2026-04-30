@@ -34,6 +34,8 @@ const HajjBuildingsPage = () => {
 
   const lang = (language === "hi" || language === "ur" || language === "ar") ? language : "en";
 
+  const buildingInputRef = useRef<HTMLInputElement>(null);
+
   // Auto-search if ?building=NNN is passed (from Home quick action)
   useEffect(() => {
     const qp = searchParams.get("building");
@@ -45,12 +47,13 @@ const HajjBuildingsPage = () => {
         setFoundZone(findZoneByBuildingNumber(num));
         setBusMatches(findBusPointsForBuilding(num));
         setExactMapLink(findMakkahBuildingMapLink(num));
-        // smoothly scroll to result on mobile
+        // smoothly scroll to result + focus input (preventScroll keeps our scroll behavior)
         setTimeout(() => {
           document.getElementById("find-building-section")?.scrollIntoView({
             behavior: "smooth",
             block: "start",
           });
+          buildingInputRef.current?.focus({ preventScroll: true });
         }, 100);
       }
     }
