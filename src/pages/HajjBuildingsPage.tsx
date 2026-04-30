@@ -221,6 +221,7 @@ const HajjBuildingsPage = () => {
           </h2>
           <div className="flex gap-2">
             <Input
+              ref={buildingInputRef}
               type="number"
               inputMode="numeric"
               placeholder={t.enterNumber}
