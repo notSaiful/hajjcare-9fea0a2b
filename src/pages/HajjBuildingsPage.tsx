@@ -80,6 +80,7 @@ const HajjBuildingsPage = () => {
       noBusPoint: "اس بلڈنگ کے لیے بس پوائنٹ ابھی میپ نہیں ہے۔ اپنے انسپکٹر یا برانچ آفس سے تصدیق کریں۔",
       madinahHotels: "مدینہ ہوٹل 2026", searchHotel: "نام، کوڈ، یا تشی سے تلاش کریں...", hotelsCount: "ہوٹل", locUnavailable: "لوکیشن دستیاب نہیں",
       hotelsSource: "ماخذ: آفیشل MOH/CGI جدہ فہرست — مدینہ مرکزیہ میں 381 ہوٹل",
+      exactPin: "بلڈنگ کی درست لوکیشن", openExactPin: "گوگل میپ میں درست پن کھولیں", altMarker: "اپڈیٹڈ/متبادل میپنگ (i)", rubaths: "کمیونٹی رباط", openLocation: "لوکیشن کھولیں",
     },
     ar: {
       title: "مباني الحج الهندية", subtitle: "مكة والمدينة 2026", makkah: "مكة", madinah: "المدينة", all: "الكل",
@@ -95,6 +96,7 @@ const HajjBuildingsPage = () => {
       noBusPoint: "لا يوجد ربط لنقطة حافلة لهذا المبنى بعد. تأكد مع المفتش أو مكتب الفرع.",
       madinahHotels: "فنادق المدينة 2026", searchHotel: "ابحث بالاسم أو الرقم أو التشي...", hotelsCount: "فنادق", locUnavailable: "الموقع غير متوفر",
       hotelsSource: "المصدر: قائمة MOH/CGI جدة الرسمية — 381 فندقًا في مركزية المدينة",
+      exactPin: "الموقع الدقيق للمبنى", openExactPin: "افتح الدبوس الدقيق في خرائط جوجل", altMarker: "ربط محدث/بديل (i)", rubaths: "أربطة المجتمع", openLocation: "افتح الموقع",
     },
   };
 
