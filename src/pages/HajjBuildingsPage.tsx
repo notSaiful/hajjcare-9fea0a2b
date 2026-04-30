@@ -48,6 +48,7 @@ const HajjBuildingsPage = () => {
       noBusPoint: "No bus point mapping found for this building yet. Check with your inspector or branch office.",
       madinahHotels: "Madinah Hotels 2026", searchHotel: "Search by name, code, or Tashee...", hotelsCount: "hotels", locUnavailable: "Location unavailable",
       hotelsSource: "Source: Official MOH/CGI Jeddah list — 381 hotels in Madinah Markaziya",
+      exactPin: "Exact Building Location", openExactPin: "Open Exact Pin in Google Maps", altMarker: "Updated/alt mapping (i)", rubaths: "Community Rubaths", openLocation: "Open Location",
     },
     hi: {
       title: "भारतीय हज भवन", subtitle: "मक्का और मदीना 2026", makkah: "मक्का", madinah: "मदीना", all: "सभी",
