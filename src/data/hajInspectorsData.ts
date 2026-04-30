@@ -719,13 +719,11 @@ export const INDIA_STATES_AND_UTS: string[] = [
   'Andaman and Nicobar Islands', 'Chandigarh', 'Dadra and Nagar Haveli and Daman and Diu', 'Delhi', 'Jammu and Kashmir', 'Ladakh', 'Lakshadweep', 'Puducherry',
 ];
 
-// Union of canonical regions and any region present in the dataset
-// (kept as a safety net in case future imports use a different label).
+// Only show regions whose official list has actually been uploaded.
+// Other regions in INDIA_STATES_AND_UTS remain available for future imports
+// but are hidden from the directory's state filter until data is added.
 export const INSPECTOR_STATES = [
-  ...new Set([
-    ...INDIA_STATES_AND_UTS,
-    ...HAJ_INSPECTORS.map(i => i.state),
-  ]),
+  ...new Set(HAJ_INSPECTORS.map(i => i.state)),
 ].sort();
 
 // Stats per state
