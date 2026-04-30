@@ -293,7 +293,6 @@ export const HAJ_INSPECTORS: HajInspector[] = [
   { id: 'WB20260050', name: 'MOHAMMAD SAFIUL ALAM', fatherName: 'Mohammad YUSUF ALI PAIK', gender: 'Male', state: 'West Bengal', cbtMarks: 0, interviewMarks: 0, totalMarks: 0, result: 'Waitlisted', quota: '20% Reserved Quota', category: 'Fresher' },
 
   // Uttar Pradesh
-  { id: 'shiupf-794-1-0', name: 'MAJID HASAN KHAN', fatherName: '—', gender: 'Male', state: 'Uttar Pradesh', cbtMarks: 0, interviewMarks: 0, totalMarks: 0, result: 'Selected', quota: 'Inspector Group', category: 'SHI', coverNumber: 'SHIUPF-794-1-0', indianMobile: '+91 82669 15789', makkahBuilding: 'Building 112', madinahBuilding: 'Safa Taiba, Room 206' },
   { id: '25101828103408', name: 'ZIAUR REHMAN', fatherName: 'AZIZUR REHMAN', gender: 'Male', state: 'Uttar Pradesh', cbtMarks: 143, interviewMarks: 42, totalMarks: 185, result: 'Selected', quota: '50% Open Quota', category: 'Repeater' },
   { id: '25102828108433', name: 'MOHAMMAD AMIL', fatherName: 'MOHAMMAD ABID KHAN', gender: 'Male', state: 'Uttar Pradesh', cbtMarks: 141, interviewMarks: 42, totalMarks: 183, result: 'Selected', quota: '50% Open Quota', category: 'Fresher' },
   { id: '25103128105778', name: 'ISLAMUR RAHMAN', fatherName: 'FAZLUR RAHMAN', gender: 'Male', state: 'Uttar Pradesh', cbtMarks: 139, interviewMarks: 42, totalMarks: 181, result: 'Selected', quota: '50% Open Quota', category: 'Repeater' },
