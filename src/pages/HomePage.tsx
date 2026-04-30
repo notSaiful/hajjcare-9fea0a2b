@@ -6,6 +6,7 @@ import { DashboardMenu } from "@/components/DashboardMenu";
 import { EmergencyMarqueeBar } from "@/components/EmergencyMarqueeBar";
 import { SubGroupAdvisoryCard } from "@/components/inspector/SubGroupAdvisoryCard";
 import { StaffMenu } from "@/components/dashboard/StaffMenu";
+import { FindBuildingQuickAction } from "@/components/FindBuildingQuickAction";
 import { StaffAccessHint } from "@/components/dashboard/StaffAccessHint";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAppAnalytics } from "@/hooks/useAppAnalytics";
@@ -49,6 +50,12 @@ const HomePage = () => {
               <HajjCountdown />
             </section>
           </Suspense>
+
+          {/* Find Makkah Building — prominent quick action */}
+          <section className="animate-fade-up" style={{ animationDelay: "60ms" }}>
+            <FindBuildingQuickAction />
+          </section>
+
 
           {/* Staff-only tools (Inspector / Admin / Coordinator) */}
           <StaffMenu />

@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { SimpleHeader } from "@/components/SimpleHeader";
 import { hajjBuildings, emergencyContacts, type HajjBuilding } from "@/data/hajjBuildingsData";
@@ -22,6 +22,7 @@ const typeConfig = {
 
 const HajjBuildingsPage = () => {
   const { language, isRTL } = useLanguage();
+  const [searchParams] = useSearchParams();
   const [search, setSearch] = useState("");
   const [cityFilter, setCityFilter] = useState<"all" | "makkah" | "madinah">("all");
   const [buildingNumber, setBuildingNumber] = useState("");
@@ -32,6 +33,30 @@ const HajjBuildingsPage = () => {
   const [hotelSearch, setHotelSearch] = useState("");
 
   const lang = (language === "hi" || language === "ur" || language === "ar") ? language : "en";
+
+  // Auto-search if ?building=NNN is passed (from Home quick action)
+  useEffect(() => {
+    const qp = searchParams.get("building");
+    if (qp) {
+      const num = parseInt(qp, 10);
+      if (!isNaN(num)) {
+        setBuildingNumber(qp);
+        setSearchedNumber(num);
+        setFoundZone(findZoneByBuildingNumber(num));
+        setBusMatches(findBusPointsForBuilding(num));
+        setExactMapLink(findMakkahBuildingMapLink(num));
+        // smoothly scroll to result on mobile
+        setTimeout(() => {
+          document.getElementById("find-building-section")?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }, 100);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
+
 
   const labels = {
     en: {
@@ -184,7 +209,7 @@ const HajjBuildingsPage = () => {
         </div>
 
         {/* ===== BUILDING NUMBER FINDER ===== */}
-        <section className="bg-primary/5 border-2 border-primary/20 rounded-2xl p-4 space-y-3">
+        <section id="find-building-section" className="bg-primary/5 border-2 border-primary/20 rounded-2xl p-4 space-y-3 scroll-mt-20">
           <h2 className="text-base font-bold flex items-center gap-2">
             <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
               <Hash className="w-4 h-4 text-primary" />
