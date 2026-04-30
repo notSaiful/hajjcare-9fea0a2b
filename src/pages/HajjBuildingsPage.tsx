@@ -5,6 +5,7 @@ import { SimpleHeader } from "@/components/SimpleHeader";
 import { hajjBuildings, emergencyContacts, type HajjBuilding } from "@/data/hajjBuildingsData";
 import { makkahBuildingZones, findZoneByBuildingNumber, type BuildingZone } from "@/data/hajjBuildingZones";
 import { findBusPointsForBuilding, type BusPointMatch } from "@/data/hajjBusPoints";
+import { findMakkahBuildingMapLink, makkahRubaths, type MakkahBuildingMapLink } from "@/data/makkahBuildingMapLinks";
 import { madinahHotels, getMadinahMapUrl } from "@/data/madinahHotels";
 import { getHotelLocation, formatDistance } from "@/data/madinahHotelCoords";
 import { Building, Bus, MapPin, Phone, Search, Stethoscope, Home, Landmark, Hash, Navigation, AlertCircle, ExternalLink, Hotel, Footprints, ArrowRight, Info } from "lucide-react";
