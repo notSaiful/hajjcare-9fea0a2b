@@ -22,6 +22,7 @@ const typeConfig = {
 
 const HajjBuildingsPage = () => {
   const { language, isRTL } = useLanguage();
+  const [searchParams] = useSearchParams();
   const [search, setSearch] = useState("");
   const [cityFilter, setCityFilter] = useState<"all" | "makkah" | "madinah">("all");
   const [buildingNumber, setBuildingNumber] = useState("");
@@ -32,6 +33,30 @@ const HajjBuildingsPage = () => {
   const [hotelSearch, setHotelSearch] = useState("");
 
   const lang = (language === "hi" || language === "ur" || language === "ar") ? language : "en";
+
+  // Auto-search if ?building=NNN is passed (from Home quick action)
+  useEffect(() => {
+    const qp = searchParams.get("building");
+    if (qp) {
+      const num = parseInt(qp, 10);
+      if (!isNaN(num)) {
+        setBuildingNumber(qp);
+        setSearchedNumber(num);
+        setFoundZone(findZoneByBuildingNumber(num));
+        setBusMatches(findBusPointsForBuilding(num));
+        setExactMapLink(findMakkahBuildingMapLink(num));
+        // smoothly scroll to result on mobile
+        setTimeout(() => {
+          document.getElementById("find-building-section")?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }, 100);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
+
 
   const labels = {
     en: {
