@@ -5,6 +5,7 @@ import { SimpleHeader } from "@/components/SimpleHeader";
 import { hajjBuildings, emergencyContacts, type HajjBuilding } from "@/data/hajjBuildingsData";
 import { makkahBuildingZones, findZoneByBuildingNumber, type BuildingZone } from "@/data/hajjBuildingZones";
 import { findBusPointsForBuilding, type BusPointMatch } from "@/data/hajjBusPoints";
+import { findMakkahBuildingMapLink, makkahRubaths, type MakkahBuildingMapLink } from "@/data/makkahBuildingMapLinks";
 import { madinahHotels, getMadinahMapUrl } from "@/data/madinahHotels";
 import { getHotelLocation, formatDistance } from "@/data/madinahHotelCoords";
 import { Building, Bus, MapPin, Phone, Search, Stethoscope, Home, Landmark, Hash, Navigation, AlertCircle, ExternalLink, Hotel, Footprints, ArrowRight, Info } from "lucide-react";
@@ -27,6 +28,7 @@ const HajjBuildingsPage = () => {
   const [foundZone, setFoundZone] = useState<BuildingZone | null>(null);
   const [searchedNumber, setSearchedNumber] = useState<number | null>(null);
   const [busMatches, setBusMatches] = useState<BusPointMatch[]>([]);
+  const [exactMapLink, setExactMapLink] = useState<MakkahBuildingMapLink | null>(null);
   const [hotelSearch, setHotelSearch] = useState("");
 
   const lang = (language === "hi" || language === "ur" || language === "ar") ? language : "en";
@@ -46,6 +48,7 @@ const HajjBuildingsPage = () => {
       noBusPoint: "No bus point mapping found for this building yet. Check with your inspector or branch office.",
       madinahHotels: "Madinah Hotels 2026", searchHotel: "Search by name, code, or Tashee...", hotelsCount: "hotels", locUnavailable: "Location unavailable",
       hotelsSource: "Source: Official MOH/CGI Jeddah list — 381 hotels in Madinah Markaziya",
+      exactPin: "Exact Building Location", openExactPin: "Open Exact Pin in Google Maps", altMarker: "Updated/alt mapping (i)", rubaths: "Community Rubaths", openLocation: "Open Location",
     },
     hi: {
       title: "भारतीय हज भवन", subtitle: "मक्का और मदीना 2026", makkah: "मक्का", madinah: "मदीना", all: "सभी",
@@ -61,6 +64,7 @@ const HajjBuildingsPage = () => {
       noBusPoint: "इस बिल्डिंग के लिए बस पॉइंट अभी मैप नहीं है। अपने इंस्पेक्टर या ब्रांच ऑफिस से पुष्टि करें।",
       madinahHotels: "मदीना होटल 2026", searchHotel: "नाम, कोड, या तशी से खोजें...", hotelsCount: "होटल", locUnavailable: "लोकेशन उपलब्ध नहीं",
       hotelsSource: "स्रोत: आधिकारिक MOH/CGI जेद्दा सूची — मदीना मरकज़िया में 381 होटल",
+      exactPin: "बिल्डिंग की सटीक लोकेशन", openExactPin: "गूगल मैप में सटीक पिन खोलें", altMarker: "अपडेटेड/वैकल्पिक मैपिंग (i)", rubaths: "कम्युनिटी रुबाथ", openLocation: "लोकेशन खोलें",
     },
     ur: {
       title: "انڈین حج عمارات", subtitle: "مکہ اور مدینہ 2026", makkah: "مکہ", madinah: "مدینہ", all: "سب",
@@ -76,6 +80,7 @@ const HajjBuildingsPage = () => {
       noBusPoint: "اس بلڈنگ کے لیے بس پوائنٹ ابھی میپ نہیں ہے۔ اپنے انسپکٹر یا برانچ آفس سے تصدیق کریں۔",
       madinahHotels: "مدینہ ہوٹل 2026", searchHotel: "نام، کوڈ، یا تشی سے تلاش کریں...", hotelsCount: "ہوٹل", locUnavailable: "لوکیشن دستیاب نہیں",
       hotelsSource: "ماخذ: آفیشل MOH/CGI جدہ فہرست — مدینہ مرکزیہ میں 381 ہوٹل",
+      exactPin: "بلڈنگ کی درست لوکیشن", openExactPin: "گوگل میپ میں درست پن کھولیں", altMarker: "اپڈیٹڈ/متبادل میپنگ (i)", rubaths: "کمیونٹی رباط", openLocation: "لوکیشن کھولیں",
     },
     ar: {
       title: "مباني الحج الهندية", subtitle: "مكة والمدينة 2026", makkah: "مكة", madinah: "المدينة", all: "الكل",
@@ -91,6 +96,7 @@ const HajjBuildingsPage = () => {
       noBusPoint: "لا يوجد ربط لنقطة حافلة لهذا المبنى بعد. تأكد مع المفتش أو مكتب الفرع.",
       madinahHotels: "فنادق المدينة 2026", searchHotel: "ابحث بالاسم أو الرقم أو التشي...", hotelsCount: "فنادق", locUnavailable: "الموقع غير متوفر",
       hotelsSource: "المصدر: قائمة MOH/CGI جدة الرسمية — 381 فندقًا في مركزية المدينة",
+      exactPin: "الموقع الدقيق للمبنى", openExactPin: "افتح الدبوس الدقيق في خرائط جوجل", altMarker: "ربط محدث/بديل (i)", rubaths: "أربطة المجتمع", openLocation: "افتح الموقع",
     },
   };
 
@@ -103,10 +109,11 @@ const HajjBuildingsPage = () => {
 
   const handleFindBuilding = () => {
     const num = parseInt(buildingNumber, 10);
-    if (isNaN(num)) { setFoundZone(null); setSearchedNumber(null); setBusMatches([]); return; }
+    if (isNaN(num)) { setFoundZone(null); setSearchedNumber(null); setBusMatches([]); setExactMapLink(null); return; }
     setSearchedNumber(num);
     setFoundZone(findZoneByBuildingNumber(num));
     setBusMatches(findBusPointsForBuilding(num));
+    setExactMapLink(findMakkahBuildingMapLink(num));
   };
 
   const filtered = hajjBuildings.filter((b) => {
