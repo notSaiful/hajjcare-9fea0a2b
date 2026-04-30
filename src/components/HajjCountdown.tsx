@@ -9,8 +9,9 @@ const labels: Record<string, { title: string; days: string; hours: string; mins:
   ar: { title: "العد التنازلي للحج 2026", days: "أيام", hours: "ساعات", mins: "دقائق", secs: "ثوانٍ" },
 };
 
-// Hajj 2026 approximate start: 8 Dhul Hijjah 1447 ≈ June 3, 2026
-const HAJJ_DATE = new Date("2026-06-03T00:00:00+03:00");
+// Hajj 2026 (1447 AH) — 8 Dhul Hijjah falls on 26 May 2026
+// (Yawm al-Arafah: 27 May 2026; Eid al-Adha: 28 May 2026 — Umm al-Qura calendar)
+const HAJJ_DATE = new Date("2026-05-26T00:00:00+03:00");
 
 function getTimeLeft() {
   const diff = HAJJ_DATE.getTime() - Date.now();
