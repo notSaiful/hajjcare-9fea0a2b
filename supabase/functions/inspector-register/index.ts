@@ -106,7 +106,7 @@ Deno.serve(async (req) => {
         state,
         role,
         language_preference: languagePreference,
-        status: role === "haj_inspector" ? "verified" : "pending",
+        status: "verified",
       })
       .select("id")
       .single();
