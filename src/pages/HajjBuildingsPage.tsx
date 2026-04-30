@@ -242,6 +242,38 @@ const HajjBuildingsPage = () => {
             </div>
           )}
 
+          {/* Exact Building Location card — direct pin from official list */}
+          {searchedNumber !== null && exactMapLink && (
+            <div className="bg-background border-2 border-emerald-500/40 rounded-xl p-4 space-y-3 animate-in fade-in slide-in-from-top-2">
+              <h3 className="text-sm font-bold flex items-center gap-2">
+                <div className="w-7 h-7 rounded-full bg-emerald-500/10 flex items-center justify-center">
+                  <MapPin className="w-4 h-4 text-emerald-700" />
+                </div>
+                {t.exactPin}
+                <span className="ml-auto font-mono text-xs text-muted-foreground">
+                  #{exactMapLink.building}
+                </span>
+              </h3>
+              {exactMapLink.variant === "alt" && (
+                <div className="flex items-start gap-2 bg-amber-500/10 border border-amber-500/40 rounded-lg p-2">
+                  <Info className="w-3.5 h-3.5 text-amber-700 mt-0.5 flex-shrink-0" />
+                  <p className="text-[11px] text-amber-800 leading-relaxed">{t.altMarker}</p>
+                </div>
+              )}
+              <Button
+                asChild
+                className="w-full rounded-xl gap-2 bg-emerald-700 hover:bg-emerald-800 text-white"
+                size="lg"
+              >
+                <a href={exactMapLink.url} target="_blank" rel="noopener noreferrer">
+                  <MapPin className="w-4 h-4" />
+                  {t.openExactPin}
+                  <ExternalLink className="w-3 h-3 ml-auto opacity-80" />
+                </a>
+              </Button>
+            </div>
+          )}
+
           {/* Bus Point / Branch result — second card */}
           {searchedNumber !== null && (() => {
             const hasUpdated = busMatches.some((m) => m.entry.isUpdated);
