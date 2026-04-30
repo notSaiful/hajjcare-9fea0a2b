@@ -22,7 +22,7 @@ const typeConfig = {
 
 const HajjBuildingsPage = () => {
   const { language, isRTL } = useLanguage();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [search, setSearch] = useState("");
   const [cityFilter, setCityFilter] = useState<"all" | "makkah" | "madinah">("all");
   const [buildingNumber, setBuildingNumber] = useState("");
@@ -137,11 +137,22 @@ const HajjBuildingsPage = () => {
 
   const handleFindBuilding = () => {
     const num = parseInt(buildingNumber, 10);
-    if (isNaN(num)) { setFoundZone(null); setSearchedNumber(null); setBusMatches([]); setExactMapLink(null); return; }
+    if (isNaN(num)) {
+      setFoundZone(null); setSearchedNumber(null); setBusMatches([]); setExactMapLink(null);
+      // clear ?building from URL so a stale param doesn't get re-shared
+      const next = new URLSearchParams(searchParams);
+      next.delete("building");
+      setSearchParams(next, { replace: true });
+      return;
+    }
     setSearchedNumber(num);
     setFoundZone(findZoneByBuildingNumber(num));
     setBusMatches(findBusPointsForBuilding(num));
     setExactMapLink(findMakkahBuildingMapLink(num));
+    // sync to URL so the result is shareable / reopenable
+    const next = new URLSearchParams(searchParams);
+    next.set("building", String(num));
+    setSearchParams(next, { replace: true });
   };
 
   const filtered = hajjBuildings.filter((b) => {
