@@ -209,7 +209,7 @@ const HajjBuildingsPage = () => {
         </div>
 
         {/* ===== BUILDING NUMBER FINDER ===== */}
-        <section className="bg-primary/5 border-2 border-primary/20 rounded-2xl p-4 space-y-3">
+        <section id="find-building-section" className="bg-primary/5 border-2 border-primary/20 rounded-2xl p-4 space-y-3 scroll-mt-20">
           <h2 className="text-base font-bold flex items-center gap-2">
             <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
               <Hash className="w-4 h-4 text-primary" />
