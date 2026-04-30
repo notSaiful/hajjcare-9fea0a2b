@@ -28,6 +28,7 @@ const HajjBuildingsPage = () => {
   const [foundZone, setFoundZone] = useState<BuildingZone | null>(null);
   const [searchedNumber, setSearchedNumber] = useState<number | null>(null);
   const [busMatches, setBusMatches] = useState<BusPointMatch[]>([]);
+  const [exactMapLink, setExactMapLink] = useState<MakkahBuildingMapLink | null>(null);
   const [hotelSearch, setHotelSearch] = useState("");
 
   const lang = (language === "hi" || language === "ur" || language === "ar") ? language : "en";
