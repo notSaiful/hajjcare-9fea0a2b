@@ -64,6 +64,7 @@ const HajjBuildingsPage = () => {
       noBusPoint: "इस बिल्डिंग के लिए बस पॉइंट अभी मैप नहीं है। अपने इंस्पेक्टर या ब्रांच ऑफिस से पुष्टि करें।",
       madinahHotels: "मदीना होटल 2026", searchHotel: "नाम, कोड, या तशी से खोजें...", hotelsCount: "होटल", locUnavailable: "लोकेशन उपलब्ध नहीं",
       hotelsSource: "स्रोत: आधिकारिक MOH/CGI जेद्दा सूची — मदीना मरकज़िया में 381 होटल",
+      exactPin: "बिल्डिंग की सटीक लोकेशन", openExactPin: "गूगल मैप में सटीक पिन खोलें", altMarker: "अपडेटेड/वैकल्पिक मैपिंग (i)", rubaths: "कम्युनिटी रुबाथ", openLocation: "लोकेशन खोलें",
     },
     ur: {
       title: "انڈین حج عمارات", subtitle: "مکہ اور مدینہ 2026", makkah: "مکہ", madinah: "مدینہ", all: "سب",
