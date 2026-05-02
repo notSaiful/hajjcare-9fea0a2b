@@ -20,6 +20,9 @@ export type Circular = {
   is_published: boolean;
   ai_processed: boolean;
   created_at: string;
+  source: string;
+  source_name_display: string | null;
+  auto_scraped: boolean;
 };
 
 export const useCirculars = () => {

@@ -31,6 +31,16 @@ export default function AdminCircularsPage() {
   const [sourceUrl, setSourceUrl] = useState("");
   const [category, setCategory] = useState("general");
   const [priority, setPriority] = useState("normal");
+  const [source, setSource] = useState("HCI");
+
+  const SOURCE_LABELS: Record<string, string> = {
+    HCI: "Haj Committee of India",
+    Saudi_MoHU: "Saudi Ministry of Hajj & Umrah",
+    Nusuk: "Nusuk Platform",
+    GACA: "GACA (Saudi Aviation)",
+    MoFA_KSA: "Saudi Ministry of Foreign Affairs",
+    Other: "Other Official Source",
+  };
 
   const circularsQuery = useQuery({
     queryKey: ["admin-circulars"],
