@@ -200,7 +200,9 @@ export default function AdminCircularsPage() {
                   {c.ai_processed && <Badge variant="outline" className="text-xs">AI ✓</Badge>}
                 </div>
               </div>
-              <p className="text-xs text-muted-foreground">{format(new Date(c.created_at), "dd MMM yyyy")}</p>
+              <p className="text-xs text-muted-foreground">
+                {format(new Date(c.created_at), "dd MMM yyyy")} · <span className="font-medium">{c.source_name_display || c.source}</span>
+              </p>
             </CardHeader>
             <CardContent className="pt-0">
               {c.summary_en && <p className="text-xs text-muted-foreground mb-2">{c.summary_en}</p>}
