@@ -1353,15 +1353,19 @@ export type Database = {
       hajj_circulars: {
         Row: {
           ai_processed: boolean
+          auto_scraped: boolean
           category: string
           circular_date: string | null
           circular_number: string | null
           created_at: string
           created_by: string | null
+          external_id: string | null
           id: string
           is_published: boolean
           original_content: string
           priority: string
+          source: string
+          source_name_display: string | null
           source_url: string | null
           summary_en: string | null
           summary_hi: string | null
@@ -1373,15 +1377,19 @@ export type Database = {
         }
         Insert: {
           ai_processed?: boolean
+          auto_scraped?: boolean
           category?: string
           circular_date?: string | null
           circular_number?: string | null
           created_at?: string
           created_by?: string | null
+          external_id?: string | null
           id?: string
           is_published?: boolean
           original_content: string
           priority?: string
+          source?: string
+          source_name_display?: string | null
           source_url?: string | null
           summary_en?: string | null
           summary_hi?: string | null
@@ -1393,15 +1401,19 @@ export type Database = {
         }
         Update: {
           ai_processed?: boolean
+          auto_scraped?: boolean
           category?: string
           circular_date?: string | null
           circular_number?: string | null
           created_at?: string
           created_by?: string | null
+          external_id?: string | null
           id?: string
           is_published?: boolean
           original_content?: string
           priority?: string
+          source?: string
+          source_name_display?: string | null
           source_url?: string | null
           summary_en?: string | null
           summary_hi?: string | null
