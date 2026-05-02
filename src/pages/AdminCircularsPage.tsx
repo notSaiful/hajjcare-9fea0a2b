@@ -31,6 +31,16 @@ export default function AdminCircularsPage() {
   const [sourceUrl, setSourceUrl] = useState("");
   const [category, setCategory] = useState("general");
   const [priority, setPriority] = useState("normal");
+  const [source, setSource] = useState("HCI");
+
+  const SOURCE_LABELS: Record<string, string> = {
+    HCI: "Haj Committee of India",
+    Saudi_MoHU: "Saudi Ministry of Hajj & Umrah",
+    Nusuk: "Nusuk Platform",
+    GACA: "GACA (Saudi Aviation)",
+    MoFA_KSA: "Saudi Ministry of Foreign Affairs",
+    Other: "Other Official Source",
+  };
 
   const circularsQuery = useQuery({
     queryKey: ["admin-circulars"],
@@ -55,6 +65,9 @@ export default function AdminCircularsPage() {
         source_url: sourceUrl || null,
         category,
         priority,
+        source,
+        source_name_display: SOURCE_LABELS[source] || source,
+        auto_scraped: false,
         created_by: user?.id,
       });
       if (error) throw error;
@@ -64,6 +77,7 @@ export default function AdminCircularsPage() {
       queryClient.invalidateQueries({ queryKey: ["admin-circulars"] });
       setShowForm(false);
       setTitle(""); setContent(""); setCircularNumber(""); setCircularDate(""); setSourceUrl("");
+      setSource("HCI");
     },
     onError: (e) => toast({ title: "Error", description: e.message, variant: "destructive" }),
   });
@@ -121,7 +135,7 @@ export default function AdminCircularsPage() {
 
   return (
     <MainLayout>
-      <PageHeader title="Manage Circulars" subtitle="Create, summarize & publish Haj Committee circulars" />
+      <PageHeader title="Manage Circulars" subtitle="Create, summarize & publish official Hajj/Umrah circulars (HCI + Saudi Govt)" />
       <div className="px-4 pb-24 max-w-2xl mx-auto space-y-4">
         <Button onClick={() => setShowForm(!showForm)} variant={showForm ? "outline" : "default"}>
           <Plus className="w-4 h-4 mr-2" />{showForm ? "Cancel" : "New Circular"}
@@ -130,6 +144,14 @@ export default function AdminCircularsPage() {
         {showForm && (
           <Card>
             <CardContent className="pt-6 space-y-3">
+              <Select value={source} onValueChange={setSource}>
+                <SelectTrigger><SelectValue placeholder="Source" /></SelectTrigger>
+                <SelectContent>
+                  {Object.entries(SOURCE_LABELS).map(([k, v]) => (
+                    <SelectItem key={k} value={k}>{v}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <Input placeholder="Title (English)" value={title} onChange={(e) => setTitle(e.target.value)} />
               <Textarea placeholder="Full circular content..." value={content} onChange={(e) => setContent(e.target.value)} rows={6} />
               <div className="grid grid-cols-2 gap-3">
@@ -178,7 +200,9 @@ export default function AdminCircularsPage() {
                   {c.ai_processed && <Badge variant="outline" className="text-xs">AI ✓</Badge>}
                 </div>
               </div>
-              <p className="text-xs text-muted-foreground">{format(new Date(c.created_at), "dd MMM yyyy")}</p>
+              <p className="text-xs text-muted-foreground">
+                {format(new Date(c.created_at), "dd MMM yyyy")} · <span className="font-medium">{c.source_name_display || c.source}</span>
+              </p>
             </CardHeader>
             <CardContent className="pt-0">
               {c.summary_en && <p className="text-xs text-muted-foreground mb-2">{c.summary_en}</p>}
