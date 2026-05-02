@@ -135,7 +135,7 @@ export default function AdminCircularsPage() {
 
   return (
     <MainLayout>
-      <PageHeader title="Manage Circulars" subtitle="Create, summarize & publish Haj Committee circulars" />
+      <PageHeader title="Manage Circulars" subtitle="Create, summarize & publish official Hajj/Umrah circulars (HCI + Saudi Govt)" />
       <div className="px-4 pb-24 max-w-2xl mx-auto space-y-4">
         <Button onClick={() => setShowForm(!showForm)} variant={showForm ? "outline" : "default"}>
           <Plus className="w-4 h-4 mr-2" />{showForm ? "Cancel" : "New Circular"}
@@ -144,6 +144,14 @@ export default function AdminCircularsPage() {
         {showForm && (
           <Card>
             <CardContent className="pt-6 space-y-3">
+              <Select value={source} onValueChange={setSource}>
+                <SelectTrigger><SelectValue placeholder="Source" /></SelectTrigger>
+                <SelectContent>
+                  {Object.entries(SOURCE_LABELS).map(([k, v]) => (
+                    <SelectItem key={k} value={k}>{v}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <Input placeholder="Title (English)" value={title} onChange={(e) => setTitle(e.target.value)} />
               <Textarea placeholder="Full circular content..." value={content} onChange={(e) => setContent(e.target.value)} rows={6} />
               <div className="grid grid-cols-2 gap-3">
