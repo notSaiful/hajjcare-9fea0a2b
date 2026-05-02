@@ -65,6 +65,9 @@ export default function AdminCircularsPage() {
         source_url: sourceUrl || null,
         category,
         priority,
+        source,
+        source_name_display: SOURCE_LABELS[source] || source,
+        auto_scraped: false,
         created_by: user?.id,
       });
       if (error) throw error;
@@ -74,6 +77,7 @@ export default function AdminCircularsPage() {
       queryClient.invalidateQueries({ queryKey: ["admin-circulars"] });
       setShowForm(false);
       setTitle(""); setContent(""); setCircularNumber(""); setCircularDate(""); setSourceUrl("");
+      setSource("HCI");
     },
     onError: (e) => toast({ title: "Error", description: e.message, variant: "destructive" }),
   });
