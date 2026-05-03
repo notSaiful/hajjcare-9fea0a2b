@@ -138,6 +138,41 @@ export default function AdminCircularsPage() {
     },
   });
 
+  const updateSummariesMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from("hajj_circulars")
+        .update({
+          title: editTitle,
+          title_hi: editTitleHi || null,
+          title_ur: editTitleUr || null,
+          summary_en: editEn || null,
+          summary_hi: editHi || null,
+          summary_ur: editUr || null,
+          ai_processed: true,
+        })
+        .eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast({ title: "Summaries updated" });
+      queryClient.invalidateQueries({ queryKey: ["admin-circulars"] });
+      queryClient.invalidateQueries({ queryKey: ["hajj-circulars"] });
+      setEditingId(null);
+    },
+    onError: (e) => toast({ title: "Error", description: e.message, variant: "destructive" }),
+  });
+
+  const startEdit = (c: Circular) => {
+    setEditingId(c.id);
+    setEditTitle(c.title || "");
+    setEditTitleHi(c.title_hi || "");
+    setEditTitleUr(c.title_ur || "");
+    setEditEn(c.summary_en || "");
+    setEditHi(c.summary_hi || "");
+    setEditUr(c.summary_ur || "");
+  };
+
   if (!isAdmin) return <MainLayout><ForbiddenError /></MainLayout>;
 
   return (
