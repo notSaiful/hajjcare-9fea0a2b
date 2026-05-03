@@ -32,6 +32,13 @@ export default function AdminCircularsPage() {
   const [category, setCategory] = useState("general");
   const [priority, setPriority] = useState("normal");
   const [source, setSource] = useState("HCI");
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editEn, setEditEn] = useState("");
+  const [editHi, setEditHi] = useState("");
+  const [editUr, setEditUr] = useState("");
+  const [editTitle, setEditTitle] = useState("");
+  const [editTitleHi, setEditTitleHi] = useState("");
+  const [editTitleUr, setEditTitleUr] = useState("");
 
   const SOURCE_LABELS: Record<string, string> = {
     HCI: "Haj Committee of India",
