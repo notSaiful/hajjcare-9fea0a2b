@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Plus, Sparkles, Eye, EyeOff, Trash2 } from "lucide-react";
+import { Loader2, Plus, Sparkles, Eye, EyeOff, Trash2, Pencil, Save, X } from "lucide-react";
 import { format } from "date-fns";
 import { ForbiddenError } from "@/components/ForbiddenError";
 import type { Circular } from "@/hooks/useCirculars";
@@ -32,6 +32,13 @@ export default function AdminCircularsPage() {
   const [category, setCategory] = useState("general");
   const [priority, setPriority] = useState("normal");
   const [source, setSource] = useState("HCI");
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editEn, setEditEn] = useState("");
+  const [editHi, setEditHi] = useState("");
+  const [editUr, setEditUr] = useState("");
+  const [editTitle, setEditTitle] = useState("");
+  const [editTitleHi, setEditTitleHi] = useState("");
+  const [editTitleUr, setEditTitleUr] = useState("");
 
   const SOURCE_LABELS: Record<string, string> = {
     HCI: "Haj Committee of India",
@@ -131,6 +138,41 @@ export default function AdminCircularsPage() {
     },
   });
 
+  const updateSummariesMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from("hajj_circulars")
+        .update({
+          title: editTitle,
+          title_hi: editTitleHi || null,
+          title_ur: editTitleUr || null,
+          summary_en: editEn || null,
+          summary_hi: editHi || null,
+          summary_ur: editUr || null,
+          ai_processed: true,
+        })
+        .eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast({ title: "Summaries updated" });
+      queryClient.invalidateQueries({ queryKey: ["admin-circulars"] });
+      queryClient.invalidateQueries({ queryKey: ["hajj-circulars"] });
+      setEditingId(null);
+    },
+    onError: (e) => toast({ title: "Error", description: e.message, variant: "destructive" }),
+  });
+
+  const startEdit = (c: Circular) => {
+    setEditingId(c.id);
+    setEditTitle(c.title || "");
+    setEditTitleHi(c.title_hi || "");
+    setEditTitleUr(c.title_ur || "");
+    setEditEn(c.summary_en || "");
+    setEditHi(c.summary_hi || "");
+    setEditUr(c.summary_ur || "");
+  };
+
   if (!isAdmin) return <MainLayout><ForbiddenError /></MainLayout>;
 
   return (
@@ -205,13 +247,43 @@ export default function AdminCircularsPage() {
               </p>
             </CardHeader>
             <CardContent className="pt-0">
-              {c.summary_en && <p className="text-xs text-muted-foreground mb-2">{c.summary_en}</p>}
+              {editingId === c.id ? (
+                <div className="space-y-2 mb-3 p-3 rounded-md bg-muted/40 border">
+                  <p className="text-xs font-semibold">Edit Title & Summaries</p>
+                  <Input placeholder="Title (EN)" value={editTitle} onChange={(e) => setEditTitle(e.target.value)} />
+                  <Input placeholder="Title (HI)" value={editTitleHi} onChange={(e) => setEditTitleHi(e.target.value)} />
+                  <Input placeholder="Title (UR)" value={editTitleUr} onChange={(e) => setEditTitleUr(e.target.value)} dir="rtl" />
+                  <Textarea placeholder="Summary (English)" value={editEn} onChange={(e) => setEditEn(e.target.value)} rows={3} />
+                  <Textarea placeholder="Summary (Hindi)" value={editHi} onChange={(e) => setEditHi(e.target.value)} rows={3} />
+                  <Textarea placeholder="Summary (Urdu)" value={editUr} onChange={(e) => setEditUr(e.target.value)} rows={3} dir="rtl" />
+                  <div className="flex gap-2">
+                    <Button size="sm" onClick={() => updateSummariesMutation.mutate(c.id)} disabled={updateSummariesMutation.isPending}>
+                      {updateSummariesMutation.isPending ? <Loader2 className="w-3 h-3 mr-1 animate-spin" /> : <Save className="w-3 h-3 mr-1" />}
+                      Save
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => setEditingId(null)}>
+                      <X className="w-3 h-3 mr-1" />Cancel
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  {c.summary_en && <p className="text-xs text-muted-foreground mb-1"><span className="font-semibold">EN:</span> {c.summary_en}</p>}
+                  {c.summary_hi && <p className="text-xs text-muted-foreground mb-1"><span className="font-semibold">HI:</span> {c.summary_hi}</p>}
+                  {c.summary_ur && <p className="text-xs text-muted-foreground mb-2" dir="rtl"><span className="font-semibold">UR:</span> {c.summary_ur}</p>}
+                </>
+              )}
               <div className="flex gap-2 flex-wrap">
                 {!c.ai_processed && (
                   <Button size="sm" variant="outline" onClick={() => summarizeMutation.mutate(c.id)}
                     disabled={summarizeMutation.isPending}>
                     {summarizeMutation.isPending ? <Loader2 className="w-3 h-3 mr-1 animate-spin" /> : <Sparkles className="w-3 h-3 mr-1" />}
                     AI Summarize
+                  </Button>
+                )}
+                {editingId !== c.id && (
+                  <Button size="sm" variant="outline" onClick={() => startEdit(c)}>
+                    <Pencil className="w-3 h-3 mr-1" />Edit Summaries
                   </Button>
                 )}
                 <Button size="sm" variant="outline" onClick={() => togglePublish.mutate({ id: c.id, published: !c.is_published })}>
