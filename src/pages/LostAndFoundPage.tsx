@@ -41,6 +41,9 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { compressImage } from "@/lib/imageCompression";
+import { useUserRole } from "@/hooks/useUserRole";
+import { useAuthContext } from "@/contexts/AuthContext";
+import { ShieldCheck, Lock } from "lucide-react";
 
 type ReportType = "person" | "item";
 type ReportStatus = "open" | "found" | "closed";
