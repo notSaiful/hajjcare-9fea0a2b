@@ -52,6 +52,7 @@ interface LostFoundReport {
   id: string;
   report_type: ReportType;
   status: ReportStatus;
+  user_id?: string | null;
   person_name: string | null;
   person_age: number | null;
   person_gender: string | null;
