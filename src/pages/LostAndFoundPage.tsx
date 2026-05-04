@@ -147,6 +147,10 @@ const LostAndFoundPage = () => {
       contact: { en: "Contact", ar: "اتصال", ur: "رابطہ", hi: "संपर्क", ta: "தொடர்பு", te: "సంప్రదించండి", mr: "संपर्क", bn: "যোগাযোগ", or: "ଯୋଗାଯୋଗ", ml: "ബന്ധപ്പെടുക", pa: "ਸੰਪਰਕ" },
       open: { en: "Open", ar: "مفتوح", ur: "کھلا", hi: "खुला", ta: "திறந்தது", te: "ఓపెన్", mr: "उघडे", bn: "খোলা", or: "ଖୋଲା", ml: "തുറന്നു", pa: "ਖੁੱਲ੍ਹਾ" },
       found: { en: "Found", ar: "وُجد", ur: "مل گیا", hi: "मिल गया", ta: "கிடைத்தது", te: "దొరికింది", mr: "सापडले", bn: "পাওয়া গেছে", or: "ମିଳିଲା", ml: "കണ്ടെത്തി", pa: "ਮਿਲ ਗਿਆ" },
+      markFound: { en: "Mark as Found", ar: "تم العثور عليه", ur: "مل گیا — نشان زد کریں", hi: "मिल गया — चिह्नित करें", ta: "கிடைத்தது எனக் குறி", te: "దొరికింది గా గుర్తించు", mr: "सापडले म्हणून खूण", bn: "পাওয়া গেছে চিহ্নিত", or: "ମିଳିଲା ଚିହ୍ନଟ", ml: "കണ്ടെത്തി അടയാളപ്പെടുത്തുക", pa: "ਮਿਲ ਗਿਆ ਨਿਸ਼ਾਨ ਲਾਓ" },
+      markOpen: { en: "Reopen", ar: "إعادة فتح", ur: "دوبارہ کھولیں", hi: "फिर से खोलें", ta: "மீண்டும் திற", te: "మళ్ళీ తెరువు", mr: "पुन्हा उघडा", bn: "পুনরায় খুলুন", or: "ପୁଣି ଖୋଲ", ml: "വീണ്ടും തുറക്കുക", pa: "ਮੁੜ ਖੋਲ੍ਹੋ" },
+      foundConfirm: { en: "Mark this report as found? Others searching will see it is resolved.", ar: "هل تم العثور؟", ur: "کیا یہ مل گیا؟ دوسرے دیکھ سکیں گے", hi: "क्या यह मिल गया है? दूसरे ढूंढने वालों को पता चल जाएगा", ta: "கிடைத்ததாகக் குறிக்கவா?", te: "దొరికినట్లు గుర్తించాలా?", mr: "सापडले म्हणून चिन्हांकित करायचे?", bn: "পাওয়া গেছে চিহ্নিত?", or: "ମିଳିଲା ଭାବେ ଚିହ୍ନଟ?", ml: "കണ്ടെത്തിയതായി അടയാളപ്പെടുത്തണോ?", pa: "ਮਿਲ ਗਿਆ ਵਜੋਂ ਨਿਸ਼ਾਨ?" },
+      statusUpdated: { en: "Status updated. Thank you!", ar: "تم التحديث", ur: "اسٹیٹس اپڈیٹ ہو گیا — شکریہ!", hi: "स्थिति अपडेट हुई — शुक्रिया!", ta: "புதுப்பிக்கப்பட்டது", te: "అప్‌డేట్ అయింది", mr: "स्थिती अपडेट", bn: "স্ট্যাটাস আপডেট", or: "ସ୍ଥିତି ଅପଡେଟ୍", ml: "സ്ഥിതി പുതുക്കി", pa: "ਅਪਡੇਟ ਹੋਇਆ" },
     };
     const get = (key: keyof typeof labels) =>
       (labels[key] as Record<string, string>)[language] || (labels[key] as Record<string, string>).en;
@@ -177,6 +181,26 @@ const LostAndFoundPage = () => {
   useEffect(() => {
     fetchReports();
   }, []);
+
+  const handleMarkStatus = async (reportId: string, newStatus: "open" | "found") => {
+    if (newStatus === "found" && !confirm(t.get("foundConfirm"))) return;
+    // Optimistic update
+    setReports((prev) => prev.map((r) => (r.id === reportId ? { ...r, status: newStatus } : r)));
+    const { data, error } = await supabase.rpc("mark_lost_found_status", {
+      p_report_id: reportId,
+      p_new_status: newStatus,
+    });
+    if (error || (data && (data as any).success === false)) {
+      toast({
+        title: "Error",
+        description: error?.message || (data as any)?.error || "Could not update",
+        variant: "destructive",
+      });
+      fetchReports();
+    } else {
+      toast({ title: t.get("statusUpdated") });
+    }
+  };
 
   const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -665,6 +689,25 @@ const LostAndFoundPage = () => {
                               <p className="text-xs text-muted-foreground italic">
                                 Sign in to view contact details
                               </p>
+                            )}
+                            {r.status === "open" ? (
+                              <Button
+                                size="sm"
+                                onClick={() => handleMarkStatus(r.id, "found")}
+                                className="h-8 bg-emerald-600 hover:bg-emerald-700"
+                              >
+                                <CheckCircle2 className="h-3 w-3 mr-1" />
+                                {t.get("markFound")}
+                              </Button>
+                            ) : (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleMarkStatus(r.id, "open")}
+                                className="h-8"
+                              >
+                                {t.get("markOpen")}
+                              </Button>
                             )}
                           </div>
                         </div>
