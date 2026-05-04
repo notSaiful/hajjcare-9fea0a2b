@@ -731,7 +731,24 @@ const LostAndFoundPage = () => {
                                 Sign in to view contact details
                               </p>
                             )}
-                            {r.status === "open" ? (
+                            {r.verified_at ? (
+                              <>
+                                <Badge variant="outline" className="h-8 px-2 flex items-center gap-1 text-amber-600 border-amber-300">
+                                  <Lock className="h-3 w-3" />
+                                  {t.get("lockedHint")}
+                                </Badge>
+                                {isAdmin && (
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={() => handleUnverify(r.id)}
+                                    className="h-8"
+                                  >
+                                    {t.get("unlock")}
+                                  </Button>
+                                )}
+                              </>
+                            ) : r.status === "open" ? (
                               <Button
                                 size="sm"
                                 onClick={() => handleMarkStatus(r.id, "found")}
@@ -741,14 +758,26 @@ const LostAndFoundPage = () => {
                                 {t.get("markFound")}
                               </Button>
                             ) : (
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => handleMarkStatus(r.id, "open")}
-                                className="h-8"
-                              >
-                                {t.get("markOpen")}
-                              </Button>
+                              <>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => handleMarkStatus(r.id, "open")}
+                                  className="h-8"
+                                >
+                                  {t.get("markOpen")}
+                                </Button>
+                                {(isAdmin || (user && r.user_id === user.id)) && (
+                                  <Button
+                                    size="sm"
+                                    onClick={() => handleVerify(r.id)}
+                                    className="h-8 bg-amber-600 hover:bg-amber-700"
+                                  >
+                                    <ShieldCheck className="h-3 w-3 mr-1" />
+                                    {t.get("verify")}
+                                  </Button>
+                                )}
+                              </>
                             )}
                           </div>
                         </div>
