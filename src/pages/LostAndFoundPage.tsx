@@ -182,6 +182,26 @@ const LostAndFoundPage = () => {
     fetchReports();
   }, []);
 
+  const handleMarkStatus = async (reportId: string, newStatus: "open" | "found") => {
+    if (newStatus === "found" && !confirm(t.get("foundConfirm"))) return;
+    // Optimistic update
+    setReports((prev) => prev.map((r) => (r.id === reportId ? { ...r, status: newStatus } : r)));
+    const { data, error } = await supabase.rpc("mark_lost_found_status", {
+      p_report_id: reportId,
+      p_new_status: newStatus,
+    });
+    if (error || (data && (data as any).success === false)) {
+      toast({
+        title: "Error",
+        description: error?.message || (data as any)?.error || "Could not update",
+        variant: "destructive",
+      });
+      fetchReports();
+    } else {
+      toast({ title: t.get("statusUpdated") });
+    }
+  };
+
   const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
