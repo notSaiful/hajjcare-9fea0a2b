@@ -90,6 +90,8 @@ const reportSchema = z.object({
 
 const LostAndFoundPage = () => {
   const { language, isRTL } = useLanguage();
+  const { isAdmin } = useUserRole();
+  const { user } = useAuthContext();
   const [reports, setReports] = useState<LostFoundReport[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
