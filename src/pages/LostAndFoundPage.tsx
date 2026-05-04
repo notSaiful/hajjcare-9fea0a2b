@@ -67,6 +67,8 @@ interface LostFoundReport {
   reporter_whatsapp?: string | null;
   notes: string | null;
   created_at: string;
+  verified_at?: string | null;
+  verified_by?: string | null;
 }
 
 const reportSchema = z.object({
