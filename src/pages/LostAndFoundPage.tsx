@@ -671,13 +671,21 @@ const LostAndFoundPage = () => {
                             <h3 className="font-semibold truncate">
                               {r.report_type === "person" ? r.person_name : r.item_name}
                             </h3>
-                            <Badge
-                              variant={r.status === "found" ? "default" : "secondary"}
-                              className={r.status === "found" ? "bg-emerald-500" : ""}
-                            >
-                              {r.status === "found" && <CheckCircle2 className="h-3 w-3 mr-1" />}
-                              {t.get(r.status as "open" | "found")}
-                            </Badge>
+                            <div className="flex items-center gap-1 flex-shrink-0">
+                              <Badge
+                                variant={r.status === "found" ? "default" : "secondary"}
+                                className={r.status === "found" ? "bg-emerald-500" : ""}
+                              >
+                                {r.status === "found" && <CheckCircle2 className="h-3 w-3 mr-1" />}
+                                {t.get(r.status as "open" | "found")}
+                              </Badge>
+                              {r.verified_at && (
+                                <Badge className="bg-amber-500 hover:bg-amber-500">
+                                  <ShieldCheck className="h-3 w-3 mr-1" />
+                                  {t.get("verified")}
+                                </Badge>
+                              )}
+                            </div>
                           </div>
                           {r.report_type === "person" && (
                             <p className="text-xs text-muted-foreground">
