@@ -281,7 +281,12 @@ const LostAndFoundPage = () => {
       const { error } = await supabase.from("lost_and_found").insert(insertPayload);
       if (error) throw error;
 
-      toast({ title: t.get("success"), description: "" });
+      toast({
+        title: t.get("success"),
+        description: photoUploadFailed
+          ? "Report saved, but photo upload failed (check internet)."
+          : "",
+      });
       resetForm();
       setDialogOpen(false);
       fetchReports();
