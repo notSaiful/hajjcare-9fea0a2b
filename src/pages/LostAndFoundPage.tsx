@@ -41,6 +41,9 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { compressImage } from "@/lib/imageCompression";
+import { useUserRole } from "@/hooks/useUserRole";
+import { useAuthContext } from "@/contexts/AuthContext";
+import { ShieldCheck, Lock } from "lucide-react";
 
 type ReportType = "person" | "item";
 type ReportStatus = "open" | "found" | "closed";
@@ -49,6 +52,7 @@ interface LostFoundReport {
   id: string;
   report_type: ReportType;
   status: ReportStatus;
+  user_id?: string | null;
   person_name: string | null;
   person_age: number | null;
   person_gender: string | null;
@@ -64,6 +68,8 @@ interface LostFoundReport {
   reporter_whatsapp?: string | null;
   notes: string | null;
   created_at: string;
+  verified_at?: string | null;
+  verified_by?: string | null;
 }
 
 const reportSchema = z.object({
@@ -85,6 +91,8 @@ const reportSchema = z.object({
 
 const LostAndFoundPage = () => {
   const { language, isRTL } = useLanguage();
+  const { isAdmin } = useUserRole();
+  const { user } = useAuthContext();
   const [reports, setReports] = useState<LostFoundReport[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -151,6 +159,12 @@ const LostAndFoundPage = () => {
       markOpen: { en: "Reopen", ar: "إعادة فتح", ur: "دوبارہ کھولیں", hi: "फिर से खोलें", ta: "மீண்டும் திற", te: "మళ్ళీ తెరువు", mr: "पुन्हा उघडा", bn: "পুনরায় খুলুন", or: "ପୁଣି ଖୋଲ", ml: "വീണ്ടും തുറക്കുക", pa: "ਮੁੜ ਖੋਲ੍ਹੋ" },
       foundConfirm: { en: "Mark this report as found? Others searching will see it is resolved.", ar: "هل تم العثور؟", ur: "کیا یہ مل گیا؟ دوسرے دیکھ سکیں گے", hi: "क्या यह मिल गया है? दूसरे ढूंढने वालों को पता चल जाएगा", ta: "கிடைத்ததாகக் குறிக்கவா?", te: "దొరికినట్లు గుర్తించాలా?", mr: "सापडले म्हणून चिन्हांकित करायचे?", bn: "পাওয়া গেছে চিহ্নিত?", or: "ମିଳିଲା ଭାବେ ଚିହ୍ନଟ?", ml: "കണ്ടെത്തിയതായി അടയാളപ്പെടുത്തണോ?", pa: "ਮਿਲ ਗਿਆ ਵਜੋਂ ਨਿਸ਼ਾਨ?" },
       statusUpdated: { en: "Status updated. Thank you!", ar: "تم التحديث", ur: "اسٹیٹس اپڈیٹ ہو گیا — شکریہ!", hi: "स्थिति अपडेट हुई — शुक्रिया!", ta: "புதுப்பிக்கப்பட்டது", te: "అప్‌డేట్ అయింది", mr: "स्थिती अपडेट", bn: "স্ট্যাটাস আপডেট", or: "ସ୍ଥିତି ଅପଡେଟ୍", ml: "സ്ഥിതി പുതുക്കി", pa: "ਅਪਡੇਟ ਹੋਇਆ" },
+      verify: { en: "Verify & Lock", ar: "تحقق وأقفل", ur: "تصدیق اور لاک", hi: "सत्यापित करें और लॉक करें", ta: "சரிபார்த்து பூட்டு", te: "ధృవీకరించి లాక్", mr: "सत्यापन व लॉक", bn: "যাচাই ও লক", or: "ଯାଞ୍ଚ ଓ ଲକ", ml: "പരിശോധിച്ച് ലോക്ക്", pa: "ਪੁਸ਼ਟੀ ਅਤੇ ਲਾਕ" },
+      verified: { en: "Verified", ar: "موثق", ur: "تصدیق شدہ", hi: "सत्यापित", ta: "சரிபார்க்கப்பட்டது", te: "ధృవీకరించబడింది", mr: "सत्यापित", bn: "যাচাইকৃত", or: "ଯାଞ୍ଚିତ", ml: "സ്ഥിരീകരിച്ചു", pa: "ਪੁਸ਼ਟੀਸ਼ੁਦਾ" },
+      verifyConfirm: { en: "Verify this report? Once verified, the status will be permanently locked and cannot be changed.", ar: "هل تتحقق؟ سيتم القفل بعد ذلك", ur: "تصدیق کریں؟ اس کے بعد اسٹیٹس مستقل لاک ہو جائے گا", hi: "सत्यापित करें? इसके बाद स्थिति स्थायी रूप से लॉक हो जाएगी", ta: "சரிபார்க்கவா? பின் பூட்டப்படும்", te: "ధృవీకరించాలా? లాక్ అవుతుంది", mr: "सत्यापित करायचे?", bn: "যাচাই?", or: "ଯାଞ୍ଚ?", ml: "സ്ഥിരീകരിക്കണോ?", pa: "ਪੁਸ਼ਟੀ ਕਰੀਏ?" },
+      unlock: { en: "Unlock (Admin)", ar: "إلغاء القفل", ur: "ان لاک", hi: "अनलॉक", ta: "திற", te: "అన్‌లాక్", mr: "अनलॉक", bn: "আনলক", or: "ଅନଲକ", ml: "അൺലോക്ക്", pa: "ਅਨਲਾਕ" },
+      verifiedToast: { en: "Verified and locked.", ar: "تم القفل", ur: "تصدیق ہو گئی اور لاک ہو گیا", hi: "सत्यापित और लॉक हुआ", ta: "சரிபார்க்கப்பட்டது", te: "ధృవీకరించబడింది", mr: "सत्यापित", bn: "যাচাইকৃত", or: "ଯାଞ୍ଚିତ", ml: "സ്ഥിരീകരിച്ചു", pa: "ਪੁਸ਼ਟੀ ਹੋਈ" },
+      lockedHint: { en: "Locked by verifier", ar: "مغلق", ur: "لاک شدہ", hi: "लॉक", ta: "பூட்டப்பட்டது", te: "లాక్", mr: "लॉक", bn: "লক", or: "ଲକ", ml: "ലോക്ക്", pa: "ਲਾਕ" },
     };
     const get = (key: keyof typeof labels) =>
       (labels[key] as Record<string, string>)[language] || (labels[key] as Record<string, string>).en;
@@ -199,6 +213,26 @@ const LostAndFoundPage = () => {
       fetchReports();
     } else {
       toast({ title: t.get("statusUpdated") });
+    }
+  };
+
+  const handleVerify = async (reportId: string) => {
+    if (!confirm(t.get("verifyConfirm"))) return;
+    const { data, error } = await supabase.rpc("verify_lost_found_report", { p_report_id: reportId });
+    if (error || (data && (data as any).success === false)) {
+      toast({ title: "Error", description: error?.message || (data as any)?.error || "Could not verify", variant: "destructive" });
+    } else {
+      toast({ title: t.get("verifiedToast") });
+      fetchReports();
+    }
+  };
+
+  const handleUnverify = async (reportId: string) => {
+    const { data, error } = await supabase.rpc("unverify_lost_found_report", { p_report_id: reportId });
+    if (error || (data && (data as any).success === false)) {
+      toast({ title: "Error", description: error?.message || (data as any)?.error || "Could not unlock", variant: "destructive" });
+    } else {
+      fetchReports();
     }
   };
 
@@ -638,13 +672,21 @@ const LostAndFoundPage = () => {
                             <h3 className="font-semibold truncate">
                               {r.report_type === "person" ? r.person_name : r.item_name}
                             </h3>
-                            <Badge
-                              variant={r.status === "found" ? "default" : "secondary"}
-                              className={r.status === "found" ? "bg-emerald-500" : ""}
-                            >
-                              {r.status === "found" && <CheckCircle2 className="h-3 w-3 mr-1" />}
-                              {t.get(r.status as "open" | "found")}
-                            </Badge>
+                            <div className="flex items-center gap-1 flex-shrink-0">
+                              <Badge
+                                variant={r.status === "found" ? "default" : "secondary"}
+                                className={r.status === "found" ? "bg-emerald-500" : ""}
+                              >
+                                {r.status === "found" && <CheckCircle2 className="h-3 w-3 mr-1" />}
+                                {t.get(r.status as "open" | "found")}
+                              </Badge>
+                              {r.verified_at && (
+                                <Badge className="bg-amber-500 hover:bg-amber-500">
+                                  <ShieldCheck className="h-3 w-3 mr-1" />
+                                  {t.get("verified")}
+                                </Badge>
+                              )}
+                            </div>
                           </div>
                           {r.report_type === "person" && (
                             <p className="text-xs text-muted-foreground">
@@ -690,7 +732,24 @@ const LostAndFoundPage = () => {
                                 Sign in to view contact details
                               </p>
                             )}
-                            {r.status === "open" ? (
+                            {r.verified_at ? (
+                              <>
+                                <Badge variant="outline" className="h-8 px-2 flex items-center gap-1 text-amber-600 border-amber-300">
+                                  <Lock className="h-3 w-3" />
+                                  {t.get("lockedHint")}
+                                </Badge>
+                                {isAdmin && (
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={() => handleUnverify(r.id)}
+                                    className="h-8"
+                                  >
+                                    {t.get("unlock")}
+                                  </Button>
+                                )}
+                              </>
+                            ) : r.status === "open" ? (
                               <Button
                                 size="sm"
                                 onClick={() => handleMarkStatus(r.id, "found")}
@@ -700,14 +759,26 @@ const LostAndFoundPage = () => {
                                 {t.get("markFound")}
                               </Button>
                             ) : (
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => handleMarkStatus(r.id, "open")}
-                                className="h-8"
-                              >
-                                {t.get("markOpen")}
-                              </Button>
+                              <>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => handleMarkStatus(r.id, "open")}
+                                  className="h-8"
+                                >
+                                  {t.get("markOpen")}
+                                </Button>
+                                {(isAdmin || (user && r.user_id === user.id)) && (
+                                  <Button
+                                    size="sm"
+                                    onClick={() => handleVerify(r.id)}
+                                    className="h-8 bg-amber-600 hover:bg-amber-700"
+                                  >
+                                    <ShieldCheck className="h-3 w-3 mr-1" />
+                                    {t.get("verify")}
+                                  </Button>
+                                )}
+                              </>
                             )}
                           </div>
                         </div>

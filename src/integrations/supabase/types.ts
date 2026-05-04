@@ -1935,6 +1935,8 @@ export type Database = {
           status: string
           updated_at: string
           user_id: string | null
+          verified_at: string | null
+          verified_by: string | null
           wearing_description: string | null
         }
         Insert: {
@@ -1958,6 +1960,8 @@ export type Database = {
           status?: string
           updated_at?: string
           user_id?: string | null
+          verified_at?: string | null
+          verified_by?: string | null
           wearing_description?: string | null
         }
         Update: {
@@ -1981,6 +1985,8 @@ export type Database = {
           status?: string
           updated_at?: string
           user_id?: string | null
+          verified_at?: string | null
+          verified_by?: string | null
           wearing_description?: string | null
         }
         Relationships: []
@@ -2977,6 +2983,8 @@ export type Database = {
           status: string | null
           updated_at: string | null
           user_id: string | null
+          verified_at: string | null
+          verified_by: string | null
           wearing_description: string | null
         }
         Insert: {
@@ -2998,6 +3006,8 @@ export type Database = {
           status?: string | null
           updated_at?: string | null
           user_id?: string | null
+          verified_at?: string | null
+          verified_by?: string | null
           wearing_description?: string | null
         }
         Update: {
@@ -3019,6 +3029,8 @@ export type Database = {
           status?: string | null
           updated_at?: string | null
           user_id?: string | null
+          verified_at?: string | null
+          verified_by?: string | null
           wearing_description?: string | null
         }
         Relationships: []
@@ -3248,6 +3260,10 @@ export type Database = {
         Returns: Json
       }
       shares_group_with: { Args: { target_user_id: string }; Returns: boolean }
+      unverify_lost_found_report: {
+        Args: { p_report_id: string }
+        Returns: Json
+      }
       upsert_member_location: {
         Args: {
           p_current_stage: string
@@ -3258,6 +3274,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      verify_lost_found_report: { Args: { p_report_id: string }; Returns: Json }
       whatsapp_verify_and_join: { Args: { p_phone: string }; Returns: Json }
     }
     Enums: {
