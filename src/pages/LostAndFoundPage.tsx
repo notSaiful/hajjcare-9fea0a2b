@@ -247,15 +247,28 @@ const LostAndFoundPage = () => {
       }
 
       let photo_url: string | null = null;
+      let photoUploadFailed = false;
       if (photoFile) {
-        const ext = photoFile.name.split(".").pop() || "jpg";
-        const fileName = `${crypto.randomUUID()}.${ext}`;
-        const { error: uploadErr } = await supabase.storage
-          .from("lost-found-photos")
-          .upload(fileName, photoFile, { contentType: photoFile.type });
-        if (uploadErr) throw uploadErr;
-        const { data: urlData } = supabase.storage.from("lost-found-photos").getPublicUrl(fileName);
-        photo_url = urlData.publicUrl;
+        try {
+          const ext = (photoFile.name.split(".").pop() || "jpg").toLowerCase();
+          const fileName = `${crypto.randomUUID()}.${ext}`;
+          const { error: uploadErr } = await supabase.storage
+            .from("lost-found-photos")
+            .upload(fileName, photoFile, {
+              contentType: photoFile.type || "image/jpeg",
+              cacheControl: "3600",
+              upsert: false,
+            });
+          if (uploadErr) throw uploadErr;
+          const { data: urlData } = supabase.storage
+            .from("lost-found-photos")
+            .getPublicUrl(fileName);
+          photo_url = urlData.publicUrl;
+        } catch (uploadError: any) {
+          // Don't block the report if photo upload fails (network/CORS/size).
+          console.error("Photo upload failed:", uploadError);
+          photoUploadFailed = true;
+        }
       }
 
       const { data: { user } } = await supabase.auth.getUser();
