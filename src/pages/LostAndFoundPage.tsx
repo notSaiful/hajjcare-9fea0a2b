@@ -215,6 +215,26 @@ const LostAndFoundPage = () => {
     }
   };
 
+  const handleVerify = async (reportId: string) => {
+    if (!confirm(t.get("verifyConfirm"))) return;
+    const { data, error } = await supabase.rpc("verify_lost_found_report", { p_report_id: reportId });
+    if (error || (data && (data as any).success === false)) {
+      toast({ title: "Error", description: error?.message || (data as any)?.error || "Could not verify", variant: "destructive" });
+    } else {
+      toast({ title: t.get("verifiedToast") });
+      fetchReports();
+    }
+  };
+
+  const handleUnverify = async (reportId: string) => {
+    const { data, error } = await supabase.rpc("unverify_lost_found_report", { p_report_id: reportId });
+    if (error || (data && (data as any).success === false)) {
+      toast({ title: "Error", description: error?.message || (data as any)?.error || "Could not unlock", variant: "destructive" });
+    } else {
+      fetchReports();
+    }
+  };
+
   const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
