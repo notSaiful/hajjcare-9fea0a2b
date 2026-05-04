@@ -690,6 +690,25 @@ const LostAndFoundPage = () => {
                                 Sign in to view contact details
                               </p>
                             )}
+                            {r.status === "open" ? (
+                              <Button
+                                size="sm"
+                                onClick={() => handleMarkStatus(r.id, "found")}
+                                className="h-8 bg-emerald-600 hover:bg-emerald-700"
+                              >
+                                <CheckCircle2 className="h-3 w-3 mr-1" />
+                                {t.get("markFound")}
+                              </Button>
+                            ) : (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleMarkStatus(r.id, "open")}
+                                className="h-8"
+                              >
+                                {t.get("markOpen")}
+                              </Button>
+                            )}
                           </div>
                         </div>
                       </div>
