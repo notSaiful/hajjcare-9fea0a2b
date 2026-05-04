@@ -3234,6 +3234,10 @@ export type Database = {
           volunteer_id: string
         }[]
       }
+      mark_lost_found_status: {
+        Args: { p_new_status: string; p_report_id: string }
+        Returns: Json
+      }
       process_referral: { Args: { p_referral_code: string }; Returns: Json }
       promote_responder: {
         Args: {
