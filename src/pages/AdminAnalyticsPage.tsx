@@ -27,6 +27,7 @@ import {
   BarChart3,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { PWAInstallsCard } from "@/components/admin/PWAInstallsCard";
 
 interface CohortRow {
   cohort_week: number;
