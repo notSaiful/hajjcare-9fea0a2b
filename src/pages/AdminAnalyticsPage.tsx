@@ -27,6 +27,7 @@ import {
   BarChart3,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { PWAInstallsCard } from "@/components/admin/PWAInstallsCard";
 
 interface CohortRow {
   cohort_week: number;
@@ -166,6 +167,9 @@ const AdminAnalyticsPage = () => {
               <KpiCard icon={<Users className="w-5 h-5 text-sky-500" />} label="Family Adoption" value={`${data.summary.family_adoption}%`} />
               <KpiCard icon={<MapPin className="w-5 h-5 text-amber-500" />} label="Tracking Adoption" value={`${data.summary.tracking_adoption}%`} />
             </div>
+
+            {/* PWA Installs Tracking */}
+            <PWAInstallsCard />
 
             {/* Funnel Chart */}
             <Card>
