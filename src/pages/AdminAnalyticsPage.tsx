@@ -168,6 +168,9 @@ const AdminAnalyticsPage = () => {
               <KpiCard icon={<MapPin className="w-5 h-5 text-amber-500" />} label="Tracking Adoption" value={`${data.summary.tracking_adoption}%`} />
             </div>
 
+            {/* PWA Installs Tracking */}
+            <PWAInstallsCard />
+
             {/* Funnel Chart */}
             <Card>
               <CardHeader>
