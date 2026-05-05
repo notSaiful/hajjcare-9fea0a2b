@@ -16,6 +16,13 @@ export function useAppAnalytics() {
     const visitorId = getVisitorId();
     const sessionKey = "hajjcare_visit_logged";
 
+    // Detect if running as installed PWA (standalone mode)
+    const isStandalone =
+      window.matchMedia?.("(display-mode: standalone)").matches ||
+      // iOS Safari
+      (window.navigator as any).standalone === true ||
+      document.referrer.startsWith("android-app://");
+
     // Log visit once per session
     if (!sessionStorage.getItem(sessionKey)) {
       supabase
@@ -30,13 +37,34 @@ export function useAppAnalytics() {
         });
     }
 
-    // Track PWA install
+    // Log install detection once per visitor (running as standalone = installed)
+    const installLoggedKey = `hajjcare_install_logged_${visitorId}`;
+    if (isStandalone && !localStorage.getItem(installLoggedKey)) {
+      supabase
+        .from("app_analytics")
+        .insert({
+          event_type: "pwa_install",
+          visitor_id: visitorId,
+          user_agent: navigator.userAgent?.substring(0, 200),
+        })
+        .then(() => {
+          localStorage.setItem(installLoggedKey, "1");
+        });
+    }
+
+    // Also catch live install events
     const handleInstall = () => {
-      supabase.from("app_analytics").insert({
-        event_type: "pwa_install",
-        visitor_id: visitorId,
-        user_agent: navigator.userAgent?.substring(0, 200),
-      });
+      if (localStorage.getItem(installLoggedKey)) return;
+      supabase
+        .from("app_analytics")
+        .insert({
+          event_type: "pwa_install",
+          visitor_id: visitorId,
+          user_agent: navigator.userAgent?.substring(0, 200),
+        })
+        .then(() => {
+          localStorage.setItem(installLoggedKey, "1");
+        });
     };
 
     window.addEventListener("appinstalled", handleInstall);
