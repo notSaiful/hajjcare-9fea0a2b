@@ -62,8 +62,7 @@ export const IHPO_MAKKAH_DESKS: IHPODesk[] = [
     department: "Medical Emergency",
     departmentHi: "मेडिकल इमरजेंसी",
     mobile: "547090402",
-    alternateMobile: "540859926",
-    whenToCall: "Urgent medical help (24x7)",
+    whenToCall: "Urgent medical help (24x7) — Alt: 0540859926",
   },
   {
     id: "ihpo-mak-br-1-azizia-mb",
