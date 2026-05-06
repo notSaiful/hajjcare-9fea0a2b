@@ -20,8 +20,9 @@ type DevRole = (typeof ROLES)[number];
 const isPreviewEnv = () => {
   if (typeof window === "undefined") return false;
   if (import.meta.env.DEV) return true;
-  const h = window.location.hostname;
-  return h.includes("lovable.app") || h.includes("lovableproject.com") || h === "localhost";
+  // Only enable on localhost. Never on lovable.app/lovableproject.com production domains
+  // to prevent client-side admin escalation via localStorage.
+  return window.location.hostname === "localhost";
 };
 
 const readMap = (): Record<string, string> => {

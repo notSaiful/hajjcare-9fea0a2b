@@ -83,6 +83,21 @@ Deno.serve(async (req) => {
       );
     }
 
+    // Verify caller is a member of the group to prevent false alert injection into other groups
+    const { data: membership, error: membershipError } = await supabase
+      .from("group_members")
+      .select("id")
+      .eq("group_id", group_id)
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (membershipError || !membership) {
+      return new Response(
+        JSON.stringify({ error: "Forbidden: not a member of this group" }),
+        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     // Fetch all active geofence zones
     const { data: zones, error: zonesError } = await supabase
       .from("geofence_zones")

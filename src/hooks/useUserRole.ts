@@ -9,8 +9,8 @@ const DEV_ROLE_KEY = 'dev:roleOverride';
 const isPreviewEnv = () => {
   if (typeof window === 'undefined') return false;
   if (import.meta.env.DEV) return true;
-  const h = window.location.hostname;
-  return h.includes('lovable.app') || h.includes('lovableproject.com') || h === 'localhost';
+  // Only allow role override on localhost. Production domains must always use DB-backed roles.
+  return window.location.hostname === 'localhost';
 };
 const readOverride = (): AppRole[] | null => {
   if (!isPreviewEnv() || typeof window === 'undefined') return null;
