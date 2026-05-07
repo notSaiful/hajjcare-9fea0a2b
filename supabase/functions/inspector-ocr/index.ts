@@ -1,12 +1,6 @@
-// Inspector OCR: extracts structured Annexure-I rows from PDF page images
-// using Lovable AI Gemini vision + tool-calling for reliable JSON output.
-//
-// Body:
-//   { state: string, images: string[] }   // images are data URLs (image/jpeg|png)
-// Returns:
-//   { rows: ParsedRow[] }
-//
-// verify_jwt is enabled (admin-only feature called from authenticated UI).
+// Inspector OCR: admin-only OCR via Gemini vision. Validates JWT in-code.
+
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
