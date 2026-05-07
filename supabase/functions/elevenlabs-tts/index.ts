@@ -44,17 +44,17 @@ serve(async (req) => {
     );
 
     const token = authHeader.replace("Bearer ", "");
-    const { data: claimsData, error: claimsError } = await supabaseClient.auth.getClaims(token);
+    const { data: { user }, error: userError } = await supabaseClient.auth.getUser(token);
     
-    if (claimsError || !claimsData?.claims) {
-      console.error("Auth validation failed:", claimsError);
+    if (userError || !user) {
+      console.error("Auth validation failed:", userError);
       return new Response(
         JSON.stringify({ error: "Unauthorized" }),
         { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    const userId = claimsData.claims.sub;
+    const userId = user.id;
     console.log(`TTS request from authenticated user: ${userId}`);
 
     const { text, language = "en" } = await req.json();
