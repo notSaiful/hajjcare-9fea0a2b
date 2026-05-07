@@ -261,6 +261,13 @@ export const InspectorCard = ({ inspector, isExpanded, onToggle, translations: t
               <Badge variant="outline">{inspector.quota}</Badge>
               <Badge variant="outline" className="text-xs text-muted-foreground">ID: {inspector.id}</Badge>
             </div>
+
+            <Button asChild variant="default" size="sm" className="w-full">
+              <a href={`/shi/${encodeURIComponent(inspector.coverNumber || inspector.id)}`}>
+                <User className="w-4 h-4 mr-1.5" />
+                View Full Profile
+              </a>
+            </Button>
           </div>
         </CollapsibleContent>
       </Card>
