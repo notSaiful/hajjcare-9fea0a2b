@@ -72,6 +72,20 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
+    // Role check — only staff can access aggregated intelligence
+    const { data: roles } = await serviceClient
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id);
+    const isStaff = roles?.some((r: { role: string }) =>
+      ["admin", "coordinator", "medical_staff"].includes(r.role)
+    );
+    if (!isStaff) {
+      return new Response(JSON.stringify({ error: "Forbidden" }), {
+        status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     // ── Module 1: Gather all intelligence in parallel ──
     const [
       trackingAlertsRes,

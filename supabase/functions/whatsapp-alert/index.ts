@@ -81,6 +81,19 @@ serve(async (req) => {
     // Use service role for database updates
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
+    // Role check — only staff can send coordinator alerts
+    const { data: roles } = await supabase
+      .from("user_roles").select("role").eq("user_id", user.id);
+    const allowed = roles?.some((r: { role: string }) =>
+      ["admin", "coordinator", "medical_staff"].includes(r.role)
+    );
+    if (!allowed) {
+      return new Response(
+        JSON.stringify({ error: "Forbidden" }),
+        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const { ticketId, zone, urgencyLevel, summary, arabicText, category, location }: AlertRequest = await req.json();
 
     if (!ticketId || !zone) {

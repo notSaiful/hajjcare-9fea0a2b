@@ -265,6 +265,16 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ error: "memberId and groupId are required" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
+    // Authorization: caller must be a member of the target group OR a staff role
+    const [{ data: membership }, { data: roles }] = await Promise.all([
+      serviceClient.from("group_members").select("id").eq("group_id", groupId).eq("user_id", user.id).maybeSingle(),
+      serviceClient.from("user_roles").select("role").eq("user_id", user.id),
+    ]);
+    const isStaff = roles?.some((r: { role: string }) => ["admin", "coordinator", "medical_staff"].includes(r.role));
+    if (!membership && !isStaff) {
+      return new Response(JSON.stringify({ error: "Forbidden" }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
     // Resolve Haji name
     let hajiName = memberName;
     if (!hajiName) {

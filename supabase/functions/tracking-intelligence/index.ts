@@ -234,14 +234,14 @@ serve(async (req) => {
 
       const isCoordinator = roles?.some(r => ["admin", "coordinator"].includes(r.role));
       
-      const query = serviceClient
+      let query = serviceClient
         .from("tracking_alerts")
         .select("*")
         .eq("status", "active")
         .order("created_at", { ascending: false });
 
       if (!isCoordinator) {
-        query.eq("user_id", user.id);
+        query = query.eq("user_id", user.id);
       }
 
       const { data: alerts } = await query.limit(50);
