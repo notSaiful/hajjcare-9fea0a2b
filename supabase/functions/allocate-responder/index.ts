@@ -50,6 +50,18 @@ Deno.serve(async (req) => {
       });
     }
 
+    // Role check — only staff can allocate responders
+    const { data: roles } = await supabase
+      .from("user_roles").select("role").eq("user_id", user.id);
+    const allowed = roles?.some((r: { role: string }) =>
+      ["admin", "coordinator", "medical_staff"].includes(r.role)
+    );
+    if (!allowed) {
+      return new Response(JSON.stringify({ error: "Forbidden" }), {
+        status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const body: AllocationRequest = await req.json();
     const { ticket_id, lat, lng, zone, escalation_level = 1, max_radius_meters } = body;
 
