@@ -279,6 +279,7 @@ function AppContent() {
       <Route path="/madinah-hotels" element={<MadinahHotelsPage />} />
       <Route path="/mina-tents" element={<MinaTentLocationsPage />} />
       <Route path="/mina-tent-locations" element={<MinaTentLocationsPage />} />
+      <Route path="/mina-tents/:maktabId" element={<MinaMaktabDetailPage />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
