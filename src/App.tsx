@@ -129,6 +129,7 @@ const LostAndFoundPage = lazy(() => import("./pages/LostAndFoundPage"));
 const MashairMapPage = lazy(() => import("./pages/MashairMapPage"));
 const MadinahHotelsPage = lazy(() => import("./pages/MadinahHotelsPage"));
 const MinaTentLocationsPage = lazy(() => import("./pages/MinaTentLocationsPage"));
+const MinaMaktabDetailPage = lazy(() => import("./pages/MinaMaktabDetailPage"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
