@@ -27,40 +27,40 @@ const ContactRow = ({ label, contact }: { label: string; contact: MaktabContact 
 const MaktabCard = ({ m }: { m: MinaMaktab }) => {
   const Icon = m.transportation === "Bus" ? Bus : Train;
   return (
-    <Card className="overflow-hidden">
-      <CardHeader className="bg-primary/5 border-b border-border p-4">
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-lg shadow-soft">
-              {m.maktab}
+    <Link to={`/mina-tents/${m.maktab}`} className="block focus:outline-none focus:ring-2 focus:ring-primary rounded-2xl">
+      <Card className="overflow-hidden transition-all hover:shadow-md active:scale-[0.99]">
+        <CardHeader className="bg-primary/5 border-b border-border p-4">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-lg shadow-soft">
+                {m.maktab}
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground">Maktab</p>
+                <p className="font-bold text-base">#{m.maktab}</p>
+              </div>
             </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Maktab</p>
-              <p className="font-bold text-base">#{m.maktab}</p>
+            <Badge variant="secondary" className="gap-1">
+              <Icon className="w-3.5 h-3.5" />
+              {m.transportation}
+            </Badge>
+          </div>
+          <div className="flex items-start gap-2 mt-3 p-2 rounded-lg bg-background/60">
+            <MapPin className="w-4 h-4 text-islamic-gold mt-0.5 shrink-0" />
+            <div className="flex-1">
+              <p className="text-sm font-semibold">{m.description}</p>
+              <p className="text-xs text-muted-foreground font-mono">Camp/Street: {m.campStreet}</p>
             </div>
           </div>
-          <Badge variant="secondary" className="gap-1">
-            <Icon className="w-3.5 h-3.5" />
-            {m.transportation}
-          </Badge>
-        </div>
-        <div className="flex items-start gap-2 mt-3 p-2 rounded-lg bg-background/60">
-          <MapPin className="w-4 h-4 text-islamic-gold mt-0.5 shrink-0" />
-          <div className="flex-1">
-            <p className="text-sm font-semibold">{m.description}</p>
-            <p className="text-xs text-muted-foreground font-mono">Camp/Street: {m.campStreet}</p>
-          </div>
-        </div>
-      </CardHeader>
-      <CardContent className="p-4 space-y-0">
-        <ContactRow label="Manager" contact={m.manager} />
-        <ContactRow label="Assistant Manager" contact={m.assistantManager} />
-        <ContactRow label="Reception & Makkah Housing" contact={m.receptionMakkahHousing} />
-        <ContactRow label="Support & Central Tawaf" contact={m.supportTawaf} />
-        <ContactRow label="Arafat Camps Housing" contact={m.arafatCampsHousing} />
-        <ContactRow label="Mina Camps Housing" contact={m.minaCampsHousing} />
-      </CardContent>
-    </Card>
+        </CardHeader>
+        <CardContent className="p-4">
+          <p className="text-xs text-muted-foreground">
+            Manager: <span className="text-foreground font-medium">{m.manager.name}</span>
+          </p>
+          <p className="text-xs text-primary font-semibold mt-2">View all 6 contacts →</p>
+        </CardContent>
+      </Card>
+    </Link>
   );
 };
 
