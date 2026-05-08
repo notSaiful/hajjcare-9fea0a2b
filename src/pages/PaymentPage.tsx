@@ -209,6 +209,8 @@ export default function PaymentPage() {
           variant: "destructive",
         });
       });
+      razorpay.open();
+
     } catch (error: any) {
       console.error("Payment error:", error);
       toast({
