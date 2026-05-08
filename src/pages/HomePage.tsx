@@ -57,6 +57,11 @@ const HomePage = () => {
             <FindBuildingQuickAction />
           </section>
 
+          {/* Mina Tent Locations — quick action */}
+          <section className="animate-fade-up" style={{ animationDelay: "70ms" }}>
+            <MinaTentsQuickAction />
+          </section>
+
 
           {/* Staff-only tools (Inspector / Admin / Coordinator) */}
           <StaffMenu />
