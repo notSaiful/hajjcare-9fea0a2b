@@ -42,6 +42,42 @@ Deno.serve(async (req) => {
       );
     }
 
+    // Verify a legitimate link request exists between caller and target for this group
+    const validActions = ["new_request", "approved", "rejected"];
+    if (!validActions.includes(action)) {
+      return new Response(
+        JSON.stringify({ error: "Invalid action" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    let linkReqQuery = serviceClient
+      .from("member_link_requests")
+      .select("id, status, requester_id, target_user_id, group_id")
+      .eq("group_id", groupId);
+
+    if (action === "new_request") {
+      // Caller is the requester notifying target
+      linkReqQuery = linkReqQuery
+        .eq("requester_id", user.id)
+        .eq("target_user_id", targetUserId)
+        .eq("status", "pending");
+    } else {
+      // approved/rejected: caller is the target notifying back the requester
+      linkReqQuery = linkReqQuery
+        .eq("target_user_id", user.id)
+        .eq("requester_id", targetUserId)
+        .in("status", ["approved", "rejected"]);
+    }
+
+    const { data: linkReq } = await linkReqQuery.maybeSingle();
+    if (!linkReq) {
+      return new Response(
+        JSON.stringify({ error: "No matching link request found" }),
+        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     // Get requester name
     const { data: requesterProfile } = await serviceClient
       .from("profiles")
