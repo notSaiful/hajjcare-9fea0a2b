@@ -19,8 +19,9 @@ export interface MinaMaktab {
   minaCampsHousing: MaktabContact;
 }
 
+// Public Google Maps link to Mina (Mashair area) — opens for everyone, no permission needed.
 export const MINA_FULL_MAP_URL =
-  "https://www.google.com/maps/d/viewer?mid=1ozBWy6XBiteUbzT4VC1SpnqusaLT_yoo";
+  "https://www.google.com/maps/place/Mina,+Saudi+Arabia/@21.4131,39.8932,15z";
 
 export const MINA_MAKTABS: MinaMaktab[] = [
   { maktab: 1, transportation: "Metro Train", campStreet: "28/62", description: "28th Camp on 62nd Street",
