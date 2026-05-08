@@ -80,35 +80,38 @@ export default function PaymentPage() {
     });
   };
 
-  const createInvoiceRecord = async (
+  const verifyAndCreateInvoice = async (
     razorpayOrderId: string,
     razorpayPaymentId: string,
-    paymentStatus: string
+    razorpaySignature: string,
+    status: "paid" | "failed"
   ) => {
     try {
-      const { data: invoiceNum } = await supabase.rpc("generate_invoice_number");
-      const invoiceNumber = invoiceNum || `HC-${Date.now().toString(36).toUpperCase()}`;
-
-      const { error } = await supabase.from("billing_invoices").insert({
-        user_id: user!.id,
-        invoice_number: invoiceNumber,
-        service_name: "HajjCare App Maintenance Service Fee",
-        base_amount: Math.round(baseAmount * 100),
-        gst_rate: 18.00,
-        gst_amount: Math.round(gstAmount * 100),
-        total_amount: Math.round(totalAmount * 100),
-        razorpay_order_id: razorpayOrderId,
-        razorpay_payment_id: razorpayPaymentId,
-        payment_status: paymentStatus,
-        customer_name: user?.user_metadata?.full_name || null,
-        customer_email: user?.email || null,
-        org_gstin: ORG_GSTIN || null,
-      });
-
-      if (error) console.error("Invoice creation error:", error);
-      return invoiceNumber;
+      const { data, error } = await supabase.functions.invoke(
+        "verify-razorpay-payment",
+        {
+          body: {
+            razorpay_order_id: razorpayOrderId,
+            razorpay_payment_id: razorpayPaymentId,
+            razorpay_signature: razorpaySignature,
+            base_amount: Math.round(baseAmount * 100),
+            gst_amount: Math.round(gstAmount * 100),
+            total_amount: Math.round(totalAmount * 100),
+            service_name: "HajjCare App Maintenance Service Fee",
+            customer_name: user?.user_metadata?.full_name || null,
+            customer_email: user?.email || null,
+            org_gstin: ORG_GSTIN || null,
+            status,
+          },
+        }
+      );
+      if (error) {
+        console.error("Verification error:", error);
+        return null;
+      }
+      return data?.invoice_number || null;
     } catch (err) {
-      console.error("Failed to create invoice:", err);
+      console.error("Failed to verify payment:", err);
       return null;
     }
   };
@@ -168,13 +171,27 @@ export default function PaymentPage() {
           color: "#16a34a",
         },
         handler: async function (resp: any) {
-          // Payment successful — create invoice
-          await createInvoiceRecord(order_id, resp.razorpay_payment_id, "paid");
+          // Server-side signature verification + invoice creation
+          const invoiceNumber = await verifyAndCreateInvoice(
+            order_id,
+            resp.razorpay_payment_id,
+            resp.razorpay_signature,
+            "paid"
+          );
 
-          toast({
-            title: "Payment Successful! 🎉",
-            description: "Invoice generated. View it in your billing history.",
-          });
+          if (invoiceNumber) {
+            toast({
+              title: "Payment Successful! 🎉",
+              description: "Invoice generated. View it in your billing history.",
+            });
+          } else {
+            toast({
+              title: "Verification Failed",
+              description:
+                "Payment received but could not be verified. Please contact support.",
+              variant: "destructive",
+            });
+          }
         },
         modal: {
           ondismiss: function () {
@@ -185,7 +202,7 @@ export default function PaymentPage() {
 
       const razorpay = new window.Razorpay(options);
       razorpay.on("payment.failed", async function (resp: any) {
-        await createInvoiceRecord(order_id, "", "failed");
+        await verifyAndCreateInvoice(order_id, "", "", "failed");
         toast({
           title: "Payment Failed",
           description: resp.error.description || "Please try again",
@@ -193,6 +210,7 @@ export default function PaymentPage() {
         });
       });
       razorpay.open();
+
     } catch (error: any) {
       console.error("Payment error:", error);
       toast({
