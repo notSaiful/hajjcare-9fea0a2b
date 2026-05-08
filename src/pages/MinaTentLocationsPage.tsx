@@ -1,28 +1,12 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, MapPin, Phone, Search, Bus, Train, ExternalLink } from "lucide-react";
+import { ArrowLeft, MapPin, Search, Bus, Train, ExternalLink } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { MINA_MAKTABS, MINA_FULL_MAP_URL, type MinaMaktab, type MaktabContact } from "@/data/minaTentLocations";
+import { MINA_MAKTABS, MINA_FULL_MAP_URL, type MinaMaktab } from "@/data/minaTentLocations";
 
-const ContactRow = ({ label, contact }: { label: string; contact: MaktabContact }) => (
-  <div className="flex items-start justify-between gap-2 py-2 border-b border-border/50 last:border-0">
-    <div className="flex-1 min-w-0">
-      <p className="text-[11px] uppercase tracking-wide text-muted-foreground">{label}</p>
-      <p className="text-sm font-medium truncate">{contact.name}</p>
-    </div>
-    <a
-      href={`tel:+966${contact.phone}`}
-      className="flex items-center gap-1 text-primary text-sm font-mono hover:underline shrink-0"
-      aria-label={`Call ${contact.name}`}
-    >
-      <Phone className="w-3.5 h-3.5" />
-      {contact.phone}
-    </a>
-  </div>
-);
 
 const MaktabCard = ({ m }: { m: MinaMaktab }) => {
   const Icon = m.transportation === "Bus" ? Bus : Train;
