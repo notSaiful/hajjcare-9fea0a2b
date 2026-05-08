@@ -152,6 +152,7 @@ export default function PaymentPage() {
       const response = await supabase.functions.invoke("create-razorpay-order", {
         body: { amount: totalInPaise, currency: "INR" },
       });
+      razorpay.open();
 
 
       if (response.error) throw new Error(response.error.message || "Failed to create order");
