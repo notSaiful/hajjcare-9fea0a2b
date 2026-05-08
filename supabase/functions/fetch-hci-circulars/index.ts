@@ -16,18 +16,36 @@ serve(async (req) => {
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, serviceKey);
 
-    // Optional auth check - if called manually by admin
+    // AUTHORIZATION: require either a valid admin user JWT, or a shared cron secret.
+    // This prevents anonymous abuse that drains AI credits via repeated scraping.
+    const cronSecret = Deno.env.get("CRON_SECRET");
+    const providedCronSecret =
+      req.headers.get("x-cron-secret") || req.headers.get("X-Cron-Secret");
     const authHeader = req.headers.get("Authorization");
-    if (authHeader) {
+
+    let authorized = false;
+
+    if (cronSecret && providedCronSecret && providedCronSecret === cronSecret) {
+      authorized = true;
+    } else if (authHeader?.startsWith("Bearer ")) {
       const token = authHeader.replace("Bearer ", "");
-      // If it's the anon key from cron, skip user check
-      const anonKey = Deno.env.get("SUPABASE_ANON_KEY") || "";
-      if (token !== anonKey) {
-        const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-        if (authError || !user) {
-          console.log("Manual call - auth check skipped or failed, proceeding anyway for cron");
+      const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+      if (!authError && user) {
+        const { data: roles } = await supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", user.id);
+        if (roles?.some((r: { role: string }) => r.role === "admin")) {
+          authorized = true;
         }
       }
+    }
+
+    if (!authorized) {
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
     console.log("Fetching Haj Committee of India website...");

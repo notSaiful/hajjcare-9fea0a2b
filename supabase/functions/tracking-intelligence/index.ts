@@ -254,6 +254,46 @@ serve(async (req) => {
     // Action: resolve alert
     if (action === "resolve" && req.method === "POST") {
       const { alert_id } = await req.json();
+
+      // AUTHORIZATION: only staff (admin/coordinator/medical_staff) or the alert owner may resolve
+      const { data: resolverRoles } = await serviceClient
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id);
+      const isStaff = resolverRoles?.some((r: { role: string }) =>
+        ["admin", "coordinator", "medical_staff"].includes(r.role)
+      );
+
+      let canResolve = isStaff === true;
+      if (!canResolve) {
+        const { data: alertRow } = await serviceClient
+          .from("tracking_alerts")
+          .select("user_id, group_id")
+          .eq("id", alert_id)
+          .maybeSingle();
+
+        if (alertRow) {
+          if (alertRow.user_id && alertRow.user_id === user.id) {
+            canResolve = true;
+          } else if (alertRow.group_id) {
+            const { data: gm } = await serviceClient
+              .from("group_members")
+              .select("id")
+              .eq("group_id", alertRow.group_id)
+              .eq("user_id", user.id)
+              .maybeSingle();
+            if (gm) canResolve = true;
+          }
+        }
+      }
+
+      if (!canResolve) {
+        return new Response(
+          JSON.stringify({ error: "Forbidden: only staff or the alert owner may resolve" }),
+          { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
       await serviceClient
         .from("tracking_alerts")
         .update({ status: "resolved", resolved_at: new Date().toISOString(), resolved_by: user.id })
