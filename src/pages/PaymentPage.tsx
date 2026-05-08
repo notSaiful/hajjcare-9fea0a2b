@@ -171,13 +171,27 @@ export default function PaymentPage() {
           color: "#16a34a",
         },
         handler: async function (resp: any) {
-          // Payment successful — create invoice
-          await createInvoiceRecord(order_id, resp.razorpay_payment_id, "paid");
+          // Server-side signature verification + invoice creation
+          const invoiceNumber = await verifyAndCreateInvoice(
+            order_id,
+            resp.razorpay_payment_id,
+            resp.razorpay_signature,
+            "paid"
+          );
 
-          toast({
-            title: "Payment Successful! 🎉",
-            description: "Invoice generated. View it in your billing history.",
-          });
+          if (invoiceNumber) {
+            toast({
+              title: "Payment Successful! 🎉",
+              description: "Invoice generated. View it in your billing history.",
+            });
+          } else {
+            toast({
+              title: "Verification Failed",
+              description:
+                "Payment received but could not be verified. Please contact support.",
+              variant: "destructive",
+            });
+          }
         },
         modal: {
           ondismiss: function () {
@@ -188,14 +202,13 @@ export default function PaymentPage() {
 
       const razorpay = new window.Razorpay(options);
       razorpay.on("payment.failed", async function (resp: any) {
-        await createInvoiceRecord(order_id, "", "failed");
+        await verifyAndCreateInvoice(order_id, "", "", "failed");
         toast({
           title: "Payment Failed",
           description: resp.error.description || "Please try again",
           variant: "destructive",
         });
       });
-      razorpay.open();
     } catch (error: any) {
       console.error("Payment error:", error);
       toast({
