@@ -20,7 +20,7 @@ export interface MinaMaktab {
 }
 
 export const MINA_FULL_MAP_URL =
-  "https://www.google.com/maps/d/u/0/edit?mid=1ozBWy6XBiteUbzT4VC1SpnqusaLT_yoo&usp=sharing";
+  "https://www.google.com/maps/d/viewer?mid=1ozBWy6XBiteUbzT4VC1SpnqusaLT_yoo";
 
 export const MINA_MAKTABS: MinaMaktab[] = [
   { maktab: 1, transportation: "Metro Train", campStreet: "28/62", description: "28th Camp on 62nd Street",
