@@ -80,35 +80,38 @@ export default function PaymentPage() {
     });
   };
 
-  const createInvoiceRecord = async (
+  const verifyAndCreateInvoice = async (
     razorpayOrderId: string,
     razorpayPaymentId: string,
-    paymentStatus: string
+    razorpaySignature: string,
+    status: "paid" | "failed"
   ) => {
     try {
-      const { data: invoiceNum } = await supabase.rpc("generate_invoice_number");
-      const invoiceNumber = invoiceNum || `HC-${Date.now().toString(36).toUpperCase()}`;
-
-      const { error } = await supabase.from("billing_invoices").insert({
-        user_id: user!.id,
-        invoice_number: invoiceNumber,
-        service_name: "HajjCare App Maintenance Service Fee",
-        base_amount: Math.round(baseAmount * 100),
-        gst_rate: 18.00,
-        gst_amount: Math.round(gstAmount * 100),
-        total_amount: Math.round(totalAmount * 100),
-        razorpay_order_id: razorpayOrderId,
-        razorpay_payment_id: razorpayPaymentId,
-        payment_status: paymentStatus,
-        customer_name: user?.user_metadata?.full_name || null,
-        customer_email: user?.email || null,
-        org_gstin: ORG_GSTIN || null,
-      });
-
-      if (error) console.error("Invoice creation error:", error);
-      return invoiceNumber;
+      const { data, error } = await supabase.functions.invoke(
+        "verify-razorpay-payment",
+        {
+          body: {
+            razorpay_order_id: razorpayOrderId,
+            razorpay_payment_id: razorpayPaymentId,
+            razorpay_signature: razorpaySignature,
+            base_amount: Math.round(baseAmount * 100),
+            gst_amount: Math.round(gstAmount * 100),
+            total_amount: Math.round(totalAmount * 100),
+            service_name: "HajjCare App Maintenance Service Fee",
+            customer_name: user?.user_metadata?.full_name || null,
+            customer_email: user?.email || null,
+            org_gstin: ORG_GSTIN || null,
+            status,
+          },
+        }
+      );
+      if (error) {
+        console.error("Verification error:", error);
+        return null;
+      }
+      return data?.invoice_number || null;
     } catch (err) {
-      console.error("Failed to create invoice:", err);
+      console.error("Failed to verify payment:", err);
       return null;
     }
   };
