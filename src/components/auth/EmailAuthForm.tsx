@@ -37,8 +37,8 @@ interface EmailAuthFormProps {
 }
 
 export function EmailAuthForm({ onSuccess }: EmailAuthFormProps) {
-  const isSignUp = false;
-  const setIsSignUp = (_: boolean) => {};
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
