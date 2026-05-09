@@ -220,7 +220,42 @@ export function EmailAuthForm({ onSuccess }: EmailAuthFormProps) {
         </Button>
       </form>
 
-      {/* Sign-up disabled — sign-in only */}
+      {/* Toggle sign-in / sign-up */}
+      <div className="flex flex-col items-center gap-2 pt-1">
+        <button
+          type="button"
+          onClick={() => { setIsSignUp(!isSignUp); setErrors({}); }}
+          className="text-sm text-primary hover:underline font-medium"
+        >
+          {isSignUp ? t.haveAccount : t.noAccount}
+        </button>
+        {!isSignUp && (
+          <button
+            type="button"
+            disabled={isResetting}
+            onClick={async () => {
+              const emailResult = emailSchema.safeParse(email);
+              if (!emailResult.success) {
+                toast({ title: "Email required", description: "Please enter your email above first", variant: "destructive" });
+                return;
+              }
+              setIsResetting(true);
+              const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                redirectTo: `${window.location.origin}/reset-password`,
+              });
+              setIsResetting(false);
+              toast({
+                title: error ? "Error" : "Check your email",
+                description: error ? error.message : "Password reset link sent if the email is registered.",
+                variant: error ? "destructive" : "default",
+              });
+            }}
+            className="text-xs text-muted-foreground hover:text-foreground hover:underline"
+          >
+            {isResetting ? "Sending…" : "Forgot password?"}
+          </button>
+        )}
+      </div>
 
       {/* Consent Review Modal - only for signup */}
       <Dialog open={showConsentModal} onOpenChange={(v) => { if (!v) setConsentAgreed(false); setShowConsentModal(v); }}>
