@@ -200,19 +200,23 @@ serve(async (req) => {
 
     console.log(`Intent: ${classification.module}/${classification.intent} (${classification.confidence}) for user ${userId}`);
 
-    // Step 2: Create/use session
+    // Step 2: Create/use session (only for authenticated users)
     let currentSessionId = session_id;
-    if (!currentSessionId) {
-      const serviceClient = createClient(
-        Deno.env.get("SUPABASE_URL")!,
-        Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
-      );
-      const { data: sessionData } = await serviceClient
-        .from("ai_sessions")
-        .insert({ user_id: userId, module: classification.module, language, session_type: classification.intent })
-        .select("id")
-        .single();
-      currentSessionId = sessionData?.id;
+    if (!currentSessionId && userId) {
+      try {
+        const serviceClient = createClient(
+          Deno.env.get("SUPABASE_URL")!,
+          Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+        );
+        const { data: sessionData } = await serviceClient
+          .from("ai_sessions")
+          .insert({ user_id: userId, module: classification.module, language, session_type: classification.intent })
+          .select("id")
+          .single();
+        currentSessionId = sessionData?.id;
+      } catch (_e) {
+        // ignore session errors for guests
+      }
     }
 
     // Step 3: Route to module and stream response
