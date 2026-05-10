@@ -221,14 +221,22 @@ export function EmailAuthForm({ onSuccess }: EmailAuthFormProps) {
       </form>
 
       {/* Toggle sign-in / sign-up */}
-      <div className="flex flex-col items-center gap-2 pt-1">
-        <button
+      <div className="flex flex-col items-center gap-3 pt-1">
+        <div className="w-full flex items-center gap-3">
+          <div className="flex-1 h-px bg-border/60" />
+          <span className="text-xs text-muted-foreground">
+            {isSignUp ? (language === "hi" ? "या" : language === "ar" ? "أو" : language === "ur" ? "یا" : "or") : (language === "hi" ? "नया उपयोगकर्ता?" : language === "ar" ? "مستخدم جديد؟" : language === "ur" ? "نئے صارف؟" : "New here?")}
+          </span>
+          <div className="flex-1 h-px bg-border/60" />
+        </div>
+        <Button
           type="button"
+          variant="outline"
           onClick={() => { setIsSignUp(!isSignUp); setErrors({}); }}
-          className="text-sm text-primary hover:underline font-medium"
+          className="w-full h-12 text-base font-semibold rounded-2xl border-2 border-primary/30 text-primary hover:bg-primary/5"
         >
           {isSignUp ? t.haveAccount : t.noAccount}
-        </button>
+        </Button>
         {!isSignUp && (
           <button
             type="button"
