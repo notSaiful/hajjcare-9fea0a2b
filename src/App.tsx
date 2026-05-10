@@ -75,6 +75,7 @@ const ChatPage = lazy(() => import("./pages/ChatPage"));
 const HealthHelpPage = lazy(() => import("./pages/HealthHelpPage"));
 const CoordinatorDashboardPage = lazy(() => import("./pages/CoordinatorDashboardPage"));
 const AdminRolesPage = lazy(() => import("./pages/AdminRolesPage"));
+const AdminStaffRequestsPage = lazy(() => import("./pages/AdminStaffRequestsPage"));
 const MedicalAlertsPage = lazy(() => import("./pages/MedicalAlertsPage"));
 const EmergencyMetricsPage = lazy(() => import("./pages/EmergencyMetricsPage"));
 const InspectorDashboardPage = lazy(() => import("./pages/InspectorDashboardPage"));
