@@ -207,7 +207,7 @@ export const StaffAccessHint = memo(function StaffAccessHint() {
         email: user.email ?? null,
         phone: profile?.phone ?? null,
         reason: reason.trim() || null,
-      });
+      } as never);
       if (error) throw error;
 
       toast.success(t.submitted);
