@@ -122,30 +122,22 @@ serve(async (req) => {
   }
 
   try {
+    // Public access: try to identify user but don't require auth
+    let userId: string | null = null;
     const authHeader = req.headers.get("Authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    if (authHeader?.startsWith("Bearer ")) {
+      const token = authHeader.replace("Bearer ", "");
+      try {
+        const supabaseClient = createClient(
+          Deno.env.get("SUPABASE_URL")!,
+          Deno.env.get("SUPABASE_ANON_KEY")!,
+        );
+        const { data: { user } } = await supabaseClient.auth.getUser(token);
+        if (user) userId = user.id;
+      } catch (_e) {
+        // ignore — proceed as guest
+      }
     }
-
-    const token = authHeader.replace("Bearer ", "");
-    const supabaseClient = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_ANON_KEY")!,
-      { global: { headers: { Authorization: authHeader } } }
-    );
-
-    // Require authenticated user
-    const { data: { user }, error: authError } = await supabaseClient.auth.getUser(token);
-    if (authError || !user) {
-      return new Response(
-        JSON.stringify({ error: "Authentication required" }),
-        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-    const userId = user.id;
 
     const { message, messages = [], language = "en", session_id } = await req.json();
 
@@ -208,19 +200,23 @@ serve(async (req) => {
 
     console.log(`Intent: ${classification.module}/${classification.intent} (${classification.confidence}) for user ${userId}`);
 
-    // Step 2: Create/use session
+    // Step 2: Create/use session (only for authenticated users)
     let currentSessionId = session_id;
-    if (!currentSessionId) {
-      const serviceClient = createClient(
-        Deno.env.get("SUPABASE_URL")!,
-        Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
-      );
-      const { data: sessionData } = await serviceClient
-        .from("ai_sessions")
-        .insert({ user_id: userId, module: classification.module, language, session_type: classification.intent })
-        .select("id")
-        .single();
-      currentSessionId = sessionData?.id;
+    if (!currentSessionId && userId) {
+      try {
+        const serviceClient = createClient(
+          Deno.env.get("SUPABASE_URL")!,
+          Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+        );
+        const { data: sessionData } = await serviceClient
+          .from("ai_sessions")
+          .insert({ user_id: userId, module: classification.module, language, session_type: classification.intent })
+          .select("id")
+          .single();
+        currentSessionId = sessionData?.id;
+      } catch (_e) {
+        // ignore session errors for guests
+      }
     }
 
     // Step 3: Route to module and stream response
@@ -268,21 +264,23 @@ serve(async (req) => {
 
     // Step 4: Log intent asynchronously
     const processingTime = Date.now() - startTime;
-    const serviceClient = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
-    );
+    if (userId) {
+      const serviceClient = createClient(
+        Deno.env.get("SUPABASE_URL")!,
+        Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+      );
 
-    serviceClient.from("ai_intent_logs").insert({
-      session_id: currentSessionId,
-      user_id: userId,
-      raw_input: message.substring(0, 500),
-      detected_intent: classification.intent,
-      confidence: classification.confidence,
-      routed_module: classification.module,
-      language,
-      processing_time_ms: processingTime,
-    }).then(() => {});
+      serviceClient.from("ai_intent_logs").insert({
+        session_id: currentSessionId,
+        user_id: userId,
+        raw_input: message.substring(0, 500),
+        detected_intent: classification.intent,
+        confidence: classification.confidence,
+        routed_module: classification.module,
+        language,
+        processing_time_ms: processingTime,
+      }).then(() => {});
+    }
 
     // Return streaming response with metadata header
     const headers = new Headers(corsHeaders);
