@@ -264,21 +264,23 @@ serve(async (req) => {
 
     // Step 4: Log intent asynchronously
     const processingTime = Date.now() - startTime;
-    const serviceClient = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
-    );
+    if (userId) {
+      const serviceClient = createClient(
+        Deno.env.get("SUPABASE_URL")!,
+        Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+      );
 
-    serviceClient.from("ai_intent_logs").insert({
-      session_id: currentSessionId,
-      user_id: userId,
-      raw_input: message.substring(0, 500),
-      detected_intent: classification.intent,
-      confidence: classification.confidence,
-      routed_module: classification.module,
-      language,
-      processing_time_ms: processingTime,
-    }).then(() => {});
+      serviceClient.from("ai_intent_logs").insert({
+        session_id: currentSessionId,
+        user_id: userId,
+        raw_input: message.substring(0, 500),
+        detected_intent: classification.intent,
+        confidence: classification.confidence,
+        routed_module: classification.module,
+        language,
+        processing_time_ms: processingTime,
+      }).then(() => {});
+    }
 
     // Return streaming response with metadata header
     const headers = new Headers(corsHeaders);
