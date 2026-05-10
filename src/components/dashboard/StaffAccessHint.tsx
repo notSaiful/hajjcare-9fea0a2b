@@ -1,8 +1,11 @@
 import { memo } from "react";
-import { ShieldAlert } from "lucide-react";
+import { ShieldAlert, MessageCircle, Mail } from "lucide-react";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useAuth } from "@/hooks/useAuth";
 import { useLanguage } from "@/contexts/LanguageContext";
+
+const ADMIN_WHATSAPP = "917588113830";
+const ADMIN_EMAIL = "support@hajjcare.in";
 
 /**
  * Small inline "Access needed" notice that appears on the HomePage when the
