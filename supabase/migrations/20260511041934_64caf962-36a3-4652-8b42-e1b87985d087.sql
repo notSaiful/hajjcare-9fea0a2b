@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS "Anon can view open reports (limited columns)" ON public.lost_and_found;
