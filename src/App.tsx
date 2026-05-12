@@ -208,6 +208,7 @@ function AppContent() {
       <Route path="/family" element={<FamilyPage />} />
       <Route path="/map" element={<MapPage />} />
       <Route path="/hajj-buildings" element={<HajjBuildingsPage />} />
+      <Route path="/medical-facilities" element={<MedicalFacilitiesPage />} />
       <Route path="/open" element={<OpenAppPage />} />
       <Route path="/share" element={<OpenAppPage />} />
       <Route path="/chat" element={<ChatPage />} />
