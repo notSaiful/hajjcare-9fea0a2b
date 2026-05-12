@@ -53,8 +53,9 @@ serve(async (req) => {
       });
     }
 
+    const KEY_ID = Deno.env.get("RAZORPAY_KEY_ID");
     const KEY_SECRET = Deno.env.get("RAZORPAY_KEY_SECRET");
-    if (!KEY_SECRET) {
+    if (!KEY_ID || !KEY_SECRET) {
       return new Response(
         JSON.stringify({ error: "Payment gateway not configured" }),
         { status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -66,9 +67,6 @@ serve(async (req) => {
       razorpay_order_id,
       razorpay_payment_id,
       razorpay_signature,
-      base_amount,
-      gst_amount,
-      total_amount,
       service_name,
       org_gstin,
       customer_name,
@@ -79,13 +77,38 @@ serve(async (req) => {
     if (
       !razorpay_order_id ||
       typeof razorpay_order_id !== "string" ||
-      typeof base_amount !== "number" ||
-      typeof gst_amount !== "number" ||
-      typeof total_amount !== "number" ||
       (status !== "paid" && status !== "failed")
     ) {
       return new Response(JSON.stringify({ error: "Invalid request" }), {
         status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Fetch authoritative order details from Razorpay — never trust client-supplied amounts.
+    const rpAuth = btoa(`${KEY_ID}:${KEY_SECRET}`);
+    const orderResp = await fetch(
+      `https://api.razorpay.com/v1/orders/${encodeURIComponent(razorpay_order_id)}`,
+      { headers: { Authorization: `Basic ${rpAuth}` } }
+    );
+    if (!orderResp.ok) {
+      console.error("Razorpay order lookup failed:", await orderResp.text());
+      return new Response(
+        JSON.stringify({ error: "Unable to verify order with payment gateway" }),
+        { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    const rpOrder = await orderResp.json();
+    // Razorpay returns amount in paise (integer). Convert to rupees for invoice fields.
+    const total_amount = Number(rpOrder.amount) / 100;
+    // GST inclusive: total = base * 1.18 -> base = total / 1.18, gst = total - base.
+    const base_amount = Math.round((total_amount / 1.18) * 100) / 100;
+    const gst_amount = Math.round((total_amount - base_amount) * 100) / 100;
+
+    // Confirm the order belongs to the authenticated user (notes set in create-razorpay-order).
+    if (rpOrder?.notes?.user_id && rpOrder.notes.user_id !== user.id) {
+      return new Response(JSON.stringify({ error: "Order does not belong to user" }), {
+        status: 403,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
