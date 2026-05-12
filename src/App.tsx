@@ -68,6 +68,7 @@ const VideoCallPage = lazy(() => import("./pages/VideoCallPage"));
 const QurbaniPage = lazy(() => import("./pages/QurbaniPage"));
 const FoodGuidePage = lazy(() => import("./pages/FoodGuidePage"));
 const HajjBuildingsPage = lazy(() => import("./pages/HajjBuildingsPage"));
+const MedicalFacilitiesPage = lazy(() => import("./pages/MedicalFacilitiesPage"));
 const OpenAppPage = lazy(() => import("./pages/OpenAppPage"));
 const AuthPage = lazy(() => import("./pages/AuthPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
@@ -207,6 +208,7 @@ function AppContent() {
       <Route path="/family" element={<FamilyPage />} />
       <Route path="/map" element={<MapPage />} />
       <Route path="/hajj-buildings" element={<HajjBuildingsPage />} />
+      <Route path="/medical-facilities" element={<MedicalFacilitiesPage />} />
       <Route path="/open" element={<OpenAppPage />} />
       <Route path="/share" element={<OpenAppPage />} />
       <Route path="/chat" element={<ChatPage />} />

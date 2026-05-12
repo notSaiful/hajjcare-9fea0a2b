@@ -472,6 +472,25 @@ export const menuSections: MenuSection[] = [
         colorClass: "icon-emerald",
       },
       {
+        id: "medical-facilities",
+        icon: Stethoscope,
+        label: {
+          en: "Medical Facilities",
+          ar: "المرافق الطبية",
+          ur: "طبی سہولیات",
+          hi: "चिकित्सा सुविधाएं",
+          ta: "மருத்துவ வசதிகள்",
+          te: "వైద్య సౌకర్యాలు",
+          mr: "वैद्यकीय सुविधा",
+          bn: "চিকিৎসা সুবিধা",
+          or: "ଚିକିତ୍ସା ସୁବିଧା",
+          ml: "വൈദ്യ സൗകര്യങ്ങൾ",
+          pa: "ਮੈਡੀਕਲ ਸਹੂਲਤਾਂ",
+        },
+        route: "/medical-facilities",
+        colorClass: "icon-coral",
+      },
+      {
         id: "lost-and-found",
         icon: Search,
         label: {
