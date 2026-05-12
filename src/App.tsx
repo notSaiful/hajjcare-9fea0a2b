@@ -68,6 +68,7 @@ const VideoCallPage = lazy(() => import("./pages/VideoCallPage"));
 const QurbaniPage = lazy(() => import("./pages/QurbaniPage"));
 const FoodGuidePage = lazy(() => import("./pages/FoodGuidePage"));
 const HajjBuildingsPage = lazy(() => import("./pages/HajjBuildingsPage"));
+const MedicalFacilitiesPage = lazy(() => import("./pages/MedicalFacilitiesPage"));
 const OpenAppPage = lazy(() => import("./pages/OpenAppPage"));
 const AuthPage = lazy(() => import("./pages/AuthPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
