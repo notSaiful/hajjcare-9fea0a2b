@@ -1,15 +1,32 @@
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { MainLayout } from "@/components/MainLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ArrowRight, MapPin, Phone, Stethoscope, Building2, Eye, AlertTriangle } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
+import {
+  ArrowLeft,
+  ArrowRight,
+  MapPin,
+  Phone,
+  Stethoscope,
+  Building2,
+  Eye,
+  AlertTriangle,
+  Search,
+  X,
+} from "lucide-react";
 import {
   MEDICAL_FACILITIES,
   MEDICAL_EMERGENCY_NUMBERS,
   MEDICAL_FACILITIES_LABELS as L,
   type MedicalFacility,
 } from "@/data/medicalFacilitiesContent";
+
+type FilterCat = "all" | "observation" | "clinic" | "team";
 
 const FacilityCard = ({ f, openLabel }: { f: MedicalFacility; openLabel: string }) => {
   const Icon = f.category === "observation" ? Eye : f.category === "clinic" ? Stethoscope : Building2;
@@ -55,9 +72,42 @@ export default function MedicalFacilitiesPage() {
   const { language, isRTL } = useLanguage();
   const t = (k: keyof typeof L) => L[k][language as keyof typeof L.title] || L[k].en;
 
-  const observation = MEDICAL_FACILITIES.filter((f) => f.category === "observation");
-  const clinics = MEDICAL_FACILITIES.filter((f) => f.category === "clinic");
-  const teams = MEDICAL_FACILITIES.filter((f) => f.category === "team");
+  const [query, setQuery] = useState("");
+  const [cat, setCat] = useState<FilterCat>("all");
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return MEDICAL_FACILITIES.filter((f) => {
+      if (cat !== "all" && f.category !== cat) return false;
+      if (!q) return true;
+      return (
+        f.description.toLowerCase().includes(q) ||
+        f.building.toLowerCase().includes(q) ||
+        (f.area?.toLowerCase().includes(q) ?? false)
+      );
+    });
+  }, [query, cat]);
+
+  const counts = useMemo(
+    () => ({
+      all: MEDICAL_FACILITIES.length,
+      observation: MEDICAL_FACILITIES.filter((f) => f.category === "observation").length,
+      clinic: MEDICAL_FACILITIES.filter((f) => f.category === "clinic").length,
+      team: MEDICAL_FACILITIES.filter((f) => f.category === "team").length,
+    }),
+    [],
+  );
+
+  const observation = filtered.filter((f) => f.category === "observation");
+  const clinics = filtered.filter((f) => f.category === "clinic");
+  const teams = filtered.filter((f) => f.category === "team");
+
+  const chips: { id: FilterCat; label: string; count: number }[] = [
+    { id: "all", label: t("all"), count: counts.all },
+    { id: "observation", label: t("observation"), count: counts.observation },
+    { id: "clinic", label: t("clinics"), count: counts.clinic },
+    { id: "team", label: t("teams"), count: counts.team },
+  ];
 
   return (
     <MainLayout>
@@ -104,34 +154,107 @@ export default function MedicalFacilitiesPage() {
           </CardContent>
         </Card>
 
-        {observation.length > 0 && (
-          <section className="space-y-2.5">
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground px-1">
-              {t("observation")}
-            </h2>
-            {observation.map((f) => (
-              <FacilityCard key={f.sno} f={f} openLabel={t("openMap")} />
-            ))}
-          </section>
+        {/* Search + filter chips */}
+        <div className="space-y-3 sticky top-0 z-10 bg-background/95 backdrop-blur-sm pt-1 pb-2 -mx-3 px-3 sm:-mx-4 sm:px-4">
+          <div className="relative">
+            <Search className={cn(
+              "absolute top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none",
+              isRTL ? "right-3" : "left-3",
+            )} />
+            <Input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={t("searchPlaceholder")}
+              inputMode="search"
+              className={cn("h-12 text-base", isRTL ? "pr-9 pl-9" : "pl-9 pr-9")}
+              aria-label={t("searchPlaceholder")}
+            />
+            {query && (
+              <button
+                type="button"
+                onClick={() => setQuery("")}
+                aria-label="Clear search"
+                className={cn(
+                  "absolute top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-muted text-muted-foreground",
+                  isRTL ? "left-2" : "right-2",
+                )}
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+
+          <div className="flex gap-2 overflow-x-auto -mx-1 px-1 pb-1 scrollbar-none">
+            {chips.map((c) => {
+              const active = cat === c.id;
+              return (
+                <button
+                  key={c.id}
+                  type="button"
+                  onClick={() => setCat(c.id)}
+                  className={cn(
+                    "flex-shrink-0 h-10 px-3 rounded-full border-2 text-sm font-medium transition-all flex items-center gap-2",
+                    active
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "bg-background text-foreground border-border hover:border-primary/40",
+                  )}
+                  aria-pressed={active}
+                >
+                  <span>{c.label}</span>
+                  <Badge
+                    variant={active ? "secondary" : "outline"}
+                    className="h-5 px-1.5 text-[10px]"
+                  >
+                    {c.count}
+                  </Badge>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {filtered.length === 0 ? (
+          <Card className="border-dashed">
+            <CardContent className="p-6 text-center text-sm text-muted-foreground">
+              {t("noResults")}
+            </CardContent>
+          </Card>
+        ) : (
+          <>
+            {observation.length > 0 && (
+              <section className="space-y-2.5">
+                <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground px-1">
+                  {t("observation")}
+                </h2>
+                {observation.map((f) => (
+                  <FacilityCard key={f.sno} f={f} openLabel={t("openMap")} />
+                ))}
+              </section>
+            )}
+
+            {clinics.length > 0 && (
+              <section className="space-y-2.5">
+                <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground px-1">
+                  {t("clinics")} ({clinics.length})
+                </h2>
+                {clinics.map((f) => (
+                  <FacilityCard key={f.sno} f={f} openLabel={t("openMap")} />
+                ))}
+              </section>
+            )}
+
+            {teams.length > 0 && (
+              <section className="space-y-2.5">
+                <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground px-1">
+                  {t("teams")} ({teams.length})
+                </h2>
+                {teams.map((f) => (
+                  <FacilityCard key={f.sno} f={f} openLabel={t("openMap")} />
+                ))}
+              </section>
+            )}
+          </>
         )}
-
-        <section className="space-y-2.5">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground px-1">
-            {t("clinics")} ({clinics.length})
-          </h2>
-          {clinics.map((f) => (
-            <FacilityCard key={f.sno} f={f} openLabel={t("openMap")} />
-          ))}
-        </section>
-
-        <section className="space-y-2.5">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground px-1">
-            {t("teams")} ({teams.length})
-          </h2>
-          {teams.map((f) => (
-            <FacilityCard key={f.sno} f={f} openLabel={t("openMap")} />
-          ))}
-        </section>
       </div>
     </MainLayout>
   );
