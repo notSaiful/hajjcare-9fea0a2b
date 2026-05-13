@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { MINA_MAKTABS } from "@/data/minaTentLocations";
+import { getMinaTentsLabels } from "@/data/minaTentsContent";
 
 /**
  * Mina Tent Locations quick-action card on Home page.
@@ -16,13 +17,14 @@ export const MinaTentsQuickAction = () => {
   const { language, isRTL } = useLanguage();
   const [num, setNum] = useState("");
 
-  const labels = {
-    en: { title: "Mina Tent Locations", subtitle: "Find your Maktab tent & contacts", placeholder: "Maktab #", find: "Open", browse: "Browse all 34 maktabs" },
-    ur: { title: "منیٰ خیمہ مقامات", subtitle: "اپنا مکتب خیمہ اور رابطے تلاش کریں", placeholder: "مکتب نمبر", find: "کھولیں", browse: "تمام 34 مکاتب دیکھیں" },
-    hi: { title: "मीना तंबू स्थान", subtitle: "अपना मक्तब और संपर्क खोजें", placeholder: "मक्तब #", find: "खोलें", browse: "सभी 34 मक्तब देखें" },
-    ar: { title: "مواقع خيام منى", subtitle: "ابحث عن خيمة المكتب وجهات الاتصال", placeholder: "رقم المكتب", find: "فتح", browse: "تصفح جميع المكاتب" },
-  } as const;
-  const t = (labels as any)[language] ?? labels.en;
+  const labels = getMinaTentsLabels(language);
+  const t = {
+    title: labels.qaTitle,
+    subtitle: labels.qaSubtitle,
+    placeholder: labels.qaPlaceholder,
+    find: labels.qaOpen,
+    browse: labels.qaBrowse(MINA_MAKTABS.length),
+  };
 
   const handleFind = () => {
     const n = num.trim();
