@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { MINA_MAKTABS, MINA_FULL_MAP_URL, type MinaMaktab } from "@/data/minaTentLocations";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { getMinaTentsLabels, type MinaTentsLabels } from "@/data/minaTentsContent";
+import { fuzzyMatches } from "@/lib/minaSearch";
 
 
 const MaktabCard = ({ m, t }: { m: MinaMaktab; t: MinaTentsLabels }) => {
@@ -58,7 +59,7 @@ export default function MinaTentLocationsPage() {
   const [filter, setFilter] = useState<"all" | "Metro Train" | "Bus">("all");
 
   const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
+    const q = query.trim();
     return MINA_MAKTABS.filter((m) => {
       if (filter !== "all" && m.transportation !== filter) return false;
       if (!q) return true;
@@ -72,8 +73,8 @@ export default function MinaTentLocationsPage() {
         m.supportTawaf.name, m.supportTawaf.phone,
         m.arafatCampsHousing.name, m.arafatCampsHousing.phone,
         m.minaCampsHousing.name, m.minaCampsHousing.phone,
-      ].join(" ").toLowerCase();
-      return blob.includes(q);
+      ].join(" ");
+      return fuzzyMatches(q, blob);
     });
   }, [query, filter]);
 
