@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { MINA_MAKTABS, MINA_FULL_MAP_URL, type MinaMaktab } from "@/data/minaTentLocations";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { getMinaTentsLabels, type MinaTentsLabels } from "@/data/minaTentsContent";
+import { fuzzyMatches } from "@/lib/minaSearch";
 
 
 const MaktabCard = ({ m, t }: { m: MinaMaktab; t: MinaTentsLabels }) => {
