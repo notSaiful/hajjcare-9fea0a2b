@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { MINA_MAKTABS } from "@/data/minaTentLocations";
 import { getMinaTentsLabels } from "@/data/minaTentsContent";
+import { normalizeNumerals } from "@/lib/minaSearch";
 
 /**
  * Mina Tent Locations quick-action card on Home page.
