@@ -28,7 +28,7 @@ export const MinaTentsQuickAction = () => {
   };
 
   const handleFind = () => {
-    const n = num.trim();
+    const n = normalizeNumerals(num.trim());
     if (!n) {
       navigate("/mina-tents");
       return;
