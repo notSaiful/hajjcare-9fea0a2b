@@ -25,6 +25,11 @@ export type MinaTentsLabels = {
   qaPlaceholder: string;
   qaOpen: string;
   qaBrowse: (n: number) => string;
+  // Search tips
+  tipsTitle: string;
+  tipsNumerals: string;
+  tipsSpelling: string;
+  tipsPartial: string;
 };
 
 const en: MinaTentsLabels = {
@@ -51,6 +56,10 @@ const en: MinaTentsLabels = {
   qaPlaceholder: "Maktab #",
   qaOpen: "Open",
   qaBrowse: (n) => `Browse all ${n} maktabs`,
+  tipsTitle: "Search tips",
+  tipsNumerals: "Type numerals in English, Arabic (٢٨), Urdu (۲۸) or Hindi (२८).",
+  tipsSpelling: "Spelling variants work — e.g. Mohamad, Muhammad, Mohamed all match.",
+  tipsPartial: "Partial names or street numbers are fine — try ‘25/56’ or ‘rayyan’.",
 };
 
 const ar: MinaTentsLabels = {
@@ -77,6 +86,10 @@ const ar: MinaTentsLabels = {
   qaPlaceholder: "رقم المكتب",
   qaOpen: "فتح",
   qaBrowse: (n) => `تصفح جميع المكاتب الـ ${n}`,
+  tipsTitle: "نصائح البحث",
+  tipsNumerals: "اكتب الأرقام بالإنجليزية أو العربية (٢٨) أو الأردية (۲۸) أو الهندية (२८).",
+  tipsSpelling: "تعمل الأشكال الإملائية المختلفة — مثل Mohamad وMuhammad وMohamed.",
+  tipsPartial: "يمكنك البحث بأجزاء من الاسم أو رقم الشارع — جرّب ‘25/56’ أو ‘ريان’.",
 };
 
 const ur: MinaTentsLabels = {
@@ -103,6 +116,10 @@ const ur: MinaTentsLabels = {
   qaPlaceholder: "مکتب نمبر",
   qaOpen: "کھولیں",
   qaBrowse: (n) => `تمام ${n} مکاتب دیکھیں`,
+  tipsTitle: "تلاش کے نکات",
+  tipsNumerals: "نمبر انگریزی، عربی (٢٨)، اردو (۲۸) یا ہندی (२८) میں لکھیں۔",
+  tipsSpelling: "ہجے کی مختلف شکلیں کام کرتی ہیں — جیسے Mohamad، Muhammad، Mohamed۔",
+  tipsPartial: "نام یا گلی کا حصہ بھی کافی ہے — مثلاً ‘25/56’ یا ‘ریان’ آزمائیں۔",
 };
 
 const hi: MinaTentsLabels = {
@@ -129,6 +146,10 @@ const hi: MinaTentsLabels = {
   qaPlaceholder: "मक्तब #",
   qaOpen: "खोलें",
   qaBrowse: (n) => `सभी ${n} मक्तब देखें`,
+  tipsTitle: "खोज सुझाव",
+  tipsNumerals: "नंबर अंग्रेज़ी, अरबी (٢٨), उर्दू (۲۸) या हिंदी (२८) में लिखें।",
+  tipsSpelling: "वर्तनी की भिन्नताएँ चलती हैं — जैसे Mohamad, Muhammad, Mohamed सभी मिलते हैं।",
+  tipsPartial: "नाम या गली का अंश भी काफ़ी है — ‘25/56’ या ‘रय्यान’ आज़माएँ।",
 };
 
 const ta: MinaTentsLabels = {
@@ -155,6 +176,10 @@ const ta: MinaTentsLabels = {
   qaPlaceholder: "மக்தப் #",
   qaOpen: "திற",
   qaBrowse: (n) => `அனைத்து ${n} மக்தப்களையும் பார்க்கவும்`,
+  tipsTitle: "தேடல் குறிப்புகள்",
+  tipsNumerals: "எண்களை ஆங்கிலம், அரபு (٢٨), உருது (۲۸) அல்லது இந்தி (२८) எழுத்துகளில் தட்டச்சு செய்யலாம்.",
+  tipsSpelling: "எழுத்துக் கோர்வை வேறுபாடுகள் ஒத்துப்போகும் — Mohamad, Muhammad, Mohamed எல்லாம் சரியே.",
+  tipsPartial: "பெயரின் அல்லது தெரு எண்ணின் ஒரு பகுதியே போதும் — ‘25/56’ அல்லது ‘rayyan’ முயற்சிக்கவும்.",
 };
 
 const te: MinaTentsLabels = {
@@ -181,6 +206,10 @@ const te: MinaTentsLabels = {
   qaPlaceholder: "మక్తబ్ #",
   qaOpen: "తెరవండి",
   qaBrowse: (n) => `మొత్తం ${n} మక్తబ్‌లను చూడండి`,
+  tipsTitle: "శోధన చిట్కాలు",
+  tipsNumerals: "సంఖ్యలను ఇంగ్లీష్, అరబిక్ (٢٨), ఉర్దూ (۲۸) లేదా హిందీ (२८) లో టైప్ చేయవచ్చు.",
+  tipsSpelling: "అక్షర వ్యత్యాసాలు పనిచేస్తాయి — Mohamad, Muhammad, Mohamed అన్నీ సరిపోతాయి.",
+  tipsPartial: "పేరు లేదా వీధి సంఖ్యలో కొంత భాగం చాలు — ‘25/56’ లేదా ‘rayyan’ ప్రయత్నించండి.",
 };
 
 const mr: MinaTentsLabels = {
@@ -207,6 +236,10 @@ const mr: MinaTentsLabels = {
   qaPlaceholder: "मक्तब #",
   qaOpen: "उघडा",
   qaBrowse: (n) => `सर्व ${n} मक्तब पहा`,
+  tipsTitle: "शोध टिपा",
+  tipsNumerals: "क्रमांक इंग्रजी, अरबी (٢٨), उर्दू (۲۸) किंवा हिंदी (२८) मध्ये टाइप करा.",
+  tipsSpelling: "स्पेलिंगच्या भिन्नता चालतात — Mohamad, Muhammad, Mohamed सर्व जुळतात.",
+  tipsPartial: "नाव किंवा रस्ता क्रमांकाचा भाग पुरेसा आहे — ‘25/56’ किंवा ‘रय्यान’ वापरून पहा.",
 };
 
 const bn: MinaTentsLabels = {
@@ -233,6 +266,10 @@ const bn: MinaTentsLabels = {
   qaPlaceholder: "মাকতাব #",
   qaOpen: "খুলুন",
   qaBrowse: (n) => `সমস্ত ${n}টি মাকতাব দেখুন`,
+  tipsTitle: "অনুসন্ধান পরামর্শ",
+  tipsNumerals: "সংখ্যা ইংরেজি, আরবি (٢٨), উর্দু (۲۸) বা হিন্দি (२८) তে লিখতে পারেন।",
+  tipsSpelling: "বানানের ভিন্নতা কাজ করে — Mohamad, Muhammad, Mohamed সবই মিলে যায়।",
+  tipsPartial: "নাম বা রাস্তার নম্বরের অংশই যথেষ্ট — ‘25/56’ বা ‘রাইয়ান’ চেষ্টা করুন।",
 };
 
 const or: MinaTentsLabels = {
@@ -259,6 +296,10 @@ const or: MinaTentsLabels = {
   qaPlaceholder: "ମକ୍ତବ #",
   qaOpen: "ଖୋଲନ୍ତୁ",
   qaBrowse: (n) => `ସମସ୍ତ ${n} ମକ୍ତବ ଦେଖନ୍ତୁ`,
+  tipsTitle: "ସନ୍ଧାନ ସୂଚନା",
+  tipsNumerals: "ସଂଖ୍ୟା ଇଂରାଜୀ, ଆରବୀ (٢٨), ଉର୍ଦ୍ଦୁ (۲۸) କିମ୍ବା ହିନ୍ଦୀ (२८) ରେ ଲେଖନ୍ତୁ।",
+  tipsSpelling: "ଅକ୍ଷର ବନାନର ଭିନ୍ନତା କାମ କରେ — Mohamad, Muhammad, Mohamed ସବୁ ମେଳ ଖାଏ।",
+  tipsPartial: "ନାମ କିମ୍ବା ରାସ୍ତା ସଂଖ୍ୟାର ଅଂଶ ଯଥେଷ୍ଟ — ‘25/56’ କିମ୍ବା ‘rayyan’ ଚେଷ୍ଟା କରନ୍ତୁ।",
 };
 
 const ml: MinaTentsLabels = {
@@ -285,6 +326,10 @@ const ml: MinaTentsLabels = {
   qaPlaceholder: "മക്തബ് #",
   qaOpen: "തുറക്കുക",
   qaBrowse: (n) => `എല്ലാ ${n} മക്തബുകളും കാണുക`,
+  tipsTitle: "തിരയൽ നുറുങ്ങുകൾ",
+  tipsNumerals: "സംഖ്യകൾ ഇംഗ്ലീഷ്, അറബി (٢٨), ഉറുദു (۲۸) അല്ലെങ്കിൽ ഹിന്ദി (२८) ലിപിയിൽ ടൈപ്പ് ചെയ്യാം.",
+  tipsSpelling: "അക്ഷരവ്യത്യാസങ്ങൾ പ്രവർത്തിക്കും — Mohamad, Muhammad, Mohamed എല്ലാം പൊരുത്തപ്പെടും.",
+  tipsPartial: "പേരിന്റെയോ തെരുവിന്റെയോ ഭാഗം മതി — ‘25/56’ അല്ലെങ്കിൽ ‘rayyan’ പരീക്ഷിക്കുക.",
 };
 
 const pa: MinaTentsLabels = {
@@ -311,6 +356,10 @@ const pa: MinaTentsLabels = {
   qaPlaceholder: "ਮਕਤਬ #",
   qaOpen: "ਖੋਲ੍ਹੋ",
   qaBrowse: (n) => `ਸਾਰੇ ${n} ਮਕਤਬ ਵੇਖੋ`,
+  tipsTitle: "ਖੋਜ ਸੁਝਾਅ",
+  tipsNumerals: "ਨੰਬਰ ਅੰਗਰੇਜ਼ੀ, ਅਰਬੀ (٢٨), ਉਰਦੂ (۲۸) ਜਾਂ ਹਿੰਦੀ (२८) ਵਿੱਚ ਟਾਈਪ ਕਰੋ।",
+  tipsSpelling: "ਸਪੈਲਿੰਗ ਦੀਆਂ ਭਿੰਨਤਾਵਾਂ ਚੱਲਦੀਆਂ ਹਨ — Mohamad, Muhammad, Mohamed ਸਾਰੇ ਮਿਲਦੇ ਹਨ।",
+  tipsPartial: "ਨਾਮ ਜਾਂ ਗਲੀ ਨੰਬਰ ਦਾ ਹਿੱਸਾ ਹੀ ਕਾਫ਼ੀ ਹੈ — ‘25/56’ ਜਾਂ ‘ਰਯਾਨ’ ਅਜ਼ਮਾਓ।",
 };
 
 const MAP: Record<Language, MinaTentsLabels> = {

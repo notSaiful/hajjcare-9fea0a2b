@@ -1,17 +1,35 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, MapPin, Search, Bus, Train, ExternalLink } from "lucide-react";
+import { ArrowLeft, MapPin, Search, Bus, Train, ExternalLink, HelpCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { MINA_MAKTABS, MINA_FULL_MAP_URL, type MinaMaktab } from "@/data/minaTentLocations";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { getMinaTentsLabels, type MinaTentsLabels } from "@/data/minaTentsContent";
-import { fuzzyMatches } from "@/lib/minaSearch";
+import { fuzzyMatches, getHighlightTokens, highlightSegments } from "@/lib/minaSearch";
 
+const Highlight = ({ text, tokens }: { text: string; tokens: string[] }) => {
+  if (!tokens.length) return <>{text}</>;
+  const segs = highlightSegments(text, tokens);
+  return (
+    <>
+      {segs.map((s, i) =>
+        s.match ? (
+          <mark key={i} className="bg-islamic-gold/30 text-foreground rounded px-0.5">
+            {s.text}
+          </mark>
+        ) : (
+          <span key={i}>{s.text}</span>
+        ),
+      )}
+    </>
+  );
+};
 
-const MaktabCard = ({ m, t }: { m: MinaMaktab; t: MinaTentsLabels }) => {
+const MaktabCard = ({ m, t, tokens }: { m: MinaMaktab; t: MinaTentsLabels; tokens: string[] }) => {
   const Icon = m.transportation === "Bus" ? Bus : Train;
   const transportLabel = m.transportation === "Bus" ? t.bus : t.metro;
   return (
@@ -21,11 +39,13 @@ const MaktabCard = ({ m, t }: { m: MinaMaktab; t: MinaTentsLabels }) => {
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-lg shadow-soft">
-                {m.maktab}
+                <Highlight text={String(m.maktab)} tokens={tokens} />
               </div>
               <div>
                 <p className="text-xs text-muted-foreground">{t.maktab}</p>
-                <p className="font-bold text-base">#{m.maktab}</p>
+                <p className="font-bold text-base">
+                  #<Highlight text={String(m.maktab)} tokens={tokens} />
+                </p>
               </div>
             </div>
             <Badge variant="secondary" className="gap-1">
@@ -36,14 +56,21 @@ const MaktabCard = ({ m, t }: { m: MinaMaktab; t: MinaTentsLabels }) => {
           <div className="flex items-start gap-2 mt-3 p-2 rounded-lg bg-background/60">
             <MapPin className="w-4 h-4 text-islamic-gold mt-0.5 shrink-0" />
             <div className="flex-1">
-              <p className="text-sm font-semibold">{m.description}</p>
-              <p className="text-xs text-muted-foreground font-mono">{t.campStreet}: {m.campStreet}</p>
+              <p className="text-sm font-semibold">
+                <Highlight text={m.description} tokens={tokens} />
+              </p>
+              <p className="text-xs text-muted-foreground font-mono">
+                {t.campStreet}: <Highlight text={m.campStreet} tokens={tokens} />
+              </p>
             </div>
           </div>
         </CardHeader>
         <CardContent className="p-4">
           <p className="text-xs text-muted-foreground">
-            {t.manager}: <span className="text-foreground font-medium">{m.manager.name}</span>
+            {t.manager}:{" "}
+            <span className="text-foreground font-medium">
+              <Highlight text={m.manager.name} tokens={tokens} />
+            </span>
           </p>
           <p className="text-xs text-primary font-semibold mt-2">{t.viewContacts}</p>
         </CardContent>
@@ -78,6 +105,8 @@ export default function MinaTentLocationsPage() {
     });
   }, [query, filter]);
 
+  const tokens = useMemo(() => getHighlightTokens(query), [query]);
+
   return (
     <div className="min-h-screen bg-background" dir={isRTL ? "rtl" : "ltr"}>
       <header className="sticky top-0 z-20 bg-background/95 backdrop-blur border-b border-border">
@@ -107,13 +136,37 @@ export default function MinaTentLocationsPage() {
 
         <div className="space-y-3">
           <div className="relative">
-            <Search className={`w-4 h-4 absolute ${isRTL ? "right-3" : "left-3"} top-1/2 -translate-y-1/2 text-muted-foreground`} />
+            <Search className={`w-4 h-4 absolute ${isRTL ? "right-3" : "left-3"} top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none`} />
             <Input
               placeholder={t.searchPlaceholder}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className={isRTL ? "pr-9 h-11" : "pl-9 h-11"}
+              className={isRTL ? "pr-9 pl-10 h-11" : "pl-9 pr-10 h-11"}
             />
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  aria-label={t.tipsTitle}
+                  className={`absolute ${isRTL ? "left-1" : "right-1"} top-1/2 -translate-y-1/2 h-9 w-9 text-muted-foreground hover:text-foreground`}
+                >
+                  <HelpCircle className="w-4 h-4" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent
+                align={isRTL ? "start" : "end"}
+                className="w-72 text-xs space-y-2"
+              >
+                <p className="font-semibold text-sm text-foreground">{t.tipsTitle}</p>
+                <ul className="space-y-1.5 text-muted-foreground leading-relaxed list-disc ps-4">
+                  <li>{t.tipsNumerals}</li>
+                  <li>{t.tipsSpelling}</li>
+                  <li>{t.tipsPartial}</li>
+                </ul>
+              </PopoverContent>
+            </Popover>
           </div>
           <div className="flex gap-2 flex-wrap">
             {(["all", "Metro Train", "Bus"] as const).map((f) => (
@@ -137,7 +190,7 @@ export default function MinaTentLocationsPage() {
 
         <div className="grid gap-3">
           {filtered.map((m) => (
-            <MaktabCard key={m.maktab} m={m} t={t} />
+            <MaktabCard key={m.maktab} m={m} t={t} tokens={tokens} />
           ))}
           {filtered.length === 0 && (
             <div className="text-center py-12 text-muted-foreground text-sm">
