@@ -25,6 +25,11 @@ export type MinaTentsLabels = {
   qaPlaceholder: string;
   qaOpen: string;
   qaBrowse: (n: number) => string;
+  // Search tips
+  tipsTitle: string;
+  tipsNumerals: string;
+  tipsSpelling: string;
+  tipsPartial: string;
 };
 
 const en: MinaTentsLabels = {
