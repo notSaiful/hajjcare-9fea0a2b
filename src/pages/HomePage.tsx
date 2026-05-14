@@ -8,6 +8,7 @@ import { SubGroupAdvisoryCard } from "@/components/inspector/SubGroupAdvisoryCar
 import { StaffMenu } from "@/components/dashboard/StaffMenu";
 import { FindBuildingQuickAction } from "@/components/FindBuildingQuickAction";
 import { MinaTentsQuickAction } from "@/components/MinaTentsQuickAction";
+import { ReturnToCampQuickAction } from "@/components/ReturnToCampQuickAction";
 import { StaffAccessHint } from "@/components/dashboard/StaffAccessHint";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAppAnalytics } from "@/hooks/useAppAnalytics";
@@ -60,6 +61,11 @@ const HomePage = () => {
           {/* Mina Tent Locations — quick action */}
           <section className="animate-fade-up" style={{ animationDelay: "70ms" }}>
             <MinaTentsQuickAction />
+          </section>
+
+          {/* Return to My Camp — Lost Mode */}
+          <section className="animate-fade-up" style={{ animationDelay: "75ms" }}>
+            <ReturnToCampQuickAction />
           </section>
 
 
