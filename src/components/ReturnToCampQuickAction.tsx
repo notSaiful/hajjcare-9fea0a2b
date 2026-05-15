@@ -50,7 +50,7 @@ export const ReturnToCampQuickAction = () => {
           <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary/10 text-primary text-[11px] font-semibold">
             <Navigation className="w-3 h-3" /> {t.navigateToCamp}
           </span>
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-islamic-gold/15 text-islamic-gold-foreground text-[11px] font-semibold">
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300 text-[11px] font-semibold">
             <Phone className="w-3 h-3" /> {t.callGroupLeader}
           </span>
           <span className={`ms-auto inline-flex items-center gap-1 text-primary text-xs font-bold ${isRTL ? "" : ""}`}>
