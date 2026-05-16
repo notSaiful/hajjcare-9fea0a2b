@@ -209,6 +209,71 @@ export default function ReturnToCampPage() {
     }
   };
 
+  // PANIC: Alert family via WhatsApp deep link + native share (with live location)
+  const handleAlertFamily = () => {
+    if (!saved?.leaderPhone) {
+      toast({ title: t.alertFamilyNoLeader, variant: "destructive" });
+      vibrate([80, 40, 80]);
+      return;
+    }
+    setAlerting(true);
+    vibrate([100, 50, 100, 50, 100]);
+
+    const buildMessage = (locUrl?: string) => {
+      const lines = [
+        "🆘 SafeReturn — I AM LOST",
+        `${t.showCardLabelLost}`,
+        "",
+        saved.maktab ? `Maktab: ${saved.maktab}` : "",
+        saved.tent ? `Tent: ${saved.tent}` : "",
+        saved.sector ? `Sector: ${saved.sector}` : "",
+        saved.groupCompany ? `Group: ${saved.groupCompany}` : "",
+        saved.hotel ? `Hotel: ${saved.hotel}` : "",
+        "",
+        locUrl ? `📍 Live location: ${locUrl}` : "📍 Location unavailable",
+        "",
+        "— Sent from HajjCare SafeReturn",
+      ].filter(Boolean).join("\n");
+      return lines;
+    };
+
+    const openWhatsApp = (msg: string) => {
+      const phone = saved.leaderPhone!.replace(/[^\d+]/g, "").replace(/^\+/, "");
+      const url = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+      window.open(url, "_blank", "noopener,noreferrer");
+      toast({ title: t.alertFamilySent });
+      // Best-effort native share too (lets user pick more channels)
+      if (navigator.share) {
+        navigator.share({ title: "SafeReturn — I am lost", text: msg }).catch(() => {});
+      }
+      setAlerting(false);
+    };
+
+    if (!navigator.geolocation) {
+      openWhatsApp(buildMessage());
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const url = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
+        openWhatsApp(buildMessage(url));
+      },
+      () => openWhatsApp(buildMessage()),
+      { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
+    );
+  };
+
+  // Keep screen awake while fullscreen card is shown
+  useEffect(() => {
+    if (!fullscreen) return;
+    let wakeLock: any = null;
+    const nav = navigator as any;
+    if (nav.wakeLock?.request) {
+      nav.wakeLock.request("screen").then((wl: any) => { wakeLock = wl; }).catch(() => {});
+    }
+    return () => { try { wakeLock?.release?.(); } catch { /* ignore */ } };
+  }, [fullscreen]);
+
   return (
     <div className="min-h-screen bg-background" dir={isRTL ? "rtl" : "ltr"}>
       {/* Emergency-styled sticky header */}
