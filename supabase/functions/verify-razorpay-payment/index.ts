@@ -168,7 +168,7 @@ serve(async (req) => {
       .insert({
         user_id: user.id,
         invoice_number,
-        service_name: service_name || "HajjCare App Maintenance Service Fee",
+        service_name: safe_service_name,
         base_amount,
         gst_rate: 18.0,
         gst_amount,
@@ -176,9 +176,9 @@ serve(async (req) => {
         razorpay_order_id,
         razorpay_payment_id: razorpay_payment_id || null,
         payment_status: verifiedStatus,
-        customer_name: customer_name || null,
-        customer_email: customer_email || null,
-        org_gstin: org_gstin || null,
+        customer_name: safe_customer_name,
+        customer_email: safe_customer_email,
+        org_gstin: safe_org_gstin,
       });
 
     if (insertError) {
