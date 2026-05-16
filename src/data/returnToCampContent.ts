@@ -220,6 +220,12 @@ const ar: ReturnToCampLabels = {
   qaSubtitle: "عودة آمنة · مسار وقائد وبطاقة عربية بضغطة · يعمل بدون إنترنت",
   qaCta: "افتح عودة آمنة",
   qaBadge: "طوارئ",
+  alertFamilyBtn: "أنا تائه — أبلغ عائلتي الآن",
+  alertFamilyNoLeader: "أضف رقم قائد المجموعة في مخيمك المحفوظ لإبلاغ العائلة بضغطة واحدة.",
+  alertFamilySent: "جارٍ فتح واتساب مع موقعك…",
+  fullscreenCardBtn: "اعرض البطاقة العربية بملء الشاشة",
+  fullscreenClose: "إغلاق",
+  fullscreenHint: "أظهر هذا لأي عامل أو شرطي أو متطوع قريب",
 };
 
 const ur: ReturnToCampLabels = {
