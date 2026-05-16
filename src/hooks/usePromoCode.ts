@@ -8,13 +8,10 @@ export const usePromoCode = () => {
   }, []);
 
   const getWelcomePromoRemaining = useCallback(async () => {
-    const { data } = await (supabase as any)
-      .from("public_promo_codes")
-      .select("max_uses, current_uses")
-      .eq("code", "HAJJCARE50")
-      .maybeSingle();
-    if (data && data.max_uses) {
-      return data.max_uses - data.current_uses;
+    const { data } = await (supabase as any).rpc("get_public_promo_code", { p_code: "HAJJCARE50" });
+    const row = Array.isArray(data) ? data[0] : data;
+    if (row && row.max_uses) {
+      return row.max_uses - (row.current_uses ?? 0);
     }
     return 0;
   }, []);
