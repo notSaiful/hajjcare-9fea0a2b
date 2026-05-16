@@ -582,6 +582,74 @@ export default function ReturnToCampPage() {
           </CardContent>
         </Card>
       </main>
+
+      {/* FULLSCREEN Arabic help card — for showing to locals in panic */}
+      {fullscreen && maktab && (
+        <div
+          className="fixed inset-0 z-50 bg-white text-black flex flex-col"
+          style={{ filter: "brightness(1.15) contrast(1.05)" }}
+          role="dialog"
+          aria-modal="true"
+          onClick={() => setFullscreen(false)}
+        >
+          <div className="flex items-center justify-between px-4 py-3 border-b border-black/10 bg-primary text-primary-foreground">
+            <span className="text-sm font-bold uppercase tracking-wider">{t.fullscreenHint}</span>
+            <Button
+              size="icon"
+              variant="secondary"
+              onClick={(e) => { e.stopPropagation(); setFullscreen(false); }}
+              aria-label={t.fullscreenClose}
+              className="h-11 w-11"
+            >
+              <X className="w-6 h-6" />
+            </Button>
+          </div>
+          <div
+            dir="rtl"
+            className="flex-1 overflow-auto flex flex-col items-center justify-center text-center px-6 py-8 gap-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <p className="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight text-black">
+              {t.showCardArabicLine}
+            </p>
+            <div className="w-full max-w-md grid grid-cols-2 gap-4 text-black">
+              <div className="rounded-2xl border-4 border-black/80 p-4">
+                <p className="text-base font-bold opacity-70">المكتب</p>
+                <p className="text-5xl font-black tabular-nums" dir="ltr">{maktab.maktab}</p>
+              </div>
+              <div className="rounded-2xl border-4 border-black/80 p-4">
+                <p className="text-base font-bold opacity-70">الشارع</p>
+                <p className="text-2xl font-extrabold break-words" dir="ltr">{maktab.campStreet}</p>
+              </div>
+              <div className="col-span-2 rounded-2xl border-4 border-black/80 p-4">
+                <p className="text-base font-bold opacity-70">هاتف المدير</p>
+                <p className="text-3xl font-mono font-extrabold tracking-wider" dir="ltr">+966 {maktab.manager.phone}</p>
+                <p className="text-base font-semibold mt-1">{maktab.manager.name}</p>
+              </div>
+              {saved?.tent && (
+                <div className="rounded-2xl border-4 border-black/80 p-4">
+                  <p className="text-base font-bold opacity-70">الخيمة</p>
+                  <p className="text-3xl font-extrabold" dir="ltr">{saved.tent}</p>
+                </div>
+              )}
+              {saved?.groupCompany && (
+                <div className={`rounded-2xl border-4 border-black/80 p-4 ${saved?.tent ? "" : "col-span-2"}`}>
+                  <p className="text-base font-bold opacity-70">المجموعة</p>
+                  <p className="text-2xl font-extrabold break-words" dir="ltr">{saved.groupCompany}</p>
+                </div>
+              )}
+            </div>
+            <Button
+              onClick={(e) => { e.stopPropagation(); handleSpeakArabic(); }}
+              className="h-14 px-6 text-base font-bold gap-2"
+              size="lg"
+            >
+              <Volume2 className="w-5 h-5" />
+              {t.speakArabic}
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
