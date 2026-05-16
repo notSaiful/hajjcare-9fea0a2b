@@ -289,6 +289,12 @@ const ur: ReturnToCampLabels = {
   qaSubtitle: "سیف ریٹرن · ایک ٹیپ پر راستہ، لیڈر کال اور عربی کارڈ · آف لائن",
   qaCta: "سیف ریٹرن کھولیں",
   qaBadge: "ایمرجنسی",
+  alertFamilyBtn: "میں بچھڑ گیا — ابھی فیملی کو الرٹ کریں",
+  alertFamilyNoLeader: "ایک ٹیپ پر فیملی کو الرٹ کرنے کے لیے گروپ لیڈر کا فون شامل کریں۔",
+  alertFamilySent: "آپ کی لوکیشن کے ساتھ واٹس ایپ کھل رہا ہے…",
+  fullscreenCardBtn: "عربی کارڈ فل اسکرین دکھائیں",
+  fullscreenClose: "بند کریں",
+  fullscreenHint: "یہ قریب کے کسی کارکن، پولیس یا رضاکار کو دکھائیں",
 };
 
 const hi: ReturnToCampLabels = {
