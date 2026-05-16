@@ -49,6 +49,15 @@ const formatDateShort = (dateStr: string) =>
     year: "numeric",
   });
 
+// Escape HTML to prevent XSS when interpolating user-supplied data into invoice HTML.
+const esc = (v: unknown): string =>
+  String(v ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+
 // Generate a printable PDF-style invoice in a new window
 function generateInvoicePDF(inv: Invoice) {
   const html = `
