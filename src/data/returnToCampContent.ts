@@ -76,6 +76,13 @@ export type ReturnToCampLabels = {
   qaSubtitle: string;
   qaCta: string;
   qaBadge: string;
+  // Panic actions
+  alertFamilyBtn: string;
+  alertFamilyNoLeader: string;
+  alertFamilySent: string;
+  fullscreenCardBtn: string;
+  fullscreenClose: string;
+  fullscreenHint: string;
 };
 
 const en: ReturnToCampLabels = {
