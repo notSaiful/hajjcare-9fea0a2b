@@ -34,6 +34,13 @@ export function InvoicePreview({
   });
 
   const handleDownloadPDF = () => {
+    const esc = (v: unknown): string =>
+      String(v ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
     const html = `
       <!DOCTYPE html><html><head><title>Invoice Preview - HajjCare</title>
       <style>
@@ -57,15 +64,15 @@ export function InvoicePreview({
         <span class="badge">Draft</span>
       </div>
       <div class="meta">
-        <div><div class="label">Billed By</div><strong>${orgName}</strong>${orgGstin ? `<br><span style="font-size:11px;color:#666">GSTIN: ${orgGstin}</span>` : ""}</div>
-        <div style="text-align:right"><div class="label">Date</div><strong>${today}</strong></div>
+        <div><div class="label">Billed By</div><strong>${esc(orgName)}</strong>${orgGstin ? `<br><span style="font-size:11px;color:#666">GSTIN: ${esc(orgGstin)}</span>` : ""}</div>
+        <div style="text-align:right"><div class="label">Date</div><strong>${esc(today)}</strong></div>
       </div>
       <table>
         <thead><tr><th>Description</th><th>Amount</th></tr></thead>
         <tbody>
-          <tr><td>${serviceName}<br><span style="font-size:11px;color:#888">Digital service fee (non-refundable)</span></td><td>₹${baseAmount.toFixed(2)}</td></tr>
-          <tr><td>GST @${gstRate}%<br><span style="font-size:11px;color:#888">Goods & Services Tax (India)</span></td><td>₹${gstAmount.toFixed(2)}</td></tr>
-          <tr class="total-row"><td>Total Payable</td><td>₹${totalAmount.toFixed(2)}</td></tr>
+          <tr><td>${esc(serviceName)}<br><span style="font-size:11px;color:#888">Digital service fee (non-refundable)</span></td><td>₹${esc(baseAmount.toFixed(2))}</td></tr>
+          <tr><td>GST @${esc(gstRate)}%<br><span style="font-size:11px;color:#888">Goods & Services Tax (India)</span></td><td>₹${esc(gstAmount.toFixed(2))}</td></tr>
+          <tr class="total-row"><td>Total Payable</td><td>₹${esc(totalAmount.toFixed(2))}</td></tr>
         </tbody>
       </table>
       <div class="footer">This is a draft invoice preview. A final GST-compliant invoice will be generated after successful payment.</div>
