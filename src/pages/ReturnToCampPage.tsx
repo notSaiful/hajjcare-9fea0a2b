@@ -480,6 +480,18 @@ export default function ReturnToCampPage() {
 
               {/* MASSIVE one-tap actions */}
               <div className="grid grid-cols-1 gap-2.5">
+                {/* PANIC: alert family with live location via WhatsApp */}
+                <Button
+                  onClick={handleAlertFamily}
+                  disabled={alerting}
+                  variant="destructive"
+                  className="w-full h-16 text-base font-bold gap-2.5 shadow-lg animate-pulse-slow"
+                  size="lg"
+                >
+                  {alerting ? <Loader2 className="w-6 h-6 animate-spin" /> : <Siren className="w-6 h-6" />}
+                  {t.alertFamilyBtn}
+                </Button>
+
                 <a href={mapsUrl} target="_blank" rel="noopener noreferrer" onClick={() => vibrate(20)}>
                   <Button className="w-full h-16 text-base font-bold gap-2.5" size="lg">
                     <Navigation className="w-6 h-6" />
