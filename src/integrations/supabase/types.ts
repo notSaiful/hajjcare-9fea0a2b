@@ -3116,6 +3116,39 @@ export type Database = {
         }
         Relationships: []
       }
+      public_promo_codes: {
+        Row: {
+          code: string | null
+          current_uses: number | null
+          discount_type: string | null
+          discount_value: number | null
+          max_uses: number | null
+          max_uses_per_user: number | null
+          valid_from: string | null
+          valid_until: string | null
+        }
+        Insert: {
+          code?: string | null
+          current_uses?: number | null
+          discount_type?: string | null
+          discount_value?: number | null
+          max_uses?: number | null
+          max_uses_per_user?: number | null
+          valid_from?: string | null
+          valid_until?: string | null
+        }
+        Update: {
+          code?: string | null
+          current_uses?: number | null
+          discount_type?: string | null
+          discount_value?: number | null
+          max_uses?: number | null
+          max_uses_per_user?: number | null
+          valid_from?: string | null
+          valid_until?: string | null
+        }
+        Relationships: []
+      }
       verified_operators_public: {
         Row: {
           avg_rating: number | null
