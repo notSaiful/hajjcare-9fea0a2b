@@ -151,6 +151,12 @@ const en: ReturnToCampLabels = {
   qaSubtitle: "SafeReturn · One-tap route, leader call & Arabic help card · Works offline",
   qaCta: "Open SafeReturn",
   qaBadge: "Emergency",
+  alertFamilyBtn: "I am LOST — Alert my family now",
+  alertFamilyNoLeader: "Add a group leader phone in your saved camp to alert family in one tap.",
+  alertFamilySent: "Opening WhatsApp with your location…",
+  fullscreenCardBtn: "Show full-screen Arabic card",
+  fullscreenClose: "Close",
+  fullscreenHint: "Show this to any worker, police or volunteer nearby",
 };
 
 const ar: ReturnToCampLabels = {
