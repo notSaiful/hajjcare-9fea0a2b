@@ -105,23 +105,23 @@ function generateInvoicePDF(inv: Invoice) {
   </div>
   <div class="invoice-badge">
     <h2>Invoice</h2>
-    <div class="inv-num">${inv.invoice_number}</div>
-    <div class="inv-date">${formatDate(inv.invoice_date)}</div>
+    <div class="inv-num">${esc(inv.invoice_number)}</div>
+    <div class="inv-date">${esc(formatDate(inv.invoice_date))}</div>
   </div>
 </div>
 
 <div class="parties">
   <div class="party-box">
     <h3>Billed By</h3>
-    <p class="name">${inv.org_name}</p>
-    <p>${inv.org_address || 'India'}</p>
-    ${inv.org_gstin ? `<p class="gstin">GSTIN: ${inv.org_gstin}</p>` : '<p style="color:#cc6600;font-size:11px;">GSTIN: Not configured</p>'}
+    <p class="name">${esc(inv.org_name)}</p>
+    <p>${esc(inv.org_address || 'India')}</p>
+    ${inv.org_gstin ? `<p class="gstin">GSTIN: ${esc(inv.org_gstin)}</p>` : '<p style="color:#cc6600;font-size:11px;">GSTIN: Not configured</p>'}
   </div>
   <div class="party-box">
     <h3>Billed To</h3>
-    <p class="name">${inv.customer_name || 'N/A'}</p>
-    ${inv.customer_email ? `<p>${inv.customer_email}</p>` : ''}
-    ${inv.customer_phone ? `<p>${inv.customer_phone}</p>` : ''}
+    <p class="name">${esc(inv.customer_name || 'N/A')}</p>
+    ${inv.customer_email ? `<p>${esc(inv.customer_email)}</p>` : ''}
+    ${inv.customer_phone ? `<p>${esc(inv.customer_phone)}</p>` : ''}
   </div>
 </div>
 
@@ -132,29 +132,29 @@ function generateInvoicePDF(inv: Invoice) {
   <tbody>
     <tr>
       <td>
-        ${inv.service_name}
+        ${esc(inv.service_name)}
         <div class="sub">Digital service fee (non-refundable)</div>
       </td>
-      <td>₹${formatAmount(inv.base_amount)}</td>
+      <td>₹${esc(formatAmount(inv.base_amount))}</td>
     </tr>
     <tr>
       <td>
-        GST @${inv.gst_rate}%
+        GST @${esc(inv.gst_rate)}%
         <div class="sub">Goods & Services Tax (India)</div>
       </td>
-      <td>₹${formatAmount(inv.gst_amount)}</td>
+      <td>₹${esc(formatAmount(inv.gst_amount))}</td>
     </tr>
     <tr class="total-row">
       <td>Total Amount Paid</td>
-      <td>₹${formatAmount(inv.total_amount)}</td>
+      <td>₹${esc(formatAmount(inv.total_amount))}</td>
     </tr>
   </tbody>
 </table>
 
 ${inv.razorpay_payment_id ? `
 <div class="txn-info">
-  Payment Transaction ID: <span>${inv.razorpay_payment_id}</span>
-  ${inv.razorpay_order_id ? `<br/>Order ID: <span>${inv.razorpay_order_id}</span>` : ''}
+  Payment Transaction ID: <span>${esc(inv.razorpay_payment_id)}</span>
+  ${inv.razorpay_order_id ? `<br/>Order ID: <span>${esc(inv.razorpay_order_id)}</span>` : ''}
 </div>` : ''}
 
 <div class="footer">
