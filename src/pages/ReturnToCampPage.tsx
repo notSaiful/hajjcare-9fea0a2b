@@ -314,18 +314,30 @@ export default function ReturnToCampPage() {
         {/* HERO: Big Arabic help banner — always visible when camp is saved */}
         {maktab && !editing && (
           <Card className="border-2 border-primary/40 bg-card overflow-hidden">
-            <div className="bg-primary text-primary-foreground px-4 py-3 flex items-center justify-between">
+            <div className="bg-primary text-primary-foreground px-4 py-3 flex items-center justify-between gap-2">
               <span className="text-xs font-bold uppercase tracking-wider">{t.showCardTitle}</span>
-              <Button
-                size="sm"
-                variant="secondary"
-                onClick={handleSpeakArabic}
-                className="h-9 gap-1.5"
-                aria-label={t.speakArabic}
-              >
-                <Volume2 className="w-4 h-4" />
-                <span className="text-xs">{t.speakArabic}</span>
-              </Button>
+              <div className="flex items-center gap-1.5">
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  onClick={() => { vibrate(20); setFullscreen(true); }}
+                  className="h-9 gap-1.5"
+                  aria-label={t.fullscreenCardBtn}
+                >
+                  <Maximize2 className="w-4 h-4" />
+                  <span className="text-xs hidden sm:inline">{t.fullscreenCardBtn}</span>
+                </Button>
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  onClick={handleSpeakArabic}
+                  className="h-9 gap-1.5"
+                  aria-label={t.speakArabic}
+                >
+                  <Volume2 className="w-4 h-4" />
+                  <span className="text-xs hidden sm:inline">{t.speakArabic}</span>
+                </Button>
+              </div>
             </div>
             <CardContent dir="rtl" className="p-5 space-y-4">
               <p className="text-2xl sm:text-3xl font-bold leading-snug text-center text-foreground">
