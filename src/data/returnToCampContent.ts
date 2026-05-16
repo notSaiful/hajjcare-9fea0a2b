@@ -76,6 +76,13 @@ export type ReturnToCampLabels = {
   qaSubtitle: string;
   qaCta: string;
   qaBadge: string;
+  // Panic actions
+  alertFamilyBtn: string;
+  alertFamilyNoLeader: string;
+  alertFamilySent: string;
+  fullscreenCardBtn: string;
+  fullscreenClose: string;
+  fullscreenHint: string;
 };
 
 const en: ReturnToCampLabels = {
@@ -144,6 +151,12 @@ const en: ReturnToCampLabels = {
   qaSubtitle: "SafeReturn · One-tap route, leader call & Arabic help card · Works offline",
   qaCta: "Open SafeReturn",
   qaBadge: "Emergency",
+  alertFamilyBtn: "I am LOST — Alert my family now",
+  alertFamilyNoLeader: "Add a group leader phone in your saved camp to alert family in one tap.",
+  alertFamilySent: "Opening WhatsApp with your location…",
+  fullscreenCardBtn: "Show full-screen Arabic card",
+  fullscreenClose: "Close",
+  fullscreenHint: "Show this to any worker, police or volunteer nearby",
 };
 
 const ar: ReturnToCampLabels = {
@@ -207,6 +220,12 @@ const ar: ReturnToCampLabels = {
   qaSubtitle: "عودة آمنة · مسار وقائد وبطاقة عربية بضغطة · يعمل بدون إنترنت",
   qaCta: "افتح عودة آمنة",
   qaBadge: "طوارئ",
+  alertFamilyBtn: "أنا تائه — أبلغ عائلتي الآن",
+  alertFamilyNoLeader: "أضف رقم قائد المجموعة في مخيمك المحفوظ لإبلاغ العائلة بضغطة واحدة.",
+  alertFamilySent: "جارٍ فتح واتساب مع موقعك…",
+  fullscreenCardBtn: "اعرض البطاقة العربية بملء الشاشة",
+  fullscreenClose: "إغلاق",
+  fullscreenHint: "أظهر هذا لأي عامل أو شرطي أو متطوع قريب",
 };
 
 const ur: ReturnToCampLabels = {
@@ -270,6 +289,12 @@ const ur: ReturnToCampLabels = {
   qaSubtitle: "سیف ریٹرن · ایک ٹیپ پر راستہ، لیڈر کال اور عربی کارڈ · آف لائن",
   qaCta: "سیف ریٹرن کھولیں",
   qaBadge: "ایمرجنسی",
+  alertFamilyBtn: "میں بچھڑ گیا — ابھی فیملی کو الرٹ کریں",
+  alertFamilyNoLeader: "ایک ٹیپ پر فیملی کو الرٹ کرنے کے لیے گروپ لیڈر کا فون شامل کریں۔",
+  alertFamilySent: "آپ کی لوکیشن کے ساتھ واٹس ایپ کھل رہا ہے…",
+  fullscreenCardBtn: "عربی کارڈ فل اسکرین دکھائیں",
+  fullscreenClose: "بند کریں",
+  fullscreenHint: "یہ قریب کے کسی کارکن، پولیس یا رضاکار کو دکھائیں",
 };
 
 const hi: ReturnToCampLabels = {
@@ -333,6 +358,12 @@ const hi: ReturnToCampLabels = {
   qaSubtitle: "सेफरिटर्न · एक टैप पर रास्ता, लीडर कॉल व अरबी कार्ड · ऑफ़लाइन",
   qaCta: "सेफरिटर्न खोलें",
   qaBadge: "आपातकाल",
+  alertFamilyBtn: "मैं बिछड़ गया — परिवार को अभी अलर्ट करें",
+  alertFamilyNoLeader: "एक टैप पर परिवार को अलर्ट करने के लिए ग्रुप लीडर का फ़ोन जोड़ें।",
+  alertFamilySent: "आपकी लोकेशन के साथ व्हाट्सएप खुल रहा है…",
+  fullscreenCardBtn: "अरबी कार्ड फुल-स्क्रीन दिखाएँ",
+  fullscreenClose: "बंद करें",
+  fullscreenHint: "यह पास के किसी कर्मचारी, पुलिस या स्वयंसेवक को दिखाएँ",
 };
 
 const ta: ReturnToCampLabels = { ...en, qaTitle: "தொலைந்தீரா? முகாமுக்குத் திரும்பு", qaSubtitle: "சேஃப்-ரிட்டர்ன் · ஒரே தட்டில் வழி, தலைவர் & அரபு உதவி", qaCta: "சேஃப்-ரிட்டர்ன் திற", qaBadge: "அவசரம்" };

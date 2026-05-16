@@ -17,6 +17,9 @@ import {
   Loader2,
   Building2,
   Users,
+  Siren,
+  Maximize2,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -101,6 +104,8 @@ export default function ReturnToCampPage() {
   const [draft, setDraft] = useState<SavedCamp>({ maktab: "" });
   const [error, setError] = useState<string | null>(null);
   const [sharing, setSharing] = useState(false);
+  const [alerting, setAlerting] = useState(false);
+  const [fullscreen, setFullscreen] = useState(false);
   const [farFromMina, setFarFromMina] = useState(false);
   const checkedFarRef = useRef(false);
 
@@ -204,6 +209,71 @@ export default function ReturnToCampPage() {
     }
   };
 
+  // PANIC: Alert family via WhatsApp deep link + native share (with live location)
+  const handleAlertFamily = () => {
+    if (!saved?.leaderPhone) {
+      toast({ title: t.alertFamilyNoLeader, variant: "destructive" });
+      vibrate([80, 40, 80]);
+      return;
+    }
+    setAlerting(true);
+    vibrate([100, 50, 100, 50, 100]);
+
+    const buildMessage = (locUrl?: string) => {
+      const lines = [
+        "🆘 SafeReturn — I AM LOST",
+        `${t.showCardLabelLost}`,
+        "",
+        saved.maktab ? `Maktab: ${saved.maktab}` : "",
+        saved.tent ? `Tent: ${saved.tent}` : "",
+        saved.sector ? `Sector: ${saved.sector}` : "",
+        saved.groupCompany ? `Group: ${saved.groupCompany}` : "",
+        saved.hotel ? `Hotel: ${saved.hotel}` : "",
+        "",
+        locUrl ? `📍 Live location: ${locUrl}` : "📍 Location unavailable",
+        "",
+        "— Sent from HajjCare SafeReturn",
+      ].filter(Boolean).join("\n");
+      return lines;
+    };
+
+    const openWhatsApp = (msg: string) => {
+      const phone = saved.leaderPhone!.replace(/[^\d+]/g, "").replace(/^\+/, "");
+      const url = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+      window.open(url, "_blank", "noopener,noreferrer");
+      toast({ title: t.alertFamilySent });
+      // Best-effort native share too (lets user pick more channels)
+      if (navigator.share) {
+        navigator.share({ title: "SafeReturn — I am lost", text: msg }).catch(() => {});
+      }
+      setAlerting(false);
+    };
+
+    if (!navigator.geolocation) {
+      openWhatsApp(buildMessage());
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const url = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
+        openWhatsApp(buildMessage(url));
+      },
+      () => openWhatsApp(buildMessage()),
+      { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
+    );
+  };
+
+  // Keep screen awake while fullscreen card is shown
+  useEffect(() => {
+    if (!fullscreen) return;
+    let wakeLock: any = null;
+    const nav = navigator as any;
+    if (nav.wakeLock?.request) {
+      nav.wakeLock.request("screen").then((wl: any) => { wakeLock = wl; }).catch(() => {});
+    }
+    return () => { try { wakeLock?.release?.(); } catch { /* ignore */ } };
+  }, [fullscreen]);
+
   return (
     <div className="min-h-screen bg-background" dir={isRTL ? "rtl" : "ltr"}>
       {/* Emergency-styled sticky header */}
@@ -244,18 +314,30 @@ export default function ReturnToCampPage() {
         {/* HERO: Big Arabic help banner — always visible when camp is saved */}
         {maktab && !editing && (
           <Card className="border-2 border-primary/40 bg-card overflow-hidden">
-            <div className="bg-primary text-primary-foreground px-4 py-3 flex items-center justify-between">
+            <div className="bg-primary text-primary-foreground px-4 py-3 flex items-center justify-between gap-2">
               <span className="text-xs font-bold uppercase tracking-wider">{t.showCardTitle}</span>
-              <Button
-                size="sm"
-                variant="secondary"
-                onClick={handleSpeakArabic}
-                className="h-9 gap-1.5"
-                aria-label={t.speakArabic}
-              >
-                <Volume2 className="w-4 h-4" />
-                <span className="text-xs">{t.speakArabic}</span>
-              </Button>
+              <div className="flex items-center gap-1.5">
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  onClick={() => { vibrate(20); setFullscreen(true); }}
+                  className="h-9 gap-1.5"
+                  aria-label={t.fullscreenCardBtn}
+                >
+                  <Maximize2 className="w-4 h-4" />
+                  <span className="text-xs hidden sm:inline">{t.fullscreenCardBtn}</span>
+                </Button>
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  onClick={handleSpeakArabic}
+                  className="h-9 gap-1.5"
+                  aria-label={t.speakArabic}
+                >
+                  <Volume2 className="w-4 h-4" />
+                  <span className="text-xs hidden sm:inline">{t.speakArabic}</span>
+                </Button>
+              </div>
             </div>
             <CardContent dir="rtl" className="p-5 space-y-4">
               <p className="text-2xl sm:text-3xl font-bold leading-snug text-center text-foreground">
@@ -398,6 +480,18 @@ export default function ReturnToCampPage() {
 
               {/* MASSIVE one-tap actions */}
               <div className="grid grid-cols-1 gap-2.5">
+                {/* PANIC: alert family with live location via WhatsApp */}
+                <Button
+                  onClick={handleAlertFamily}
+                  disabled={alerting}
+                  variant="destructive"
+                  className="w-full h-16 text-base font-bold gap-2.5 shadow-lg"
+                  size="lg"
+                >
+                  {alerting ? <Loader2 className="w-6 h-6 animate-spin" /> : <Siren className="w-6 h-6" />}
+                  {t.alertFamilyBtn}
+                </Button>
+
                 <a href={mapsUrl} target="_blank" rel="noopener noreferrer" onClick={() => vibrate(20)}>
                   <Button className="w-full h-16 text-base font-bold gap-2.5" size="lg">
                     <Navigation className="w-6 h-6" />
@@ -488,6 +582,74 @@ export default function ReturnToCampPage() {
           </CardContent>
         </Card>
       </main>
+
+      {/* FULLSCREEN Arabic help card — for showing to locals in panic */}
+      {fullscreen && maktab && (
+        <div
+          className="fixed inset-0 z-50 bg-white text-black flex flex-col"
+          style={{ filter: "brightness(1.15) contrast(1.05)" }}
+          role="dialog"
+          aria-modal="true"
+          onClick={() => setFullscreen(false)}
+        >
+          <div className="flex items-center justify-between px-4 py-3 border-b border-black/10 bg-primary text-primary-foreground">
+            <span className="text-sm font-bold uppercase tracking-wider">{t.fullscreenHint}</span>
+            <Button
+              size="icon"
+              variant="secondary"
+              onClick={(e) => { e.stopPropagation(); setFullscreen(false); }}
+              aria-label={t.fullscreenClose}
+              className="h-11 w-11"
+            >
+              <X className="w-6 h-6" />
+            </Button>
+          </div>
+          <div
+            dir="rtl"
+            className="flex-1 overflow-auto flex flex-col items-center justify-center text-center px-6 py-8 gap-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <p className="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight text-black">
+              {t.showCardArabicLine}
+            </p>
+            <div className="w-full max-w-md grid grid-cols-2 gap-4 text-black">
+              <div className="rounded-2xl border-4 border-black/80 p-4">
+                <p className="text-base font-bold opacity-70">المكتب</p>
+                <p className="text-5xl font-black tabular-nums" dir="ltr">{maktab.maktab}</p>
+              </div>
+              <div className="rounded-2xl border-4 border-black/80 p-4">
+                <p className="text-base font-bold opacity-70">الشارع</p>
+                <p className="text-2xl font-extrabold break-words" dir="ltr">{maktab.campStreet}</p>
+              </div>
+              <div className="col-span-2 rounded-2xl border-4 border-black/80 p-4">
+                <p className="text-base font-bold opacity-70">هاتف المدير</p>
+                <p className="text-3xl font-mono font-extrabold tracking-wider" dir="ltr">+966 {maktab.manager.phone}</p>
+                <p className="text-base font-semibold mt-1">{maktab.manager.name}</p>
+              </div>
+              {saved?.tent && (
+                <div className="rounded-2xl border-4 border-black/80 p-4">
+                  <p className="text-base font-bold opacity-70">الخيمة</p>
+                  <p className="text-3xl font-extrabold" dir="ltr">{saved.tent}</p>
+                </div>
+              )}
+              {saved?.groupCompany && (
+                <div className={`rounded-2xl border-4 border-black/80 p-4 ${saved?.tent ? "" : "col-span-2"}`}>
+                  <p className="text-base font-bold opacity-70">المجموعة</p>
+                  <p className="text-2xl font-extrabold break-words" dir="ltr">{saved.groupCompany}</p>
+                </div>
+              )}
+            </div>
+            <Button
+              onClick={(e) => { e.stopPropagation(); handleSpeakArabic(); }}
+              className="h-14 px-6 text-base font-bold gap-2"
+              size="lg"
+            >
+              <Volume2 className="w-5 h-5" />
+              {t.speakArabic}
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
