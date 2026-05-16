@@ -358,6 +358,12 @@ const hi: ReturnToCampLabels = {
   qaSubtitle: "सेफरिटर्न · एक टैप पर रास्ता, लीडर कॉल व अरबी कार्ड · ऑफ़लाइन",
   qaCta: "सेफरिटर्न खोलें",
   qaBadge: "आपातकाल",
+  alertFamilyBtn: "मैं बिछड़ गया — परिवार को अभी अलर्ट करें",
+  alertFamilyNoLeader: "एक टैप पर परिवार को अलर्ट करने के लिए ग्रुप लीडर का फ़ोन जोड़ें।",
+  alertFamilySent: "आपकी लोकेशन के साथ व्हाट्सएप खुल रहा है…",
+  fullscreenCardBtn: "अरबी कार्ड फुल-स्क्रीन दिखाएँ",
+  fullscreenClose: "बंद करें",
+  fullscreenHint: "यह पास के किसी कर्मचारी, पुलिस या स्वयंसेवक को दिखाएँ",
 };
 
 const ta: ReturnToCampLabels = { ...en, qaTitle: "தொலைந்தீரா? முகாமுக்குத் திரும்பு", qaSubtitle: "சேஃப்-ரிட்டர்ன் · ஒரே தட்டில் வழி, தலைவர் & அரபு உதவி", qaCta: "சேஃப்-ரிட்டர்ன் திற", qaBadge: "அவசரம்" };
