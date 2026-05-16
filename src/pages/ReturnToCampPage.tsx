@@ -104,6 +104,8 @@ export default function ReturnToCampPage() {
   const [draft, setDraft] = useState<SavedCamp>({ maktab: "" });
   const [error, setError] = useState<string | null>(null);
   const [sharing, setSharing] = useState(false);
+  const [alerting, setAlerting] = useState(false);
+  const [fullscreen, setFullscreen] = useState(false);
   const [farFromMina, setFarFromMina] = useState(false);
   const checkedFarRef = useRef(false);
 
