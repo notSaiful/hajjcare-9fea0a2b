@@ -8,11 +8,10 @@ export const usePromoCode = () => {
   }, []);
 
   const getWelcomePromoRemaining = useCallback(async () => {
-    const { data } = await supabase
-      .from("promo_codes")
+    const { data } = await (supabase as any)
+      .from("public_promo_codes")
       .select("max_uses, current_uses")
       .eq("code", "HAJJCARE50")
-      .eq("is_active", true)
       .maybeSingle();
     if (data && data.max_uses) {
       return data.max_uses - data.current_uses;
