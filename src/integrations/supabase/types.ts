@@ -3116,39 +3116,6 @@ export type Database = {
         }
         Relationships: []
       }
-      public_promo_codes: {
-        Row: {
-          code: string | null
-          current_uses: number | null
-          discount_type: string | null
-          discount_value: number | null
-          max_uses: number | null
-          max_uses_per_user: number | null
-          valid_from: string | null
-          valid_until: string | null
-        }
-        Insert: {
-          code?: string | null
-          current_uses?: number | null
-          discount_type?: string | null
-          discount_value?: number | null
-          max_uses?: number | null
-          max_uses_per_user?: number | null
-          valid_from?: string | null
-          valid_until?: string | null
-        }
-        Update: {
-          code?: string | null
-          current_uses?: number | null
-          discount_type?: string | null
-          discount_value?: number | null
-          max_uses?: number | null
-          max_uses_per_user?: number | null
-          valid_from?: string | null
-          valid_until?: string | null
-        }
-        Relationships: []
-      }
       verified_operators_public: {
         Row: {
           avg_rating: number | null
@@ -3280,6 +3247,19 @@ export type Database = {
           full_name: string
           id: string
           user_id: string
+        }[]
+      }
+      get_public_promo_code: {
+        Args: { p_code: string }
+        Returns: {
+          code: string
+          current_uses: number
+          discount_type: string
+          discount_value: number
+          max_uses: number
+          max_uses_per_user: number
+          valid_from: string
+          valid_until: string
         }[]
       }
       has_active_consent: {
