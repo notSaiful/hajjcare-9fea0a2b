@@ -485,7 +485,7 @@ export default function ReturnToCampPage() {
                   onClick={handleAlertFamily}
                   disabled={alerting}
                   variant="destructive"
-                  className="w-full h-16 text-base font-bold gap-2.5 shadow-lg animate-pulse-slow"
+                  className="w-full h-16 text-base font-bold gap-2.5 shadow-lg"
                   size="lg"
                 >
                   {alerting ? <Loader2 className="w-6 h-6 animate-spin" /> : <Siren className="w-6 h-6" />}
