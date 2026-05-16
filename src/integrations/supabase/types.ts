@@ -3249,6 +3249,19 @@ export type Database = {
           user_id: string
         }[]
       }
+      get_public_promo_code: {
+        Args: { p_code: string }
+        Returns: {
+          code: string
+          current_uses: number
+          discount_type: string
+          discount_value: number
+          max_uses: number
+          max_uses_per_user: number
+          valid_from: string
+          valid_until: string
+        }[]
+      }
       has_active_consent: {
         Args: { p_purpose: string; p_user_id: string }
         Returns: boolean

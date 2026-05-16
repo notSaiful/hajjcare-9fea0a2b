@@ -85,6 +85,20 @@ serve(async (req) => {
       });
     }
 
+    // Sanitize free-text invoice fields to prevent stored XSS / injection downstream.
+    const safeText = (v: unknown, max: number, pattern?: RegExp): string | null => {
+      if (v == null) return null;
+      const s = String(v).trim().slice(0, max);
+      if (!s) return null;
+      if (pattern && !pattern.test(s)) return null;
+      // strip control chars and HTML-significant characters
+      return s.replace(/[\u0000-\u001F\u007F<>"'`]/g, "");
+    };
+    const safe_service_name = safeText(service_name, 120) ?? "HajjCare App Maintenance Service Fee";
+    const safe_customer_name = safeText(customer_name, 100);
+    const safe_customer_email = safeText(customer_email, 254, /^[^\s@]+@[^\s@]+\.[^\s@]+$/);
+    const safe_org_gstin = safeText(org_gstin, 20, /^[0-9A-Z]+$/);
+
     // Fetch authoritative order details from Razorpay — never trust client-supplied amounts.
     const rpAuth = btoa(`${KEY_ID}:${KEY_SECRET}`);
     const orderResp = await fetch(
@@ -154,7 +168,7 @@ serve(async (req) => {
       .insert({
         user_id: user.id,
         invoice_number,
-        service_name: service_name || "HajjCare App Maintenance Service Fee",
+        service_name: safe_service_name,
         base_amount,
         gst_rate: 18.0,
         gst_amount,
@@ -162,9 +176,9 @@ serve(async (req) => {
         razorpay_order_id,
         razorpay_payment_id: razorpay_payment_id || null,
         payment_status: verifiedStatus,
-        customer_name: customer_name || null,
-        customer_email: customer_email || null,
-        org_gstin: org_gstin || null,
+        customer_name: safe_customer_name,
+        customer_email: safe_customer_email,
+        org_gstin: safe_org_gstin,
       });
 
     if (insertError) {
