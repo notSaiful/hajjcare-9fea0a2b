@@ -237,7 +237,7 @@ const SukoonFamilyFeature = () => {
             width={622}
             height={622}
             decoding="async"
-            fetchPriority="high"
+            {...({ fetchpriority: "high" } as Record<string, string>)}
             className="w-full h-auto object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent" />
