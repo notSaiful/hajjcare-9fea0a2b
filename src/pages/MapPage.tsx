@@ -44,7 +44,7 @@ const MapPage = () => {
   const map = useRef<mapboxgl.Map | null>(null);
   const userMarker = useRef<mapboxgl.Marker | null>(null);
   const familyMarkers = useRef<Map<string, mapboxgl.Marker>>(new Map());
-  const { lat, lng, accuracy, stage, stageInfo, error, isLoading, refresh } = useHajjLocation();
+  const { lat, lng, accuracy, stage, stageInfo, error, isLoading, refresh, isStale, lastUpdatedAt } = useHajjLocation();
   const { t, language, isRTL } = useLanguage();
   const { group, memberLocations, memberId, updateLocation } = useFamilyGroup();
   const { processLocation, geofenceStatus, lastSensorResult } = useGeofencedTracking(group?.id ?? null);
