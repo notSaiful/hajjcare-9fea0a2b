@@ -304,6 +304,9 @@ export const EmergencySOS = () => {
               <div className="text-center text-xs text-muted-foreground/70 bg-muted/30 rounded-lg p-2">
                 📍 GPS: {lat.toFixed(5)}, {lng.toFixed(5)}
                 {stage && ` • ${stage}`}
+                {isStale && (
+                  <span className="block text-amber-600 mt-1 font-medium">⚠️ {t("locationStaleWarning")}</span>
+                )}
               </div>
             )}
           </AlertDialogHeader>
