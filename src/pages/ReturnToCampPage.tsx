@@ -253,11 +253,14 @@ export default function ReturnToCampPage() {
       return lines;
     };
 
-    const openWhatsApp = (msg: string) => {
+    const openWhatsApp = (msg: string, isFallback: boolean = false) => {
       const phone = saved.leaderPhone!.replace(/[^\d+]/g, "").replace(/^\+/, "");
       const url = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
       window.open(url, "_blank", "noopener,noreferrer");
       toast({ title: t.alertFamilySent });
+      if (isFallback) {
+        toast({ title: langT("locationStaleWarning") });
+      }
       // Best-effort native share too (lets user pick more channels)
       if (navigator.share) {
         navigator.share({ title: "SafeReturn — I am lost", text: msg }).catch(() => {});
@@ -271,10 +274,20 @@ export default function ReturnToCampPage() {
     }
     navigator.geolocation.getCurrentPosition(
       (pos) => {
-        const url = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
+        const { latitude, longitude } = pos.coords;
+        lastKnownPosRef.current = { lat: latitude, lng: longitude };
+        const url = `https://www.google.com/maps?q=${latitude},${longitude}`;
         openWhatsApp(buildMessage(url));
       },
-      () => openWhatsApp(buildMessage()),
+      () => {
+        const fallback = lastKnownPosRef.current;
+        if (fallback) {
+          const url = `https://www.google.com/maps?q=${fallback.lat},${fallback.lng}`;
+          openWhatsApp(buildMessage(url), true);
+        } else {
+          openWhatsApp(buildMessage());
+        }
+      },
       { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
     );
   };
