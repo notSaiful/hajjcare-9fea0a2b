@@ -98,6 +98,7 @@ function vibrate(pattern: number | number[]) {
 export default function ReturnToCampPage() {
   const { language, isRTL } = useLanguage();
   const t = getReturnToCampLabels(language);
+  const langT = useLanguage().t;
 
   const [saved, setSaved] = useState<SavedCamp | null>(null);
   const [editing, setEditing] = useState(false);
@@ -108,6 +109,7 @@ export default function ReturnToCampPage() {
   const [fullscreen, setFullscreen] = useState(false);
   const [farFromMina, setFarFromMina] = useState(false);
   const checkedFarRef = useRef(false);
+  const lastKnownPosRef = useRef<{ lat: number; lng: number } | null>(null);
 
   useEffect(() => {
     const s = readSaved();
@@ -167,30 +169,44 @@ export default function ReturnToCampPage() {
     }
     setSharing(true);
     vibrate(20);
+
+    const doShare = (latitude: number, longitude: number, isFallback: boolean = false) => {
+      const url = `https://www.google.com/maps?q=${latitude},${longitude}`;
+      const text =
+        `${t.showCardLabelLost}\n` +
+        (saved?.maktab ? `Maktab: ${saved.maktab}\n` : "") +
+        (saved?.tent ? `Tent: ${saved.tent}\n` : "") +
+        (saved?.sector ? `Sector: ${saved.sector}\n` : "") +
+        (saved?.groupCompany ? `Group: ${saved.groupCompany}\n` : "") +
+        `\n📍 ${url}`;
+      try {
+        if (navigator.share) {
+          navigator.share({ title: "SafeReturn — Live Location", text });
+        } else {
+          navigator.clipboard.writeText(text);
+          toast({ title: "Location copied to clipboard" });
+        }
+      } catch { /* user cancelled */ }
+      if (isFallback) {
+        toast({ title: langT("locationStaleWarning") });
+      }
+      setSharing(false);
+    };
+
     navigator.geolocation.getCurrentPosition(
-      async (pos) => {
+      (pos) => {
         const { latitude, longitude } = pos.coords;
-        const url = `https://www.google.com/maps?q=${latitude},${longitude}`;
-        const text =
-          `${t.showCardLabelLost}\n` +
-          (saved?.maktab ? `Maktab: ${saved.maktab}\n` : "") +
-          (saved?.tent ? `Tent: ${saved.tent}\n` : "") +
-          (saved?.sector ? `Sector: ${saved.sector}\n` : "") +
-          (saved?.groupCompany ? `Group: ${saved.groupCompany}\n` : "") +
-          `\n📍 ${url}`;
-        try {
-          if (navigator.share) {
-            await navigator.share({ title: "SafeReturn — Live Location", text });
-          } else {
-            await navigator.clipboard.writeText(text);
-            toast({ title: "Location copied to clipboard" });
-          }
-        } catch { /* user cancelled */ }
-        setSharing(false);
+        lastKnownPosRef.current = { lat: latitude, lng: longitude };
+        doShare(latitude, longitude);
       },
       () => {
-        toast({ title: t.shareLocationError, variant: "destructive" });
-        setSharing(false);
+        const fallback = lastKnownPosRef.current;
+        if (fallback) {
+          doShare(fallback.lat, fallback.lng, true);
+        } else {
+          toast({ title: t.shareLocationError, variant: "destructive" });
+          setSharing(false);
+        }
       },
       { enableHighAccuracy: true, timeout: 10000 }
     );
@@ -237,11 +253,14 @@ export default function ReturnToCampPage() {
       return lines;
     };
 
-    const openWhatsApp = (msg: string) => {
+    const openWhatsApp = (msg: string, isFallback: boolean = false) => {
       const phone = saved.leaderPhone!.replace(/[^\d+]/g, "").replace(/^\+/, "");
       const url = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
       window.open(url, "_blank", "noopener,noreferrer");
       toast({ title: t.alertFamilySent });
+      if (isFallback) {
+        toast({ title: langT("locationStaleWarning") });
+      }
       // Best-effort native share too (lets user pick more channels)
       if (navigator.share) {
         navigator.share({ title: "SafeReturn — I am lost", text: msg }).catch(() => {});
@@ -255,10 +274,20 @@ export default function ReturnToCampPage() {
     }
     navigator.geolocation.getCurrentPosition(
       (pos) => {
-        const url = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
+        const { latitude, longitude } = pos.coords;
+        lastKnownPosRef.current = { lat: latitude, lng: longitude };
+        const url = `https://www.google.com/maps?q=${latitude},${longitude}`;
         openWhatsApp(buildMessage(url));
       },
-      () => openWhatsApp(buildMessage()),
+      () => {
+        const fallback = lastKnownPosRef.current;
+        if (fallback) {
+          const url = `https://www.google.com/maps?q=${fallback.lat},${fallback.lng}`;
+          openWhatsApp(buildMessage(url), true);
+        } else {
+          openWhatsApp(buildMessage());
+        }
+      },
       { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
     );
   };

@@ -241,6 +241,8 @@ export interface LocationState {
   stageInfo: HajjStageInfo;
   error: string | null;
   isLoading: boolean;
+  isStale: boolean;
+  lastUpdatedAt: number | null;
 }
 
 export function useHajjLocation() {
@@ -252,6 +254,8 @@ export function useHajjLocation() {
     stageInfo: HAJJ_STAGES.unknown,
     error: null,
     isLoading: true,
+    isStale: false,
+    lastUpdatedAt: null,
   });
 
   const updateLocation = useCallback((position: GeolocationPosition) => {
@@ -265,6 +269,8 @@ export function useHajjLocation() {
       stageInfo: HAJJ_STAGES[stage],
       error: null,
       isLoading: false,
+      isStale: false,
+      lastUpdatedAt: Date.now(),
     });
   }, []);
 
@@ -281,13 +287,29 @@ export function useHajjLocation() {
         errorMsg = "Location request timeout";
         break;
     }
-    setState((prev) => ({
-      ...prev,
-      error: errorMsg,
-      isLoading: false,
-      stage: "unknown",
-      stageInfo: HAJJ_STAGES.unknown,
-    }));
+
+    // For timeout or position unavailable, preserve last known location but mark as stale
+    const isRecoverable = error.code === error.TIMEOUT || error.code === error.POSITION_UNAVAILABLE;
+
+    setState((prev) => {
+      if (isRecoverable && prev.lat !== null && prev.lng !== null) {
+        return {
+          ...prev,
+          error: errorMsg,
+          isLoading: false,
+          isStale: true,
+        };
+      }
+      return {
+        ...prev,
+        error: errorMsg,
+        isLoading: false,
+        stage: "unknown",
+        stageInfo: HAJJ_STAGES.unknown,
+        isStale: false,
+        lastUpdatedAt: null,
+      };
+    });
   }, []);
 
   const requestLocation = useCallback(() => {

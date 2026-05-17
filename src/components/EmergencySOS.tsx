@@ -118,9 +118,9 @@ const labels = {
 };
 
 export const EmergencySOS = () => {
-  const { language, isRTL } = useLanguage();
+  const { language, isRTL, t } = useLanguage();
   const { user, isAuthenticated } = useAuth();
-  const { lat, lng, stage, refresh } = useHajjLocation();
+  const { lat, lng, stage, refresh, isStale } = useHajjLocation();
   const [status, setStatus] = useState<SOSStatus>("idle");
 
   const getLabel = (key: keyof typeof labels) => {
@@ -304,6 +304,9 @@ export const EmergencySOS = () => {
               <div className="text-center text-xs text-muted-foreground/70 bg-muted/30 rounded-lg p-2">
                 📍 GPS: {lat.toFixed(5)}, {lng.toFixed(5)}
                 {stage && ` • ${stage}`}
+                {isStale && (
+                  <span className="block text-amber-600 mt-1 font-medium">⚠️ {t("locationStaleWarning")}</span>
+                )}
               </div>
             )}
           </AlertDialogHeader>

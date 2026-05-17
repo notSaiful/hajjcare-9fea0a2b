@@ -28,7 +28,8 @@ import {
   MapPinned,
   Home,
   Eye,
-  X
+  X,
+  AlertTriangle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -44,7 +45,7 @@ const MapPage = () => {
   const map = useRef<mapboxgl.Map | null>(null);
   const userMarker = useRef<mapboxgl.Marker | null>(null);
   const familyMarkers = useRef<Map<string, mapboxgl.Marker>>(new Map());
-  const { lat, lng, accuracy, stage, stageInfo, error, isLoading, refresh } = useHajjLocation();
+  const { lat, lng, accuracy, stage, stageInfo, error, isLoading, refresh, isStale, lastUpdatedAt } = useHajjLocation();
   const { t, language, isRTL } = useLanguage();
   const { group, memberLocations, memberId, updateLocation } = useFamilyGroup();
   const { processLocation, geofenceStatus, lastSensorResult } = useGeofencedTracking(group?.id ?? null);
@@ -712,6 +713,23 @@ const MapPage = () => {
                   ? "أنت خارج حدود المشاعر المقدسة. يرجى العودة إلى المنطقة المحددة."
                   : "You are outside the sacred sites boundary. Please return to the designated area."}
               </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Stale Location Warning Banner */}
+      {isStale && (
+        <div className="absolute top-16 left-0 right-0 z-10 px-4">
+          <div className="bg-amber-50/95 backdrop-blur-xl text-amber-900 rounded-2xl p-3 flex items-center gap-3 shadow-lg border border-amber-200">
+            <AlertTriangle className="w-5 h-5 flex-shrink-0 text-amber-600" />
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold">{t("locationStaleWarning")}</p>
+              {lastUpdatedAt && (
+                <p className="text-xs text-amber-700">
+                  {t("lastUpdate")}: {Math.floor((Date.now() - lastUpdatedAt) / 60000)}m ago
+                </p>
+              )}
             </div>
           </div>
         </div>

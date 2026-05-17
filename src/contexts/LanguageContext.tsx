@@ -75,7 +75,8 @@ type TranslationKey =
   | "lastUpdate"
   | "preparationProgress"
   | "stepComplete"
-  | "stepPending";
+  | "stepPending"
+  | "locationStaleWarning";
 
 // Helper type for partial translations in data files - allows missing languages with fallback to English
 export type LocalizedString = { en: string } & Partial<Record<Exclude<Language, 'en'>, string>>;
@@ -145,6 +146,7 @@ const translations: Partial<Record<Language, Record<TranslationKey, string>>> = 
     preparationProgress: "Preparation Progress",
     stepComplete: "Complete",
     stepPending: "Pending",
+    locationStaleWarning: "Location not updated — showing last known position",
   },
   ar: {
     hajjGuide: "دليل الحج",
@@ -205,6 +207,7 @@ const translations: Partial<Record<Language, Record<TranslationKey, string>>> = 
     preparationProgress: "تقدم التحضير",
     stepComplete: "مكتمل",
     stepPending: "قيد الانتظار",
+    locationStaleWarning: "الموقع لم يُحدَّث — يُعرض آخر موقع معروف",
   },
   ur: {
     hajjGuide: "حج گائیڈ",
@@ -265,6 +268,7 @@ const translations: Partial<Record<Language, Record<TranslationKey, string>>> = 
     preparationProgress: "تیاری کی پیشرفت",
     stepComplete: "مکمل",
     stepPending: "زیر التواء",
+    locationStaleWarning: "Location update نہیں ہوئی — پچھلی location دکھائی جا رہی ہے",
   },
   hi: {
     hajjGuide: "हज गाइड",
@@ -325,6 +329,7 @@ const translations: Partial<Record<Language, Record<TranslationKey, string>>> = 
     preparationProgress: "तैयारी की प्रगति",
     stepComplete: "पूर्ण",
     stepPending: "लंबित",
+    locationStaleWarning: "Location update नहीं हुई — पिछली location दिखाई जा रही है",
   },
   ta: {
     hajjGuide: "ஹஜ் வழிகாட்டி",
@@ -385,6 +390,7 @@ const translations: Partial<Record<Language, Record<TranslationKey, string>>> = 
     preparationProgress: "தயாரிப்பு முன்னேற்றம்",
     stepComplete: "முடிந்தது",
     stepPending: "நிலுவையில்",
+    locationStaleWarning: "இடம் புதுப்பிக்கப்படவில்லை — கடைசியாக அறியப்பட்ட இடம் காட்டப்படுகிறது",
   },
   te: {
     hajjGuide: "హజ్ గైడ్",
@@ -445,6 +451,7 @@ const translations: Partial<Record<Language, Record<TranslationKey, string>>> = 
     preparationProgress: "తయారీ పురోగతి",
     stepComplete: "పూర్తయింది",
     stepPending: "పెండింగ్‌లో ఉంది",
+    locationStaleWarning: "స్థానం అప్‌డేట్ కాలేదు — చివరిగా తెలిసిన స్థానం చూపబడుతోంది",
   },
   mr: {
     hajjGuide: "हज मार्गदर्शक",
@@ -505,6 +512,7 @@ const translations: Partial<Record<Language, Record<TranslationKey, string>>> = 
     preparationProgress: "तयारी प्रगती",
     stepComplete: "पूर्ण",
     stepPending: "प्रलंबित",
+    locationStaleWarning: "स्थान अपडेट झाले नाही — शेवटचे ठाऊक स्थान दाखवत आहे",
   },
   bn: {
     hajjGuide: "হজ গাইড",
@@ -565,6 +573,7 @@ const translations: Partial<Record<Language, Record<TranslationKey, string>>> = 
     preparationProgress: "প্রস্তুতি অগ্রগতি",
     stepComplete: "সম্পূর্ণ",
     stepPending: "বাকি আছে",
+    locationStaleWarning: "অবস্থান আপডেট হয়নি — শেষ পরিচিত অবস্থান দেখানো হচ্ছে",
   },
   or: {
     hajjGuide: "ହଜ୍ଜ ଗାଇଡ୍",
@@ -625,6 +634,7 @@ const translations: Partial<Record<Language, Record<TranslationKey, string>>> = 
     preparationProgress: "ପ୍ରସ୍ତୁତି ଅଗ୍ରଗତି",
     stepComplete: "ସମ୍ପୂର୍ଣ୍ଣ",
     stepPending: "ବାକି ଅଛି",
+    locationStaleWarning: "ସ୍ଥାନ ଅପଡେଟ୍ ହେଲା ନାହିଁ — ଶେଷ ଜଣାଥିବା ସ୍ଥାନ ଦେଖାଯାଉଛି",
   },
   ml: {
     hajjGuide: "ഹജ്ജ് ഗൈഡ്",
@@ -685,6 +695,7 @@ const translations: Partial<Record<Language, Record<TranslationKey, string>>> = 
     preparationProgress: "തയ്യാറെടുപ്പ് പുരോഗതി",
     stepComplete: "പൂർത്തിയായി",
     stepPending: "ബാക്കിയുണ്ട്",
+    locationStaleWarning: "സ്ഥാനം അപ്‌ഡേറ്റ് ചെയ്തില്ല — അറിയാവുന്ന അവസാന സ്ഥാനം കാണിക്കുന്നു",
   },
   pa: {
     hajjGuide: "ਹੱਜ ਗਾਈਡ",
@@ -745,6 +756,7 @@ const translations: Partial<Record<Language, Record<TranslationKey, string>>> = 
     preparationProgress: "ਤਿਆਰੀ ਦੀ ਪ੍ਰਗਤੀ",
     stepComplete: "ਪੂਰਾ",
     stepPending: "ਬਾਕੀ",
+    locationStaleWarning: "ਥਾਂ ਅਪਡੇਟ ਨਹੀਂ ਹੋਈ — ਆਖਰੀ ਜਾਣੀ ਪਛਾਣੀ ਥਾਂ ਵਿਖਾਈ ਜਾ ਰਹੀ ਹੈ",
   },
 };
 
