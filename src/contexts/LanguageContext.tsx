@@ -390,6 +390,7 @@ const translations: Partial<Record<Language, Record<TranslationKey, string>>> = 
     preparationProgress: "தயாரிப்பு முன்னேற்றம்",
     stepComplete: "முடிந்தது",
     stepPending: "நிலுவையில்",
+    locationStaleWarning: "இடம் புதுப்பிக்கப்படவில்லை — கடைசியாக அறியப்பட்ட இடம் காட்டப்படுகிறது",
   },
   te: {
     hajjGuide: "హజ్ గైడ్",
