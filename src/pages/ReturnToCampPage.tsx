@@ -96,8 +96,8 @@ function vibrate(pattern: number | number[]) {
 }
 
 export default function ReturnToCampPage() {
-  const { language, isRTL } = useLanguage();
-  const t = getReturnToCampLabels(language);
+  const { language, isRTL, t } = useLanguage();
+  const tLabels = getReturnToCampLabels(language);
 
   const [saved, setSaved] = useState<SavedCamp | null>(null);
   const [editing, setEditing] = useState(false);
@@ -108,6 +108,7 @@ export default function ReturnToCampPage() {
   const [fullscreen, setFullscreen] = useState(false);
   const [farFromMina, setFarFromMina] = useState(false);
   const checkedFarRef = useRef(false);
+  const lastKnownPosRef = useRef<{ lat: number; lng: number } | null>(null);
 
   useEffect(() => {
     const s = readSaved();
