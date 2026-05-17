@@ -118,9 +118,9 @@ const labels = {
 };
 
 export const EmergencySOS = () => {
-  const { language, isRTL } = useLanguage();
+  const { language, isRTL, t } = useLanguage();
   const { user, isAuthenticated } = useAuth();
-  const { lat, lng, stage, refresh } = useHajjLocation();
+  const { lat, lng, stage, refresh, isStale } = useHajjLocation();
   const [status, setStatus] = useState<SOSStatus>("idle");
 
   const getLabel = (key: keyof typeof labels) => {
