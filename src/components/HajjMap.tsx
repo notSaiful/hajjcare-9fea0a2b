@@ -213,6 +213,21 @@ const HajjMap = ({ isExpanded = false, onToggleExpand }: HajjMapProps) => {
         </div>
       </div>
 
+      {/* Stale Location Warning */}
+      {isStale && (
+        <div className="p-2.5 bg-amber-50 border-b border-amber-200 flex items-center gap-2.5">
+          <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+          <div className="min-w-0">
+            <p className="text-xs font-semibold text-amber-800">{t("locationStaleWarning")}</p>
+            {lastUpdatedAt && (
+              <p className="text-[10px] text-amber-600">
+                {t("lastUpdate")}: {Math.floor((Date.now() - lastUpdatedAt) / 60000)}m ago
+              </p>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Map Container with Loading Overlay */}
       <div className={`w-full transition-all duration-300 relative ${isExpanded ? "h-64" : "h-40"}`}>
         <div ref={mapContainer} className="absolute inset-0 w-full h-full" />
