@@ -241,6 +241,8 @@ export interface LocationState {
   stageInfo: HajjStageInfo;
   error: string | null;
   isLoading: boolean;
+  isStale: boolean;
+  lastUpdatedAt: number | null;
 }
 
 export function useHajjLocation() {
@@ -252,6 +254,8 @@ export function useHajjLocation() {
     stageInfo: HAJJ_STAGES.unknown,
     error: null,
     isLoading: true,
+    isStale: false,
+    lastUpdatedAt: null,
   });
 
   const updateLocation = useCallback((position: GeolocationPosition) => {
