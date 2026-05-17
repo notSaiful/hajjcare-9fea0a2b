@@ -146,6 +146,7 @@ const translations: Partial<Record<Language, Record<TranslationKey, string>>> = 
     preparationProgress: "Preparation Progress",
     stepComplete: "Complete",
     stepPending: "Pending",
+    locationStaleWarning: "Location not updated — showing last known position",
   },
   ar: {
     hajjGuide: "دليل الحج",
@@ -206,6 +207,7 @@ const translations: Partial<Record<Language, Record<TranslationKey, string>>> = 
     preparationProgress: "تقدم التحضير",
     stepComplete: "مكتمل",
     stepPending: "قيد الانتظار",
+    locationStaleWarning: "الموقع لم يُحدَّث — يُعرض آخر موقع معروف",
   },
   ur: {
     hajjGuide: "حج گائیڈ",
@@ -266,6 +268,7 @@ const translations: Partial<Record<Language, Record<TranslationKey, string>>> = 
     preparationProgress: "تیاری کی پیشرفت",
     stepComplete: "مکمل",
     stepPending: "زیر التواء",
+    locationStaleWarning: "Location update نہیں ہوئی — پچھلی location دکھائی جا رہی ہے",
   },
   hi: {
     hajjGuide: "हज गाइड",
@@ -326,6 +329,7 @@ const translations: Partial<Record<Language, Record<TranslationKey, string>>> = 
     preparationProgress: "तैयारी की प्रगति",
     stepComplete: "पूर्ण",
     stepPending: "लंबित",
+    locationStaleWarning: "Location update नहीं हुई — पिछली location दिखाई जा रही है",
   },
   ta: {
     hajjGuide: "ஹஜ் வழிகாட்டி",
