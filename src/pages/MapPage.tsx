@@ -718,6 +718,23 @@ const MapPage = () => {
         </div>
       )}
 
+      {/* Stale Location Warning Banner */}
+      {isStale && (
+        <div className="absolute top-16 left-0 right-0 z-10 px-4">
+          <div className="bg-amber-50/95 backdrop-blur-xl text-amber-900 rounded-2xl p-3 flex items-center gap-3 shadow-lg border border-amber-200">
+            <AlertTriangle className="w-5 h-5 flex-shrink-0 text-amber-600" />
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold">{t("locationStaleWarning")}</p>
+              {lastUpdatedAt && (
+                <p className="text-xs text-amber-700">
+                  {t("lastUpdate")}: {Math.floor((Date.now() - lastUpdatedAt) / 60000)}m ago
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Frosted Glass Top Navigation Bar */}
       <div className="absolute top-0 left-0 right-0 z-10 safe-area-top">
         <div className="bg-background/70 backdrop-blur-xl border-b border-border/30">
