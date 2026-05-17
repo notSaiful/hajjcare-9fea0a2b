@@ -75,7 +75,8 @@ type TranslationKey =
   | "lastUpdate"
   | "preparationProgress"
   | "stepComplete"
-  | "stepPending";
+  | "stepPending"
+  | "locationStaleWarning";
 
 // Helper type for partial translations in data files - allows missing languages with fallback to English
 export type LocalizedString = { en: string } & Partial<Record<Exclude<Language, 'en'>, string>>;
