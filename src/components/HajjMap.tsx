@@ -5,7 +5,7 @@ import { useHajjLocation, HAJJ_LOCATIONS, HAJJ_STAGES } from "@/hooks/useHajjLoc
 import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
-import { MapPin, Navigation, RefreshCw, Loader2, AlertCircle, Maximize2 } from "lucide-react";
+import { MapPin, Navigation, RefreshCw, Loader2, AlertCircle, Maximize2, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface HajjMapProps {
