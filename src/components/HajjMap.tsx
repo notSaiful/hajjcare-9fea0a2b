@@ -17,7 +17,7 @@ const HajjMap = ({ isExpanded = false, onToggleExpand }: HajjMapProps) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const userMarker = useRef<mapboxgl.Marker | null>(null);
-  const { lat, lng, stage, stageInfo, error, isLoading, refresh } = useHajjLocation();
+  const { lat, lng, stage, stageInfo, error, isLoading, refresh, isStale, lastUpdatedAt } = useHajjLocation();
   const { t, language } = useLanguage();
   const [mapToken, setMapToken] = useState<string | null>(null);
   const [mapError, setMapError] = useState<string | null>(null);
