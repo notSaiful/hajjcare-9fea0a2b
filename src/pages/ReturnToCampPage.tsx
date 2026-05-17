@@ -96,8 +96,9 @@ function vibrate(pattern: number | number[]) {
 }
 
 export default function ReturnToCampPage() {
-  const { language, isRTL, t } = useLanguage();
-  const tLabels = getReturnToCampLabels(language);
+  const { language, isRTL } = useLanguage();
+  const t = getReturnToCampLabels(language);
+  const langT = useLanguage().t;
 
   const [saved, setSaved] = useState<SavedCamp | null>(null);
   const [editing, setEditing] = useState(false);
