@@ -269,6 +269,8 @@ export function useHajjLocation() {
       stageInfo: HAJJ_STAGES[stage],
       error: null,
       isLoading: false,
+      isStale: false,
+      lastUpdatedAt: Date.now(),
     });
   }, []);
 
