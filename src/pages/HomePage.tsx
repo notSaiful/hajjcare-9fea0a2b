@@ -69,6 +69,11 @@ const HomePage = () => {
             <ReturnToCampQuickAction />
           </section>
 
+          {/* Nusuk / HCOI Card lookup — smart router */}
+          <section className="animate-fade-up" style={{ animationDelay: "78ms" }}>
+            <CardLookupQuickAction />
+          </section>
+
 
           {/* Staff-only tools (Inspector / Admin / Coordinator) */}
           <StaffMenu />
