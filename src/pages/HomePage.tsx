@@ -9,6 +9,7 @@ import { StaffMenu } from "@/components/dashboard/StaffMenu";
 import { FindBuildingQuickAction } from "@/components/FindBuildingQuickAction";
 import { MinaTentsQuickAction } from "@/components/MinaTentsQuickAction";
 import { ReturnToCampQuickAction } from "@/components/ReturnToCampQuickAction";
+import { CardLookupQuickAction } from "@/components/CardLookupQuickAction";
 import { StaffAccessHint } from "@/components/dashboard/StaffAccessHint";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAppAnalytics } from "@/hooks/useAppAnalytics";
@@ -66,6 +67,11 @@ const HomePage = () => {
           {/* Return to My Camp — Lost Mode */}
           <section className="animate-fade-up" style={{ animationDelay: "75ms" }}>
             <ReturnToCampQuickAction />
+          </section>
+
+          {/* Nusuk / HCOI Card lookup — smart router */}
+          <section className="animate-fade-up" style={{ animationDelay: "78ms" }}>
+            <CardLookupQuickAction />
           </section>
 
 
