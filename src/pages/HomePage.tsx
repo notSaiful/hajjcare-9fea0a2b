@@ -9,6 +9,7 @@ import { StaffMenu } from "@/components/dashboard/StaffMenu";
 import { FindBuildingQuickAction } from "@/components/FindBuildingQuickAction";
 import { MinaTentsQuickAction } from "@/components/MinaTentsQuickAction";
 import { ReturnToCampQuickAction } from "@/components/ReturnToCampQuickAction";
+import { CardLookupQuickAction } from "@/components/CardLookupQuickAction";
 import { StaffAccessHint } from "@/components/dashboard/StaffAccessHint";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAppAnalytics } from "@/hooks/useAppAnalytics";
