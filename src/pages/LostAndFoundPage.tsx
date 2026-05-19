@@ -429,6 +429,18 @@ const LostAndFoundPage = () => {
       const { error } = await supabase.from("lost_and_found").insert(insertPayload);
       if (error) throw error;
 
+      // Persist reporter info for next time (skip if user is logged in — profile handles it)
+      try {
+        localStorage.setItem(
+          REPORTER_STORAGE_KEY,
+          JSON.stringify({
+            name: form.reporter_name,
+            mobile: form.reporter_mobile,
+            whatsapp: form.reporter_whatsapp,
+          })
+        );
+      } catch {/* ignore */}
+
       toast({
         title: t.get("success"),
         description: photoUploadFailed
