@@ -612,36 +612,73 @@ const LostAndFoundPage = () => {
                 {/* Common fields */}
                 <div>
                   <Label htmlFor="loc">{t.get("lastLocation")} *</Label>
-                  <Input
-                    id="loc"
-                    value={form.last_seen_location}
-                    onChange={(e) => setForm({ ...form, last_seen_location: e.target.value })}
-                    maxLength={200}
-                    placeholder="Mina, Arafat, Masjid al-Haram..."
-                    required
-                  />
+                  <div className="flex gap-2">
+                    <Input
+                      id="loc"
+                      value={form.last_seen_location}
+                      onChange={(e) => setForm({ ...form, last_seen_location: e.target.value })}
+                      maxLength={200}
+                      placeholder="Mina, Arafat, Masjid al-Haram..."
+                      required
+                      className="flex-1"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={handleCaptureLocation}
+                      disabled={locating}
+                      className="shrink-0 h-10"
+                      title={t.get("useGps")}
+                    >
+                      {locating ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Crosshair className="h-4 w-4" />
+                      )}
+                      <span className="ml-1 text-xs hidden sm:inline">
+                        {locating ? t.get("locating") : t.get("useGps")}
+                      </span>
+                    </Button>
+                  </div>
+                  {gpsCoords && (
+                    <p className="mt-1 text-xs text-emerald-700 flex items-center gap-1">
+                      <MapPin className="h-3 w-3" />
+                      {gpsCoords.lat}, {gpsCoords.lng} · {t.get("gpsAccuracy")} ±{gpsCoords.accuracy}m
+                    </p>
+                  )}
                 </div>
                 <div>
-                  <Label htmlFor="time">{t.get("lastTime")}</Label>
+                  <Label htmlFor="time" className="flex items-center gap-1">
+                    <Clock className="h-3.5 w-3.5" />
+                    {t.get("lastTime")}
+                  </Label>
                   <Input
                     id="time"
                     type="datetime-local"
                     value={form.last_seen_at}
                     onChange={(e) => setForm({ ...form, last_seen_at: e.target.value })}
+                    max={nowForInput()}
                   />
                 </div>
                 <div>
-                  <Label htmlFor="photo">{t.get("photo")}</Label>
+                  <Label htmlFor="photo" className="flex items-center gap-1">
+                    <Camera className="h-3.5 w-3.5" />
+                    {t.get("photo")}
+                  </Label>
                   <Input
                     id="photo"
                     type="file"
                     accept="image/*"
+                    capture="environment"
                     onChange={handlePhotoChange}
                   />
+                  <p className="mt-1 text-xs text-muted-foreground">{t.get("takePhoto")}</p>
                   {photoPreview && (
-                    <img src={photoPreview} alt="preview" className="mt-2 h-32 w-32 object-cover rounded-md" />
+                    <img src={photoPreview} alt="preview" className="mt-2 h-32 w-32 object-cover rounded-md border" />
                   )}
                 </div>
+
 
                 <div className="border-t pt-3 space-y-3">
                   <div>
