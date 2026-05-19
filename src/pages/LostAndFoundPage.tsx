@@ -693,6 +693,11 @@ const LostAndFoundPage = () => {
 
 
                 <div className="border-t pt-3 space-y-3">
+                  {(form.reporter_name || form.reporter_mobile) && (
+                    <p className="text-xs text-emerald-700 bg-emerald-50 px-2 py-1 rounded">
+                      ✓ {t.get("prefilled")}
+                    </p>
+                  )}
                   <div>
                     <Label htmlFor="rname">{t.get("reporterName")} *</Label>
                     <Input
