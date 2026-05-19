@@ -301,6 +301,38 @@ const LostAndFoundPage = () => {
     }
   };
 
+  const handleCaptureLocation = () => {
+    if (!navigator.geolocation) {
+      toast({ title: t.get("locUnsupported"), variant: "destructive" });
+      return;
+    }
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const lat = +pos.coords.latitude.toFixed(5);
+        const lng = +pos.coords.longitude.toFixed(5);
+        const acc = Math.round(pos.coords.accuracy);
+        setGpsCoords({ lat, lng, accuracy: acc });
+        const coordStr = `(${lat}, ${lng})`;
+        setForm((prev) => {
+          const base = prev.last_seen_location.replace(/\s*\([-\d.,\s]+\)\s*$/, "").trim();
+          return { ...prev, last_seen_location: base ? `${base} ${coordStr}` : `GPS ${coordStr}` };
+        });
+        toast({ title: t.get("locCaptured"), description: `±${acc}m` });
+        setLocating(false);
+      },
+      (err) => {
+        setLocating(false);
+        toast({
+          title: t.get("locError"),
+          description: err.message,
+          variant: "destructive",
+        });
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 }
+    );
+  };
+
   const resetForm = () => {
     setForm({
       report_type: "person",
@@ -320,7 +352,9 @@ const LostAndFoundPage = () => {
     });
     setPhotoFile(null);
     setPhotoPreview(null);
+    setGpsCoords(null);
   };
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
