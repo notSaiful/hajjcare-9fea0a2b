@@ -37,6 +37,8 @@ import {
   Loader2,
   CheckCircle2,
   AlertCircle,
+  Crosshair,
+  Clock,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
@@ -44,6 +46,15 @@ import { compressImage } from "@/lib/imageCompression";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { ShieldCheck, Lock } from "lucide-react";
+
+const REPORTER_STORAGE_KEY = "lost_found_reporter_v1";
+
+// Format current datetime for <input type="datetime-local">
+const nowForInput = () => {
+  const d = new Date();
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+};
 
 type ReportType = "person" | "item";
 type ReportStatus = "open" | "found" | "closed";
@@ -101,6 +112,8 @@ const LostAndFoundPage = () => {
   const [submitting, setSubmitting] = useState(false);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [locating, setLocating] = useState(false);
+  const [gpsCoords, setGpsCoords] = useState<{ lat: number; lng: number; accuracy: number } | null>(null);
 
   const [form, setForm] = useState({
     report_type: "person" as ReportType,
@@ -118,6 +131,41 @@ const LostAndFoundPage = () => {
     reporter_whatsapp: "",
     notes: "",
   });
+
+  // Prefill reporter info + time when dialog opens
+  useEffect(() => {
+    if (!dialogOpen) return;
+    setForm((prev) => {
+      const next = { ...prev };
+      if (!next.last_seen_at) next.last_seen_at = nowForInput();
+      // Prefill from localStorage
+      try {
+        const cached = JSON.parse(localStorage.getItem(REPORTER_STORAGE_KEY) || "null");
+        if (cached) {
+          if (!next.reporter_name && cached.name) next.reporter_name = cached.name;
+          if (!next.reporter_mobile && cached.mobile) next.reporter_mobile = cached.mobile;
+          if (!next.reporter_whatsapp && cached.whatsapp) next.reporter_whatsapp = cached.whatsapp;
+        }
+      } catch {/* ignore */}
+      return next;
+    });
+    // Prefill from logged-in profile (overrides empty fields only)
+    (async () => {
+      if (!user?.id) return;
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("full_name, phone")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      if (!profile) return;
+      setForm((prev) => ({
+        ...prev,
+        reporter_name: prev.reporter_name || profile.full_name || "",
+        reporter_mobile: prev.reporter_mobile || profile.phone || "",
+      }));
+    })();
+  }, [dialogOpen, user?.id]);
+
 
   const t = useMemo(() => {
     const labels = {
@@ -148,6 +196,14 @@ const LostAndFoundPage = () => {
       reporterName: { en: "Your Name", ar: "اسمك", ur: "آپ کا نام", hi: "आपका नाम", ta: "உங்கள் பெயர்", te: "మీ పేరు", mr: "तुमचे नाव", bn: "আপনার নাম", or: "ଆପଣଙ୍କ ନାମ", ml: "നിങ്ങളുടെ പേര്", pa: "ਤੁਹਾਡਾ ਨਾਮ" },
       mobile: { en: "Mobile Number", ar: "رقم الجوال", ur: "موبائل نمبر", hi: "मोबाइल नंबर", ta: "மொபைல் எண்", te: "మొబైల్ నంబర్", mr: "मोबाइल क्रमांक", bn: "মোবাইল নম্বর", or: "ମୋବାଇଲ ନମ୍ବର", ml: "മൊബൈൽ", pa: "ਮੋਬਾਈਲ ਨੰਬਰ" },
       whatsapp: { en: "WhatsApp (optional)", ar: "واتساب", ur: "واٹس ایپ", hi: "व्हाट्सएप", ta: "வாட்ஸ்அப்", te: "వాట్సాప్", mr: "व्हॉट्सअॅप", bn: "হোয়াটসঅ্যাপ", or: "ୱାଟସଆପ", ml: "വാട്ട്‌സാപ്പ്", pa: "ਵਟਸਐਪ" },
+      useGps: { en: "Use my current GPS", ar: "استخدم موقعي", ur: "میرا GPS لیں", hi: "मेरा GPS लें", ta: "எனது GPS", te: "నా GPS", mr: "माझे GPS", bn: "আমার GPS", or: "ମୋ GPS", ml: "എന്റെ GPS", pa: "ਮੇਰਾ GPS" },
+      locating: { en: "Locating…", ar: "جاري التحديد…", ur: "تلاش جاری…", hi: "ढूंढ रहे हैं…", ta: "தேடுகிறது…", te: "గుర్తిస్తోంది…", mr: "शोधत आहे…", bn: "খুঁজছি…", or: "ଖୋଜୁଛି…", ml: "കണ്ടെത്തുന്നു…", pa: "ਲੱਭ ਰਿਹਾ…" },
+      locCaptured: { en: "Location captured", ar: "تم تحديد الموقع", ur: "مقام محفوظ", hi: "स्थान कैप्चर हुआ", ta: "இடம் சேமிக்கப்பட்டது", te: "ప్రదేశం సేవ్", mr: "स्थान मिळाले", bn: "অবস্থান নেওয়া হয়েছে", or: "ସ୍ଥାନ ସଂଗୃହୀତ", ml: "സ്ഥാനം ലഭിച്ചു", pa: "ਥਾਂ ਮਿਲੀ" },
+      locError: { en: "Could not get GPS", ar: "تعذر تحديد الموقع", ur: "GPS نہیں ملا", hi: "GPS नहीं मिला", ta: "GPS கிடைக்கவில்லை", te: "GPS దొరకలేదు", mr: "GPS मिळाले नाही", bn: "GPS পাওয়া যায়নি", or: "GPS ମିଳିଲା ନାହିଁ", ml: "GPS ലഭിച്ചില്ല", pa: "GPS ਨਹੀਂ ਮਿਲਿਆ" },
+      locUnsupported: { en: "GPS not supported on this device", ar: "GPS غير مدعوم", ur: "GPS سپورٹ نہیں", hi: "GPS समर्थित नहीं", ta: "GPS ஆதரிக்கவில்லை", te: "GPS మద్దతు లేదు", mr: "GPS समर्थन नाही", bn: "GPS সমর্থিত নয়", or: "GPS ସମର୍ଥିତ ନୁହେଁ", ml: "GPS പിന്തുണയില്ല", pa: "GPS ਸਮਰਥਨ ਨਹੀਂ" },
+      takePhoto: { en: "Take photo or choose file", ar: "التقط صورة", ur: "تصویر لیں", hi: "फोटो लें या फ़ाइल चुनें", ta: "புகைப்படம் எடுக்க", te: "ఫోటో తీయండి", mr: "फोटो काढा", bn: "ছবি তুলুন", or: "ଫଟୋ ନିଅନ୍ତୁ", ml: "ഫോട്ടോ എടുക്കുക", pa: "ਫੋਟੋ ਖਿੱਚੋ" },
+      gpsAccuracy: { en: "Accuracy", ar: "الدقة", ur: "درستگی", hi: "सटीकता", ta: "துல்லியம்", te: "ఖచ్చితత్వం", mr: "अचूकता", bn: "নির্ভুলতা", or: "ସଠିକତା", ml: "കൃത്യത", pa: "ਸਟੀਕਤਾ" },
+      prefilled: { en: "Prefilled — edit if needed", ar: "تم ملؤها — يمكن التعديل", ur: "پہلے سے بھرا — ضرورت ہو تو بدلیں", hi: "पहले से भरा — बदल सकते हैं", ta: "முன்-நிரப்பப்பட்டது", te: "ముందుగా నింపబడింది", mr: "आधीच भरले — बदल शकता", bn: "আগে থেকে পূরণ — পরিবর্তন করুন", or: "ପୂର୍ବ-ପୂରଣ", ml: "മുൻകൂട്ടി പൂരിപ്പിച്ചു", pa: "ਪਹਿਲਾਂ ਭਰਿਆ — ਬਦਲ ਸਕਦੇ ਹੋ" },
       notes: { en: "Additional Notes", ar: "ملاحظات", ur: "اضافی نوٹس", hi: "अतिरिक्त नोट्स", ta: "குறிப்புகள்", te: "గమనికలు", mr: "टिपा", bn: "অতিরিক্ত নোট", or: "ଅତିରିକ୍ତ ଟିପ୍ପଣୀ", ml: "കുറിപ്പുകൾ", pa: "ਨੋਟਸ" },
       submit: { en: "Submit Report", ar: "إرسال", ur: "جمع کرائیں", hi: "रिपोर्ट जमा करें", ta: "சமர்ப்பி", te: "సమర్పించండి", mr: "सबमिट करा", bn: "জমা দিন", or: "ଦାଖଲ କରନ୍ତୁ", ml: "സമർപ്പിക്കുക", pa: "ਜਮ੍ਹਾਂ ਕਰੋ" },
       cancel: { en: "Cancel", ar: "إلغاء", ur: "منسوخ", hi: "रद्द करें", ta: "ரத்து", te: "రద్దు", mr: "रद्द", bn: "বাতিল", or: "ବାତିଲ", ml: "റദ്ദാക്കുക", pa: "ਰੱਦ" },
@@ -253,6 +309,38 @@ const LostAndFoundPage = () => {
     }
   };
 
+  const handleCaptureLocation = () => {
+    if (!navigator.geolocation) {
+      toast({ title: t.get("locUnsupported"), variant: "destructive" });
+      return;
+    }
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const lat = +pos.coords.latitude.toFixed(5);
+        const lng = +pos.coords.longitude.toFixed(5);
+        const acc = Math.round(pos.coords.accuracy);
+        setGpsCoords({ lat, lng, accuracy: acc });
+        const coordStr = `(${lat}, ${lng})`;
+        setForm((prev) => {
+          const base = prev.last_seen_location.replace(/\s*\([-\d.,\s]+\)\s*$/, "").trim();
+          return { ...prev, last_seen_location: base ? `${base} ${coordStr}` : `GPS ${coordStr}` };
+        });
+        toast({ title: t.get("locCaptured"), description: `±${acc}m` });
+        setLocating(false);
+      },
+      (err) => {
+        setLocating(false);
+        toast({
+          title: t.get("locError"),
+          description: err.message,
+          variant: "destructive",
+        });
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 }
+    );
+  };
+
   const resetForm = () => {
     setForm({
       report_type: "person",
@@ -272,7 +360,9 @@ const LostAndFoundPage = () => {
     });
     setPhotoFile(null);
     setPhotoPreview(null);
+    setGpsCoords(null);
   };
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -338,6 +428,18 @@ const LostAndFoundPage = () => {
       };
       const { error } = await supabase.from("lost_and_found").insert(insertPayload);
       if (error) throw error;
+
+      // Persist reporter info for next time (skip if user is logged in — profile handles it)
+      try {
+        localStorage.setItem(
+          REPORTER_STORAGE_KEY,
+          JSON.stringify({
+            name: form.reporter_name,
+            mobile: form.reporter_mobile,
+            whatsapp: form.reporter_whatsapp,
+          })
+        );
+      } catch {/* ignore */}
 
       toast({
         title: t.get("success"),
@@ -522,38 +624,80 @@ const LostAndFoundPage = () => {
                 {/* Common fields */}
                 <div>
                   <Label htmlFor="loc">{t.get("lastLocation")} *</Label>
-                  <Input
-                    id="loc"
-                    value={form.last_seen_location}
-                    onChange={(e) => setForm({ ...form, last_seen_location: e.target.value })}
-                    maxLength={200}
-                    placeholder="Mina, Arafat, Masjid al-Haram..."
-                    required
-                  />
+                  <div className="flex gap-2">
+                    <Input
+                      id="loc"
+                      value={form.last_seen_location}
+                      onChange={(e) => setForm({ ...form, last_seen_location: e.target.value })}
+                      maxLength={200}
+                      placeholder="Mina, Arafat, Masjid al-Haram..."
+                      required
+                      className="flex-1"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={handleCaptureLocation}
+                      disabled={locating}
+                      className="shrink-0 h-10"
+                      title={t.get("useGps")}
+                    >
+                      {locating ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Crosshair className="h-4 w-4" />
+                      )}
+                      <span className="ml-1 text-xs hidden sm:inline">
+                        {locating ? t.get("locating") : t.get("useGps")}
+                      </span>
+                    </Button>
+                  </div>
+                  {gpsCoords && (
+                    <p className="mt-1 text-xs text-emerald-700 flex items-center gap-1">
+                      <MapPin className="h-3 w-3" />
+                      {gpsCoords.lat}, {gpsCoords.lng} · {t.get("gpsAccuracy")} ±{gpsCoords.accuracy}m
+                    </p>
+                  )}
                 </div>
                 <div>
-                  <Label htmlFor="time">{t.get("lastTime")}</Label>
+                  <Label htmlFor="time" className="flex items-center gap-1">
+                    <Clock className="h-3.5 w-3.5" />
+                    {t.get("lastTime")}
+                  </Label>
                   <Input
                     id="time"
                     type="datetime-local"
                     value={form.last_seen_at}
                     onChange={(e) => setForm({ ...form, last_seen_at: e.target.value })}
+                    max={nowForInput()}
                   />
                 </div>
                 <div>
-                  <Label htmlFor="photo">{t.get("photo")}</Label>
+                  <Label htmlFor="photo" className="flex items-center gap-1">
+                    <Camera className="h-3.5 w-3.5" />
+                    {t.get("photo")}
+                  </Label>
                   <Input
                     id="photo"
                     type="file"
                     accept="image/*"
+                    capture="environment"
                     onChange={handlePhotoChange}
                   />
+                  <p className="mt-1 text-xs text-muted-foreground">{t.get("takePhoto")}</p>
                   {photoPreview && (
-                    <img src={photoPreview} alt="preview" className="mt-2 h-32 w-32 object-cover rounded-md" />
+                    <img src={photoPreview} alt="preview" className="mt-2 h-32 w-32 object-cover rounded-md border" />
                   )}
                 </div>
 
+
                 <div className="border-t pt-3 space-y-3">
+                  {(form.reporter_name || form.reporter_mobile) && (
+                    <p className="text-xs text-emerald-700 bg-emerald-50 px-2 py-1 rounded">
+                      ✓ {t.get("prefilled")}
+                    </p>
+                  )}
                   <div>
                     <Label htmlFor="rname">{t.get("reporterName")} *</Label>
                     <Input
