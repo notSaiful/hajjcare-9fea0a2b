@@ -112,6 +112,8 @@ const LostAndFoundPage = () => {
   const [submitting, setSubmitting] = useState(false);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [locating, setLocating] = useState(false);
+  const [gpsCoords, setGpsCoords] = useState<{ lat: number; lng: number; accuracy: number } | null>(null);
 
   const [form, setForm] = useState({
     report_type: "person" as ReportType,
@@ -129,6 +131,41 @@ const LostAndFoundPage = () => {
     reporter_whatsapp: "",
     notes: "",
   });
+
+  // Prefill reporter info + time when dialog opens
+  useEffect(() => {
+    if (!dialogOpen) return;
+    setForm((prev) => {
+      const next = { ...prev };
+      if (!next.last_seen_at) next.last_seen_at = nowForInput();
+      // Prefill from localStorage
+      try {
+        const cached = JSON.parse(localStorage.getItem(REPORTER_STORAGE_KEY) || "null");
+        if (cached) {
+          if (!next.reporter_name && cached.name) next.reporter_name = cached.name;
+          if (!next.reporter_mobile && cached.mobile) next.reporter_mobile = cached.mobile;
+          if (!next.reporter_whatsapp && cached.whatsapp) next.reporter_whatsapp = cached.whatsapp;
+        }
+      } catch {/* ignore */}
+      return next;
+    });
+    // Prefill from logged-in profile (overrides empty fields only)
+    (async () => {
+      if (!user?.id) return;
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("full_name, phone")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      if (!profile) return;
+      setForm((prev) => ({
+        ...prev,
+        reporter_name: prev.reporter_name || profile.full_name || "",
+        reporter_mobile: prev.reporter_mobile || profile.phone || "",
+      }));
+    })();
+  }, [dialogOpen, user?.id]);
+
 
   const t = useMemo(() => {
     const labels = {
