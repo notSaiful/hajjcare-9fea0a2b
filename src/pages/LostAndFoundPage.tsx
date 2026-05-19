@@ -37,6 +37,8 @@ import {
   Loader2,
   CheckCircle2,
   AlertCircle,
+  Crosshair,
+  Clock,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
@@ -44,6 +46,15 @@ import { compressImage } from "@/lib/imageCompression";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { ShieldCheck, Lock } from "lucide-react";
+
+const REPORTER_STORAGE_KEY = "lost_found_reporter_v1";
+
+// Format current datetime for <input type="datetime-local">
+const nowForInput = () => {
+  const d = new Date();
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+};
 
 type ReportType = "person" | "item";
 type ReportStatus = "open" | "found" | "closed";
