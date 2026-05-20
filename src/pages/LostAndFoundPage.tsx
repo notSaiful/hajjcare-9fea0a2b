@@ -690,16 +690,60 @@ const LostAndFoundPage = () => {
                     <Camera className="h-3.5 w-3.5" />
                     {t.get("photo")}
                   </Label>
-                  <Input
-                    id="photo"
-                    type="file"
-                    accept="image/*"
-                    capture="environment"
-                    onChange={handlePhotoChange}
-                  />
-                  <p className="mt-1 text-xs text-muted-foreground">{t.get("takePhoto")}</p>
-                  {photoPreview && (
-                    <img src={photoPreview} alt="preview" className="mt-2 h-32 w-32 object-cover rounded-md border" />
+                  {!photoPreview ? (
+                    <>
+                      <Input
+                        id="photo"
+                        type="file"
+                        accept="image/*"
+                        capture="environment"
+                        onChange={handlePhotoChange}
+                      />
+                      <p className="mt-1 text-xs text-muted-foreground">{t.get("takePhoto")}</p>
+                    </>
+                  ) : (
+                    <div className="mt-2 space-y-2">
+                      <div className="relative rounded-lg border overflow-hidden bg-muted">
+                        <img
+                          src={photoPreview}
+                          alt="preview"
+                          className="w-full h-52 object-contain"
+                        />
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={handleRemovePhoto}
+                          className="flex-1"
+                        >
+                          <X className="h-4 w-4 mr-1" />
+                          {t.get("removePhoto")}
+                        </Button>
+                        <label className="flex-1">
+                          <Input
+                            type="file"
+                            accept="image/*"
+                            capture="environment"
+                            onChange={handlePhotoChange}
+                            className="hidden"
+                          />
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="w-full"
+                            asChild
+                          >
+                            <span>
+                              <RotateCcw className="h-4 w-4 mr-1" />
+                              {t.get("replacePhoto")}
+                            </span>
+                          </Button>
+                        </label>
+                      </div>
+                    </div>
                   )}
                 </div>
 
