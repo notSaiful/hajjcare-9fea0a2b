@@ -14,7 +14,29 @@ import {
 import {
   Accordion, AccordionContent, AccordionItem, AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Loader2, HandIcon, CheckCircle2, XCircle, Clock, Inbox, Send } from "lucide-react";
+import { Loader2, HandIcon, CheckCircle2, XCircle, Clock, Inbox, Send, MessageCircle } from "lucide-react";
+
+const buildWaUrl = (phone: string | null | undefined, message: string) => {
+  if (!phone) return null;
+  const digits = phone.replace(/\D/g, "");
+  if (!digits) return null;
+  return `https://wa.me/${digits}?text=${encodeURIComponent(message)}`;
+};
+
+const WhatsAppButton = ({ url, label = "WhatsApp" }: { url: string | null; label?: string }) => {
+  if (!url) return null;
+  return (
+    <a href={url} target="_blank" rel="noopener noreferrer" className="flex-1">
+      <Button
+        type="button"
+        size="sm"
+        className="w-full bg-[#25D366] hover:bg-[#1ebd5a] text-white h-9"
+      >
+        <MessageCircle className="h-3.5 w-3.5 mr-1" /> {label}
+      </Button>
+    </a>
+  );
+};
 
 type ClaimStatus = "pending" | "approved" | "rejected" | "withdrawn";
 
@@ -38,6 +60,8 @@ export interface Claim {
     photo_url: string | null;
     last_seen_location: string;
     post_kind: string | null;
+    reporter_whatsapp?: string | null;
+    reporter_mobile?: string | null;
   };
 }
 
@@ -185,7 +209,7 @@ export const ClaimsPanel = () => {
   const [loading, setLoading] = useState(false);
   const [respondNote, setRespondNote] = useState<Record<string, string>>({});
 
-  const reportSelect = "report:lost_and_found!inner(item_name,person_name,photo_url,last_seen_location,post_kind)";
+  const reportSelect = "report:lost_and_found!inner(item_name,person_name,photo_url,last_seen_location,post_kind,reporter_whatsapp,reporter_mobile)";
 
   const fetchAll = useCallback(async () => {
     if (!user?.id) return;
@@ -291,6 +315,16 @@ export const ClaimsPanel = () => {
                       </Badge>
                     </div>
                     <p className="text-sm whitespace-pre-wrap break-words">{c.claim_description}</p>
+                    {(() => {
+                      const subject = c.report?.item_name || c.report?.person_name || "your report";
+                      const msg = `Assalamu Alaikum ${c.claimant_name}, regarding your claim on HajjCare for "${subject}" — let's coordinate the handover.`;
+                      const url = buildWaUrl(c.claimant_whatsapp || c.claimant_mobile, msg);
+                      return url ? (
+                        <div className="flex gap-2">
+                          <WhatsAppButton url={url} label="WhatsApp claimant" />
+                        </div>
+                      ) : null;
+                    })()}
                     {c.status === "pending" && (
                       <div className="space-y-2 pt-1">
                         <Textarea
@@ -341,6 +375,16 @@ export const ClaimsPanel = () => {
                     {c.owner_response_note && (
                       <p className="text-xs italic">Finder's note: {c.owner_response_note}</p>
                     )}
+                    {(() => {
+                      const subject = c.report?.item_name || c.report?.person_name || "this report";
+                      const msg = `Assalamu Alaikum, I submitted a claim on HajjCare for "${subject}". Could we coordinate the handover please?`;
+                      const url = buildWaUrl(c.report?.reporter_whatsapp || c.report?.reporter_mobile, msg);
+                      return url ? (
+                        <div className="flex gap-2">
+                          <WhatsAppButton url={url} label="WhatsApp finder" />
+                        </div>
+                      ) : null;
+                    })()}
                     {c.status === "pending" && (
                       <Button size="sm" variant="ghost" onClick={() => withdraw(c)} className="h-7 text-xs">
                         Withdraw
