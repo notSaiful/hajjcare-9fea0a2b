@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import {
   Select,
   SelectContent,
@@ -114,6 +115,7 @@ const LostAndFoundPage = () => {
   const [filterType, setFilterType] = useState<"all" | ReportType>("all");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [pdfThumb, setPdfThumb] = useState<string | null>(null);
@@ -454,14 +456,37 @@ const LostAndFoundPage = () => {
         try {
           const ext = (photoFile.name.split(".").pop() || "jpg").toLowerCase();
           const fileName = `${crypto.randomUUID()}.${ext}`;
-          const { error: uploadErr } = await supabase.storage
-            .from("lost-found-photos")
-            .upload(fileName, photoFile, {
-              contentType: photoFile.type || "image/jpeg",
-              cacheControl: "3600",
-              upsert: false,
-            });
-          if (uploadErr) throw uploadErr;
+          const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+          const apiKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+          const { data: { session } } = await supabase.auth.getSession();
+          const authToken = session?.access_token || apiKey;
+
+          setUploadProgress(0);
+          await new Promise<void>((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", `${supabaseUrl}/storage/v1/object/lost-found-photos/${fileName}`);
+            xhr.setRequestHeader("Authorization", `Bearer ${authToken}`);
+            xhr.setRequestHeader("apikey", apiKey);
+            xhr.setRequestHeader("x-upsert", "false");
+            xhr.setRequestHeader("cache-control", "3600");
+            if (photoFile.type) xhr.setRequestHeader("Content-Type", photoFile.type);
+            xhr.upload.onprogress = (ev) => {
+              if (ev.lengthComputable) {
+                setUploadProgress(Math.round((ev.loaded / ev.total) * 100));
+              }
+            };
+            xhr.onload = () => {
+              if (xhr.status >= 200 && xhr.status < 300) {
+                setUploadProgress(100);
+                resolve();
+              } else {
+                reject(new Error(`Upload failed (${xhr.status}): ${xhr.responseText}`));
+              }
+            };
+            xhr.onerror = () => reject(new Error("Network error during upload"));
+            xhr.send(photoFile);
+          });
+
           const { data: urlData } = supabase.storage
             .from("lost-found-photos")
             .getPublicUrl(fileName);
@@ -470,6 +495,8 @@ const LostAndFoundPage = () => {
           // Don't block the report if photo upload fails (network/CORS/size).
           console.error("Photo upload failed:", uploadError);
           photoUploadFailed = true;
+        } finally {
+          setUploadProgress(null);
         }
       }
 
@@ -866,12 +893,30 @@ const LostAndFoundPage = () => {
                   </div>
                 </div>
 
+                {uploadProgress !== null && (
+                  <div className="space-y-1 pt-2">
+                    <div className="flex justify-between text-xs text-muted-foreground">
+                      <span className="flex items-center gap-1">
+                        <Loader2 className="h-3 w-3 animate-spin" />
+                        Uploading {photoFile?.type === "application/pdf" ? "PDF" : "photo"}…
+                      </span>
+                      <span>{uploadProgress}%</span>
+                    </div>
+                    <Progress value={uploadProgress} className="h-2" />
+                  </div>
+                )}
+
                 <div className="flex gap-2 pt-2">
-                  <Button type="button" variant="outline" onClick={() => setDialogOpen(false)} className="flex-1">
+                  <Button type="button" variant="outline" onClick={() => setDialogOpen(false)} className="flex-1" disabled={submitting}>
                     {t.get("cancel")}
                   </Button>
                   <Button type="submit" disabled={submitting} className="flex-1 bg-emerald-600 hover:bg-emerald-700">
-                    {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : t.get("submit")}
+                    {submitting ? (
+                      <span className="flex items-center gap-2">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        {uploadProgress !== null ? `${uploadProgress}%` : t.get("submit")}
+                      </span>
+                    ) : t.get("submit")}
                   </Button>
                 </div>
               </form>
