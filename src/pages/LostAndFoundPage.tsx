@@ -699,7 +699,7 @@ const LostAndFoundPage = () => {
                 </div>
                 <div>
                   <Label htmlFor="photo" className="flex items-center gap-1">
-                    <Camera className="h-3.5 w-3.5" />
+                    <Paperclip className="h-3.5 w-3.5" />
                     {t.get("photo")}
                   </Label>
                   {!photoPreview ? (
@@ -707,20 +707,31 @@ const LostAndFoundPage = () => {
                       <Input
                         id="photo"
                         type="file"
-                        accept="image/*"
-                        capture="environment"
+                        accept="image/*,application/pdf,.pdf"
                         onChange={handlePhotoChange}
                       />
-                      <p className="mt-1 text-xs text-muted-foreground">{t.get("takePhoto")}</p>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        {t.get("takePhoto")} (JPG / PNG / PDF, max 10MB)
+                      </p>
                     </>
                   ) : (
                     <div className="mt-2 space-y-2">
                       <div className="relative rounded-lg border overflow-hidden bg-muted">
-                        <img
-                          src={photoPreview}
-                          alt="preview"
-                          className="w-full h-52 object-contain"
-                        />
+                        {photoFile?.type === "application/pdf" ? (
+                          <div className="w-full h-52 flex flex-col items-center justify-center gap-2 p-4">
+                            <FileText className="h-16 w-16 text-primary" />
+                            <p className="text-sm font-medium text-center break-all px-2">
+                              {photoFile.name}
+                            </p>
+                            <p className="text-xs text-muted-foreground">PDF</p>
+                          </div>
+                        ) : (
+                          <img
+                            src={photoPreview}
+                            alt="preview"
+                            className="w-full h-52 object-contain"
+                          />
+                        )}
                       </div>
                       <div className="flex gap-2">
                         <Button
@@ -736,8 +747,7 @@ const LostAndFoundPage = () => {
                         <label className="flex-1">
                           <Input
                             type="file"
-                            accept="image/*"
-                            capture="environment"
+                            accept="image/*,application/pdf,.pdf"
                             onChange={handlePhotoChange}
                             className="hidden"
                           />
