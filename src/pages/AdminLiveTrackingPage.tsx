@@ -34,7 +34,7 @@ const isActive = (updated_at: string) =>
 
 const AdminLiveTrackingPage = () => {
   const { user, loading: authLoading } = useAuthContext();
-  const { isAdmin, isCoordinator, loading: roleLoading } = useUserRole();
+  const { isAdmin, isCoordinator, isLoading: roleLoading } = useUserRole();
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const markers = useRef<Record<string, mapboxgl.Marker>>({});
