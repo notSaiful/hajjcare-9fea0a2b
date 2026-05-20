@@ -959,6 +959,34 @@ const LostAndFoundPage = () => {
             </DialogContent>
           </Dialog>
 
+          {/* My claims / Incoming claims */}
+          <ClaimsPanel />
+
+          {/* Lost vs Found segmented filter */}
+          <div className="grid grid-cols-3 gap-1 p-1 bg-muted rounded-lg">
+            <button
+              type="button"
+              onClick={() => setFilterKind("all")}
+              className={`h-9 rounded-md text-sm font-medium transition ${filterKind === "all" ? "bg-background shadow-sm" : "text-muted-foreground"}`}
+            >
+              {t.get("all")} ({reports.length})
+            </button>
+            <button
+              type="button"
+              onClick={() => setFilterKind("lost")}
+              className={`h-9 rounded-md text-sm font-medium transition ${filterKind === "lost" ? "bg-background shadow-sm" : "text-muted-foreground"}`}
+            >
+              🔍 Lost ({lostCount})
+            </button>
+            <button
+              type="button"
+              onClick={() => setFilterKind("found")}
+              className={`h-9 rounded-md text-sm font-medium transition ${filterKind === "found" ? "bg-emerald-600 text-white shadow-sm" : "text-muted-foreground"}`}
+            >
+              ✋ Found ({foundCount})
+            </button>
+          </div>
+
           {/* Search */}
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
