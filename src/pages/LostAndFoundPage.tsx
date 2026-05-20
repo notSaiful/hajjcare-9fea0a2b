@@ -1163,6 +1163,21 @@ const LostAndFoundPage = () => {
                                 )}
                               </>
                             )}
+                            {r.post_kind === "found" && r.status !== "closed" && user && r.user_id !== user.id && (
+                              <Button
+                                size="sm"
+                                onClick={() => setClaimTarget(r)}
+                                className="h-8 bg-primary hover:bg-primary/90"
+                              >
+                                <HandIcon className="h-3 w-3 mr-1" />
+                                Claim
+                              </Button>
+                            )}
+                            {r.post_kind === "found" && !user && (
+                              <Button asChild size="sm" variant="outline" className="h-8">
+                                <Link to="/auth">Sign in to claim</Link>
+                              </Button>
+                            )}
                           </div>
                         </div>
                       </div>
