@@ -39,6 +39,8 @@ import {
   AlertCircle,
   Crosshair,
   Clock,
+  X,
+  RotateCcw,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
@@ -202,6 +204,8 @@ const LostAndFoundPage = () => {
       locError: { en: "Could not get GPS", ar: "تعذر تحديد الموقع", ur: "GPS نہیں ملا", hi: "GPS नहीं मिला", ta: "GPS கிடைக்கவில்லை", te: "GPS దొరకలేదు", mr: "GPS मिळाले नाही", bn: "GPS পাওয়া যায়নি", or: "GPS ମିଳିଲା ନାହିଁ", ml: "GPS ലഭിച്ചില്ല", pa: "GPS ਨਹੀਂ ਮਿਲਿਆ" },
       locUnsupported: { en: "GPS not supported on this device", ar: "GPS غير مدعوم", ur: "GPS سپورٹ نہیں", hi: "GPS समर्थित नहीं", ta: "GPS ஆதரிக்கவில்லை", te: "GPS మద్దతు లేదు", mr: "GPS समर्थन नाही", bn: "GPS সমর্থিত নয়", or: "GPS ସମର୍ଥିତ ନୁହେଁ", ml: "GPS പിന്തുണയില്ല", pa: "GPS ਸਮਰਥਨ ਨਹੀਂ" },
       takePhoto: { en: "Take photo or choose file", ar: "التقط صورة", ur: "تصویر لیں", hi: "फोटो लें या फ़ाइल चुनें", ta: "புகைப்படம் எடுக்க", te: "ఫోటో తీయండి", mr: "फोटो काढा", bn: "ছবি তুলুন", or: "ଫଟୋ ନିଅନ୍ତୁ", ml: "ഫോട്ടോ എടുക്കുക", pa: "ਫੋਟੋ ਖਿੱਚੋ" },
+      removePhoto: { en: "Remove", ar: "إزالة", ur: "ہٹائیں", hi: "हटाएं", ta: "அகற்று", te: "తీసివేయండి", mr: "काढून टाका", bn: "সরান", or: "ହଟାନ୍ତୁ", ml: "നീക്കം", pa: "ਹਟਾਓ" },
+      replacePhoto: { en: "Replace", ar: "استبدال", ur: "بدلیں", hi: "बदलें", ta: "மாற்று", te: "మార్చండి", mr: "बदला", bn: "প্রতিস্থাপন", or: "ବଦଳାନ୍ତୁ", ml: "മാറ്റുക", pa: "ਬਦਲੋ" },
       gpsAccuracy: { en: "Accuracy", ar: "الدقة", ur: "درستگی", hi: "सटीकता", ta: "துல்லியம்", te: "ఖచ్చితత్వం", mr: "अचूकता", bn: "নির্ভুলতা", or: "ସଠିକତା", ml: "കൃത്യത", pa: "ਸਟੀਕਤਾ" },
       prefilled: { en: "Prefilled — edit if needed", ar: "تم ملؤها — يمكن التعديل", ur: "پہلے سے بھرا — ضرورت ہو تو بدلیں", hi: "पहले से भरा — बदल सकते हैं", ta: "முன்-நிரப்பப்பட்டது", te: "ముందుగా నింపబడింది", mr: "आधीच भरले — बदल शकता", bn: "আগে থেকে পূরণ — পরিবর্তন করুন", or: "ପୂର୍ବ-ପୂରଣ", ml: "മുൻകൂട്ടി പൂരിപ്പിച്ചു", pa: "ਪਹਿਲਾਂ ਭਰਿਆ — ਬਦਲ ਸਕਦੇ ਹੋ" },
       notes: { en: "Additional Notes", ar: "ملاحظات", ur: "اضافی نوٹس", hi: "अतिरिक्त नोट्स", ta: "குறிப்புகள்", te: "గమనికలు", mr: "टिपा", bn: "অতিরিক্ত নোট", or: "ଅତିରିକ୍ତ ଟିପ୍ପଣୀ", ml: "കുറിപ്പുകൾ", pa: "ਨੋਟਸ" },
@@ -307,6 +311,14 @@ const LostAndFoundPage = () => {
       setPhotoFile(file);
       setPhotoPreview(URL.createObjectURL(file));
     }
+  };
+
+  const handleRemovePhoto = () => {
+    if (photoPreview) {
+      URL.revokeObjectURL(photoPreview);
+    }
+    setPhotoFile(null);
+    setPhotoPreview(null);
   };
 
   const handleCaptureLocation = () => {
@@ -678,16 +690,60 @@ const LostAndFoundPage = () => {
                     <Camera className="h-3.5 w-3.5" />
                     {t.get("photo")}
                   </Label>
-                  <Input
-                    id="photo"
-                    type="file"
-                    accept="image/*"
-                    capture="environment"
-                    onChange={handlePhotoChange}
-                  />
-                  <p className="mt-1 text-xs text-muted-foreground">{t.get("takePhoto")}</p>
-                  {photoPreview && (
-                    <img src={photoPreview} alt="preview" className="mt-2 h-32 w-32 object-cover rounded-md border" />
+                  {!photoPreview ? (
+                    <>
+                      <Input
+                        id="photo"
+                        type="file"
+                        accept="image/*"
+                        capture="environment"
+                        onChange={handlePhotoChange}
+                      />
+                      <p className="mt-1 text-xs text-muted-foreground">{t.get("takePhoto")}</p>
+                    </>
+                  ) : (
+                    <div className="mt-2 space-y-2">
+                      <div className="relative rounded-lg border overflow-hidden bg-muted">
+                        <img
+                          src={photoPreview}
+                          alt="preview"
+                          className="w-full h-52 object-contain"
+                        />
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={handleRemovePhoto}
+                          className="flex-1"
+                        >
+                          <X className="h-4 w-4 mr-1" />
+                          {t.get("removePhoto")}
+                        </Button>
+                        <label className="flex-1">
+                          <Input
+                            type="file"
+                            accept="image/*"
+                            capture="environment"
+                            onChange={handlePhotoChange}
+                            className="hidden"
+                          />
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="w-full"
+                            asChild
+                          >
+                            <span>
+                              <RotateCcw className="h-4 w-4 mr-1" />
+                              {t.get("replacePhoto")}
+                            </span>
+                          </Button>
+                        </label>
+                      </div>
+                    </div>
                   )}
                 </div>
 
