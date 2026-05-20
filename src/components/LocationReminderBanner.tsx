@@ -3,6 +3,10 @@ import { MapPin, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
 
+const LOCATION_OK_STORAGE_KEY = "hajj_location_ok_at";
+const LOCATION_UPDATED_EVENT = "hajj-location-updated";
+const RECENT_LOCATION_WINDOW_MS = 10 * 60 * 1000;
+
 const labels = {
   en: { msg: "Location is off. Enable it for live tracking & safety.", btn: "Enable" },
   ar: { msg: "الموقع معطل. فعّله للتتبع المباشر والسلامة.", btn: "تفعيل" },
@@ -21,20 +25,41 @@ export function LocationReminderBanner() {
 
   useEffect(() => {
     // Show banner only if permission is not granted
-    if (!("permissions" in navigator)) return;
+    const hasRecentLocation = () => {
+      const lastOkAt = Number(localStorage.getItem(LOCATION_OK_STORAGE_KEY) || 0);
+      return lastOkAt > 0 && Date.now() - lastOkAt < RECENT_LOCATION_WINDOW_MS;
+    };
+
+    const hideIfLocationWorks = () => {
+      if (hasRecentLocation()) setVisible(false);
+    };
+
+    window.addEventListener(LOCATION_UPDATED_EVENT, hideIfLocationWorks);
+
+    if (!("permissions" in navigator)) {
+      setVisible(!hasRecentLocation());
+      return () => window.removeEventListener(LOCATION_UPDATED_EVENT, hideIfLocationWorks);
+    }
+
     navigator.permissions.query({ name: "geolocation" }).then((result) => {
-      if (result.state !== "granted") setVisible(true);
+      if (result.state !== "granted" && !hasRecentLocation()) setVisible(true);
       result.addEventListener("change", () => {
         if (result.state === "granted") setVisible(false);
       });
     }).catch(() => {});
+
+    return () => window.removeEventListener(LOCATION_UPDATED_EVENT, hideIfLocationWorks);
   }, []);
 
   if (!visible || dismissed) return null;
 
   const requestLocation = () => {
     navigator.geolocation?.getCurrentPosition(
-      () => setVisible(false),
+      () => {
+        localStorage.setItem(LOCATION_OK_STORAGE_KEY, String(Date.now()));
+        window.dispatchEvent(new Event(LOCATION_UPDATED_EVENT));
+        setVisible(false);
+      },
       () => {},
       { enableHighAccuracy: true, timeout: 10000 }
     );
