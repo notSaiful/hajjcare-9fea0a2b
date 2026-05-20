@@ -129,6 +129,7 @@ const LostAndFoundPage = () => {
 
   const [form, setForm] = useState({
     report_type: "person" as ReportType,
+    post_kind: "lost" as PostKind,
     person_name: "",
     person_age: "",
     person_gender: "male",
