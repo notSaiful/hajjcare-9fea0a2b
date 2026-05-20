@@ -50,7 +50,8 @@ import { toast } from "@/hooks/use-toast";
 import { compressImage } from "@/lib/imageCompression";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useAuthContext } from "@/contexts/AuthContext";
-import { ShieldCheck, Lock } from "lucide-react";
+import { ShieldCheck, Lock, HandIcon } from "lucide-react";
+import { ClaimDialog, ClaimsPanel } from "@/components/lost-found/LostFoundClaims";
 
 const REPORTER_STORAGE_KEY = "lost_found_reporter_v1";
 
