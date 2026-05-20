@@ -116,6 +116,8 @@ const LostAndFoundPage = () => {
   const [submitting, setSubmitting] = useState(false);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [pdfThumb, setPdfThumb] = useState<string | null>(null);
+  const [pdfPageCount, setPdfPageCount] = useState<number>(0);
   const [locating, setLocating] = useState(false);
   const [gpsCoords, setGpsCoords] = useState<{ lat: number; lng: number; accuracy: number } | null>(null);
 
