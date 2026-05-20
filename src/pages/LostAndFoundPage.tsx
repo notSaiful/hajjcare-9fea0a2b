@@ -549,6 +549,7 @@ const LostAndFoundPage = () => {
 
   const filtered = reports.filter((r) => {
     if (filterType !== "all" && r.report_type !== filterType) return false;
+    if (filterKind !== "all" && (r.post_kind || "lost") !== filterKind) return false;
     if (!search.trim()) return true;
     const q = search.toLowerCase();
     return (
@@ -559,6 +560,9 @@ const LostAndFoundPage = () => {
       (r.item_description?.toLowerCase().includes(q))
     );
   });
+
+  const lostCount = reports.filter((r) => (r.post_kind || "lost") === "lost").length;
+  const foundCount = reports.filter((r) => r.post_kind === "found").length;
 
   return (
     <MainLayout>
