@@ -1928,6 +1928,7 @@ export type Database = {
           person_gender: string | null
           person_name: string | null
           photo_url: string | null
+          post_kind: string
           report_type: string
           reporter_mobile: string
           reporter_name: string
@@ -1953,6 +1954,7 @@ export type Database = {
           person_gender?: string | null
           person_name?: string | null
           photo_url?: string | null
+          post_kind?: string
           report_type: string
           reporter_mobile: string
           reporter_name: string
@@ -1978,6 +1980,7 @@ export type Database = {
           person_gender?: string | null
           person_name?: string | null
           photo_url?: string | null
+          post_kind?: string
           report_type?: string
           reporter_mobile?: string
           reporter_name?: string
@@ -3029,6 +3032,7 @@ export type Database = {
           person_gender: string | null
           person_name: string | null
           photo_url: string | null
+          post_kind: string | null
           report_type: string | null
           reporter_name: string | null
           status: string | null
@@ -3052,6 +3056,7 @@ export type Database = {
           person_gender?: string | null
           person_name?: string | null
           photo_url?: string | null
+          post_kind?: string | null
           report_type?: string | null
           reporter_name?: string | null
           status?: string | null
@@ -3075,6 +3080,7 @@ export type Database = {
           person_gender?: string | null
           person_name?: string | null
           photo_url?: string | null
+          post_kind?: string | null
           report_type?: string | null
           reporter_name?: string | null
           status?: string | null
