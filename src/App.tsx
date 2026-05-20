@@ -112,6 +112,7 @@ const VolunteerPage = lazy(() => import("./pages/VolunteerPage"));
 const VolunteerDashboardPage = lazy(() => import("./pages/VolunteerDashboardPage"));
 const ResponderCommandPage = lazy(() => import("./pages/ResponderCommandPage"));
 const NationalCommandPage = lazy(() => import("./pages/NationalCommandPage"));
+const AdminLiveTrackingPage = lazy(() => import("./pages/AdminLiveTrackingPage"));
 const DeploymentRoadmapPage = lazy(() => import("./pages/DeploymentRoadmapPage"));
 const ComplianceDashboardPage = lazy(() => import("./pages/ComplianceDashboardPage"));
 const AdminWhatsAppApiPage = lazy(() => import("./pages/AdminWhatsAppApiPage"));
@@ -263,6 +264,7 @@ function AppContent() {
       <Route path="/hajj-wizard" element={<HajjQueryWizardPage />} />
       <Route path="/command-center" element={<ResponderCommandPage />} />
       <Route path="/national-command" element={<NationalCommandPage />} />
+      <Route path="/admin/live-tracking" element={<AdminLiveTrackingPage />} />
       <Route path="/deployment-roadmap" element={<DeploymentRoadmapPage />} />
       <Route path="/admin/compliance" element={<ComplianceDashboardPage />} />
       <Route path="/admin/whatsapp-api" element={<AdminWhatsAppApiPage />} />
