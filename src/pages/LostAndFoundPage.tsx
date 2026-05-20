@@ -50,7 +50,8 @@ import { toast } from "@/hooks/use-toast";
 import { compressImage } from "@/lib/imageCompression";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useAuthContext } from "@/contexts/AuthContext";
-import { ShieldCheck, Lock } from "lucide-react";
+import { ShieldCheck, Lock, HandIcon } from "lucide-react";
+import { ClaimDialog, ClaimsPanel } from "@/components/lost-found/LostFoundClaims";
 
 const REPORTER_STORAGE_KEY = "lost_found_reporter_v1";
 
@@ -126,6 +127,7 @@ const LostAndFoundPage = () => {
   const [pdfPageCount, setPdfPageCount] = useState<number>(0);
   const [locating, setLocating] = useState(false);
   const [gpsCoords, setGpsCoords] = useState<{ lat: number; lng: number; accuracy: number } | null>(null);
+  const [claimTarget, setClaimTarget] = useState<LostFoundReport | null>(null);
 
   const [form, setForm] = useState({
     report_type: "person" as ReportType,
@@ -547,6 +549,7 @@ const LostAndFoundPage = () => {
 
   const filtered = reports.filter((r) => {
     if (filterType !== "all" && r.report_type !== filterType) return false;
+    if (filterKind !== "all" && (r.post_kind || "lost") !== filterKind) return false;
     if (!search.trim()) return true;
     const q = search.toLowerCase();
     return (
@@ -557,6 +560,9 @@ const LostAndFoundPage = () => {
       (r.item_description?.toLowerCase().includes(q))
     );
   });
+
+  const lostCount = reports.filter((r) => (r.post_kind || "lost") === "lost").length;
+  const foundCount = reports.filter((r) => r.post_kind === "found").length;
 
   return (
     <MainLayout>
@@ -953,6 +959,34 @@ const LostAndFoundPage = () => {
             </DialogContent>
           </Dialog>
 
+          {/* My claims / Incoming claims */}
+          <ClaimsPanel />
+
+          {/* Lost vs Found segmented filter */}
+          <div className="grid grid-cols-3 gap-1 p-1 bg-muted rounded-lg">
+            <button
+              type="button"
+              onClick={() => setFilterKind("all")}
+              className={`h-9 rounded-md text-sm font-medium transition ${filterKind === "all" ? "bg-background shadow-sm" : "text-muted-foreground"}`}
+            >
+              {t.get("all")} ({reports.length})
+            </button>
+            <button
+              type="button"
+              onClick={() => setFilterKind("lost")}
+              className={`h-9 rounded-md text-sm font-medium transition ${filterKind === "lost" ? "bg-background shadow-sm" : "text-muted-foreground"}`}
+            >
+              🔍 Lost ({lostCount})
+            </button>
+            <button
+              type="button"
+              onClick={() => setFilterKind("found")}
+              className={`h-9 rounded-md text-sm font-medium transition ${filterKind === "found" ? "bg-emerald-600 text-white shadow-sm" : "text-muted-foreground"}`}
+            >
+              ✋ Found ({foundCount})
+            </button>
+          </div>
+
           {/* Search */}
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -1016,7 +1050,12 @@ const LostAndFoundPage = () => {
                             <h3 className="font-semibold truncate">
                               {r.report_type === "person" ? r.person_name : r.item_name}
                             </h3>
-                            <div className="flex items-center gap-1 flex-shrink-0">
+                            <div className="flex items-center gap-1 flex-shrink-0 flex-wrap justify-end">
+                              {r.post_kind === "found" && (
+                                <Badge className="bg-emerald-600 hover:bg-emerald-600">
+                                  ✋ {t.get("found")}
+                                </Badge>
+                              )}
                               <Badge
                                 variant={r.status === "found" ? "default" : "secondary"}
                                 className={r.status === "found" ? "bg-emerald-500" : ""}
@@ -1124,6 +1163,21 @@ const LostAndFoundPage = () => {
                                 )}
                               </>
                             )}
+                            {r.post_kind === "found" && r.status !== "closed" && user && r.user_id !== user.id && (
+                              <Button
+                                size="sm"
+                                onClick={() => setClaimTarget(r)}
+                                className="h-8 bg-primary hover:bg-primary/90"
+                              >
+                                <HandIcon className="h-3 w-3 mr-1" />
+                                Claim
+                              </Button>
+                            )}
+                            {r.post_kind === "found" && !user && (
+                              <Button asChild size="sm" variant="outline" className="h-8">
+                                <Link to="/auth">Sign in to claim</Link>
+                              </Button>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -1135,6 +1189,19 @@ const LostAndFoundPage = () => {
           </Tabs>
         </div>
       </div>
+      {claimTarget && (
+        <ClaimDialog
+          open={!!claimTarget}
+          onOpenChange={(v) => !v && setClaimTarget(null)}
+          report={{
+            id: claimTarget.id,
+            item_name: claimTarget.item_name,
+            person_name: claimTarget.person_name,
+            photo_url: claimTarget.photo_url,
+          }}
+          onSubmitted={fetchReports}
+        />
+      )}
     </MainLayout>
   );
 };

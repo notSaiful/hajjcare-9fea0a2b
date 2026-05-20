@@ -1994,6 +1994,72 @@ export type Database = {
         }
         Relationships: []
       }
+      lost_found_claims: {
+        Row: {
+          claim_description: string
+          claimant_mobile: string
+          claimant_name: string
+          claimant_user_id: string
+          claimant_whatsapp: string | null
+          created_at: string
+          id: string
+          owner_response_note: string | null
+          owner_user_id: string | null
+          proof_photo_url: string | null
+          report_id: string
+          responded_at: string | null
+          status: Database["public"]["Enums"]["claim_status"]
+          updated_at: string
+        }
+        Insert: {
+          claim_description: string
+          claimant_mobile: string
+          claimant_name: string
+          claimant_user_id: string
+          claimant_whatsapp?: string | null
+          created_at?: string
+          id?: string
+          owner_response_note?: string | null
+          owner_user_id?: string | null
+          proof_photo_url?: string | null
+          report_id: string
+          responded_at?: string | null
+          status?: Database["public"]["Enums"]["claim_status"]
+          updated_at?: string
+        }
+        Update: {
+          claim_description?: string
+          claimant_mobile?: string
+          claimant_name?: string
+          claimant_user_id?: string
+          claimant_whatsapp?: string | null
+          created_at?: string
+          id?: string
+          owner_response_note?: string | null
+          owner_user_id?: string | null
+          proof_photo_url?: string | null
+          report_id?: string
+          responded_at?: string | null
+          status?: Database["public"]["Enums"]["claim_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lost_found_claims_report_id_fkey"
+            columns: ["report_id"]
+            isOneToOne: false
+            referencedRelation: "lost_and_found"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lost_found_claims_report_id_fkey"
+            columns: ["report_id"]
+            isOneToOne: false
+            referencedRelation: "lost_and_found_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       member_link_requests: {
         Row: {
           created_at: string
@@ -3349,6 +3415,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "coordinator" | "medical_staff" | "user"
+      claim_status: "pending" | "approved" | "rejected" | "withdrawn"
       health_ticket_status:
         | "submitted"
         | "ai_triaged"
@@ -3493,6 +3560,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "coordinator", "medical_staff", "user"],
+      claim_status: ["pending", "approved", "rejected", "withdrawn"],
       health_ticket_status: [
         "submitted",
         "ai_triaged",
