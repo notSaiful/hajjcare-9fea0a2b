@@ -62,6 +62,19 @@ const nowForInput = () => {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 };
 
+// Build WhatsApp click-to-chat URL with pre-filled message
+const buildWhatsAppUrl = (number: string, report: LostFoundReport) => {
+  const clean = number.replace(/\D/g, "");
+  if (!clean) return "#";
+  const subject = report.report_type === "person"
+    ? `Lost person: ${report.person_name}`
+    : `Lost item: ${report.item_name}`;
+  const msg = encodeURIComponent(
+    `Assalamu Alaikum, I saw your report on HajjCare about "${subject}". Can you please provide more details?`
+  );
+  return `https://wa.me/${clean}?text=${msg}`;
+};
+
 type ReportType = "person" | "item";
 type ReportStatus = "open" | "found" | "closed";
 type PostKind = "lost" | "found";
