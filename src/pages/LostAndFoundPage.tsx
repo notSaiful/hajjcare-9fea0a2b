@@ -1050,7 +1050,12 @@ const LostAndFoundPage = () => {
                             <h3 className="font-semibold truncate">
                               {r.report_type === "person" ? r.person_name : r.item_name}
                             </h3>
-                            <div className="flex items-center gap-1 flex-shrink-0">
+                            <div className="flex items-center gap-1 flex-shrink-0 flex-wrap justify-end">
+                              {r.post_kind === "found" && (
+                                <Badge className="bg-emerald-600 hover:bg-emerald-600">
+                                  ✋ {t.get("found")}
+                                </Badge>
+                              )}
                               <Badge
                                 variant={r.status === "found" ? "default" : "secondary"}
                                 className={r.status === "found" ? "bg-emerald-500" : ""}
