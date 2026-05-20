@@ -305,14 +305,24 @@ const LostAndFoundPage = () => {
       toast({ title: "File too large", description: "Max 10MB", variant: "destructive" });
       return;
     }
-    try {
-      const compressed = await compressImage(file, 2);
-      setPhotoFile(compressed);
-      setPhotoPreview(URL.createObjectURL(compressed));
-    } catch {
-      setPhotoFile(file);
-      setPhotoPreview(URL.createObjectURL(file));
+    const isImage = file.type.startsWith("image/");
+    const isPdf = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
+    if (!isImage && !isPdf) {
+      toast({ title: "Unsupported file", description: "Only images or PDF allowed", variant: "destructive" });
+      return;
     }
+    if (isImage) {
+      try {
+        const compressed = await compressImage(file, 2);
+        setPhotoFile(compressed);
+        setPhotoPreview(URL.createObjectURL(compressed));
+        return;
+      } catch {
+        // fall through to raw
+      }
+    }
+    setPhotoFile(file);
+    setPhotoPreview(URL.createObjectURL(file));
   };
 
   const handleRemovePhoto = () => {
