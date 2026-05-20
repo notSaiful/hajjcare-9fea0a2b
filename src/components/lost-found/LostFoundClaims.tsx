@@ -209,7 +209,7 @@ export const ClaimsPanel = () => {
   const [loading, setLoading] = useState(false);
   const [respondNote, setRespondNote] = useState<Record<string, string>>({});
 
-  const reportSelect = "report:lost_and_found!inner(item_name,person_name,photo_url,last_seen_location,post_kind)";
+  const reportSelect = "report:lost_and_found!inner(item_name,person_name,photo_url,last_seen_location,post_kind,reporter_whatsapp,reporter_mobile)";
 
   const fetchAll = useCallback(async () => {
     if (!user?.id) return;
