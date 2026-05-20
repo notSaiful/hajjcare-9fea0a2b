@@ -315,6 +315,16 @@ export const ClaimsPanel = () => {
                       </Badge>
                     </div>
                     <p className="text-sm whitespace-pre-wrap break-words">{c.claim_description}</p>
+                    {(() => {
+                      const subject = c.report?.item_name || c.report?.person_name || "your report";
+                      const msg = `Assalamu Alaikum ${c.claimant_name}, regarding your claim on HajjCare for "${subject}" — let's coordinate the handover.`;
+                      const url = buildWaUrl(c.claimant_whatsapp || c.claimant_mobile, msg);
+                      return url ? (
+                        <div className="flex gap-2">
+                          <WhatsAppButton url={url} label="WhatsApp claimant" />
+                        </div>
+                      ) : null;
+                    })()}
                     {c.status === "pending" && (
                       <div className="space-y-2 pt-1">
                         <Textarea
