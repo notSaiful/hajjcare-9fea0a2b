@@ -455,14 +455,37 @@ const LostAndFoundPage = () => {
         try {
           const ext = (photoFile.name.split(".").pop() || "jpg").toLowerCase();
           const fileName = `${crypto.randomUUID()}.${ext}`;
-          const { error: uploadErr } = await supabase.storage
-            .from("lost-found-photos")
-            .upload(fileName, photoFile, {
-              contentType: photoFile.type || "image/jpeg",
-              cacheControl: "3600",
-              upsert: false,
-            });
-          if (uploadErr) throw uploadErr;
+          const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+          const apiKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+          const { data: { session } } = await supabase.auth.getSession();
+          const authToken = session?.access_token || apiKey;
+
+          setUploadProgress(0);
+          await new Promise<void>((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", `${supabaseUrl}/storage/v1/object/lost-found-photos/${fileName}`);
+            xhr.setRequestHeader("Authorization", `Bearer ${authToken}`);
+            xhr.setRequestHeader("apikey", apiKey);
+            xhr.setRequestHeader("x-upsert", "false");
+            xhr.setRequestHeader("cache-control", "3600");
+            if (photoFile.type) xhr.setRequestHeader("Content-Type", photoFile.type);
+            xhr.upload.onprogress = (ev) => {
+              if (ev.lengthComputable) {
+                setUploadProgress(Math.round((ev.loaded / ev.total) * 100));
+              }
+            };
+            xhr.onload = () => {
+              if (xhr.status >= 200 && xhr.status < 300) {
+                setUploadProgress(100);
+                resolve();
+              } else {
+                reject(new Error(`Upload failed (${xhr.status}): ${xhr.responseText}`));
+              }
+            };
+            xhr.onerror = () => reject(new Error("Network error during upload"));
+            xhr.send(photoFile);
+          });
+
           const { data: urlData } = supabase.storage
             .from("lost-found-photos")
             .getPublicUrl(fileName);
@@ -471,6 +494,8 @@ const LostAndFoundPage = () => {
           // Don't block the report if photo upload fails (network/CORS/size).
           console.error("Photo upload failed:", uploadError);
           photoUploadFailed = true;
+        } finally {
+          setUploadProgress(null);
         }
       }
 
