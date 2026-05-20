@@ -114,6 +114,7 @@ const LostAndFoundPage = () => {
   const [filterType, setFilterType] = useState<"all" | ReportType>("all");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [pdfThumb, setPdfThumb] = useState<string | null>(null);
