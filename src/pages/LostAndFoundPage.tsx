@@ -405,6 +405,7 @@ const LostAndFoundPage = () => {
   const resetForm = () => {
     setForm({
       report_type: "person",
+      post_kind: "lost",
       person_name: "",
       person_age: "",
       person_gender: "male",
