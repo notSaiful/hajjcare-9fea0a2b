@@ -318,6 +318,8 @@ const LostAndFoundPage = () => {
         const compressed = await compressImage(file, 2);
         setPhotoFile(compressed);
         setPhotoPreview(URL.createObjectURL(compressed));
+        setPdfThumb(null);
+        setPdfPageCount(0);
         return;
       } catch {
         // fall through to raw
@@ -325,6 +327,30 @@ const LostAndFoundPage = () => {
     }
     setPhotoFile(file);
     setPhotoPreview(URL.createObjectURL(file));
+    setPdfThumb(null);
+    setPdfPageCount(0);
+    if (isPdf) {
+      try {
+        const pdfjsLib: any = await import("pdfjs-dist");
+        const workerUrl = (await import("pdfjs-dist/build/pdf.worker.min.mjs?url")).default;
+        pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl;
+        const buf = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+        setPdfPageCount(pdf.numPages);
+        const page = await pdf.getPage(1);
+        const viewport = page.getViewport({ scale: 1.5 });
+        const canvas = document.createElement("canvas");
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        const ctx = canvas.getContext("2d")!;
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        await page.render({ canvasContext: ctx, viewport }).promise;
+        setPdfThumb(canvas.toDataURL("image/jpeg", 0.8));
+      } catch (err) {
+        console.error("PDF thumbnail failed", err);
+      }
+    }
   };
 
   const handleRemovePhoto = () => {
@@ -333,6 +359,8 @@ const LostAndFoundPage = () => {
     }
     setPhotoFile(null);
     setPhotoPreview(null);
+    setPdfThumb(null);
+    setPdfPageCount(0);
   };
 
   const handleCaptureLocation = () => {
