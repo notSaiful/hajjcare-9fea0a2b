@@ -245,6 +245,9 @@ export interface LocationState {
   lastUpdatedAt: number | null;
 }
 
+const LOCATION_OK_STORAGE_KEY = "hajj_location_ok_at";
+const LOCATION_UPDATED_EVENT = "hajj-location-updated";
+
 export function useHajjLocation() {
   const [state, setState] = useState<LocationState>({
     lat: null,
@@ -261,6 +264,12 @@ export function useHajjLocation() {
   const updateLocation = useCallback((position: GeolocationPosition) => {
     const { latitude, longitude, accuracy } = position.coords;
     const stage = determineStage(latitude, longitude);
+    try {
+      localStorage.setItem(LOCATION_OK_STORAGE_KEY, String(Date.now()));
+      window.dispatchEvent(new Event(LOCATION_UPDATED_EVENT));
+    } catch {
+      // Ignore storage/event failures in restricted browser modes.
+    }
     setState({
       lat: latitude,
       lng: longitude,
