@@ -375,6 +375,16 @@ export const ClaimsPanel = () => {
                     {c.owner_response_note && (
                       <p className="text-xs italic">Finder's note: {c.owner_response_note}</p>
                     )}
+                    {(() => {
+                      const subject = c.report?.item_name || c.report?.person_name || "this report";
+                      const msg = `Assalamu Alaikum, I submitted a claim on HajjCare for "${subject}". Could we coordinate the handover please?`;
+                      const url = buildWaUrl(c.report?.reporter_whatsapp || c.report?.reporter_mobile, msg);
+                      return url ? (
+                        <div className="flex gap-2">
+                          <WhatsAppButton url={url} label="WhatsApp finder" />
+                        </div>
+                      ) : null;
+                    })()}
                     {c.status === "pending" && (
                       <Button size="sm" variant="ghost" onClick={() => withdraw(c)} className="h-7 text-xs">
                         Withdraw
