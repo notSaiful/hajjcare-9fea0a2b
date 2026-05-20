@@ -116,6 +116,8 @@ const LostAndFoundPage = () => {
   const [submitting, setSubmitting] = useState(false);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [pdfThumb, setPdfThumb] = useState<string | null>(null);
+  const [pdfPageCount, setPdfPageCount] = useState<number>(0);
   const [locating, setLocating] = useState(false);
   const [gpsCoords, setGpsCoords] = useState<{ lat: number; lng: number; accuracy: number } | null>(null);
 
@@ -316,6 +318,8 @@ const LostAndFoundPage = () => {
         const compressed = await compressImage(file, 2);
         setPhotoFile(compressed);
         setPhotoPreview(URL.createObjectURL(compressed));
+        setPdfThumb(null);
+        setPdfPageCount(0);
         return;
       } catch {
         // fall through to raw
@@ -323,6 +327,30 @@ const LostAndFoundPage = () => {
     }
     setPhotoFile(file);
     setPhotoPreview(URL.createObjectURL(file));
+    setPdfThumb(null);
+    setPdfPageCount(0);
+    if (isPdf) {
+      try {
+        const pdfjsLib: any = await import("pdfjs-dist");
+        const workerUrl = (await import("pdfjs-dist/build/pdf.worker.min.mjs?url")).default;
+        pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl;
+        const buf = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+        setPdfPageCount(pdf.numPages);
+        const page = await pdf.getPage(1);
+        const viewport = page.getViewport({ scale: 1.5 });
+        const canvas = document.createElement("canvas");
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        const ctx = canvas.getContext("2d")!;
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        await page.render({ canvasContext: ctx, viewport }).promise;
+        setPdfThumb(canvas.toDataURL("image/jpeg", 0.8));
+      } catch (err) {
+        console.error("PDF thumbnail failed", err);
+      }
+    }
   };
 
   const handleRemovePhoto = () => {
@@ -331,6 +359,8 @@ const LostAndFoundPage = () => {
     }
     setPhotoFile(null);
     setPhotoPreview(null);
+    setPdfThumb(null);
+    setPdfPageCount(0);
   };
 
   const handleCaptureLocation = () => {
@@ -716,16 +746,33 @@ const LostAndFoundPage = () => {
                     </>
                   ) : (
                     <div className="mt-2 space-y-2">
-                      <div className="relative rounded-lg border overflow-hidden bg-muted">
-                        {photoFile?.type === "application/pdf" ? (
-                          <div className="w-full h-52 flex flex-col items-center justify-center gap-2 p-4">
-                            <FileText className="h-16 w-16 text-primary" />
-                            <p className="text-sm font-medium text-center break-all px-2">
-                              {photoFile.name}
-                            </p>
-                            <p className="text-xs text-muted-foreground">PDF</p>
-                          </div>
-                        ) : (
+                       <div className="relative rounded-lg border overflow-hidden bg-muted">
+                         {photoFile?.type === "application/pdf" ? (
+                           pdfThumb ? (
+                             <div className="relative">
+                               <img
+                                 src={pdfThumb}
+                                 alt="PDF first page"
+                                 className="w-full h-52 object-contain bg-white"
+                               />
+                               <div className="absolute top-2 left-2 flex items-center gap-1 bg-primary text-primary-foreground text-xs font-semibold px-2 py-1 rounded shadow">
+                                 <FileText className="h-3 w-3" />
+                                 PDF{pdfPageCount > 1 ? ` · ${pdfPageCount} pages` : ""}
+                               </div>
+                               <div className="absolute bottom-0 inset-x-0 bg-black/60 text-white text-xs px-2 py-1 truncate">
+                                 {photoFile.name}
+                               </div>
+                             </div>
+                           ) : (
+                             <div className="w-full h-52 flex flex-col items-center justify-center gap-2 p-4">
+                               <FileText className="h-16 w-16 text-primary animate-pulse" />
+                               <p className="text-sm font-medium text-center break-all px-2">
+                                 {photoFile.name}
+                               </p>
+                               <p className="text-xs text-muted-foreground">Loading preview…</p>
+                             </div>
+                           )
+                         ) : (
                           <img
                             src={photoPreview}
                             alt="preview"
