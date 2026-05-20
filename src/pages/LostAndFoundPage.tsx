@@ -594,9 +594,32 @@ const LostAndFoundPage = () => {
                 <DialogDescription>{t.get("formDescription")}</DialogDescription>
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Lost vs Found toggle */}
+                <div>
+                  <Label>I want to report</Label>
+                  <div className="grid grid-cols-2 gap-2 mt-1">
+                    <Button
+                      type="button"
+                      variant={form.post_kind === "lost" ? "default" : "outline"}
+                      onClick={() => setForm({ ...form, post_kind: "lost" })}
+                      className="h-12"
+                    >
+                      🔍 Lost
+                    </Button>
+                    <Button
+                      type="button"
+                      variant={form.post_kind === "found" ? "default" : "outline"}
+                      onClick={() => setForm({ ...form, post_kind: "found" })}
+                      className={`h-12 ${form.post_kind === "found" ? "bg-emerald-600 hover:bg-emerald-700" : ""}`}
+                    >
+                      ✋ Found
+                    </Button>
+                  </div>
+                </div>
+
                 {/* Report type */}
                 <div>
-                  <Label>{t.get("reportType")}</Label>
+                  <Label>{form.post_kind === "found" ? "What did you find?" : t.get("reportType")}</Label>
                   <div className="grid grid-cols-2 gap-2 mt-1">
                     <Button
                       type="button"
