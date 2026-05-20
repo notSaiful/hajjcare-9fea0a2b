@@ -14,7 +14,29 @@ import {
 import {
   Accordion, AccordionContent, AccordionItem, AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Loader2, HandIcon, CheckCircle2, XCircle, Clock, Inbox, Send } from "lucide-react";
+import { Loader2, HandIcon, CheckCircle2, XCircle, Clock, Inbox, Send, MessageCircle } from "lucide-react";
+
+const buildWaUrl = (phone: string | null | undefined, message: string) => {
+  if (!phone) return null;
+  const digits = phone.replace(/\D/g, "");
+  if (!digits) return null;
+  return `https://wa.me/${digits}?text=${encodeURIComponent(message)}`;
+};
+
+const WhatsAppButton = ({ url, label = "WhatsApp" }: { url: string | null; label?: string }) => {
+  if (!url) return null;
+  return (
+    <a href={url} target="_blank" rel="noopener noreferrer" className="flex-1">
+      <Button
+        type="button"
+        size="sm"
+        className="w-full bg-[#25D366] hover:bg-[#1ebd5a] text-white h-9"
+      >
+        <MessageCircle className="h-3.5 w-3.5 mr-1" /> {label}
+      </Button>
+    </a>
+  );
+};
 
 type ClaimStatus = "pending" | "approved" | "rejected" | "withdrawn";
 
