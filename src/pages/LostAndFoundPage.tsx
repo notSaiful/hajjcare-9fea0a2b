@@ -1189,6 +1189,19 @@ const LostAndFoundPage = () => {
           </Tabs>
         </div>
       </div>
+      {claimTarget && (
+        <ClaimDialog
+          open={!!claimTarget}
+          onOpenChange={(v) => !v && setClaimTarget(null)}
+          report={{
+            id: claimTarget.id,
+            item_name: claimTarget.item_name,
+            person_name: claimTarget.person_name,
+            photo_url: claimTarget.photo_url,
+          }}
+          onSubmitted={fetchReports}
+        />
+      )}
     </MainLayout>
   );
 };
