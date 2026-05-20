@@ -127,6 +127,7 @@ const LostAndFoundPage = () => {
   const [pdfPageCount, setPdfPageCount] = useState<number>(0);
   const [locating, setLocating] = useState(false);
   const [gpsCoords, setGpsCoords] = useState<{ lat: number; lng: number; accuracy: number } | null>(null);
+  const [claimTarget, setClaimTarget] = useState<LostFoundReport | null>(null);
 
   const [form, setForm] = useState({
     report_type: "person" as ReportType,
