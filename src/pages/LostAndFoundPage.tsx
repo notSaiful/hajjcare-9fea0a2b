@@ -746,16 +746,33 @@ const LostAndFoundPage = () => {
                     </>
                   ) : (
                     <div className="mt-2 space-y-2">
-                      <div className="relative rounded-lg border overflow-hidden bg-muted">
-                        {photoFile?.type === "application/pdf" ? (
-                          <div className="w-full h-52 flex flex-col items-center justify-center gap-2 p-4">
-                            <FileText className="h-16 w-16 text-primary" />
-                            <p className="text-sm font-medium text-center break-all px-2">
-                              {photoFile.name}
-                            </p>
-                            <p className="text-xs text-muted-foreground">PDF</p>
-                          </div>
-                        ) : (
+                       <div className="relative rounded-lg border overflow-hidden bg-muted">
+                         {photoFile?.type === "application/pdf" ? (
+                           pdfThumb ? (
+                             <div className="relative">
+                               <img
+                                 src={pdfThumb}
+                                 alt="PDF first page"
+                                 className="w-full h-52 object-contain bg-white"
+                               />
+                               <div className="absolute top-2 left-2 flex items-center gap-1 bg-primary text-primary-foreground text-xs font-semibold px-2 py-1 rounded shadow">
+                                 <FileText className="h-3 w-3" />
+                                 PDF{pdfPageCount > 1 ? ` · ${pdfPageCount} pages` : ""}
+                               </div>
+                               <div className="absolute bottom-0 inset-x-0 bg-black/60 text-white text-xs px-2 py-1 truncate">
+                                 {photoFile.name}
+                               </div>
+                             </div>
+                           ) : (
+                             <div className="w-full h-52 flex flex-col items-center justify-center gap-2 p-4">
+                               <FileText className="h-16 w-16 text-primary animate-pulse" />
+                               <p className="text-sm font-medium text-center break-all px-2">
+                                 {photoFile.name}
+                               </p>
+                               <p className="text-xs text-muted-foreground">Loading preview…</p>
+                             </div>
+                           )
+                         ) : (
                           <img
                             src={photoPreview}
                             alt="preview"
