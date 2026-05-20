@@ -311,6 +311,14 @@ const LostAndFoundPage = () => {
     }
   };
 
+  const handleRemovePhoto = () => {
+    if (photoPreview) {
+      URL.revokeObjectURL(photoPreview);
+    }
+    setPhotoFile(null);
+    setPhotoPreview(null);
+  };
+
   const handleCaptureLocation = () => {
     if (!navigator.geolocation) {
       toast({ title: t.get("locUnsupported"), variant: "destructive" });
