@@ -433,6 +433,7 @@ const LostAndFoundPage = () => {
     try {
       const payload = {
         report_type: form.report_type,
+        post_kind: form.post_kind,
         person_name: form.report_type === "person" ? form.person_name || undefined : undefined,
         person_age: form.report_type === "person" && form.person_age ? Number(form.person_age) : undefined,
         person_gender: form.report_type === "person" ? form.person_gender : undefined,
