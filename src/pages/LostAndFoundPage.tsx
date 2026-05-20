@@ -62,6 +62,19 @@ const nowForInput = () => {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 };
 
+// Build WhatsApp click-to-chat URL with pre-filled message
+const buildWhatsAppUrl = (number: string, report: LostFoundReport) => {
+  const clean = number.replace(/\D/g, "");
+  if (!clean) return "#";
+  const subject = report.report_type === "person"
+    ? `Lost person: ${report.person_name}`
+    : `Lost item: ${report.item_name}`;
+  const msg = encodeURIComponent(
+    `Assalamu Alaikum, I saw your report on HajjCare about "${subject}". Can you please provide more details?`
+  );
+  return `https://wa.me/${clean}?text=${msg}`;
+};
+
 type ReportType = "person" | "item";
 type ReportStatus = "open" | "found" | "closed";
 type PostKind = "lost" | "found";
@@ -226,6 +239,7 @@ const LostAndFoundPage = () => {
       cancel: { en: "Cancel", ar: "إلغاء", ur: "منسوخ", hi: "रद्द करें", ta: "ரத்து", te: "రద్దు", mr: "रद्द", bn: "বাতিল", or: "ବାତିଲ", ml: "റദ്ദാക്കുക", pa: "ਰੱਦ" },
       success: { en: "Report submitted successfully!", ar: "تم إرسال التقرير", ur: "رپورٹ جمع ہو گئی", hi: "रिपोर्ट जमा हो गई", ta: "அறிக்கை சமர்ப்பிக்கப்பட்டது", te: "నివేదిక సమర్పించబడింది", mr: "अहवाल सबमिट झाला", bn: "রিপোর্ট জমা হয়েছে", or: "ରିପୋର୍ଟ ଦାଖଲ ହେଲା", ml: "റിപ്പോർട്ട് സമർപ്പിച്ചു", pa: "ਰਿਪੋਰਟ ਜਮ੍ਹਾਂ ਹੋਈ" },
       contact: { en: "Contact", ar: "اتصال", ur: "رابطہ", hi: "संपर्क", ta: "தொடர்பு", te: "సంప్రదించండి", mr: "संपर्क", bn: "যোগাযোগ", or: "ଯୋଗାଯୋଗ", ml: "ബന്ധപ്പെടുക", pa: "ਸੰਪਰਕ" },
+      whatsappContact: { en: "WhatsApp", ar: "واتساب", ur: "واٹس ایپ", hi: "व्हाट्सएप", ta: "வாட்ஸ்அப்", te: "వాట్సాప్", mr: "व्हॉट्सअॅप", bn: "হোয়াটসঅ্যাপ", or: "ୱାଟସଆପ", ml: "വാട്ട്‌സാപ്പ്", pa: "ਵਟਸਐਪ" },
       open: { en: "Open", ar: "مفتوح", ur: "کھلا", hi: "खुला", ta: "திறந்தது", te: "ఓపెన్", mr: "उघडे", bn: "খোলা", or: "ଖୋଲା", ml: "തുറന്നു", pa: "ਖੁੱਲ੍ਹਾ" },
       found: { en: "Found", ar: "وُجد", ur: "مل گیا", hi: "मिल गया", ta: "கிடைத்தது", te: "దొరికింది", mr: "सापडले", bn: "পাওয়া গেছে", or: "ମିଳିଲା", ml: "കണ്ടെത്തി", pa: "ਮਿਲ ਗਿਆ" },
       markFound: { en: "Mark as Found", ar: "تم العثور عليه", ur: "مل گیا — نشان زد کریں", hi: "मिल गया — चिह्नित करें", ta: "கிடைத்தது எனக் குறி", te: "దొరికింది గా గుర్తించు", mr: "सापडले म्हणून खूण", bn: "পাওয়া গেছে চিহ্নিত", or: "ମିଳିଲା ଚିହ୍ନଟ", ml: "കണ്ടെത്തി അടയാളപ്പെടുത്തുക", pa: "ਮਿਲ ਗਿਆ ਨਿਸ਼ਾਨ ਲਾਓ" },
@@ -1098,14 +1112,18 @@ const LostAndFoundPage = () => {
                                     {t.get("contact")}
                                   </a>
                                 </Button>
-                                {r.reporter_whatsapp && (
-                                  <Button asChild size="sm" variant="outline" className="h-8">
+                                {/* WhatsApp button — uses explicit whatsapp number or falls back to mobile */}
+                                {(r.reporter_whatsapp || r.reporter_mobile) && (
+                                  <Button asChild size="sm" className="h-8 bg-[#25D366] hover:bg-[#1ebd5a] text-white border-0">
                                     <a
-                                      href={`https://wa.me/${r.reporter_whatsapp.replace(/\D/g, "")}`}
+                                      href={buildWhatsAppUrl(r.reporter_whatsapp || r.reporter_mobile || "", r)}
                                       target="_blank"
                                       rel="noopener noreferrer"
                                     >
-                                      WhatsApp
+                                      <svg className="h-3.5 w-3.5 mr-1" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+                                      </svg>
+                                      {t.get("whatsappContact")}
                                     </a>
                                   </Button>
                                 )}
