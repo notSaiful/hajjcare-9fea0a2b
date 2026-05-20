@@ -63,10 +63,12 @@ const nowForInput = () => {
 
 type ReportType = "person" | "item";
 type ReportStatus = "open" | "found" | "closed";
+type PostKind = "lost" | "found";
 
 interface LostFoundReport {
   id: string;
   report_type: ReportType;
+  post_kind?: PostKind;
   status: ReportStatus;
   user_id?: string | null;
   person_name: string | null;
@@ -90,6 +92,7 @@ interface LostFoundReport {
 
 const reportSchema = z.object({
   report_type: z.enum(["person", "item"]),
+  post_kind: z.enum(["lost", "found"]),
   person_name: z.string().trim().max(100).optional(),
   person_age: z.number().int().min(0).max(120).optional(),
   person_gender: z.string().max(20).optional(),
