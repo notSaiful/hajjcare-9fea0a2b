@@ -893,12 +893,30 @@ const LostAndFoundPage = () => {
                   </div>
                 </div>
 
+                {uploadProgress !== null && (
+                  <div className="space-y-1 pt-2">
+                    <div className="flex justify-between text-xs text-muted-foreground">
+                      <span className="flex items-center gap-1">
+                        <Loader2 className="h-3 w-3 animate-spin" />
+                        Uploading {photoFile?.type === "application/pdf" ? "PDF" : "photo"}…
+                      </span>
+                      <span>{uploadProgress}%</span>
+                    </div>
+                    <Progress value={uploadProgress} className="h-2" />
+                  </div>
+                )}
+
                 <div className="flex gap-2 pt-2">
-                  <Button type="button" variant="outline" onClick={() => setDialogOpen(false)} className="flex-1">
+                  <Button type="button" variant="outline" onClick={() => setDialogOpen(false)} className="flex-1" disabled={submitting}>
                     {t.get("cancel")}
                   </Button>
                   <Button type="submit" disabled={submitting} className="flex-1 bg-emerald-600 hover:bg-emerald-700">
-                    {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : t.get("submit")}
+                    {submitting ? (
+                      <span className="flex items-center gap-2">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        {uploadProgress !== null ? `${uploadProgress}%` : t.get("submit")}
+                      </span>
+                    ) : t.get("submit")}
                   </Button>
                 </div>
               </form>
