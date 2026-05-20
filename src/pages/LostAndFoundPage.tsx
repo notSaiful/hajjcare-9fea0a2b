@@ -116,6 +116,7 @@ const LostAndFoundPage = () => {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [filterType, setFilterType] = useState<"all" | ReportType>("all");
+  const [filterKind, setFilterKind] = useState<"all" | PostKind>("all");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
