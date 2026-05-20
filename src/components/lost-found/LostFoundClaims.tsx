@@ -60,6 +60,8 @@ export interface Claim {
     photo_url: string | null;
     last_seen_location: string;
     post_kind: string | null;
+    reporter_whatsapp?: string | null;
+    reporter_mobile?: string | null;
   };
 }
 
