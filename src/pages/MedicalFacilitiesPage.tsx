@@ -259,7 +259,7 @@ export default function MedicalFacilitiesPage() {
                   {t("observation")}
                 </h2>
                 {observation.map((f) => (
-                  <FacilityCard key={f.sno} f={f} openLabel={t("openMap")} />
+                  <FacilityCard key={f.sno} f={f} openLabel={t("openMap")} callLabel={t("call")} />
                 ))}
               </section>
             )}
@@ -270,7 +270,7 @@ export default function MedicalFacilitiesPage() {
                   {t("clinics")} ({clinics.length})
                 </h2>
                 {clinics.map((f) => (
-                  <FacilityCard key={f.sno} f={f} openLabel={t("openMap")} />
+                  <FacilityCard key={f.sno} f={f} openLabel={t("openMap")} callLabel={t("call")} />
                 ))}
               </section>
             )}
@@ -281,7 +281,18 @@ export default function MedicalFacilitiesPage() {
                   {t("teams")} ({teams.length})
                 </h2>
                 {teams.map((f) => (
-                  <FacilityCard key={f.sno} f={f} openLabel={t("openMap")} />
+                  <FacilityCard key={f.sno} f={f} openLabel={t("openMap")} callLabel={t("call")} />
+                ))}
+              </section>
+            )}
+
+            {hospitals.length > 0 && (
+              <section className="space-y-2.5">
+                <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground px-1">
+                  {t("hospitals")} ({hospitals.length})
+                </h2>
+                {hospitals.map((f) => (
+                  <FacilityCard key={f.sno} f={f} openLabel={t("openMap")} callLabel={t("call")} />
                 ))}
               </section>
             )}
