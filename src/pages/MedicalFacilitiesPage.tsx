@@ -111,7 +111,7 @@ export default function MedicalFacilitiesPage() {
       if (!q) return true;
       return (
         f.description.toLowerCase().includes(q) ||
-        f.building.toLowerCase().includes(q) ||
+        (f.building?.toLowerCase().includes(q) ?? false) ||
         (f.area?.toLowerCase().includes(q) ?? false)
       );
     });
@@ -123,6 +123,7 @@ export default function MedicalFacilitiesPage() {
       observation: MEDICAL_FACILITIES.filter((f) => f.category === "observation").length,
       clinic: MEDICAL_FACILITIES.filter((f) => f.category === "clinic").length,
       team: MEDICAL_FACILITIES.filter((f) => f.category === "team").length,
+      hospital: MEDICAL_FACILITIES.filter((f) => f.category === "hospital").length,
     }),
     [],
   );
@@ -130,12 +131,14 @@ export default function MedicalFacilitiesPage() {
   const observation = filtered.filter((f) => f.category === "observation");
   const clinics = filtered.filter((f) => f.category === "clinic");
   const teams = filtered.filter((f) => f.category === "team");
+  const hospitals = filtered.filter((f) => f.category === "hospital");
 
   const chips: { id: FilterCat; label: string; count: number }[] = [
     { id: "all", label: t("all"), count: counts.all },
     { id: "observation", label: t("observation"), count: counts.observation },
     { id: "clinic", label: t("clinics"), count: counts.clinic },
     { id: "team", label: t("teams"), count: counts.team },
+    { id: "hospital", label: t("hospitals"), count: counts.hospital },
   ];
 
   return (
