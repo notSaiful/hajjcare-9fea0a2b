@@ -246,7 +246,7 @@ export default function MedicalFacilitiesPage() {
 
             {/* Doctors & Paramedics — link to Health Guide page */}
             <Link
-              to="/health-guide"
+              to="/health"
               className={cn(
                 "flex-shrink-0 h-10 px-3 rounded-full border-2 text-sm font-medium transition-all flex items-center gap-2",
                 "bg-background text-foreground border-emerald-500/40 hover:border-emerald-500 hover:bg-emerald-500/10",
@@ -257,7 +257,7 @@ export default function MedicalFacilitiesPage() {
               <ArrowUpRight className="w-3.5 h-3.5 text-muted-foreground" />
             </Link>
             <Link
-              to="/health-guide"
+              to="/health"
               className={cn(
                 "flex-shrink-0 h-10 px-3 rounded-full border-2 text-sm font-medium transition-all flex items-center gap-2",
                 "bg-background text-foreground border-sky-500/40 hover:border-sky-500 hover:bg-sky-500/10",
