@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import {
   ArrowLeft,
   ArrowRight,
+  ArrowUpRight,
   MapPin,
   Phone,
   Stethoscope,
