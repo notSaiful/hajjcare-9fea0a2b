@@ -4,11 +4,13 @@
 export interface MedicalFacility {
   sno: number;
   description: string;
-  building: string;
+  building?: string;
   mapUrl: string;
-  category: "observation" | "clinic" | "team";
+  category: "observation" | "clinic" | "team" | "hospital";
   area?: string;
+  phone?: string;
 }
+
 
 export const MEDICAL_EMERGENCY_NUMBERS = ["+966547090402", "+966540859926"];
 
