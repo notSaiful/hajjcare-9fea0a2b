@@ -26,16 +26,25 @@ import {
   type MedicalFacility,
 } from "@/data/medicalFacilitiesContent";
 
-type FilterCat = "all" | "observation" | "clinic" | "team";
+type FilterCat = "all" | "observation" | "clinic" | "team" | "hospital";
 
-const FacilityCard = ({ f, openLabel }: { f: MedicalFacility; openLabel: string }) => {
-  const Icon = f.category === "observation" ? Eye : f.category === "clinic" ? Stethoscope : Building2;
+const FacilityCard = ({ f, openLabel, callLabel }: { f: MedicalFacility; openLabel: string; callLabel: string }) => {
+  const Icon =
+    f.category === "observation"
+      ? Eye
+      : f.category === "clinic"
+        ? Stethoscope
+        : f.category === "hospital"
+          ? Phone
+          : Building2;
   const ring =
     f.category === "observation"
       ? "border-primary/40 bg-primary/5"
       : f.category === "clinic"
         ? "border-status-safe/30 bg-status-safe/5"
-        : "border-amber-500/30 bg-amber-500/5";
+        : f.category === "hospital"
+          ? "border-rose-500/30 bg-rose-500/5"
+          : "border-amber-500/30 bg-amber-500/5";
 
   return (
     <Card className={`border-2 ${ring} transition-all hover:shadow-md`}>
@@ -48,21 +57,41 @@ const FacilityCard = ({ f, openLabel }: { f: MedicalFacility; openLabel: string 
             {f.description}
           </p>
           <p className="text-xs sm:text-sm text-muted-foreground">
-            Bldg <span className="font-mono font-semibold text-foreground">{f.building}</span>
-            {f.area ? <span className="ml-2">· {f.area}</span> : null}
+            {f.building ? (
+              <>Bldg <span className="font-mono font-semibold text-foreground">{f.building}</span></>
+            ) : null}
+            {f.area ? <span className={f.building ? "ml-2" : ""}>· {f.area}</span> : null}
           </p>
+          {f.phone && (
+            <p className="text-xs sm:text-sm font-mono text-emerald-600 mt-0.5">{f.phone}</p>
+          )}
         </div>
-        <Button
-          asChild
-          size="sm"
-          variant="outline"
-          className="flex-shrink-0 h-11 px-3 gap-1.5"
-        >
-          <a href={f.mapUrl} target="_blank" rel="noopener noreferrer" aria-label={`${openLabel} ${f.description}`}>
-            <MapPin className="w-4 h-4" />
-            <span className="hidden sm:inline">{openLabel}</span>
-          </a>
-        </Button>
+        <div className="flex flex-col gap-2 flex-shrink-0">
+          {f.phone && (
+            <Button
+              asChild
+              size="sm"
+              variant="default"
+              className="h-10 px-3 gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white"
+            >
+              <a href={`tel:${f.phone}`} aria-label={`${callLabel} ${f.description}`}>
+                <Phone className="w-4 h-4" />
+                <span className="hidden sm:inline">{callLabel}</span>
+              </a>
+            </Button>
+          )}
+          <Button
+            asChild
+            size="sm"
+            variant="outline"
+            className="h-10 px-3 gap-1.5"
+          >
+            <a href={f.mapUrl} target="_blank" rel="noopener noreferrer" aria-label={`${openLabel} ${f.description}`}>
+              <MapPin className="w-4 h-4" />
+              <span className="hidden sm:inline">{openLabel}</span>
+            </a>
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );
