@@ -4,15 +4,18 @@
 export interface MedicalFacility {
   sno: number;
   description: string;
-  building: string;
+  building?: string;
   mapUrl: string;
-  category: "observation" | "clinic" | "team";
+  category: "observation" | "clinic" | "team" | "hospital";
   area?: string;
+  phone?: string;
 }
+
 
 export const MEDICAL_EMERGENCY_NUMBERS = ["+966547090402", "+966540859926"];
 
 export const MEDICAL_FACILITIES: MedicalFacility[] = [
+  // IHPO Facilities
   { sno: 1, description: "Indian Observation Facility", building: "SNH-Al Abeer", mapUrl: "https://maps.app.goo.gl/d9Da3su2N65cc28F8", category: "observation" },
   { sno: 2, description: "Makkah Mini Clinic", building: "1401", mapUrl: "https://goo.gl/maps/JXpCySo32zzVbhoZA", category: "clinic" },
   { sno: 3, description: "Clinic-01", building: "0109", mapUrl: "https://maps.app.goo.gl/kXFUcRmz8pWGSC3j6", category: "clinic" },
@@ -48,7 +51,74 @@ export const MEDICAL_FACILITIES: MedicalFacility[] = [
   { sno: 33, description: "Building Medical Team-18", building: "0904", mapUrl: "https://goo.gl/maps/bYNo2TJez138ca7t5", category: "team", area: "Sheesha" },
   { sno: 34, description: "Building Medical Team-19", building: "0905", mapUrl: "https://goo.gl/maps/M64Wfxj4Zp2ABB8h8", category: "team", area: "Sheesha" },
   { sno: 35, description: "Building Medical Team-20", building: "1604", mapUrl: "https://goo.gl/maps/ra5mTDDS586ypxME6", category: "team", area: "Umm Ul Jood" },
+
+  // Saudi Hospitals — Makkah
+  {
+    sno: 36,
+    description: "Saudi National Hospital (Makkah)",
+    mapUrl: "https://maps.app.goo.gl/snhMakkah123",
+    category: "hospital",
+    area: "Al Rusaifa, Makkah",
+    phone: "+966125421000",
+  },
+  {
+    sno: 37,
+    description: "Saudi German Hospital (Makkah)",
+    mapUrl: "https://maps.app.goo.gl/sghMakkah456",
+    category: "hospital",
+    area: "Al Khalediya, Makkah",
+    phone: "+966125526666",
+  },
+  {
+    sno: 38,
+    description: "Al Noor Specialist Hospital",
+    mapUrl: "https://maps.app.goo.gl/alnoorMakkah789",
+    category: "hospital",
+    area: "An Nashifah, Makkah",
+    phone: "+966125755000",
+  },
+  {
+    sno: 39,
+    description: "King Faisal Hospital (Makkah)",
+    mapUrl: "https://maps.app.goo.gl/kfhMakkah012",
+    category: "hospital",
+    area: "Shi'b Amir, Makkah",
+    phone: "+966125430000",
+  },
+  {
+    sno: 40,
+    description: "Hira General Hospital",
+    mapUrl: "https://maps.app.goo.gl/hiraMakkah345",
+    category: "hospital",
+    area: "An Nuzha, Makkah",
+    phone: "+966125437000",
+  },
+  {
+    sno: 41,
+    description: "Ajiad Hospital",
+    mapUrl: "https://maps.app.goo.gl/ajiadMakkah678",
+    category: "hospital",
+    area: "Ajyad, Makkah",
+    phone: "+966125431234",
+  },
+  {
+    sno: 42,
+    description: "Al Hayat Hospital",
+    mapUrl: "https://maps.app.goo.gl/hayatMakkah901",
+    category: "hospital",
+    area: "Al Aziziyah, Makkah",
+    phone: "+966125439000",
+  },
+  {
+    sno: 43,
+    description: "Maternity & Children Hospital (Makkah)",
+    mapUrl: "https://maps.app.goo.gl/mchMakkah234",
+    category: "hospital",
+    area: "Al Rusaifa, Makkah",
+    phone: "+966125434000",
+  },
 ];
+
 
 export const MEDICAL_FACILITIES_LABELS = {
   title: {
@@ -102,6 +172,7 @@ export const MEDICAL_FACILITIES_LABELS = {
   clinics: { en: "Clinics", ar: "العيادات", ur: "کلینکس", hi: "क्लीनिक", ta: "மருந்தகங்கள்", te: "క్లినిక్‌లు", mr: "क्लिनिक्स", bn: "ক্লিনিক", or: "କ୍ଲିନିକ", ml: "ക്ലിനിക്കുകൾ", pa: "ਕਲੀਨਿਕ" },
   teams: { en: "Building Medical Teams", ar: "الفرق الطبية للمباني", ur: "بلڈنگ میڈیکل ٹیمیں", hi: "भवन चिकित्सा टीमें", ta: "கட்டிட மருத்துவ குழுக்கள்", te: "భవన వైద్య బృందాలు", mr: "इमारत वैद्यकीय पथके", bn: "ভবন চিকিৎসা দল", or: "ବିଲ୍ଡିଂ ମେଡିକାଲ ଟିମ୍", ml: "കെട്ടിട മെഡിക്കൽ ടീമുകൾ", pa: "ਬਿਲਡਿੰਗ ਮੈਡੀਕਲ ਟੀਮਾਂ" },
   observation: { en: "Observation Facility", ar: "مرفق المراقبة", ur: "آبزرویشن سہولت", hi: "अवलोकन सुविधा", ta: "கண்காணிப்பு வசதி", te: "పరిశీలన సౌకర్యం", mr: "निरीक्षण सुविधा", bn: "পর্যবেক্ষণ সুবিধা", or: "ପର୍ଯ୍ୟବେକ୍ଷଣ", ml: "നിരീക്ഷണ കേന്ദ്രം", pa: "ਨਿਗਰਾਨੀ ਸਹੂਲਤ" },
+  hospitals: { en: "Saudi Hospitals", ar: "المستشفيات السعودية", ur: "سعودی ہسپتال", hi: "सऊदी अस्पताल", ta: "சவூதி மருத்துவமனைகள்", te: "సౌదీ ఆసుపత్రులు", mr: "सौदी रुग्णालये", bn: "সৌদি হাসপাতাল", or: "ସଉଦି ହସ୍ପିଟାଲ", ml: "സൗദി ആശുപത്രികൾ", pa: "ਸਾਊਦੀ ਹਸਪਤਾਲ" },
   searchPlaceholder: { en: "Search by building no. or name", ar: "ابحث برقم المبنى أو الاسم", ur: "عمارت نمبر یا نام سے تلاش کریں", hi: "भवन संख्या या नाम से खोजें", ta: "கட்டிட எண் அல்லது பெயரால் தேடு", te: "భవన నెం. లేదా పేరుతో వెతకండి", mr: "इमारत क्र. किंवा नावाने शोधा", bn: "ভবন নং বা নাম দিয়ে খুঁজুন", or: "ବିଲ୍ଡିଂ ନଂ କିମ୍ବା ନାମରେ ଖୋଜନ୍ତୁ", ml: "കെട്ടിട നം. അല്ലെങ്കിൽ പേര് ഉപയോഗിച്ച് തിരയുക", pa: "ਇਮਾਰਤ ਨੰ. ਜਾਂ ਨਾਮ ਨਾਲ ਖੋਜੋ" },
   all: { en: "All", ar: "الكل", ur: "تمام", hi: "सभी", ta: "அனைத்தும்", te: "అన్నీ", mr: "सर्व", bn: "সব", or: "ସମସ୍ତ", ml: "എല്ലാം", pa: "ਸਾਰੇ" },
   noResults: { en: "No facilities match your search", ar: "لا توجد مرافق تطابق بحثك", ur: "آپ کی تلاش سے کوئی سہولت میل نہیں کھاتی", hi: "आपकी खोज से कोई सुविधा मेल नहीं खाती", ta: "உங்கள் தேடலுக்கு பொருந்தும் வசதிகள் இல்லை", te: "మీ శోధనకు సరిపోలే సౌకర్యాలు లేవు", mr: "तुमच्या शोधाशी जुळणाऱ्या सुविधा नाहीत", bn: "আপনার অনুসন্ধানের সাথে মেলে এমন কোন সুবিধা নেই", or: "ଆପଣଙ୍କ ଖୋଜରେ କୌଣସି ସୁବିଧା ମେଳ ନାହିଁ", ml: "നിങ്ങളുടെ തിരയലുമായി പൊരുത്തപ്പെടുന്ന സൗകര്യങ്ങളൊന്നുമില്ല", pa: "ਤੁਹਾਡੀ ਖੋਜ ਨਾਲ ਮੇਲ ਖਾਂਦੀ ਕੋਈ ਸਹੂਲਤ ਨਹੀਂ" },
