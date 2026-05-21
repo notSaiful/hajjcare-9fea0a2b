@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import {
   ArrowLeft,
   ArrowRight,
+  ArrowUpRight,
   MapPin,
   Phone,
   Stethoscope,
@@ -242,6 +243,30 @@ export default function MedicalFacilitiesPage() {
                 </button>
               );
             })}
+
+            {/* Doctors & Paramedics — link to Health Guide page */}
+            <Link
+              to="/health-guide"
+              className={cn(
+                "flex-shrink-0 h-10 px-3 rounded-full border-2 text-sm font-medium transition-all flex items-center gap-2",
+                "bg-background text-foreground border-emerald-500/40 hover:border-emerald-500 hover:bg-emerald-500/10",
+              )}
+            >
+              <Stethoscope className="w-4 h-4 text-emerald-600" />
+              <span>{t("doctors")}</span>
+              <ArrowUpRight className="w-3.5 h-3.5 text-muted-foreground" />
+            </Link>
+            <Link
+              to="/health-guide"
+              className={cn(
+                "flex-shrink-0 h-10 px-3 rounded-full border-2 text-sm font-medium transition-all flex items-center gap-2",
+                "bg-background text-foreground border-sky-500/40 hover:border-sky-500 hover:bg-sky-500/10",
+              )}
+            >
+              <Phone className="w-4 h-4 text-sky-600" />
+              <span>{t("paramedics")}</span>
+              <ArrowUpRight className="w-3.5 h-3.5 text-muted-foreground" />
+            </Link>
           </div>
         </div>
 
