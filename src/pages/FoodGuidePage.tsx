@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FoodRateList } from "@/components/food/FoodRateList";
 import foodGuideImage from "@/assets/food-guide-pilgrims.jpeg";
+import hajjMealsScheduleImage from "@/assets/hajj-meals-schedule-1447.jpg";
 
 const FoodGuidePage = () => {
   const { language } = useLanguage();
@@ -920,6 +921,49 @@ const FoodGuidePage = () => {
 
             {/* Meal Schedule Tab */}
             <TabsContent value="schedule" className="space-y-4">
+              {/* Official Rehab Meals List - Hajj 1447 AH */}
+              <Card className="overflow-hidden border-2 border-primary/40 shadow-lg">
+                <CardHeader className="pb-2 bg-primary/5">
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Utensils className="w-5 h-5 text-primary" />
+                    {language === "ar"
+                      ? "قائمة طعام حجاج الهند - حج 1447هـ (رحاب)"
+                      : language === "ur"
+                      ? "ہندوستانی حجاج کے کھانے کی فہرست - حج 1447ھ (رحاب)"
+                      : language === "hi"
+                      ? "भारतीय हाजियों के लिए भोजन सूची - हज 1447 हिजरी (Rehab)"
+                      : "Meals List for Indian Pilgrims - Hajj 1447 AH (Rehab)"}
+                  </CardTitle>
+                  <p className="text-sm text-muted-foreground">
+                    {language === "ar"
+                      ? "الوجبات الرسمية المقدمة من شركة رحاب في منى وعرفات (7-13 ذو الحجة)"
+                      : language === "ur"
+                      ? "منیٰ اور عرفات میں رحاب کمپنی کی طرف سے سرکاری کھانے (7-13 ذوالحجہ)"
+                      : language === "hi"
+                      ? "मीना और अराफात में Rehab कंपनी द्वारा आधिकारिक भोजन (7-13 ज़िल हिज्जा)"
+                      : "Official meals provided by Rehab company at Mina & Arafat (7-13 Dhul Hijjah)"}
+                  </p>
+                </CardHeader>
+                <CardContent className="p-2">
+                  <a
+                    href={hajjMealsScheduleImage}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block relative rounded-lg overflow-hidden"
+                  >
+                    <img
+                      src={hajjMealsScheduleImage}
+                      alt="List of Meals of Indian Pilgrims in Hajj 1447 AH - Rehab"
+                      className="w-full h-auto object-contain rounded-lg"
+                      loading="lazy"
+                    />
+                    <p className="text-xs text-muted-foreground text-center mt-2">
+                      {t.viewImage}
+                    </p>
+                  </a>
+                </CardContent>
+              </Card>
+
               <Card className="border-primary/20">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-lg flex items-center gap-2">
