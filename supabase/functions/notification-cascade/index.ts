@@ -373,7 +373,7 @@ Deno.serve(async (req) => {
   } catch (error) {
     console.error("Notification cascade error:", error);
     return new Response(
-      JSON.stringify({ error: "Notification cascade failed", details: error instanceof Error ? error.message : "Unknown" }),
+      JSON.stringify({ error: "Notification cascade failed" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   }

@@ -246,8 +246,7 @@ _"Haji Saudi mein, Ghar wale sukoon mein"_`;
     console.error('Error in sukoon-stage-notify:', error);
     return new Response(
       JSON.stringify({ 
-        error: 'Failed to send stage notification',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        error: 'Failed to send stage notification'
       }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
