@@ -111,6 +111,11 @@ const T: Record<string, Record<string, string>> = {
     round: "شوط",
     startHere: "ابدأ من هنا",
     moreDuas: "المزيد من الأدعية والأذكار",
+    listen: "استمع",
+    stop: "إيقاف",
+    audioLang: "صوت",
+    arabic: "عربي",
+    translit: "نقحرة",
   },
 };
 
