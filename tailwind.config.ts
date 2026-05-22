@@ -48,7 +48,8 @@ export default {
   				'Liberation Mono',
   				'Courier New',
   				'monospace'
-  			]
+  			],
+  			arabic: ['Amiri', 'Scheherazade New', 'Noto Naskh Arabic', 'serif']
   		},
   		fontSize: {
   			body: [
