@@ -3331,6 +3331,42 @@ export type Database = {
           whatsapp: string
         }[]
       }
+      admin_list_volunteers: {
+        Args: never
+        Returns: {
+          age: number
+          availability_days: string
+          availability_tag: string | null
+          city: string
+          city_tag: string | null
+          created_at: string
+          declaration_agreed: boolean
+          district: string
+          duty_location: string
+          email: string | null
+          embarkation_point: string | null
+          father_name: string
+          full_address: string
+          full_name: string
+          id: string
+          languages: string[]
+          mobile: string
+          skill_tag: string | null
+          skills: string[]
+          state: string
+          status: string
+          updated_at: string
+          user_id: string | null
+          volunteer_id: string
+          whatsapp: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "volunteers"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       apply_promo_code: { Args: { p_code: string }; Returns: Json }
       assign_user_role: {
         Args: {
