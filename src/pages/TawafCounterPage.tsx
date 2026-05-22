@@ -63,6 +63,11 @@ const T: Record<string, Record<string, string>> = {
     round: "چکر",
     startHere: "یہاں سے شروع",
     moreDuas: "مزید دعائیں اور اذکار",
+    listen: "سنیں",
+    stop: "رکیں",
+    audioLang: "آڈیو",
+    arabic: "عربی",
+    translit: "اردو",
   },
   hi: {
     title: "तवाफ़ और सई काउंटर",
