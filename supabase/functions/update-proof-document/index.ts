@@ -50,6 +50,47 @@ serve(async (req) => {
       );
     }
 
+    // Validate proofUrl: must be a relative bucket path (no scheme, no traversal)
+    if (
+      typeof proofUrl !== "string" ||
+      proofUrl.length > 512 ||
+      !/^[A-Za-z0-9_\-]+\/[A-Za-z0-9_\-./]+$/.test(proofUrl) ||
+      proofUrl.includes("..") ||
+      proofUrl.startsWith("/")
+    ) {
+      return new Response(
+        JSON.stringify({ error: "Invalid proof document path" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Verify the object actually exists in the proof-documents bucket
+    const lastSlash = proofUrl.lastIndexOf("/");
+    const folder = proofUrl.slice(0, lastSlash);
+    const filename = proofUrl.slice(lastSlash + 1);
+
+    const supabaseStorageCheck = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+      { auth: { persistSession: false } }
+    );
+    const { data: listed, error: listErr } = await supabaseStorageCheck.storage
+      .from("proof-documents")
+      .list(folder, { limit: 100, search: filename });
+    if (listErr || !listed?.some((f) => f.name === filename)) {
+      return new Response(
+        JSON.stringify({ error: "Proof document not found in storage" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    if (proofType && (typeof proofType !== "string" || proofType.length > 64)) {
+      return new Response(
+        JSON.stringify({ error: "Invalid proof type" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     // Create Supabase client with service role for admin access
     const supabaseAdmin = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
