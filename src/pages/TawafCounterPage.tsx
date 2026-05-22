@@ -661,6 +661,19 @@ const TawafCounterPage = () => {
             <p className="text-sm italic text-center leading-relaxed" style={{ color: `${PALETTE.emerald}AA` }}>
               {step.dua.tr}
             </p>
+            <DuaAudioPlayer
+              arabic={step.dua.ar}
+              translit={step.dua.tr}
+              uiLang={lang}
+              labels={{
+                listen: t.listen,
+                stop: t.stop,
+                audioLang: t.audioLang,
+                arabic: t.arabic,
+                translit: t.translit,
+              }}
+              palette={{ emerald: PALETTE.emerald, gold: PALETTE.gold, ivory: PALETTE.ivory }}
+            />
           </div>
         )}
 
