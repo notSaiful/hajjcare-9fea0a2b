@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,8 @@ import {
   CheckCircle2,
   Lightbulb,
   Sparkles,
+  Play,
+  Pause,
 } from "lucide-react";
 
 type Mode = "tawaf" | "sai";
@@ -37,6 +39,11 @@ const T: Record<string, Record<string, string>> = {
     round: "Round",
     startHere: "Start here",
     moreDuas: "More Duas & Adhkar",
+    listen: "Listen",
+    stop: "Stop",
+    audioLang: "Audio",
+    arabic: "Arabic",
+    translit: "English",
   },
   ur: {
     title: "طواف اور سعی کاؤنٹر",
@@ -56,6 +63,11 @@ const T: Record<string, Record<string, string>> = {
     round: "چکر",
     startHere: "یہاں سے شروع",
     moreDuas: "مزید دعائیں اور اذکار",
+    listen: "سنیں",
+    stop: "رکیں",
+    audioLang: "آڈیو",
+    arabic: "عربی",
+    translit: "اردو",
   },
   hi: {
     title: "तवाफ़ और सई काउंटर",
@@ -75,6 +87,11 @@ const T: Record<string, Record<string, string>> = {
     round: "चक्कर",
     startHere: "यहाँ से शुरू",
     moreDuas: "और दुआएँ व अज़कार",
+    listen: "सुनें",
+    stop: "रोकें",
+    audioLang: "ऑडियो",
+    arabic: "अरबी",
+    translit: "हिंदी",
   },
   ar: {
     title: "عدّاد الطواف والسعي",
@@ -94,6 +111,11 @@ const T: Record<string, Record<string, string>> = {
     round: "شوط",
     startHere: "ابدأ من هنا",
     moreDuas: "المزيد من الأدعية والأذكار",
+    listen: "استمع",
+    stop: "إيقاف",
+    audioLang: "صوت",
+    arabic: "عربي",
+    translit: "نقحرة",
   },
 };
 
@@ -303,9 +325,129 @@ const PALETTE = {
 
 const TOTAL = 7;
 
+// Map app language code -> BCP-47 voice locales (preference order)
+const VOICE_LOCALES: Record<string, string[]> = {
+  ar: ["ar-SA", "ar-EG", "ar"],
+  en: ["en-US", "en-GB", "en"],
+  ur: ["ur-PK", "ur-IN", "ur"],
+  hi: ["hi-IN", "hi"],
+};
+
+const pickVoice = (lang: string): SpeechSynthesisVoice | null => {
+  if (!("speechSynthesis" in window)) return null;
+  const voices = window.speechSynthesis.getVoices();
+  const codes = VOICE_LOCALES[lang] || [lang];
+  for (const code of codes) {
+    const exact = voices.find((v) => v.lang === code);
+    if (exact) return exact;
+    const prefix = voices.find((v) => v.lang.toLowerCase().startsWith(code.split("-")[0]));
+    if (prefix) return prefix;
+  }
+  return null;
+};
+
+type DuaAudioProps = {
+  arabic: string;
+  translit: string;
+  uiLang: "en" | "ar" | "ur" | "hi";
+  labels: { listen: string; stop: string; audioLang: string; arabic: string; translit: string };
+  palette: { emerald: string; gold: string; ivory: string };
+};
+
+const DuaAudioPlayer = ({ arabic, translit, uiLang, labels, palette }: DuaAudioProps) => {
+  // Audio language: Arabic recitation OR transliteration spoken in the UI language voice
+  const [audioLang, setAudioLang] = useState<"ar" | "translit">("ar");
+  const [isPlaying, setIsPlaying] = useState(false);
+  const utterRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const supported = typeof window !== "undefined" && "speechSynthesis" in window;
+
+  // Stop on unmount or when dua text changes
+  useEffect(() => {
+    return () => {
+      if (supported) window.speechSynthesis.cancel();
+    };
+  }, [supported]);
+
+  useEffect(() => {
+    if (supported) window.speechSynthesis.cancel();
+    setIsPlaying(false);
+  }, [arabic, translit, audioLang, supported]);
+
+  const handleToggle = () => {
+    if (!supported) return;
+    if (isPlaying) {
+      window.speechSynthesis.cancel();
+      setIsPlaying(false);
+      return;
+    }
+    window.speechSynthesis.cancel();
+    const isArabic = audioLang === "ar";
+    const text = isArabic ? arabic : translit;
+    const voiceLang = isArabic ? "ar" : uiLang;
+    const u = new SpeechSynthesisUtterance(text);
+    const v = pickVoice(voiceLang);
+    if (v) {
+      u.voice = v;
+      u.lang = v.lang;
+    } else {
+      u.lang = VOICE_LOCALES[voiceLang]?.[0] || "en-US";
+    }
+    u.rate = isArabic ? 0.75 : 0.9;
+    u.pitch = 1;
+    u.onend = () => setIsPlaying(false);
+    u.onerror = () => setIsPlaying(false);
+    utterRef.current = u;
+    setIsPlaying(true);
+    window.speechSynthesis.speak(u);
+  };
+
+  if (!supported) return null;
+
+  return (
+    <div className="mt-4 flex items-center gap-2" dir="ltr">
+      <button
+        onClick={handleToggle}
+        className="flex-1 h-12 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+        style={{
+          background: isPlaying ? palette.emerald : palette.gold,
+          color: isPlaying ? palette.ivory : palette.emerald,
+          boxShadow: `0 4px 14px ${palette.gold}55`,
+        }}
+        aria-label={isPlaying ? labels.stop : labels.listen}
+      >
+        {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
+        <span className="text-sm">{isPlaying ? labels.stop : labels.listen}</span>
+      </button>
+      <div
+        className="grid grid-cols-2 p-1 rounded-xl shrink-0"
+        style={{ background: `${palette.gold}22`, border: `1px solid ${palette.gold}55` }}
+      >
+        {(["ar", "translit"] as const).map((opt) => {
+          const active = audioLang === opt;
+          return (
+            <button
+              key={opt}
+              onClick={() => setAudioLang(opt)}
+              className="h-10 px-3 rounded-lg text-xs font-semibold transition-all"
+              style={{
+                background: active ? palette.emerald : "transparent",
+                color: active ? palette.ivory : palette.emerald,
+              }}
+              aria-pressed={active}
+            >
+              {opt === "ar" ? labels.arabic : labels.translit}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+
 const TawafCounterPage = () => {
   const { language, isRTL } = useLanguage();
-  const lang = (["en", "ar", "ur", "hi"].includes(language) ? language : "en") as keyof typeof T;
+  const lang = (["en", "ar", "ur", "hi"].includes(language) ? language : "en") as "en" | "ar" | "ur" | "hi";
   const t = T[lang];
 
   const [state, setState] = useState<StoredState>(() => {
@@ -519,6 +661,19 @@ const TawafCounterPage = () => {
             <p className="text-sm italic text-center leading-relaxed" style={{ color: `${PALETTE.emerald}AA` }}>
               {step.dua.tr}
             </p>
+            <DuaAudioPlayer
+              arabic={step.dua.ar}
+              translit={step.dua.tr}
+              uiLang={lang}
+              labels={{
+                listen: t.listen,
+                stop: t.stop,
+                audioLang: t.audioLang,
+                arabic: t.arabic,
+                translit: t.translit,
+              }}
+              palette={{ emerald: PALETTE.emerald, gold: PALETTE.gold, ivory: PALETTE.ivory }}
+            />
           </div>
         )}
 
