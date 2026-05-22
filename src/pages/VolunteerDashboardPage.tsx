@@ -93,10 +93,11 @@ const VolunteerDashboardPage = () => {
 
   const fetchVolunteers = async () => {
     setLoading(true);
-    const { data, error } = await (supabase as any)
-      .from("volunteers")
-      .select("*")
-      .order("created_at", { ascending: false });
+    // Use admin RPC: regular SELECT on volunteers no longer returns
+    // PII columns (mobile/whatsapp/email/address/father_name) to
+    // any authenticated user. The SECURITY DEFINER function checks
+    // admin role server-side before returning full rows.
+    const { data, error } = await (supabase as any).rpc("admin_list_volunteers");
 
     if (error) {
       toast({ title: "Error loading volunteers", description: error.message, variant: "destructive" });
