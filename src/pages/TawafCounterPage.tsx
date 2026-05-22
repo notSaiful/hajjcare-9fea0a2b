@@ -87,6 +87,11 @@ const T: Record<string, Record<string, string>> = {
     round: "चक्कर",
     startHere: "यहाँ से शुरू",
     moreDuas: "और दुआएँ व अज़कार",
+    listen: "सुनें",
+    stop: "रोकें",
+    audioLang: "ऑडियो",
+    arabic: "अरबी",
+    translit: "हिंदी",
   },
   ar: {
     title: "عدّاد الطواف والسعي",
