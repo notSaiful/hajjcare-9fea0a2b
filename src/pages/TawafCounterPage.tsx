@@ -447,7 +447,7 @@ const DuaAudioPlayer = ({ arabic, translit, uiLang, labels, palette }: DuaAudioP
 
 const TawafCounterPage = () => {
   const { language, isRTL } = useLanguage();
-  const lang = (["en", "ar", "ur", "hi"].includes(language) ? language : "en") as keyof typeof T;
+  const lang = (["en", "ar", "ur", "hi"].includes(language) ? language : "en") as "en" | "ar" | "ur" | "hi";
   const t = T[lang];
 
   const [state, setState] = useState<StoredState>(() => {
