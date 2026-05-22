@@ -325,6 +325,126 @@ const PALETTE = {
 
 const TOTAL = 7;
 
+// Map app language code -> BCP-47 voice locales (preference order)
+const VOICE_LOCALES: Record<string, string[]> = {
+  ar: ["ar-SA", "ar-EG", "ar"],
+  en: ["en-US", "en-GB", "en"],
+  ur: ["ur-PK", "ur-IN", "ur"],
+  hi: ["hi-IN", "hi"],
+};
+
+const pickVoice = (lang: string): SpeechSynthesisVoice | null => {
+  if (!("speechSynthesis" in window)) return null;
+  const voices = window.speechSynthesis.getVoices();
+  const codes = VOICE_LOCALES[lang] || [lang];
+  for (const code of codes) {
+    const exact = voices.find((v) => v.lang === code);
+    if (exact) return exact;
+    const prefix = voices.find((v) => v.lang.toLowerCase().startsWith(code.split("-")[0]));
+    if (prefix) return prefix;
+  }
+  return null;
+};
+
+type DuaAudioProps = {
+  arabic: string;
+  translit: string;
+  uiLang: "en" | "ar" | "ur" | "hi";
+  labels: { listen: string; stop: string; audioLang: string; arabic: string; translit: string };
+  palette: { emerald: string; gold: string; ivory: string };
+};
+
+const DuaAudioPlayer = ({ arabic, translit, uiLang, labels, palette }: DuaAudioProps) => {
+  // Audio language: Arabic recitation OR transliteration spoken in the UI language voice
+  const [audioLang, setAudioLang] = useState<"ar" | "translit">("ar");
+  const [isPlaying, setIsPlaying] = useState(false);
+  const utterRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const supported = typeof window !== "undefined" && "speechSynthesis" in window;
+
+  // Stop on unmount or when dua text changes
+  useEffect(() => {
+    return () => {
+      if (supported) window.speechSynthesis.cancel();
+    };
+  }, [supported]);
+
+  useEffect(() => {
+    if (supported) window.speechSynthesis.cancel();
+    setIsPlaying(false);
+  }, [arabic, translit, audioLang, supported]);
+
+  const handleToggle = () => {
+    if (!supported) return;
+    if (isPlaying) {
+      window.speechSynthesis.cancel();
+      setIsPlaying(false);
+      return;
+    }
+    window.speechSynthesis.cancel();
+    const isArabic = audioLang === "ar";
+    const text = isArabic ? arabic : translit;
+    const voiceLang = isArabic ? "ar" : uiLang;
+    const u = new SpeechSynthesisUtterance(text);
+    const v = pickVoice(voiceLang);
+    if (v) {
+      u.voice = v;
+      u.lang = v.lang;
+    } else {
+      u.lang = VOICE_LOCALES[voiceLang]?.[0] || "en-US";
+    }
+    u.rate = isArabic ? 0.75 : 0.9;
+    u.pitch = 1;
+    u.onend = () => setIsPlaying(false);
+    u.onerror = () => setIsPlaying(false);
+    utterRef.current = u;
+    setIsPlaying(true);
+    window.speechSynthesis.speak(u);
+  };
+
+  if (!supported) return null;
+
+  return (
+    <div className="mt-4 flex items-center gap-2" dir="ltr">
+      <button
+        onClick={handleToggle}
+        className="flex-1 h-12 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+        style={{
+          background: isPlaying ? palette.emerald : palette.gold,
+          color: isPlaying ? palette.ivory : palette.emerald,
+          boxShadow: `0 4px 14px ${palette.gold}55`,
+        }}
+        aria-label={isPlaying ? labels.stop : labels.listen}
+      >
+        {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
+        <span className="text-sm">{isPlaying ? labels.stop : labels.listen}</span>
+      </button>
+      <div
+        className="grid grid-cols-2 p-1 rounded-xl shrink-0"
+        style={{ background: `${palette.gold}22`, border: `1px solid ${palette.gold}55` }}
+      >
+        {(["ar", "translit"] as const).map((opt) => {
+          const active = audioLang === opt;
+          return (
+            <button
+              key={opt}
+              onClick={() => setAudioLang(opt)}
+              className="h-10 px-3 rounded-lg text-xs font-semibold transition-all"
+              style={{
+                background: active ? palette.emerald : "transparent",
+                color: active ? palette.ivory : palette.emerald,
+              }}
+              aria-pressed={active}
+            >
+              {opt === "ar" ? labels.arabic : labels.translit}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+
 const TawafCounterPage = () => {
   const { language, isRTL } = useLanguage();
   const lang = (["en", "ar", "ur", "hi"].includes(language) ? language : "en") as keyof typeof T;
