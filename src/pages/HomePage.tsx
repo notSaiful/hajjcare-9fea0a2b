@@ -10,6 +10,7 @@ import { FindBuildingQuickAction } from "@/components/FindBuildingQuickAction";
 import { MinaTentsQuickAction } from "@/components/MinaTentsQuickAction";
 import { ReturnToCampQuickAction } from "@/components/ReturnToCampQuickAction";
 import { CardLookupQuickAction } from "@/components/CardLookupQuickAction";
+import { TawafCounterQuickAction } from "@/components/TawafCounterQuickAction";
 import { StaffAccessHint } from "@/components/dashboard/StaffAccessHint";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAppAnalytics } from "@/hooks/useAppAnalytics";
@@ -72,6 +73,11 @@ const HomePage = () => {
           {/* Nusuk / HCOI Card lookup — smart router */}
           <section className="animate-fade-up" style={{ animationDelay: "78ms" }}>
             <CardLookupQuickAction />
+          </section>
+
+          {/* Tawaf & Sa'i Counter — quick action */}
+          <section className="animate-fade-up" style={{ animationDelay: "82ms" }}>
+            <TawafCounterQuickAction />
           </section>
 
 
