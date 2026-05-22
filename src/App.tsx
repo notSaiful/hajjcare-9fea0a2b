@@ -73,6 +73,7 @@ const OpenAppPage = lazy(() => import("./pages/OpenAppPage"));
 const AuthPage = lazy(() => import("./pages/AuthPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const ChatPage = lazy(() => import("./pages/ChatPage"));
+const TawafCounterPage = lazy(() => import("./pages/TawafCounterPage"));
 const HealthHelpPage = lazy(() => import("./pages/HealthHelpPage"));
 const CoordinatorDashboardPage = lazy(() => import("./pages/CoordinatorDashboardPage"));
 const AdminRolesPage = lazy(() => import("./pages/AdminRolesPage"));
@@ -214,6 +215,8 @@ function AppContent() {
       <Route path="/open" element={<OpenAppPage />} />
       <Route path="/share" element={<OpenAppPage />} />
       <Route path="/chat" element={<ChatPage />} />
+      <Route path="/tawaf-counter" element={<TawafCounterPage />} />
+      <Route path="/counter" element={<TawafCounterPage />} />
       <Route path="/pre-hajj-india" element={<PreHajjIndiaPage />} />
       <Route path="/pre-hajj-india/:sectionId" element={<PreHajjIndiaDetailPage />} />
       <Route path="/post-hajj" element={<PostHajjGuidePage />} />
