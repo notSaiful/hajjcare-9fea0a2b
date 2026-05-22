@@ -3266,8 +3266,71 @@ export type Database = {
         }
         Relationships: []
       }
+      volunteers_zone_safe: {
+        Row: {
+          availability_days: string | null
+          availability_tag: string | null
+          city: string | null
+          city_tag: string | null
+          created_at: string | null
+          embarkation_point: string | null
+          full_name: string | null
+          id: string | null
+          skill_tag: string | null
+          skills: string[] | null
+          state: string | null
+          status: string | null
+          updated_at: string | null
+          volunteer_id: string | null
+        }
+        Insert: {
+          availability_days?: string | null
+          availability_tag?: string | null
+          city?: string | null
+          city_tag?: string | null
+          created_at?: string | null
+          embarkation_point?: string | null
+          full_name?: string | null
+          id?: string | null
+          skill_tag?: string | null
+          skills?: string[] | null
+          state?: string | null
+          status?: string | null
+          updated_at?: string | null
+          volunteer_id?: string | null
+        }
+        Update: {
+          availability_days?: string | null
+          availability_tag?: string | null
+          city?: string | null
+          city_tag?: string | null
+          created_at?: string | null
+          embarkation_point?: string | null
+          full_name?: string | null
+          id?: string | null
+          skill_tag?: string | null
+          skills?: string[] | null
+          state?: string | null
+          status?: string | null
+          updated_at?: string | null
+          volunteer_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
+      admin_get_volunteer_pii: {
+        Args: { p_volunteer_id: string }
+        Returns: {
+          email: string
+          father_name: string
+          full_address: string
+          full_name: string
+          id: string
+          mobile: string
+          whatsapp: string
+        }[]
+      }
       apply_promo_code: { Args: { p_code: string }; Returns: Json }
       assign_user_role: {
         Args: {
