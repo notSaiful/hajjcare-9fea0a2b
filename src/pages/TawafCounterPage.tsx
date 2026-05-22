@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,8 @@ import {
   CheckCircle2,
   Lightbulb,
   Sparkles,
+  Play,
+  Pause,
 } from "lucide-react";
 
 type Mode = "tawaf" | "sai";
