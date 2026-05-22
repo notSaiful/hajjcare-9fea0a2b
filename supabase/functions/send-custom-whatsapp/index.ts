@@ -75,6 +75,14 @@ serve(async (req) => {
       );
     }
 
+    const MAX_RECIPIENTS = 500;
+    if (recipients.length > MAX_RECIPIENTS) {
+      return new Response(
+        JSON.stringify({ error: `Too many recipients. Max ${MAX_RECIPIENTS} per request.` }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const results: Array<{ mobile: string; success: boolean; error?: string }> = [];
 
     for (const recipient of recipients) {
