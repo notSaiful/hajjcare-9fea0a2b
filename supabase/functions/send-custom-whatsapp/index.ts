@@ -147,8 +147,7 @@ serve(async (req) => {
     console.error('Error in send-custom-whatsapp:', error);
     return new Response(
       JSON.stringify({ 
-        error: 'Failed to send WhatsApp messages',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        error: 'Failed to send WhatsApp messages'
       }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );

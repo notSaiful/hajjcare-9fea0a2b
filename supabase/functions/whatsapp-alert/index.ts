@@ -234,8 +234,7 @@ Please respond via the Coordinator Dashboard.`;
     console.error('Error in whatsapp-alert:', error);
     return new Response(
       JSON.stringify({ 
-        error: 'Failed to send WhatsApp alert',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        error: 'Failed to send WhatsApp alert'
       }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );

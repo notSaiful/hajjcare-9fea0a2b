@@ -225,8 +225,7 @@ Haj Care AI - Deeni Khidmat Program
     console.error('Error in free-umrah-notify:', error);
     return new Response(
       JSON.stringify({ 
-        error: 'Failed to send WhatsApp notification',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        error: 'Failed to send WhatsApp notification'
       }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
