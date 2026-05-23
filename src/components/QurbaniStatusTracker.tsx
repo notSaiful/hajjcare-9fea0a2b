@@ -395,7 +395,11 @@ const QurbaniStatusTracker = () => {
         {statusConfig && (
           <div className={`rounded-xl p-5 border ${statusConfig.bgClass} transition-all duration-500 animate-in fade-in-0 slide-in-from-bottom-2`}>
             <div className="flex flex-col items-center text-center space-y-3">
-              <statusConfig.icon className={`w-12 h-12 ${statusConfig.colorClass}`} />
+              {status === "completed" ? (
+                <PartyPopper className={`w-12 h-12 ${statusConfig.colorClass}`} />
+              ) : (
+                <statusConfig.icon className={`w-12 h-12 ${statusConfig.colorClass}`} />
+              )}
               {statusConfig.label && (
                 <span className={`text-xl font-semibold ${statusConfig.colorClass}`}>
                   {statusConfig.label}
@@ -404,9 +408,30 @@ const QurbaniStatusTracker = () => {
               <p className="text-foreground text-base leading-relaxed">
                 {statusConfig.message}
               </p>
+
+              {autoPolling && (status === "in_process" || status === "not_recorded") && (
+                <div className="flex items-center gap-2 text-xs text-muted-foreground pt-1">
+                  <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                  <span>{labels.autoChecking[lang]}</span>
+                </div>
+              )}
+
+              {(status === "in_process" || status === "not_recorded") && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleCheckStatus}
+                  disabled={isChecking}
+                  className="gap-1.5 mt-1"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${isChecking ? "animate-spin" : ""}`} />
+                  {labels.refresh[lang]}
+                </Button>
+              )}
             </div>
           </div>
         )}
+
 
         {/* Default message when no status checked */}
         {!status && (
