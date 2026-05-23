@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Search, CheckCircle2, Clock, FileQuestion, Info } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { Search, CheckCircle2, Clock, FileQuestion, Info, RefreshCw, PartyPopper } from "lucide-react";
 
 type QurbaniStatus = "not_recorded" | "in_process" | "completed" | "unavailable" | null;
 
@@ -178,6 +179,58 @@ const labels: Record<string, Record<Lang, string>> = {
     or: "ଆପଣଙ୍କ ରେଫରେନ୍ସ ନମ୍ବର ଏପର୍ଯ୍ୟନ୍ତ ସିଷ୍ଟମରେ ରେକର୍ଡ ହୋଇନାହିଁ। ଦୟାକରି ଆପଣଙ୍କ ହଜ ଅପରେଟରଙ୍କ ସହ ଯୋଗାଯୋଗ କରନ୍ତୁ।",
     ml: "നിങ്ങളുടെ റഫറൻസ് നമ്പർ ഇതുവരെ സിസ്റ്റത്തിൽ രേഖപ്പെടുത്തിയിട്ടില്ല. ദയവായി നിങ്ങളുടെ ഹജ്ജ് ഓപ്പറേറ്ററെ ബന്ധപ്പെടുക.",
     pa: "ਤੁਹਾਡਾ ਹਵਾਲਾ ਨੰਬਰ ਅਜੇ ਤੱਕ ਸਿਸਟਮ ਵਿੱਚ ਰਿਕਾਰਡ ਨਹੀਂ ਹੋਇਆ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਹੱਜ ਆਪਰੇਟਰ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।"
+  },
+  autoChecking: {
+    en: "Auto-checking status…",
+    ar: "جارٍ التحقق التلقائي من الحالة…",
+    ur: "حالت خودکار چیک ہو رہی ہے…",
+    hi: "स्थिति स्वतः जांची जा रही है…",
+    ta: "நிலை தானாக சரிபார்க்கப்படுகிறது…",
+    te: "స్థితి ఆటోమేటిక్‌గా తనిఖీ చేయబడుతోంది…",
+    mr: "स्थिती स्वयं तपासली जात आहे…",
+    bn: "স্থিতি স্বয়ংক্রিয়ভাবে পরীক্ষা হচ্ছে…",
+    or: "ସ୍ଥିତି ସ୍ୱୟଂଚାଳିତ ଭାବେ ଯାଞ୍ଚ ହେଉଛି…",
+    ml: "സ്റ്റാറ്റസ് സ്വയം പരിശോധിക്കുന്നു…",
+    pa: "ਸਥਿਤੀ ਆਪਣੇ-ਆਪ ਜਾਂਚੀ ਜਾ ਰਹੀ ਹੈ…"
+  },
+  completedToastTitle: {
+    en: "Qurbani Completed ✓",
+    ar: "اكتملت الأضحية ✓",
+    ur: "قربانی مکمل ہو گئی ✓",
+    hi: "कुर्बानी पूर्ण हुई ✓",
+    ta: "குர்பானி நிறைவடைந்தது ✓",
+    te: "ఖుర్బానీ పూర్తయింది ✓",
+    mr: "कुर्बानी पूर्ण झाली ✓",
+    bn: "কুরবানি সম্পন্ন হয়েছে ✓",
+    or: "କୁର୍ବାନୀ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି ✓",
+    ml: "ഖുർബാനി പൂർത്തിയായി ✓",
+    pa: "ਕੁਰਬਾਨੀ ਪੂਰੀ ਹੋਈ ✓"
+  },
+  completedToastDesc: {
+    en: "Alhamdulillah! Your sacrifice has been recorded. You may now proceed with the next rituals.",
+    ar: "الحمد لله! تم تسجيل أضحيتك. يمكنك الآن المتابعة مع المناسك التالية.",
+    ur: "الحمد للہ! آپ کی قربانی درج ہو چکی ہے۔ اب آپ اگلے مناسک کی طرف بڑھ سکتے ہیں۔",
+    hi: "अल्हम्दुलिल्लाह! आपकी कुर्बानी दर्ज हो गई है। अब आप अगले अनुष्ठानों के लिए आगे बढ़ सकते हैं।",
+    ta: "அல்ஹம்துலில்லாஹ்! உங்கள் குர்பானி பதிவாகியுள்ளது.",
+    te: "అల్హందులిల్లాహ్! మీ ఖుర్బానీ నమోదైంది.",
+    mr: "अल्हम्दुलिल्लाह! तुमची कुर्बानी नोंदवली गेली आहे.",
+    bn: "আলহামদুলিল্লাহ! আপনার কুরবানি রেকর্ড হয়েছে।",
+    or: "ଅଲ୍‌ହମ୍‌ଦୁଲିଲ୍ଲାହ୍! ଆପଣଙ୍କ କୁର୍ବାନୀ ରେକର୍ଡ ହୋଇଛି।",
+    ml: "അൽഹംദുലില്ലാഹ്! നിങ്ങളുടെ ഖുർബാനി രേഖപ്പെടുത്തി.",
+    pa: "ਅਲਹਮਦੁਲਿੱਲਾਹ! ਤੁਹਾਡੀ ਕੁਰਬਾਨੀ ਰਿਕਾਰਡ ਹੋ ਗਈ ਹੈ।"
+  },
+  refresh: {
+    en: "Refresh now",
+    ar: "تحديث الآن",
+    ur: "ابھی تازہ کریں",
+    hi: "अभी रिफ्रेश करें",
+    ta: "இப்போது புதுப்பிக்கவும்",
+    te: "ఇప్పుడే రిఫ్రెష్ చేయండి",
+    mr: "आता रिफ्रेश करा",
+    bn: "এখন রিফ্রেশ করুন",
+    or: "ଏବେ ରିଫ୍ରେସ୍ କରନ୍ତୁ",
+    ml: "ഇപ്പോൾ പുതുക്കുക",
+    pa: "ਹੁਣੇ ਰਿਫਰੈਸ਼ ਕਰੋ"
   }
 };
 
@@ -185,34 +238,80 @@ const SUPPORTED_LANGS: Lang[] = ["en", "ar", "ur", "hi", "ta", "te", "mr", "bn",
 
 const QurbaniStatusTracker = () => {
   const { language } = useLanguage();
-  const [referenceNumber, setReferenceNumber] = useState("");
-  const [status, setStatus] = useState<QurbaniStatus>(null);
+  const { toast } = useToast();
+  const [referenceNumber, setReferenceNumber] = useState(() => {
+    try { return localStorage.getItem("qurbani_ref") || ""; } catch { return ""; }
+  });
+  const [status, setStatus] = useState<QurbaniStatus>(() => {
+    try { return (localStorage.getItem("qurbani_status") as QurbaniStatus) || null; } catch { return null; }
+  });
   const [isChecking, setIsChecking] = useState(false);
+  const [autoPolling, setAutoPolling] = useState(false);
+  const lastStatusRef = useRef<QurbaniStatus>(status);
 
   const lang: Lang = SUPPORTED_LANGS.includes(language as Lang) ? (language as Lang) : "en";
 
-  const handleCheckStatus = async () => {
-    if (!referenceNumber.trim()) return;
-    
-    setIsChecking(true);
-    
-    // Simulate API call - in production this would call the official Adahi API
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    // Demo logic: show different statuses based on reference number patterns
-    const trimmedRef = referenceNumber.trim().toUpperCase();
-    if (trimmedRef.startsWith("C") || trimmedRef.endsWith("99")) {
-      setStatus("completed");
-    } else if (trimmedRef.startsWith("P") || trimmedRef.endsWith("50")) {
-      setStatus("in_process");
-    } else if (trimmedRef.startsWith("N") || trimmedRef.length < 5) {
-      setStatus("not_recorded");
-    } else {
-      setStatus("unavailable");
+  const computeStatus = (ref: string): QurbaniStatus => {
+    const trimmedRef = ref.trim().toUpperCase();
+    // Force statuses by prefix/suffix (demo override)
+    if (trimmedRef.startsWith("C") || trimmedRef.endsWith("99")) return "completed";
+    if (trimmedRef.startsWith("N") || trimmedRef.length < 5) return "not_recorded";
+    if (trimmedRef.startsWith("U")) return "unavailable";
+
+    // For valid refs (incl. official Adahi coupons like ADHHAJ-/HAJ-): simulate progression
+    // not_recorded -> in_process (after 10s) -> completed (after 40s)
+    let startedAt = Number(localStorage.getItem(`qurbani_started_${trimmedRef}`));
+    if (!startedAt) {
+      startedAt = Date.now();
+      try { localStorage.setItem(`qurbani_started_${trimmedRef}`, String(startedAt)); } catch {}
     }
-    
-    setIsChecking(false);
+    const elapsed = (Date.now() - startedAt) / 1000;
+    if (elapsed < 10) return "not_recorded";
+    if (elapsed < 40) return "in_process";
+    return "completed";
   };
+
+  const runCheck = async (silent = false) => {
+    if (!referenceNumber.trim()) return;
+    if (!silent) setIsChecking(true);
+    await new Promise(resolve => setTimeout(resolve, silent ? 300 : 1200));
+    const next = computeStatus(referenceNumber);
+    setStatus(next);
+    try {
+      localStorage.setItem("qurbani_ref", referenceNumber.trim());
+      if (next) localStorage.setItem("qurbani_status", next);
+    } catch {}
+    if (!silent) setIsChecking(false);
+  };
+
+  const handleCheckStatus = () => runCheck(false);
+
+  // Fire toast when status transitions to completed
+  useEffect(() => {
+    if (status === "completed" && lastStatusRef.current !== "completed") {
+      toast({
+        title: labels.completedToastTitle[lang],
+        description: labels.completedToastDesc[lang],
+        duration: 8000,
+      });
+    }
+    lastStatusRef.current = status;
+  }, [status, lang, toast]);
+
+  // Auto-poll while status is pending
+  useEffect(() => {
+    if (!referenceNumber.trim()) return;
+    if (status === "completed" || status === "unavailable") {
+      setAutoPolling(false);
+      return;
+    }
+    if (status !== "in_process" && status !== "not_recorded") return;
+    setAutoPolling(true);
+    const id = setInterval(() => { runCheck(true); }, 15000);
+    return () => { clearInterval(id); setAutoPolling(false); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status, referenceNumber]);
+
 
   const getStatusConfig = () => {
     switch (status) {
@@ -296,7 +395,11 @@ const QurbaniStatusTracker = () => {
         {statusConfig && (
           <div className={`rounded-xl p-5 border ${statusConfig.bgClass} transition-all duration-500 animate-in fade-in-0 slide-in-from-bottom-2`}>
             <div className="flex flex-col items-center text-center space-y-3">
-              <statusConfig.icon className={`w-12 h-12 ${statusConfig.colorClass}`} />
+              {status === "completed" ? (
+                <PartyPopper className={`w-12 h-12 ${statusConfig.colorClass}`} />
+              ) : (
+                <statusConfig.icon className={`w-12 h-12 ${statusConfig.colorClass}`} />
+              )}
               {statusConfig.label && (
                 <span className={`text-xl font-semibold ${statusConfig.colorClass}`}>
                   {statusConfig.label}
@@ -305,9 +408,30 @@ const QurbaniStatusTracker = () => {
               <p className="text-foreground text-base leading-relaxed">
                 {statusConfig.message}
               </p>
+
+              {autoPolling && (status === "in_process" || status === "not_recorded") && (
+                <div className="flex items-center gap-2 text-xs text-muted-foreground pt-1">
+                  <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                  <span>{labels.autoChecking[lang]}</span>
+                </div>
+              )}
+
+              {(status === "in_process" || status === "not_recorded") && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleCheckStatus}
+                  disabled={isChecking}
+                  className="gap-1.5 mt-1"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${isChecking ? "animate-spin" : ""}`} />
+                  {labels.refresh[lang]}
+                </Button>
+              )}
             </div>
           </div>
         )}
+
 
         {/* Default message when no status checked */}
         {!status && (
