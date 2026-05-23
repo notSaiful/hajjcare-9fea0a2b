@@ -1,11 +1,12 @@
 import { useMemo } from "react";
 import { Link, useParams, Navigate } from "react-router-dom";
-import { ArrowLeft, MapPin, Phone, MessageCircle, Bus, Train, ExternalLink, Copy, Check } from "lucide-react";
+import { ArrowLeft, MapPin, Phone, MessageCircle, Bus, Train, ExternalLink, Copy, Check, Shield, UserCheck } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { MINA_MAKTABS, MINA_FULL_MAP_URL, type MaktabContact } from "@/data/minaTentLocations";
+import { getInspectorsForMaktab, type MaktabInspector } from "@/data/maktabInspectorAllotment";
 import { toast } from "sonner";
 
 const ROLES: Array<{ key: keyof typeof labelMap; label: string }> = [
