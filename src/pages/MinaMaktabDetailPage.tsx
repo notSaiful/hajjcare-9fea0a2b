@@ -1,11 +1,12 @@
 import { useMemo } from "react";
 import { Link, useParams, Navigate } from "react-router-dom";
-import { ArrowLeft, MapPin, Phone, MessageCircle, Bus, Train, ExternalLink, Copy, Check } from "lucide-react";
+import { ArrowLeft, MapPin, Phone, MessageCircle, Bus, Train, ExternalLink, Copy, Check, Shield, UserCheck } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { MINA_MAKTABS, MINA_FULL_MAP_URL, type MaktabContact } from "@/data/minaTentLocations";
+import { getInspectorsForMaktab, type MaktabInspector } from "@/data/maktabInspectorAllotment";
 import { toast } from "sonner";
 
 const ROLES: Array<{ key: keyof typeof labelMap; label: string }> = [
@@ -78,11 +79,65 @@ const ContactCard = ({ role, contact }: { role: string; contact: MaktabContact }
   );
 };
 
+const InspectorCard = ({ insp }: { insp: MaktabInspector }) => {
+  const indianIntl = `+91${insp.indianMobile}`;
+  const saudiIntl = `+966${insp.saudiMobile}`;
+  return (
+    <Card className="overflow-hidden border-emerald-500/30">
+      <CardContent className="p-4 space-y-3">
+        <div className="flex items-start gap-2">
+          <div className="w-9 h-9 rounded-full bg-emerald-500/15 flex items-center justify-center shrink-0">
+            <UserCheck className="w-4 h-4 text-emerald-700" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-[11px] uppercase tracking-wide text-muted-foreground font-semibold">
+              State Haj Inspector
+            </p>
+            <p className="text-base font-semibold leading-snug">{insp.name}</p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div className="rounded-xl border border-border p-3 space-y-2">
+            <p className="text-[11px] font-semibold text-muted-foreground">🇮🇳 Indian Mobile</p>
+            <p className="text-sm font-mono">{indianIntl}</p>
+            <div className="grid grid-cols-2 gap-1.5">
+              <a href={`tel:${indianIntl}`}>
+                <Button size="sm" className="w-full h-10 gap-1"><Phone className="w-3.5 h-3.5" />Call</Button>
+              </a>
+              <a href={`https://wa.me/91${insp.indianMobile}`} target="_blank" rel="noopener noreferrer">
+                <Button variant="outline" size="sm" className="w-full h-10 gap-1"><MessageCircle className="w-3.5 h-3.5" />WA</Button>
+              </a>
+            </div>
+          </div>
+          <div className="rounded-xl border border-border p-3 space-y-2">
+            <p className="text-[11px] font-semibold text-muted-foreground">🇸🇦 Saudi Mobile</p>
+            <p className="text-sm font-mono">{saudiIntl}</p>
+            <div className="grid grid-cols-2 gap-1.5">
+              <a href={`tel:${saudiIntl}`}>
+                <Button size="sm" className="w-full h-10 gap-1"><Phone className="w-3.5 h-3.5" />Call</Button>
+              </a>
+              <a href={`https://wa.me/966${insp.saudiMobile}`} target="_blank" rel="noopener noreferrer">
+                <Button variant="outline" size="sm" className="w-full h-10 gap-1"><MessageCircle className="w-3.5 h-3.5" />WA</Button>
+              </a>
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
 export default function MinaMaktabDetailPage() {
   const { maktabId } = useParams<{ maktabId: string }>();
   const m = useMemo(
     () => MINA_MAKTABS.find((x) => String(x.maktab) === String(maktabId)),
     [maktabId]
+  );
+
+  const inspectors = useMemo(
+    () => (m ? getInspectorsForMaktab(Number(m.maktab)) : []),
+    [m]
   );
 
   if (!m) return <Navigate to="/mina-tents" replace />;
@@ -161,6 +216,31 @@ export default function MinaMaktabDetailPage() {
             ))}
           </div>
         </div>
+
+        {/* State Haj Inspectors allotted to this Maktab */}
+        <div>
+          <div className="flex items-center justify-between mb-2 px-1">
+            <h2 className="text-sm font-bold uppercase tracking-wide text-muted-foreground flex items-center gap-1.5">
+              <Shield className="w-4 h-4 text-emerald-700" />
+              State Haj Inspectors
+            </h2>
+            <Badge variant="secondary" className="text-xs">
+              {inspectors.length} allotted
+            </Badge>
+          </div>
+          {inspectors.length > 0 ? (
+            <div className="grid gap-3">
+              {inspectors.map((insp, i) => (
+                <InspectorCard key={`${insp.indianMobile}-${i}`} insp={insp} />
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-2xl border border-border bg-muted/30 p-4 text-sm text-muted-foreground text-center">
+              No State Haj Inspector allotment published yet for Maktab #{m.maktab}.
+            </div>
+          )}
+        </div>
+
 
         <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-foreground/80">
           <strong>Unofficial directory.</strong> Numbers shown are Saudi mobile numbers (+966).
