@@ -136,7 +136,7 @@ export default function MinaMaktabDetailPage() {
   );
 
   const inspectors = useMemo(
-    () => (m ? getInspectorsForMaktab(m.maktab) : []),
+    () => (m ? getInspectorsForMaktab(Number(m.maktab)) : []),
     [m]
   );
 
