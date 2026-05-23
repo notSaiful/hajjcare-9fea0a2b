@@ -238,34 +238,83 @@ const SUPPORTED_LANGS: Lang[] = ["en", "ar", "ur", "hi", "ta", "te", "mr", "bn",
 
 const QurbaniStatusTracker = () => {
   const { language } = useLanguage();
-  const [referenceNumber, setReferenceNumber] = useState("");
-  const [status, setStatus] = useState<QurbaniStatus>(null);
+  const { toast } = useToast();
+  const [referenceNumber, setReferenceNumber] = useState(() => {
+    try { return localStorage.getItem("qurbani_ref") || ""; } catch { return ""; }
+  });
+  const [status, setStatus] = useState<QurbaniStatus>(() => {
+    try { return (localStorage.getItem("qurbani_status") as QurbaniStatus) || null; } catch { return null; }
+  });
   const [isChecking, setIsChecking] = useState(false);
+  const [autoPolling, setAutoPolling] = useState(false);
+  const lastStatusRef = useRef<QurbaniStatus>(status);
+  const checkStartRef = useRef<number>(() => {
+    try { return Number(localStorage.getItem("qurbani_started_at")) || Date.now(); } catch { return Date.now(); }
+  } as any);
 
   const lang: Lang = SUPPORTED_LANGS.includes(language as Lang) ? (language as Lang) : "en";
 
-  const handleCheckStatus = async () => {
-    if (!referenceNumber.trim()) return;
-    
-    setIsChecking(true);
-    
-    // Simulate API call - in production this would call the official Adahi API
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    // Demo logic: show different statuses based on reference number patterns
-    const trimmedRef = referenceNumber.trim().toUpperCase();
-    if (trimmedRef.startsWith("C") || trimmedRef.endsWith("99")) {
-      setStatus("completed");
-    } else if (trimmedRef.startsWith("P") || trimmedRef.endsWith("50")) {
-      setStatus("in_process");
-    } else if (trimmedRef.startsWith("N") || trimmedRef.length < 5) {
-      setStatus("not_recorded");
-    } else {
-      setStatus("unavailable");
+  const computeStatus = (ref: string): QurbaniStatus => {
+    const trimmedRef = ref.trim().toUpperCase();
+    // Force statuses by prefix/suffix (demo override)
+    if (trimmedRef.startsWith("C") || trimmedRef.endsWith("99")) return "completed";
+    if (trimmedRef.startsWith("N") || trimmedRef.length < 5) return "not_recorded";
+    if (trimmedRef.startsWith("U")) return "unavailable";
+
+    // For valid refs (incl. official Adahi coupons like ADHHAJ-/HAJ-): simulate progression
+    // not_recorded -> in_process (after 10s) -> completed (after 40s)
+    let startedAt = Number(localStorage.getItem(`qurbani_started_${trimmedRef}`));
+    if (!startedAt) {
+      startedAt = Date.now();
+      try { localStorage.setItem(`qurbani_started_${trimmedRef}`, String(startedAt)); } catch {}
     }
-    
-    setIsChecking(false);
+    const elapsed = (Date.now() - startedAt) / 1000;
+    if (elapsed < 10) return "not_recorded";
+    if (elapsed < 40) return "in_process";
+    return "completed";
   };
+
+  const runCheck = async (silent = false) => {
+    if (!referenceNumber.trim()) return;
+    if (!silent) setIsChecking(true);
+    await new Promise(resolve => setTimeout(resolve, silent ? 300 : 1200));
+    const next = computeStatus(referenceNumber);
+    setStatus(next);
+    try {
+      localStorage.setItem("qurbani_ref", referenceNumber.trim());
+      if (next) localStorage.setItem("qurbani_status", next);
+    } catch {}
+    if (!silent) setIsChecking(false);
+  };
+
+  const handleCheckStatus = () => runCheck(false);
+
+  // Fire toast when status transitions to completed
+  useEffect(() => {
+    if (status === "completed" && lastStatusRef.current !== "completed") {
+      toast({
+        title: labels.completedToastTitle[lang],
+        description: labels.completedToastDesc[lang],
+        duration: 8000,
+      });
+    }
+    lastStatusRef.current = status;
+  }, [status, lang, toast]);
+
+  // Auto-poll while status is pending
+  useEffect(() => {
+    if (!referenceNumber.trim()) return;
+    if (status === "completed" || status === "unavailable") {
+      setAutoPolling(false);
+      return;
+    }
+    if (status !== "in_process" && status !== "not_recorded") return;
+    setAutoPolling(true);
+    const id = setInterval(() => { runCheck(true); }, 15000);
+    return () => { clearInterval(id); setAutoPolling(false); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status, referenceNumber]);
+
 
   const getStatusConfig = () => {
     switch (status) {
