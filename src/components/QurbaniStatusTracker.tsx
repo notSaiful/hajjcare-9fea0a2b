@@ -248,9 +248,6 @@ const QurbaniStatusTracker = () => {
   const [isChecking, setIsChecking] = useState(false);
   const [autoPolling, setAutoPolling] = useState(false);
   const lastStatusRef = useRef<QurbaniStatus>(status);
-  const checkStartRef = useRef<number>(() => {
-    try { return Number(localStorage.getItem("qurbani_started_at")) || Date.now(); } catch { return Date.now(); }
-  } as any);
 
   const lang: Lang = SUPPORTED_LANGS.includes(language as Lang) ? (language as Lang) : "en";
 
