@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Search, CheckCircle2, Clock, FileQuestion, Info } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { Search, CheckCircle2, Clock, FileQuestion, Info, RefreshCw, PartyPopper } from "lucide-react";
 
 type QurbaniStatus = "not_recorded" | "in_process" | "completed" | "unavailable" | null;
 
