@@ -217,6 +217,31 @@ export default function MinaMaktabDetailPage() {
           </div>
         </div>
 
+        {/* State Haj Inspectors allotted to this Maktab */}
+        <div>
+          <div className="flex items-center justify-between mb-2 px-1">
+            <h2 className="text-sm font-bold uppercase tracking-wide text-muted-foreground flex items-center gap-1.5">
+              <Shield className="w-4 h-4 text-emerald-700" />
+              State Haj Inspectors
+            </h2>
+            <Badge variant="secondary" className="text-xs">
+              {inspectors.length} allotted
+            </Badge>
+          </div>
+          {inspectors.length > 0 ? (
+            <div className="grid gap-3">
+              {inspectors.map((insp, i) => (
+                <InspectorCard key={`${insp.indianMobile}-${i}`} insp={insp} />
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-2xl border border-border bg-muted/30 p-4 text-sm text-muted-foreground text-center">
+              No State Haj Inspector allotment published yet for Maktab #{m.maktab}.
+            </div>
+          )}
+        </div>
+
+
         <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-foreground/80">
           <strong>Unofficial directory.</strong> Numbers shown are Saudi mobile numbers (+966).
           For corrections contact <a href="tel:+919796762333" className="text-primary font-semibold">+91 97967 62333</a>.
