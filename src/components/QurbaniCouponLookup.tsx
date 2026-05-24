@@ -114,12 +114,8 @@ const QurbaniCouponLookup = () => {
     }
     setLoading(true);
     setSearched(true);
-    const lower = q.toLowerCase();
-    const { data, error } = await supabase
-      .from("qurbani_coupons")
-      .select("coupon_id,pilgrim_name,group_no,status,slaughter_date")
-      .or(`cover_id.ilike.${lower},passport_no.ilike.${lower}`)
-      .limit(10);
+    const { data, error } = await supabase.rpc("lookup_qurbani_coupon", { p_query: q });
+
     setLoading(false);
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
