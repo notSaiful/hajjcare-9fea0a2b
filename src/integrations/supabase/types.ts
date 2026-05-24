@@ -3496,6 +3496,16 @@ export type Database = {
           name: string
         }[]
       }
+      lookup_qurbani_coupon: {
+        Args: { p_query: string }
+        Returns: {
+          coupon_id: string
+          group_no: string
+          pilgrim_name: string
+          slaughter_date: string
+          status: string
+        }[]
+      }
       lookup_user_for_role_assignment: {
         Args: { p_identifier: string }
         Returns: {
