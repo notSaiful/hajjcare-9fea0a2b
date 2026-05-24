@@ -206,6 +206,9 @@ export default function MinaMaktabDetailPage() {
           </CardContent>
         </Card>
 
+        {/* Schematic Tent Map */}
+        <MaktabTentMap maktab={m} />
+
         {/* Contacts */}
         <div>
           <h2 className="text-sm font-bold uppercase tracking-wide text-muted-foreground mb-2 px-1">
