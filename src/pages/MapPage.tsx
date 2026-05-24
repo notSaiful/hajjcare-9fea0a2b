@@ -61,6 +61,54 @@ const MapPage = () => {
 
   const downloadableMaps = [
     {
+      id: "mina-scouts-2026",
+      nameEn: "Mina Official Map 2026",
+      nameAr: "خريطة منى الرسمية 2026",
+      descEn: "Saudi Scouts Mina map with zones, camps & services",
+      descAr: "خريطة الكشافة السعودية لمنى مع المناطق والمخيمات",
+      file: "/maps/mina-2026-scouts.jpg"
+    },
+    {
+      id: "arafat-scouts-2026",
+      nameEn: "Arafat Official Map 2026",
+      nameAr: "خريطة عرفات الرسمية 2026",
+      descEn: "Saudi Scouts Arafat map with Nusuk Care centers",
+      descAr: "خريطة الكشافة السعودية لعرفات مع مراكز نسك",
+      file: "/maps/arafat-2026-scouts.jpg"
+    },
+    {
+      id: "muzdalifah-scouts-2026",
+      nameEn: "Muzdalifah Official Map 2026",
+      nameAr: "خريطة مزدلفة الرسمية 2026",
+      descEn: "Saudi Scouts Muzdalifah map with government services",
+      descAr: "خريطة الكشافة السعودية لمزدلفة مع الخدمات الحكومية",
+      file: "/maps/muzdalifah-2026-scouts.jpg"
+    },
+    {
+      id: "makkah-haram-scouts-2026",
+      nameEn: "Makkah Haram Region Map 2026",
+      nameAr: "خريطة منطقة الحرم بمكة 2026",
+      descEn: "Saudi Scouts Makkah central region map",
+      descAr: "خريطة الكشافة السعودية لمنطقة مكة المركزية",
+      file: "/maps/makkah-haram-2026-scouts.jpg"
+    },
+    {
+      id: "mina-facilities-2026",
+      nameEn: "Mina Facilities Guide 2026",
+      nameAr: "دليل مرافق منى 2026",
+      descEn: "Detailed list of Mina facilities & service points",
+      descAr: "قائمة تفصيلية بمرافق منى ونقاط الخدمة",
+      file: "/maps/mina-2026-facilities.pdf"
+    },
+    {
+      id: "arafat-facilities-2026",
+      nameEn: "Arafat Facilities Guide 2026",
+      nameAr: "دليل مرافق عرفات 2026",
+      descEn: "Detailed list of Arafat facilities & service points",
+      descAr: "قائمة تفصيلية بمرافق عرفات ونقاط الخدمة",
+      file: "/maps/arafat-2026-facilities.pdf"
+    },
+    {
       id: "makkah-building",
       nameEn: "Makkah Building Map",
       nameAr: "خريطة مباني مكة",
@@ -77,6 +125,7 @@ const MapPage = () => {
       file: "/maps/azizia-map.pdf"
     }
   ];
+
 
   // Pipe GPS updates through Smart Sensor + Geofence pipeline
   useEffect(() => {
