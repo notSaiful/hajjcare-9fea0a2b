@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { MINA_MAKTABS, MINA_FULL_MAP_URL, type MaktabContact } from "@/data/minaTentLocations";
 import { getInspectorsForMaktab, type MaktabInspector } from "@/data/maktabInspectorAllotment";
+import MaktabTentMap from "@/components/MaktabTentMap";
 import { toast } from "sonner";
 
 const ROLES: Array<{ key: keyof typeof labelMap; label: string }> = [
