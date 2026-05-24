@@ -2354,6 +2354,48 @@ export type Database = {
         }
         Relationships: []
       }
+      qurbani_coupons: {
+        Row: {
+          coupon_id: string
+          cover_id: string | null
+          created_at: string
+          group_no: string | null
+          id: string
+          notes: string | null
+          passport_no: string | null
+          pilgrim_name: string | null
+          slaughter_date: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          coupon_id: string
+          cover_id?: string | null
+          created_at?: string
+          group_no?: string | null
+          id?: string
+          notes?: string | null
+          passport_no?: string | null
+          pilgrim_name?: string | null
+          slaughter_date?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          coupon_id?: string
+          cover_id?: string | null
+          created_at?: string
+          group_no?: string | null
+          id?: string
+          notes?: string | null
+          passport_no?: string | null
+          pilgrim_name?: string | null
+          slaughter_date?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       rate_limits: {
         Row: {
           action: string
