@@ -143,6 +143,15 @@ export default function MinaMaktabDetailPage() {
     [m]
   );
 
+  const [inspectorQuery, setInspectorQuery] = useState("");
+  const filteredInspectors = useMemo(() => {
+    const q = inspectorQuery.trim();
+    if (!q) return inspectors;
+    return inspectors.filter((i) =>
+      fuzzyMatches(q, `${i.name} ${i.indianMobile} ${i.saudiMobile}`)
+    );
+  }, [inspectors, inspectorQuery]);
+
   if (!m) return <Navigate to="/mina-tents" replace />;
 
   const Icon = m.transportation === "Bus" ? Bus : Train;
