@@ -244,11 +244,41 @@ export default function MinaMaktabDetailPage() {
             </Badge>
           </div>
           {inspectors.length > 0 ? (
-            <div className="grid gap-3">
-              {inspectors.map((insp, i) => (
-                <InspectorCard key={`${insp.indianMobile}-${i}`} insp={insp} />
-              ))}
-            </div>
+            <>
+              <div className="relative mb-3">
+                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+                <Input
+                  type="search"
+                  inputMode="search"
+                  placeholder="Search by name or phone…"
+                  value={inspectorQuery}
+                  onChange={(e) => setInspectorQuery(e.target.value)}
+                  className="h-11 pl-9 pr-9 text-base"
+                  aria-label="Search inspectors"
+                />
+                {inspectorQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setInspectorQuery("")}
+                    aria-label="Clear search"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-md text-muted-foreground hover:bg-muted"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+              {filteredInspectors.length > 0 ? (
+                <div className="grid gap-3">
+                  {filteredInspectors.map((insp, i) => (
+                    <InspectorCard key={`${insp.indianMobile}-${i}`} insp={insp} />
+                  ))}
+                </div>
+              ) : (
+                <div className="rounded-2xl border border-border bg-muted/30 p-4 text-sm text-muted-foreground text-center">
+                  No inspector matches “{inspectorQuery}”.
+                </div>
+              )}
+            </>
           ) : (
             <div className="rounded-2xl border border-border bg-muted/30 p-4 text-sm text-muted-foreground text-center">
               No State Haj Inspector allotment published yet for Maktab #{m.maktab}.
