@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { SEO } from "@/components/SEO";
 import { useNavigate } from "react-router-dom";
 import { MainLayout } from "@/components/MainLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -61,6 +62,7 @@ const MakkahGuidePage = () => {
 
   return (
     <MainLayout>
+      <SEO title="Makkah Guide" description="Navigate Makkah with confidence: Haram zones, prayer times, building locator, transport, and key logistics for pilgrims." path="/makkah-guide" type="article" jsonLd={{"@context":"https://schema.org","@type":"Article","headline":"Makkah Guide","description":"Navigate Makkah with confidence: Haram zones, prayer times, building locator, transport, and key logistics for pilgrims.","url":"https://hajjcare.in/makkah-guide"}} />
       <div className="container max-w-2xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
         {/* Consistent Page Header */}
         <PageHeader

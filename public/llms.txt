@@ -1,0 +1,57 @@
+# HajCare AI
+
+> Your complete digital companion for a peaceful & organized Hajj and Umrah journey. Smart guidance, AI assistance, multilingual content in 11 languages, and spiritual support for pilgrims from India.
+
+HajCare AI offers ritual guidance, official Hajj circulars, building & tent locators, medical facility directories, Saudi rules briefings, multilingual duas, and AI-powered Q&A — built specifically for Indian Hajj pilgrims.
+
+## Guides
+
+- [Hajj Preparation](/prepare): Step-by-step preparation for the Hajj journey.
+- [Umrah Guide](/umrah): Complete Umrah rituals walkthrough.
+- [Makkah Guide](/makkah-guide): Navigation, mosques, and logistics in Makkah.
+- [Madinah Guide](/madinah-guide): Visits, hotels, and key sites in Madinah.
+- [Pre-Hajj India](/pre-hajj-india): Indian government formalities before departure.
+- [Post-Hajj Guide](/post-hajj): After-Hajj rituals and return-home checklist.
+- [Saudi Rules Briefing](/rules): Important rules and conduct in Saudi Arabia.
+- [Women Solutions](/women): Guidance tailored for women pilgrims.
+- [Duas & Supplications](/dua): Daily and ritual duas.
+- [Preparation Guide](/preparation): Packing, vaccinations, and readiness.
+- [Health Guide](/health): Health tips for the journey.
+- [Food Guide](/food): Halal food and dietary guidance.
+- [Money Guide](/money): Currency, cards, and budgeting.
+- [Telecom Guide](/telecom): SIM cards, roaming, and connectivity.
+
+## Tools
+
+- [Hajj FAQ Chat](/hajj-faq): AI-powered Q&A on Hajj topics.
+- [Hajj Query Wizard](/hajj-wizard): Guided wizard for common pilgrim questions.
+- [Tawaf Counter](/tawaf-counter): Ritual counter with haptic feedback.
+- [Hajj Buildings Directory](/hajj-buildings): Building lookup in Makkah and Madinah.
+- [Medical Facilities](/medical-facilities): Saudi hospital directory.
+- [Madinah Hotels](/madinah-hotels): Approved Madinah hotel locator.
+- [Mina Tent Locations](/mina-tents): Maktab-wise tent maps.
+- [Map](/map): Official maps of Mina, Arafat, Muzdalifah, and Haram.
+- [Mashair Map](/mashair-map): Interactive Mashair area map.
+- [Lost & Found](/lost-and-found): Report and search lost items.
+- [Return to Camp](/return-to-camp): Lost-mode camp finder.
+- [Qurbani Booking](/qurbani): Qurbani service booking and tracking.
+- [Free Umrah Application](/free-umrah): Apply for sponsored Umrah.
+- [Volunteer Registration](/volunteer): Register as a Hajj volunteer.
+
+## Information
+
+- [Contact Numbers](/contacts): Emergency and helpline numbers.
+- [Haj Mission Directory](/haj-directory): Indian Haj Mission offices.
+- [Haj Inspectors](/haj-inspectors): Inspector directory.
+- [Government Services](/govt-services): Indian govt services for pilgrims.
+- [Official Circulars](/circulars): AI-summarized Hajj circulars.
+
+## About
+
+- [About Us](/about-us): Our mission and story.
+- [Contact Us](/contact-us): Reach the HajCare team.
+- [Pricing](/pricing): Service fee disclosure.
+- [Privacy Policy](/privacy-policy): How we handle your data.
+- [Terms & Conditions](/terms-conditions): Service terms.
+- [Refund Policy](/refund-policy): Refund rules.
+- [Shipping Policy](/shipping-policy): Delivery policies.

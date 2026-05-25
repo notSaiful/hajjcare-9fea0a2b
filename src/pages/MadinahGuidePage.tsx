@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { SEO } from "@/components/SEO";
 import { useNavigate } from "react-router-dom";
 import { MainLayout } from "@/components/MainLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -75,6 +76,7 @@ const MadinahGuidePage = () => {
 
   return (
     <MainLayout>
+      <SEO title="Madinah Guide" description="Visits, hotels, prayer schedule, and key sites in Madinah — practical guidance for Indian pilgrims." path="/madinah-guide" type="article" jsonLd={{"@context":"https://schema.org","@type":"Article","headline":"Madinah Guide","description":"Visits, hotels, prayer schedule, and key sites in Madinah — practical guidance for Indian pilgrims.","url":"https://hajjcare.in/madinah-guide"}} />
       <div className="container max-w-2xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
         {/* Header */}
         <div className="space-y-1.5 sm:space-y-2">

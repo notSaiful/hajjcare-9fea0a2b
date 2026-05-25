@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { SEO } from "@/components/SEO";
 import { Link, useSearchParams } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { SimpleHeader } from "@/components/SimpleHeader";
@@ -210,6 +211,7 @@ const HajjBuildingsPage = () => {
 
   return (
     <div className="min-h-screen bg-background" dir={isRTL ? "rtl" : "ltr"}>
+      <SEO title="Hajj Buildings Directory 2026" description="Search official Indian Hajj accommodation buildings in Makkah and Madinah with maps, contacts, and zones." path="/hajj-buildings" type="website" />
       <SimpleHeader />
       <main className="container max-w-2xl mx-auto px-4 py-5 space-y-5">
         {/* Header */}

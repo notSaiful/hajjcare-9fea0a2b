@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { SEO } from "@/components/SEO";
 import { MainLayout } from "@/components/MainLayout";
 import { PageHeader } from "@/components/PageHeader";
 import { useCirculars, Circular } from "@/hooks/useCirculars";
@@ -112,6 +113,7 @@ export default function CircularsPage() {
 
   return (
     <MainLayout>
+      <SEO title="Official Hajj Circulars" description="AI-summarized official Hajj circulars from the Indian Haj Committee — stay updated on policies and announcements." path="/circulars" type="website" jsonLd={{"@context":"https://schema.org","@type":"WebPage","headline":"Official Hajj Circulars","description":"AI-summarized official Hajj circulars from the Indian Haj Committee — stay updated on policies and announcements.","url":"https://hajjcare.in/circulars"}} />
       <PageHeader title={l.title} subtitle={l.subtitle} />
       <div className="px-4 pb-24 space-y-4 max-w-2xl mx-auto">
         {isLoading ? (

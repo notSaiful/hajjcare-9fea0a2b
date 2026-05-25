@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { SEO } from "@/components/SEO";
 import { useNavigate, Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
@@ -478,7 +479,9 @@ const FreeUmrahApplyPage = () => {
   // Rate limit screen
   if (rateLimitState?.isLimited) {
     return (
-      <div className="min-h-screen bg-background">
+      <>
+        <SEO title="Free Umrah Application" description="Apply for sponsored Free Umrah — eligibility, documents, and application process." path="/free-umrah" type="website" jsonLd={{"@context":"https://schema.org","@type":"WebPage","headline":"Free Umrah Application","description":"Apply for sponsored Free Umrah — eligibility, documents, and application process.","url":"https://hajjcare.in/free-umrah"}} />
+        <div className="min-h-screen bg-background">
         <header className="sticky top-0 z-50 bg-card/95 backdrop-blur-md border-b border-border/50">
           <div className="container max-w-3xl mx-auto px-4 h-14 flex items-center gap-3">
             <Link to="/" className="p-2 -ml-2 rounded-lg hover:bg-muted transition-colors">
@@ -537,6 +540,7 @@ const FreeUmrahApplyPage = () => {
           </Card>
         </div>
       </div>
+      </>
     );
   }
 
@@ -575,6 +579,7 @@ const FreeUmrahApplyPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO title="Free Umrah Application" description="Apply for sponsored Free Umrah — eligibility, documents, and application process." path="/free-umrah" type="website" />
       <header className="sticky top-0 z-50 bg-card/95 backdrop-blur-md border-b border-border/50">
         <div className="container max-w-3xl mx-auto px-4 h-14 flex items-center gap-3">
           <Link to="/" className="p-2 -ml-2 rounded-lg hover:bg-muted transition-colors">

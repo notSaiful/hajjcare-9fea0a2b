@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { SEO } from "@/components/SEO";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { SimpleHeader } from "@/components/SimpleHeader";
@@ -128,7 +129,9 @@ const MadinahHotelsPage = () => {
   }, [search, sort, showOnlyVerified]);
 
   return (
-    <div className="min-h-screen bg-background pb-16" dir={isRTL ? "rtl" : "ltr"}>
+    <>
+      <SEO title="Madinah Hotels Directory" description="Approved Madinah hotel locator for Indian Hajj pilgrims with maps and contact info." path="/madinah-hotels" type="website" jsonLd={{"@context":"https://schema.org","@type":"WebPage","headline":"Madinah Hotels Directory","description":"Approved Madinah hotel locator for Indian Hajj pilgrims with maps and contact info.","url":"https://hajjcare.in/madinah-hotels"}} />
+      <div className="min-h-screen bg-background pb-16" dir={isRTL ? "rtl" : "ltr"}>
       <SimpleHeader />
       <main className="container max-w-2xl mx-auto px-4 py-5 space-y-5">
         {/* Header */}
@@ -256,6 +259,8 @@ const MadinahHotelsPage = () => {
         </p>
       </main>
     </div>
+  </>
+
   );
 };
 

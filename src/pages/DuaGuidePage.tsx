@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { SEO } from "@/components/SEO";
 import { MainLayout } from "@/components/MainLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Card, CardContent } from "@/components/ui/card";
@@ -88,6 +89,7 @@ const DuaGuidePage = () => {
 
   return (
     <MainLayout>
+      <SEO title="Hajj & Umrah Duas" description="Authentic Hajj and Umrah duas with multilingual translations and audio guidance." path="/dua" type="article" jsonLd={{"@context":"https://schema.org","@type":"Article","headline":"Hajj & Umrah Duas","description":"Authentic Hajj and Umrah duas with multilingual translations and audio guidance.","url":"https://hajjcare.in/dua"}} />
       <div className="container max-w-2xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
         {/* Consistent Page Header */}
         <PageHeader

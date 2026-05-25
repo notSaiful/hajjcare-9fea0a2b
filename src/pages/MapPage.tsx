@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { SEO } from "@/components/SEO";
 import { LocationPermissionFlow } from "@/components/LocationPermissionFlow";
 import { LocationReminderBanner } from "@/components/LocationReminderBanner";
 import mapboxgl from "mapbox-gl";
@@ -566,7 +567,9 @@ const MapPage = () => {
   // Enhanced Error State
   if (mapError) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-background via-background to-primary/5 flex flex-col items-center justify-center p-6" dir={isRTL ? "rtl" : "ltr"}>
+      <>
+        <SEO title="Official Hajj Maps" description="Official maps of Mina, Arafat, Muzdalifah, and the Haram for 2026 pilgrims." path="/map" type="website" jsonLd={{"@context":"https://schema.org","@type":"WebPage","headline":"Official Hajj Maps","description":"Official maps of Mina, Arafat, Muzdalifah, and the Haram for 2026 pilgrims.","url":"https://hajjcare.in/map"}} />
+        <div className="min-h-screen bg-gradient-to-b from-background via-background to-primary/5 flex flex-col items-center justify-center p-6" dir={isRTL ? "rtl" : "ltr"}>
         {/* Ambient Background */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-primary/5 rounded-full blur-3xl" />
@@ -609,11 +612,13 @@ const MapPage = () => {
           </div>
         </div>
       </div>
+      </>
     );
   }
 
   return (
     <div className="h-screen w-screen relative overflow-hidden bg-background" dir={isRTL ? "rtl" : "ltr"}>
+      <SEO title="Official Hajj Maps" description="Official maps of Mina, Arafat, Muzdalifah, and the Haram for 2026 pilgrims." path="/map" type="website" />
       {/* Map Container */}
       <div ref={mapContainer} className="absolute inset-0 w-full h-full" />
       

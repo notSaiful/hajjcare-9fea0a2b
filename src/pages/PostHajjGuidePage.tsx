@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from "react";
+import { SEO } from "@/components/SEO";
 import { MainLayout } from "@/components/MainLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { IconCircle } from "@/components/IconCircle";
@@ -39,6 +40,7 @@ export default function PostHajjGuidePage() {
 
   return (
     <MainLayout>
+      <SEO title="Post-Hajj Guide" description="After-Hajj rituals, returning home, Zamzam handling, and integrating the Hajj experience into daily life." path="/post-hajj" type="article" jsonLd={{"@context":"https://schema.org","@type":"Article","headline":"Post-Hajj Guide","description":"After-Hajj rituals, returning home, Zamzam handling, and integrating the Hajj experience into daily life.","url":"https://hajjcare.in/post-hajj"}} />
       <div className="min-h-screen bg-gradient-to-b from-background to-muted/30 pb-24">
         {/* Header */}
         <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent p-6">

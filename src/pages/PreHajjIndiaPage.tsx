@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { SEO } from "@/components/SEO";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { MainLayout } from "@/components/MainLayout";
 import { Card } from "@/components/ui/card";
@@ -55,6 +56,7 @@ const PreHajjIndiaPage = () => {
 
   return (
     <MainLayout>
+      <SEO title="Pre-Hajj India Formalities" description="Indian government Hajj formalities — orientation, document verification, vaccinations, and departure checklist." path="/pre-hajj-india" type="article" jsonLd={{"@context":"https://schema.org","@type":"Article","headline":"Pre-Hajj India Formalities","description":"Indian government Hajj formalities — orientation, document verification, vaccinations, and departure checklist.","url":"https://hajjcare.in/pre-hajj-india"}} />
       <div className="space-y-6">
         <button
           onClick={() => navigate("/")}
