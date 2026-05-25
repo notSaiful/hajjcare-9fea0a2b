@@ -278,6 +278,7 @@ const VolunteerPage = () => {
 
   return (
     <div className="min-h-screen bg-background" dir={isRTL ? "rtl" : "ltr"}>
+      <SEO title="Volunteer Registration" description="Register as a Hajj volunteer with HajCare AI — serve pilgrims with multilingual support and on-ground assistance." path="/volunteer" type="website" />
       <SimpleHeader />
       <main className="container max-w-2xl mx-auto px-4 py-6 space-y-6">
 
@@ -779,8 +780,6 @@ const VolunteerPage = () => {
       </main>
       <Footer />
     </div>
-  </>
-
   );
 };
 

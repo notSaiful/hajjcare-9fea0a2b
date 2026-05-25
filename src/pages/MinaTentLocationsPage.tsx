@@ -17,8 +17,6 @@ const Highlight = ({ text, tokens }: { text: string; tokens: string[] }) => {
   const segs = highlightSegments(text, tokens);
   return (
     <>
-      <SEO title="Mina Tent Locations" description="Maktab-wise Mina tent maps and schematic visualizations for 2026 pilgrims." path="/mina-tents" type="website" jsonLd={{"@context":"https://schema.org","@type":"WebPage","headline":"Mina Tent Locations","description":"Maktab-wise Mina tent maps and schematic visualizations for 2026 pilgrims.","url":"https://hajjcare.in/mina-tents"}} />
-      <>
       {segs.map((s, i) =>
         s.match ? (
           <mark key={i} className="bg-islamic-gold/30 text-foreground rounded px-0.5">
@@ -79,8 +77,6 @@ const MaktabCard = ({ m, t, tokens }: { m: MinaMaktab; t: MinaTentsLabels; token
         </CardContent>
       </Card>
     </Link>
-  </>
-
   );
 };
 
@@ -114,6 +110,7 @@ export default function MinaTentLocationsPage() {
 
   return (
     <div className="min-h-screen bg-background" dir={isRTL ? "rtl" : "ltr"}>
+      <SEO title="Mina Tent Locations" description="Maktab-wise Mina tent maps and schematic visualizations for 2026 pilgrims." path="/mina-tents" type="website" />
       <header className="sticky top-0 z-20 bg-background/95 backdrop-blur border-b border-border">
         <div className="max-w-3xl mx-auto px-4 py-3 flex items-center gap-3">
           <Link to="/home">

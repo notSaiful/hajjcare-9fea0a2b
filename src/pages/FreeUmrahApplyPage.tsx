@@ -578,6 +578,7 @@ const FreeUmrahApplyPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO title="Free Umrah Application" description="Apply for sponsored Free Umrah — eligibility, documents, and application process." path="/free-umrah" type="website" />
       <header className="sticky top-0 z-50 bg-card/95 backdrop-blur-md border-b border-border/50">
         <div className="container max-w-3xl mx-auto px-4 h-14 flex items-center gap-3">
           <Link to="/" className="p-2 -ml-2 rounded-lg hover:bg-muted transition-colors">
@@ -762,8 +763,6 @@ const FreeUmrahApplyPage = () => {
         </AlertDialogContent>
       </AlertDialog>
     </div>
-  </>
-
   );
 };
 

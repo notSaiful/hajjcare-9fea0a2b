@@ -617,6 +617,7 @@ const MapPage = () => {
 
   return (
     <div className="h-screen w-screen relative overflow-hidden bg-background" dir={isRTL ? "rtl" : "ltr"}>
+      <SEO title="Official Hajj Maps" description="Official maps of Mina, Arafat, Muzdalifah, and the Haram for 2026 pilgrims." path="/map" type="website" />
       {/* Map Container */}
       <div ref={mapContainer} className="absolute inset-0 w-full h-full" />
       
@@ -1140,8 +1141,6 @@ const MapPage = () => {
       <LocationPermissionFlow />
       <LocationReminderBanner />
     </div>
-  </>
-
   );
 };
 
