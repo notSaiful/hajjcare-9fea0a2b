@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { SEO } from "@/components/SEO";
 import { Link, useSearchParams } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { SimpleHeader } from "@/components/SimpleHeader";
@@ -183,7 +184,9 @@ const HajjBuildingsPage = () => {
     const typeLbl = cfg.label[lang as keyof typeof cfg.label] || cfg.label.en;
     const desc = building.description[lang] || building.description.en;
     return (
-      <div className="bg-card rounded-xl border border-border p-4 space-y-2 hover:shadow-md transition-shadow">
+      <>
+        <SEO title="Hajj Buildings Directory 2026" description="Search official Indian Hajj accommodation buildings in Makkah and Madinah with maps, contacts, and zones." path="/hajj-buildings" type="website" jsonLd={{"@context":"https://schema.org","@type":"WebPage","headline":"Hajj Buildings Directory 2026","description":"Search official Indian Hajj accommodation buildings in Makkah and Madinah with maps, contacts, and zones.","url":"https://hajjcare.in/hajj-buildings"}} />
+        <div className="bg-card rounded-xl border border-border p-4 space-y-2 hover:shadow-md transition-shadow">
         <div className="flex items-start gap-3">
           <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${cfg.color}`}>
             <Icon className="w-5 h-5" />
@@ -642,6 +645,8 @@ const HajjBuildingsPage = () => {
         </section>
       </main>
     </div>
+  </>
+
   );
 };
 

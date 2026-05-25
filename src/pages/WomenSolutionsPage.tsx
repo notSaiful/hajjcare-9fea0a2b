@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { SEO } from "@/components/SEO";
 import { ArrowLeft, Flower2, Heart, Droplets, ShieldCheck, Moon, Footprints, Clock, Smile, AlertCircle, Users, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -687,6 +688,7 @@ export default function WomenSolutionsPage() {
 
   return (
     <MainLayout>
+      <SEO title="Women Pilgrim Solutions" description="Practical guidance tailored for women Hajj pilgrims — health, privacy, and ritual considerations." path="/women" type="article" jsonLd={{"@context":"https://schema.org","@type":"Article","headline":"Women Pilgrim Solutions","description":"Practical guidance tailored for women Hajj pilgrims — health, privacy, and ritual considerations.","url":"https://hajjcare.in/women"}} />
       <div className="min-h-screen bg-gradient-to-b from-pink-50/50 to-background dark:from-pink-950/20 dark:to-background">
         <div className="container max-w-4xl mx-auto px-4 py-6 pb-24">
           {/* Header */}

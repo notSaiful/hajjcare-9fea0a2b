@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { SEO } from "@/components/SEO";
 import { Link } from "react-router-dom";
 import { MainLayout } from "@/components/MainLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -144,6 +145,7 @@ export default function MedicalFacilitiesPage() {
 
   return (
     <MainLayout>
+      <SEO title="Saudi Hospital Directory" description="Directory of major hospitals in Makkah and Madinah with direct call functionality for pilgrims." path="/medical-facilities" type="website" jsonLd={{"@context":"https://schema.org","@type":"WebPage","headline":"Saudi Hospital Directory","description":"Directory of major hospitals in Makkah and Madinah with direct call functionality for pilgrims.","url":"https://hajjcare.in/medical-facilities"}} />
       <div className="container max-w-2xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-5">
         <Link to="/">
           <Button variant="ghost" size="sm" className="gap-2 -ml-2 h-10">

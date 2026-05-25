@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { SEO } from "@/components/SEO";
 import { SimpleHeader } from "@/components/SimpleHeader";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -247,7 +248,9 @@ const VolunteerPage = () => {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-background" dir={isRTL ? "rtl" : "ltr"}>
+      <>
+        <SEO title="Volunteer Registration" description="Register as a Hajj volunteer with HajCare AI — serve pilgrims with multilingual support and on-ground assistance." path="/volunteer" type="website" jsonLd={{"@context":"https://schema.org","@type":"WebPage","headline":"Volunteer Registration","description":"Register as a Hajj volunteer with HajCare AI — serve pilgrims with multilingual support and on-ground assistance.","url":"https://hajjcare.in/volunteer"}} />
+        <div className="min-h-screen bg-background" dir={isRTL ? "rtl" : "ltr"}>
         <SimpleHeader />
         <main className="container max-w-2xl mx-auto px-4 py-8">
           <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-background">
@@ -776,6 +779,8 @@ const VolunteerPage = () => {
       </main>
       <Footer />
     </div>
+  </>
+
   );
 };
 

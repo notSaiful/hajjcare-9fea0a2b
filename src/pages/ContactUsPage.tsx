@@ -1,4 +1,5 @@
 import { MainLayout } from "@/components/MainLayout";
+import { SEO } from "@/components/SEO";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent } from "@/components/ui/card";
@@ -9,6 +10,7 @@ export default function ContactUsPage() {
 
   return (
     <MainLayout>
+      <SEO title="Contact HajCare AI" description="Reach the HajCare AI team for support, partnerships, and feedback. Email, phone and official channels." path="/contact-us" type="website" jsonLd={{"@context":"https://schema.org","@type":"WebPage","headline":"Contact HajCare AI","description":"Reach the HajCare AI team for support, partnerships, and feedback. Email, phone and official channels.","url":"https://hajjcare.in/contact-us"}} />
       <ScrollArea className="h-[calc(100vh-3.5rem)]">
         <div className="container max-w-4xl mx-auto px-4 py-8 pb-24">
           <div className="flex items-center gap-3 mb-6">

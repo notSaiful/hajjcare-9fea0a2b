@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
+import { SEO } from "@/components/SEO";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Send, RotateCcw, Bot, User, Sparkles } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -214,7 +215,9 @@ export default function HajjFaqChatPage() {
   const hasMessages = messages.length > 0;
 
   return (
-    <div className="min-h-screen bg-background flex flex-col" dir={isRTL ? "rtl" : "ltr"}>
+    <>
+      <SEO title="Hajj FAQ Chat" description="AI-powered question and answer assistant for Hajj and Umrah pilgrims in English, Urdu, Hindi and Arabic." path="/hajj-faq" type="website" jsonLd={{"@context":"https://schema.org","@type":"WebPage","headline":"Hajj FAQ Chat","description":"AI-powered question and answer assistant for Hajj and Umrah pilgrims in English, Urdu, Hindi and Arabic.","url":"https://hajjcare.in/hajj-faq"}} />
+      <div className="min-h-screen bg-background flex flex-col" dir={isRTL ? "rtl" : "ltr"}>
       {/* Header */}
       <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
         <div className="max-w-2xl mx-auto px-4 flex items-center justify-between h-14">
@@ -344,5 +347,7 @@ export default function HajjFaqChatPage() {
         </div>
       </div>
     </div>
+  </>
+
   );
 }

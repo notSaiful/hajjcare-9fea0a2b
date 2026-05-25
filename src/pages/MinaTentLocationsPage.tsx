@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { SEO } from "@/components/SEO";
 import { Link } from "react-router-dom";
 import { ArrowLeft, MapPin, Search, Bus, Train, ExternalLink, HelpCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -16,6 +17,8 @@ const Highlight = ({ text, tokens }: { text: string; tokens: string[] }) => {
   const segs = highlightSegments(text, tokens);
   return (
     <>
+      <SEO title="Mina Tent Locations" description="Maktab-wise Mina tent maps and schematic visualizations for 2026 pilgrims." path="/mina-tents" type="website" jsonLd={{"@context":"https://schema.org","@type":"WebPage","headline":"Mina Tent Locations","description":"Maktab-wise Mina tent maps and schematic visualizations for 2026 pilgrims.","url":"https://hajjcare.in/mina-tents"}} />
+      <>
       {segs.map((s, i) =>
         s.match ? (
           <mark key={i} className="bg-islamic-gold/30 text-foreground rounded px-0.5">
@@ -76,6 +79,8 @@ const MaktabCard = ({ m, t, tokens }: { m: MinaMaktab; t: MinaTentsLabels; token
         </CardContent>
       </Card>
     </Link>
+  </>
+
   );
 };
 

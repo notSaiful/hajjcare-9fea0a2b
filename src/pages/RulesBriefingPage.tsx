@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { SEO } from "@/components/SEO";
 import { Link, useNavigate } from "react-router-dom";
 import { SimpleHeader } from "@/components/SimpleHeader";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -59,7 +60,9 @@ const RulesBriefingPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background" dir={isRTL ? "rtl" : "ltr"}>
+    <>
+      <SEO title="Saudi Rules & Conduct Briefing" description="Important rules and conduct guidance for Saudi Arabia — pilgrim safety, public behavior, and legal essentials." path="/rules" type="article" jsonLd={{"@context":"https://schema.org","@type":"Article","headline":"Saudi Rules & Conduct Briefing","description":"Important rules and conduct guidance for Saudi Arabia — pilgrim safety, public behavior, and legal essentials.","url":"https://hajjcare.in/rules"}} />
+      <div className="min-h-screen bg-background" dir={isRTL ? "rtl" : "ltr"}>
       <SimpleHeader />
 
       <main className="container max-w-lg mx-auto px-4 py-6 space-y-6 pb-32">
@@ -145,6 +148,8 @@ const RulesBriefingPage = () => {
         </div>
       </main>
     </div>
+  </>
+
   );
 };
 

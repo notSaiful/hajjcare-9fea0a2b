@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { SEO } from "@/components/SEO";
 import { MainLayout } from "@/components/MainLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -44,6 +45,7 @@ export default function PricingDisclosurePage() {
 
   return (
     <MainLayout>
+      <SEO title="Pricing & Service Fees" description="Transparent pricing and service fee disclosure for HajCare AI premium features." path="/pricing" type="website" jsonLd={{"@context":"https://schema.org","@type":"WebPage","headline":"Pricing & Service Fees","description":"Transparent pricing and service fee disclosure for HajCare AI premium features.","url":"https://hajjcare.in/pricing"}} />
       <div className="container max-w-2xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
         {/* Back Button */}
         <Link to="/">

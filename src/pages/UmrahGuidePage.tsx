@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { SEO } from "@/components/SEO";
 import { MainLayout } from "@/components/MainLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Card, CardContent } from "@/components/ui/card";
@@ -38,6 +39,7 @@ const UmrahGuidePage = () => {
 
   return (
     <MainLayout>
+      <SEO title="Umrah Guide" description="Step-by-step Umrah rituals walkthrough — Ihram, Tawaf, Sa'i, and Tahallul — with multilingual guidance and duas." path="/umrah" type="article" jsonLd={{"@context":"https://schema.org","@type":"Article","headline":"Umrah Guide","description":"Step-by-step Umrah rituals walkthrough — Ihram, Tawaf, Sa'i, and Tahallul — with multilingual guidance and duas.","url":"https://hajjcare.in/umrah"}} />
       <div className="container max-w-2xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
         {/* Header */}
         <div className="space-y-1.5 sm:space-y-2">

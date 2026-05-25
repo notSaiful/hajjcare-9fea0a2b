@@ -1,4 +1,5 @@
 import { MainLayout } from "@/components/MainLayout";
+import { SEO } from "@/components/SEO";
 import { PageHeader } from "@/components/PageHeader";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ShieldCheck } from "lucide-react";
@@ -6,6 +7,7 @@ import { ShieldCheck } from "lucide-react";
 export default function PrivacyPolicyPage() {
   return (
     <MainLayout>
+      <SEO title="Privacy Policy" description="How HajCare AI collects, uses, and protects your data — DPDP-aligned privacy practices for pilgrims." path="/privacy-policy" type="website" jsonLd={{"@context":"https://schema.org","@type":"WebPage","headline":"Privacy Policy","description":"How HajCare AI collects, uses, and protects your data — DPDP-aligned privacy practices for pilgrims.","url":"https://hajjcare.in/privacy-policy"}} />
       <ScrollArea className="h-[calc(100vh-3.5rem)]">
         <div className="container max-w-3xl mx-auto px-4 py-8 pb-24">
           <PageHeader

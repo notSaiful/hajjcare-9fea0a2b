@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { SEO } from "@/components/SEO";
 import { Link, useNavigate } from "react-router-dom";
 import { MainLayout } from "@/components/MainLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -291,6 +292,7 @@ const HajMissionDirectoryPage = () => {
 
   return (
     <MainLayout>
+      <SEO title="Indian Haj Mission Directory" description="Directory of Indian Haj Mission offices in Makkah, Madinah, and Jeddah with contacts and hours." path="/haj-directory" type="website" jsonLd={{"@context":"https://schema.org","@type":"WebPage","headline":"Indian Haj Mission Directory","description":"Directory of Indian Haj Mission offices in Makkah, Madinah, and Jeddah with contacts and hours.","url":"https://hajjcare.in/haj-directory"}} />
       <div className="container max-w-2xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
         <Link to="/">
           <Button variant="ghost" size="sm" className="gap-2 -ml-2 h-10 sm:h-9 text-sm">

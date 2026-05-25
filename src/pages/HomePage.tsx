@@ -1,4 +1,5 @@
 import { lazy, Suspense } from "react";
+import { SEO } from "@/components/SEO";
 
 import { SimpleHeader } from "@/components/SimpleHeader";
 import { HeroSection } from "@/components/HeroSection";
@@ -30,7 +31,9 @@ const HomePage = () => {
   useAppAnalytics();
 
   return (
-    <div className="min-h-screen bg-background" dir={isRTL ? "rtl" : "ltr"}>
+    <>
+      <SEO title="HajCare AI Dashboard" description="Your personal Hajj dashboard — guidance, building locator, Tawaf counter, circulars and AI support, all in one place." path="/home" type="website" jsonLd={{"@context":"https://schema.org","@type":"WebPage","headline":"HajCare AI Dashboard","description":"Your personal Hajj dashboard — guidance, building locator, Tawaf counter, circulars and AI support, all in one place.","url":"https://hajjcare.in/home"}} />
+      <div className="min-h-screen bg-background" dir={isRTL ? "rtl" : "ltr"}>
       {/* Persistent emergency contacts ticker — always visible at top */}
       <EmergencyMarqueeBar />
 
@@ -124,6 +127,8 @@ const HomePage = () => {
         <OnboardingTour />
       </Suspense>
     </div>
+  </>
+
   );
 };
 

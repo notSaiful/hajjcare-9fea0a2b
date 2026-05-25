@@ -1,4 +1,5 @@
 import { SimpleHeader } from "@/components/SimpleHeader";
+import { SEO } from "@/components/SEO";
 import { useLanguage } from "@/contexts/LanguageContext";
 import QurbaniStatusTracker from "@/components/QurbaniStatusTracker";
 import QurbaniCouponLookup from "@/components/QurbaniCouponLookup";
@@ -98,7 +99,9 @@ const QurbaniPage = () => {
   const lang: Lang = SUPPORTED_LANGS.includes(language as Lang) ? (language as Lang) : "en";
 
   return (
-    <div className="min-h-screen bg-background" dir={isRTL ? "rtl" : "ltr"}>
+    <>
+      <SEO title="Qurbani Booking" description="Book Qurbani for Hajj 2026 with live tracking, coupon lookup, and multilingual support." path="/qurbani" type="website" jsonLd={{"@context":"https://schema.org","@type":"WebPage","headline":"Qurbani Booking","description":"Book Qurbani for Hajj 2026 with live tracking, coupon lookup, and multilingual support.","url":"https://hajjcare.in/qurbani"}} />
+      <div className="min-h-screen bg-background" dir={isRTL ? "rtl" : "ltr"}>
       <SimpleHeader />
 
       <main className="container max-w-lg mx-auto px-4 py-6 space-y-6 pb-24">
@@ -155,6 +158,8 @@ const QurbaniPage = () => {
         </Card>
       </main>
     </div>
+  </>
+
   );
 };
 

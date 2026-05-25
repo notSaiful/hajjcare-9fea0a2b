@@ -1,4 +1,5 @@
 import { MainLayout } from "@/components/MainLayout";
+import { SEO } from "@/components/SEO";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Heart, Thermometer, Droplets, AlertTriangle, Pill, Sun } from "lucide-react";
@@ -75,6 +76,7 @@ const HealthGuidePage = () => {
 
   return (
     <MainLayout>
+      <SEO title="Hajj Health Guide" description="Health tips and advisories for Hajj — heat safety, hygiene, medication tips, and emergency contacts." path="/health" type="article" jsonLd={{"@context":"https://schema.org","@type":"Article","headline":"Hajj Health Guide","description":"Health tips and advisories for Hajj — heat safety, hygiene, medication tips, and emergency contacts.","url":"https://hajjcare.in/health"}} />
       <div className="container max-w-2xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
         {/* Consistent Page Header */}
         <PageHeader

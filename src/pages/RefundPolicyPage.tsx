@@ -1,4 +1,5 @@
 import { MainLayout } from "@/components/MainLayout";
+import { SEO } from "@/components/SEO";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { RotateCcw } from "lucide-react";
@@ -8,6 +9,7 @@ export default function RefundPolicyPage() {
 
   return (
     <MainLayout>
+      <SEO title="Refund Policy" description="HajCare AI refund policy for digital services, aligned with Indian IT laws." path="/refund-policy" type="website" jsonLd={{"@context":"https://schema.org","@type":"WebPage","headline":"Refund Policy","description":"HajCare AI refund policy for digital services, aligned with Indian IT laws.","url":"https://hajjcare.in/refund-policy"}} />
       <ScrollArea className="h-[calc(100vh-3.5rem)]">
         <div className="container max-w-4xl mx-auto px-4 py-8 pb-24">
           <div className="flex items-center gap-3 mb-6">
