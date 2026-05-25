@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { SEO } from "@/components/SEO";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useEffect } from "react";
@@ -81,6 +82,21 @@ const LandingPage = () => {
       style={{ background: PALETTE.ivory, color: PALETTE.emerald }}
       dir={isRTL ? "rtl" : "ltr"}
     >
+      <SEO
+        title="HajCare AI — Your Digital Hajj Companion"
+        description="Your complete digital companion for a peaceful & organized Hajj. Smart guidance, AI assistance, reminders, and spiritual support in 11 languages."
+        path="/"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "WebApplication",
+          name: "HajCare AI",
+          applicationCategory: "TravelApplication",
+          operatingSystem: "Web, iOS, Android",
+          description: "Digital Hajj & Umrah companion for Indian pilgrims.",
+          url: "https://hajjcare.in/",
+        }}
+      />
+      <main>
       {/* ===== HERO ===== */}
       <section className="relative min-h-[92vh] flex flex-col items-center justify-center px-5 sm:px-6 text-center overflow-hidden">
         {/* Islamic geometric pattern */}
