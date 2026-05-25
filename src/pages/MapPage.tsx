@@ -612,6 +612,7 @@ const MapPage = () => {
           </div>
         </div>
       </div>
+      </>
     );
   }
 

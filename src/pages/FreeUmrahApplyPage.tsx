@@ -540,6 +540,7 @@ const FreeUmrahApplyPage = () => {
           </Card>
         </div>
       </div>
+      </>
     );
   }
 

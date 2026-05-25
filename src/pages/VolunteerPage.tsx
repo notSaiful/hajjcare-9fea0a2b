@@ -273,6 +273,7 @@ const VolunteerPage = () => {
         </main>
         <Footer />
       </div>
+      </>
     );
   }
 
