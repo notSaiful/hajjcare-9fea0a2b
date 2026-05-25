@@ -447,6 +447,7 @@ const LandingPage = () => {
           <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4" style={{ color: PALETTE.gold }} /> Privacy-first</span>
         </div>
       </section>
+      </main>
 
       {/* ===== FOOTER ===== */}
       <footer
