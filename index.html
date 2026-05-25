@@ -32,10 +32,21 @@
     <meta name="description" content="Your complete digital companion for a peaceful & organized Hajj journey. Smart guidance, AI assistance, reminders, and spiritual support — all in one place." />
     <meta name="keywords" content="Hajj, Hajj Guide, Pilgrimage, Mecca, Islamic, Tawaf, Umrah, HajCare AI, دليل الحج, مناسك الحج" />
     
-    <!-- Open Graph -->
+    <!-- Open Graph (sitewide fallback; per-route Helmet overrides) -->
     <meta property="og:title" content="HajCare AI — Your Digital Hajj Companion" />
     <meta property="og:description" content="Smart ritual guidance, AI assistance, reminders & spiritual support for your blessed Hajj journey." />
+    <meta property="og:url" content="https://hajjcare.in/" />
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="HajCare AI" />
+    <meta name="twitter:card" content="summary" />
+
+    <!-- Sitewide Organization + WebSite JSON-LD -->
+    <script type="application/ld+json">
+      {"@context":"https://schema.org","@type":"Organization","name":"HajCare AI","url":"https://hajjcare.in/","logo":"https://hajjcare.in/favicon.ico","description":"Digital Hajj & Umrah companion for Indian pilgrims with multilingual guidance, AI assistance, and spiritual support."}
+    </script>
+    <script type="application/ld+json">
+      {"@context":"https://schema.org","@type":"WebSite","name":"HajCare AI","url":"https://hajjcare.in/","inLanguage":["en","ar","ur","hi"],"potentialAction":{"@type":"SearchAction","target":"https://hajjcare.in/hajj-faq?q={search_term_string}","query-input":"required name=search_term_string"}}
+    </script>
     
     <!-- Critical inline CSS for instant first paint -->
     <style>
