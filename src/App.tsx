@@ -230,6 +230,7 @@ function AppContent() {
       <Route path="/coordinator" element={<CoordinatorDashboardPage />} />
       <Route path="/medical-alerts" element={<MedicalAlertsPage />} />
       <Route path="/admin/roles" element={<AdminRolesPage />} />
+      <Route path="/admin/seo" element={<AdminSEOStatusPage />} />
       <Route path="/admin/staff-requests" element={<AdminStaffRequestsPage />} />
       <Route path="/admin/metrics" element={<EmergencyMetricsPage />} />
       <Route path="/inspector" element={<InspectorDashboardPage />} />
