@@ -77,6 +77,7 @@ const TawafCounterPage = lazy(() => import("./pages/TawafCounterPage"));
 const HealthHelpPage = lazy(() => import("./pages/HealthHelpPage"));
 const CoordinatorDashboardPage = lazy(() => import("./pages/CoordinatorDashboardPage"));
 const AdminRolesPage = lazy(() => import("./pages/AdminRolesPage"));
+const AdminSEOStatusPage = lazy(() => import("./pages/AdminSEOStatusPage"));
 const AdminStaffRequestsPage = lazy(() => import("./pages/AdminStaffRequestsPage"));
 const MedicalAlertsPage = lazy(() => import("./pages/MedicalAlertsPage"));
 const EmergencyMetricsPage = lazy(() => import("./pages/EmergencyMetricsPage"));
