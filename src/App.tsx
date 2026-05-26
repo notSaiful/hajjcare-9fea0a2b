@@ -77,6 +77,7 @@ const TawafCounterPage = lazy(() => import("./pages/TawafCounterPage"));
 const HealthHelpPage = lazy(() => import("./pages/HealthHelpPage"));
 const CoordinatorDashboardPage = lazy(() => import("./pages/CoordinatorDashboardPage"));
 const AdminRolesPage = lazy(() => import("./pages/AdminRolesPage"));
+const AdminSEOStatusPage = lazy(() => import("./pages/AdminSEOStatusPage"));
 const AdminStaffRequestsPage = lazy(() => import("./pages/AdminStaffRequestsPage"));
 const MedicalAlertsPage = lazy(() => import("./pages/MedicalAlertsPage"));
 const EmergencyMetricsPage = lazy(() => import("./pages/EmergencyMetricsPage"));
@@ -230,6 +231,7 @@ function AppContent() {
       <Route path="/coordinator" element={<CoordinatorDashboardPage />} />
       <Route path="/medical-alerts" element={<MedicalAlertsPage />} />
       <Route path="/admin/roles" element={<AdminRolesPage />} />
+      <Route path="/admin/seo" element={<AdminSEOStatusPage />} />
       <Route path="/admin/staff-requests" element={<AdminStaffRequestsPage />} />
       <Route path="/admin/metrics" element={<EmergencyMetricsPage />} />
       <Route path="/inspector" element={<InspectorDashboardPage />} />
