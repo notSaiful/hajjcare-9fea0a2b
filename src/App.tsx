@@ -8,6 +8,7 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { InspectorOnlyRoute } from "@/components/InspectorOnlyRoute";
+import { AdminOnlyRoute } from "@/components/AdminOnlyRoute";
 import { DevRoleSwitcher } from "@/components/dev/DevRoleSwitcher";
 
 // Handle dynamic import failures (stale cache, network issues)
