@@ -259,13 +259,13 @@ function AppContent() {
       <Route path="/payment" element={<PaymentPage />} />
       <Route path="/billing-history" element={<BillingHistoryPage />} />
       <Route path="/rewards" element={<RewardsPage />} />
-      <Route path="/admin/promo" element={<AdminPromoPage />} />
+      <Route path="/admin/promo" element={<AdminOnlyRoute><AdminPromoPage /></AdminOnlyRoute>} />
       <Route path="/sukoon-rd" element={<SukoonRdPage />} />
-      <Route path="/admin/operators" element={<AdminOperatorsPage />} />
-      <Route path="/admin/fraud-alerts" element={<AdminFraudAlertsPage />} />
-      <Route path="/admin/ai-dashboard" element={<AdminAIDashboardPage />} />
-      <Route path="/admin/sukoon-metrics" element={<SukoonTrackingMetricsPage />} />
-      <Route path="/admin/analytics" element={<AdminAnalyticsPage />} />
+      <Route path="/admin/operators" element={<AdminOnlyRoute><AdminOperatorsPage /></AdminOnlyRoute>} />
+      <Route path="/admin/fraud-alerts" element={<AdminOnlyRoute><AdminFraudAlertsPage /></AdminOnlyRoute>} />
+      <Route path="/admin/ai-dashboard" element={<AdminOnlyRoute><AdminAIDashboardPage /></AdminOnlyRoute>} />
+      <Route path="/admin/sukoon-metrics" element={<AdminOnlyRoute><SukoonTrackingMetricsPage /></AdminOnlyRoute>} />
+      <Route path="/admin/analytics" element={<AdminOnlyRoute><AdminAnalyticsPage /></AdminOnlyRoute>} />
       <Route path="/hajj-faq" element={<HajjFaqChatPage />} />
       <Route path="/hajj-wizard" element={<HajjQueryWizardPage />} />
       <Route path="/command-center" element={<ResponderCommandPage />} />
