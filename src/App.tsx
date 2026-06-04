@@ -270,10 +270,10 @@ function AppContent() {
       <Route path="/hajj-wizard" element={<HajjQueryWizardPage />} />
       <Route path="/command-center" element={<ResponderCommandPage />} />
       <Route path="/national-command" element={<NationalCommandPage />} />
-      <Route path="/admin/live-tracking" element={<AdminLiveTrackingPage />} />
+      <Route path="/admin/live-tracking" element={<AdminOnlyRoute><AdminLiveTrackingPage /></AdminOnlyRoute>} />
       <Route path="/deployment-roadmap" element={<DeploymentRoadmapPage />} />
-      <Route path="/admin/compliance" element={<ComplianceDashboardPage />} />
-      <Route path="/admin/whatsapp-api" element={<AdminWhatsAppApiPage />} />
+      <Route path="/admin/compliance" element={<AdminOnlyRoute><ComplianceDashboardPage /></AdminOnlyRoute>} />
+      <Route path="/admin/whatsapp-api" element={<AdminOnlyRoute><AdminWhatsAppApiPage /></AdminOnlyRoute>} />
       <Route path="/error/forbidden" element={<ForbiddenPage />} />
       <Route path="/error/rate-limited" element={<ForbiddenPage />} />
       <Route path="/security-settings" element={<SecuritySettingsPage />} />
