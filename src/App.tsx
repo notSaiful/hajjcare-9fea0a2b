@@ -239,8 +239,8 @@ function AppContent() {
       <Route path="/haj-inspectors" element={<HajInspectorsDirectoryPage />} />
       <Route path="/shi/:coverNumber" element={<ShiProfilePage />} />
       <Route path="/inspector-directory" element={<InspectorDirectoryPage />} />
-      <Route path="/admin/inspectors" element={<AdminInspectorsPage />} />
-      <Route path="/admin/inspectors/upload" element={<AdminInspectorUploadPage />} />
+      <Route path="/admin/inspectors" element={<AdminOnlyRoute><AdminInspectorsPage /></AdminOnlyRoute>} />
+      <Route path="/admin/inspectors/upload" element={<AdminOnlyRoute><AdminInspectorUploadPage /></AdminOnlyRoute>} />
       <Route path="/inspector-group" element={<InspectorGroupManagePage />} />
         <Route path="/haj-inspector-register" element={<InspectorRegisterPage />} />
         <Route path="/inspector-register" element={<InspectorRegisterPage />} />
