@@ -34,6 +34,7 @@ import {
   Sparkles,
   Bell,
   Search,
+  Tent,
   LucideIcon,
 } from "lucide-react";
 
