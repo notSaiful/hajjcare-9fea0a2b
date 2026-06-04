@@ -130,25 +130,6 @@ export const menuSections: MenuSection[] = [
         colorClass: "icon-sand",
       },
       {
-        id: "travel-safety",
-        icon: HeartPulse,
-        label: {
-          en: "Travel Safety",
-          ar: "سلامة السفر",
-          ur: "سفر کی حفاظت",
-          hi: "यात्रा सुरक्षा",
-          ta: "பயண பாதுகாப்பு",
-          te: "ప్రయాణ భద్రత",
-          mr: "प्रवास सुरक्षा",
-          bn: "ভ্রমণ নিরাপত্তা",
-          or: "ଯାତ୍ରା ସୁରକ୍ଷା",
-          ml: "യാത്രാ സുരക്ഷ",
-          pa: "ਯਾਤਰਾ ਸੁਰੱਖਿਆ",
-        },
-        route: "/health",
-        colorClass: "icon-coral",
-      },
-      {
         id: "money",
         icon: Banknote,
         label: {
