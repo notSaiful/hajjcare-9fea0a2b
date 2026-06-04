@@ -278,7 +278,7 @@ function AppContent() {
       <Route path="/error/rate-limited" element={<ForbiddenPage />} />
       <Route path="/security-settings" element={<SecuritySettingsPage />} />
       <Route path="/circulars" element={<CircularsPage />} />
-      <Route path="/admin/circulars" element={<AdminCircularsPage />} />
+      <Route path="/admin/circulars" element={<AdminOnlyRoute><AdminCircularsPage /></AdminOnlyRoute>} />
 
       <Route path="/free-umrah" element={<FreeUmrahApplyPage />} />
       <Route path="/free-umrah/status" element={<FreeUmrahStatusPage />} />
