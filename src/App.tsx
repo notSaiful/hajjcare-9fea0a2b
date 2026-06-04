@@ -282,10 +282,10 @@ function AppContent() {
 
       <Route path="/free-umrah" element={<FreeUmrahApplyPage />} />
       <Route path="/free-umrah/status" element={<FreeUmrahStatusPage />} />
-      <Route path="/admin/free-umrah" element={<FreeUmrahAdminPage />} />
+      <Route path="/admin/free-umrah" element={<AdminOnlyRoute><FreeUmrahAdminPage /></AdminOnlyRoute>} />
       <Route path="/volunteer" element={<VolunteerPage />} />
-      <Route path="/admin/volunteers" element={<VolunteerDashboardPage />} />
-      <Route path="/admin/panel" element={<AdminControlPanelPage />} />
+      <Route path="/admin/volunteers" element={<AdminOnlyRoute><VolunteerDashboardPage /></AdminOnlyRoute>} />
+      <Route path="/admin/panel" element={<AdminOnlyRoute><AdminControlPanelPage /></AdminOnlyRoute>} />
       <Route path="/profile" element={<ProfilePage />} />
       <Route path="/lost-and-found" element={<LostAndFoundPage />} />
       <Route path="/mashair-map" element={<MashairMapPage />} />
