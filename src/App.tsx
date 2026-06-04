@@ -8,6 +8,7 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { InspectorOnlyRoute } from "@/components/InspectorOnlyRoute";
+import { AdminOnlyRoute } from "@/components/AdminOnlyRoute";
 import { DevRoleSwitcher } from "@/components/dev/DevRoleSwitcher";
 
 // Handle dynamic import failures (stale cache, network issues)
@@ -230,16 +231,16 @@ function AppContent() {
       <Route path="/help" element={<HealthHelpPage />} />
       <Route path="/coordinator" element={<CoordinatorDashboardPage />} />
       <Route path="/medical-alerts" element={<MedicalAlertsPage />} />
-      <Route path="/admin/roles" element={<AdminRolesPage />} />
-      <Route path="/admin/seo" element={<AdminSEOStatusPage />} />
-      <Route path="/admin/staff-requests" element={<AdminStaffRequestsPage />} />
-      <Route path="/admin/metrics" element={<EmergencyMetricsPage />} />
+      <Route path="/admin/roles" element={<AdminOnlyRoute><AdminRolesPage /></AdminOnlyRoute>} />
+      <Route path="/admin/seo" element={<AdminOnlyRoute><AdminSEOStatusPage /></AdminOnlyRoute>} />
+      <Route path="/admin/staff-requests" element={<AdminOnlyRoute><AdminStaffRequestsPage /></AdminOnlyRoute>} />
+      <Route path="/admin/metrics" element={<AdminOnlyRoute><EmergencyMetricsPage /></AdminOnlyRoute>} />
       <Route path="/inspector" element={<InspectorDashboardPage />} />
       <Route path="/haj-inspectors" element={<HajInspectorsDirectoryPage />} />
       <Route path="/shi/:coverNumber" element={<ShiProfilePage />} />
       <Route path="/inspector-directory" element={<InspectorDirectoryPage />} />
-      <Route path="/admin/inspectors" element={<AdminInspectorsPage />} />
-      <Route path="/admin/inspectors/upload" element={<AdminInspectorUploadPage />} />
+      <Route path="/admin/inspectors" element={<AdminOnlyRoute><AdminInspectorsPage /></AdminOnlyRoute>} />
+      <Route path="/admin/inspectors/upload" element={<AdminOnlyRoute><AdminInspectorUploadPage /></AdminOnlyRoute>} />
       <Route path="/inspector-group" element={<InspectorGroupManagePage />} />
         <Route path="/haj-inspector-register" element={<InspectorRegisterPage />} />
         <Route path="/inspector-register" element={<InspectorRegisterPage />} />
@@ -258,33 +259,33 @@ function AppContent() {
       <Route path="/payment" element={<PaymentPage />} />
       <Route path="/billing-history" element={<BillingHistoryPage />} />
       <Route path="/rewards" element={<RewardsPage />} />
-      <Route path="/admin/promo" element={<AdminPromoPage />} />
+      <Route path="/admin/promo" element={<AdminOnlyRoute><AdminPromoPage /></AdminOnlyRoute>} />
       <Route path="/sukoon-rd" element={<SukoonRdPage />} />
-      <Route path="/admin/operators" element={<AdminOperatorsPage />} />
-      <Route path="/admin/fraud-alerts" element={<AdminFraudAlertsPage />} />
-      <Route path="/admin/ai-dashboard" element={<AdminAIDashboardPage />} />
-      <Route path="/admin/sukoon-metrics" element={<SukoonTrackingMetricsPage />} />
-      <Route path="/admin/analytics" element={<AdminAnalyticsPage />} />
+      <Route path="/admin/operators" element={<AdminOnlyRoute><AdminOperatorsPage /></AdminOnlyRoute>} />
+      <Route path="/admin/fraud-alerts" element={<AdminOnlyRoute><AdminFraudAlertsPage /></AdminOnlyRoute>} />
+      <Route path="/admin/ai-dashboard" element={<AdminOnlyRoute><AdminAIDashboardPage /></AdminOnlyRoute>} />
+      <Route path="/admin/sukoon-metrics" element={<AdminOnlyRoute><SukoonTrackingMetricsPage /></AdminOnlyRoute>} />
+      <Route path="/admin/analytics" element={<AdminOnlyRoute><AdminAnalyticsPage /></AdminOnlyRoute>} />
       <Route path="/hajj-faq" element={<HajjFaqChatPage />} />
       <Route path="/hajj-wizard" element={<HajjQueryWizardPage />} />
       <Route path="/command-center" element={<ResponderCommandPage />} />
       <Route path="/national-command" element={<NationalCommandPage />} />
-      <Route path="/admin/live-tracking" element={<AdminLiveTrackingPage />} />
+      <Route path="/admin/live-tracking" element={<AdminOnlyRoute><AdminLiveTrackingPage /></AdminOnlyRoute>} />
       <Route path="/deployment-roadmap" element={<DeploymentRoadmapPage />} />
-      <Route path="/admin/compliance" element={<ComplianceDashboardPage />} />
-      <Route path="/admin/whatsapp-api" element={<AdminWhatsAppApiPage />} />
+      <Route path="/admin/compliance" element={<AdminOnlyRoute><ComplianceDashboardPage /></AdminOnlyRoute>} />
+      <Route path="/admin/whatsapp-api" element={<AdminOnlyRoute><AdminWhatsAppApiPage /></AdminOnlyRoute>} />
       <Route path="/error/forbidden" element={<ForbiddenPage />} />
       <Route path="/error/rate-limited" element={<ForbiddenPage />} />
       <Route path="/security-settings" element={<SecuritySettingsPage />} />
       <Route path="/circulars" element={<CircularsPage />} />
-      <Route path="/admin/circulars" element={<AdminCircularsPage />} />
+      <Route path="/admin/circulars" element={<AdminOnlyRoute><AdminCircularsPage /></AdminOnlyRoute>} />
 
       <Route path="/free-umrah" element={<FreeUmrahApplyPage />} />
       <Route path="/free-umrah/status" element={<FreeUmrahStatusPage />} />
-      <Route path="/admin/free-umrah" element={<FreeUmrahAdminPage />} />
+      <Route path="/admin/free-umrah" element={<AdminOnlyRoute><FreeUmrahAdminPage /></AdminOnlyRoute>} />
       <Route path="/volunteer" element={<VolunteerPage />} />
-      <Route path="/admin/volunteers" element={<VolunteerDashboardPage />} />
-      <Route path="/admin/panel" element={<AdminControlPanelPage />} />
+      <Route path="/admin/volunteers" element={<AdminOnlyRoute><VolunteerDashboardPage /></AdminOnlyRoute>} />
+      <Route path="/admin/panel" element={<AdminOnlyRoute><AdminControlPanelPage /></AdminOnlyRoute>} />
       <Route path="/profile" element={<ProfilePage />} />
       <Route path="/lost-and-found" element={<LostAndFoundPage />} />
       <Route path="/mashair-map" element={<MashairMapPage />} />
