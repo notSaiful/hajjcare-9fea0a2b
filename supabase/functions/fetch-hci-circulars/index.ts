@@ -16,20 +16,25 @@ serve(async (req) => {
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, serviceKey);
 
-    // AUTHORIZATION: require either a valid admin user JWT, or a shared cron secret.
-    // This prevents anonymous abuse that drains AI credits via repeated scraping.
+    // AUTHORIZATION: allow either (a) admin user JWT, (b) shared cron secret,
+    // or (c) the service_role key (used by scheduled pg_cron invocations).
     const cronSecret = Deno.env.get("CRON_SECRET");
     const providedCronSecret =
       req.headers.get("x-cron-secret") || req.headers.get("X-Cron-Secret");
     const authHeader = req.headers.get("Authorization");
+    const bearer = authHeader?.startsWith("Bearer ")
+      ? authHeader.replace("Bearer ", "")
+      : null;
 
     let authorized = false;
 
     if (cronSecret && providedCronSecret && providedCronSecret === cronSecret) {
       authorized = true;
-    } else if (authHeader?.startsWith("Bearer ")) {
-      const token = authHeader.replace("Bearer ", "");
-      const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    } else if (bearer && bearer === serviceKey) {
+      // Scheduled invocation from pg_cron using the service role key
+      authorized = true;
+    } else if (bearer) {
+      const { data: { user }, error: authError } = await supabase.auth.getUser(bearer);
       if (!authError && user) {
         const { data: roles } = await supabase
           .from("user_roles")
@@ -40,6 +45,7 @@ serve(async (req) => {
         }
       }
     }
+
 
     if (!authorized) {
       return new Response(
