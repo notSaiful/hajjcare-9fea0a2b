@@ -20,7 +20,6 @@ const WelcomePromoDialog = lazy(() => import("@/components/WelcomePromoDialog").
 const OnboardingTour = lazy(() => import("@/components/OnboardingTour").then(m => ({ default: m.OnboardingTour })));
 const LocationPermissionFlow = lazy(() => import("@/components/LocationPermissionFlow").then(m => ({ default: m.LocationPermissionFlow })));
 const LocationReminderBanner = lazy(() => import("@/components/LocationReminderBanner").then(m => ({ default: m.LocationReminderBanner })));
-const HajjCountdown = lazy(() => import("@/components/HajjCountdown").then(m => ({ default: m.HajjCountdown })));
 
 
 const HomePage = () => {
