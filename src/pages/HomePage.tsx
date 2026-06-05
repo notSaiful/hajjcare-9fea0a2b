@@ -8,11 +8,8 @@ import { EmergencyMarqueeBar } from "@/components/EmergencyMarqueeBar";
 import { SubGroupAdvisoryCard } from "@/components/inspector/SubGroupAdvisoryCard";
 import { StaffMenu } from "@/components/dashboard/StaffMenu";
 import { FindBuildingQuickAction } from "@/components/FindBuildingQuickAction";
-import { MinaTentsQuickAction } from "@/components/MinaTentsQuickAction";
-import { ReturnToCampQuickAction } from "@/components/ReturnToCampQuickAction";
-import { CardLookupQuickAction } from "@/components/CardLookupQuickAction";
-import { TawafCounterQuickAction } from "@/components/TawafCounterQuickAction";
 import { StaffAccessHint } from "@/components/dashboard/StaffAccessHint";
+
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAppAnalytics } from "@/hooks/useAppAnalytics";
 
@@ -24,7 +21,7 @@ const OnboardingTour = lazy(() => import("@/components/OnboardingTour").then(m =
 const LocationPermissionFlow = lazy(() => import("@/components/LocationPermissionFlow").then(m => ({ default: m.LocationPermissionFlow })));
 const LocationReminderBanner = lazy(() => import("@/components/LocationReminderBanner").then(m => ({ default: m.LocationReminderBanner })));
 const HajjCountdown = lazy(() => import("@/components/HajjCountdown").then(m => ({ default: m.HajjCountdown })));
-const AppDownloadStats = lazy(() => import("@/components/AppDownloadStats").then(m => ({ default: m.AppDownloadStats })));
+
 
 const HomePage = () => {
   const { t, isRTL, language } = useLanguage();
@@ -63,25 +60,6 @@ const HomePage = () => {
             <FindBuildingQuickAction />
           </section>
 
-          {/* Mina Tent Locations — quick action */}
-          <section className="animate-fade-up" style={{ animationDelay: "70ms" }}>
-            <MinaTentsQuickAction />
-          </section>
-
-          {/* Return to My Camp — Lost Mode */}
-          <section className="animate-fade-up" style={{ animationDelay: "75ms" }}>
-            <ReturnToCampQuickAction />
-          </section>
-
-          {/* Nusuk / HCOI Card lookup — smart router */}
-          <section className="animate-fade-up" style={{ animationDelay: "78ms" }}>
-            <CardLookupQuickAction />
-          </section>
-
-          {/* Tawaf & Sa'i Counter — quick action */}
-          <section className="animate-fade-up" style={{ animationDelay: "82ms" }}>
-            <TawafCounterQuickAction />
-          </section>
 
 
           {/* Staff-only tools (Inspector / Admin / Coordinator) */}
@@ -102,12 +80,6 @@ const HomePage = () => {
             </section>
           </Suspense>
 
-          {/* App Download Stats */}
-          <Suspense fallback={null}>
-            <section className="animate-fade-up" style={{ animationDelay: "200ms" }}>
-              <AppDownloadStats />
-            </section>
-          </Suspense>
 
         </div>
       </main>
