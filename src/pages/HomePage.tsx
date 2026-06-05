@@ -60,25 +60,6 @@ const HomePage = () => {
             <FindBuildingQuickAction />
           </section>
 
-          {/* Mina Tent Locations — quick action */}
-          <section className="animate-fade-up" style={{ animationDelay: "70ms" }}>
-            <MinaTentsQuickAction />
-          </section>
-
-          {/* Return to My Camp — Lost Mode */}
-          <section className="animate-fade-up" style={{ animationDelay: "75ms" }}>
-            <ReturnToCampQuickAction />
-          </section>
-
-          {/* Nusuk / HCOI Card lookup — smart router */}
-          <section className="animate-fade-up" style={{ animationDelay: "78ms" }}>
-            <CardLookupQuickAction />
-          </section>
-
-          {/* Tawaf & Sa'i Counter — quick action */}
-          <section className="animate-fade-up" style={{ animationDelay: "82ms" }}>
-            <TawafCounterQuickAction />
-          </section>
 
 
           {/* Staff-only tools (Inspector / Admin / Coordinator) */}
