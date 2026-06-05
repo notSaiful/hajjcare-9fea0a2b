@@ -8,11 +8,8 @@ import { EmergencyMarqueeBar } from "@/components/EmergencyMarqueeBar";
 import { SubGroupAdvisoryCard } from "@/components/inspector/SubGroupAdvisoryCard";
 import { StaffMenu } from "@/components/dashboard/StaffMenu";
 import { FindBuildingQuickAction } from "@/components/FindBuildingQuickAction";
-import { MinaTentsQuickAction } from "@/components/MinaTentsQuickAction";
-import { ReturnToCampQuickAction } from "@/components/ReturnToCampQuickAction";
-import { CardLookupQuickAction } from "@/components/CardLookupQuickAction";
-import { TawafCounterQuickAction } from "@/components/TawafCounterQuickAction";
 import { StaffAccessHint } from "@/components/dashboard/StaffAccessHint";
+
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAppAnalytics } from "@/hooks/useAppAnalytics";
 
