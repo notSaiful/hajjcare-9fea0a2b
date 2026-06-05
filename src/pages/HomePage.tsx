@@ -7,7 +7,6 @@ import { DashboardMenu } from "@/components/DashboardMenu";
 import { EmergencyMarqueeBar } from "@/components/EmergencyMarqueeBar";
 import { SubGroupAdvisoryCard } from "@/components/inspector/SubGroupAdvisoryCard";
 import { StaffMenu } from "@/components/dashboard/StaffMenu";
-import { FindBuildingQuickAction } from "@/components/FindBuildingQuickAction";
 import { StaffAccessHint } from "@/components/dashboard/StaffAccessHint";
 
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -20,7 +19,6 @@ const WelcomePromoDialog = lazy(() => import("@/components/WelcomePromoDialog").
 const OnboardingTour = lazy(() => import("@/components/OnboardingTour").then(m => ({ default: m.OnboardingTour })));
 const LocationPermissionFlow = lazy(() => import("@/components/LocationPermissionFlow").then(m => ({ default: m.LocationPermissionFlow })));
 const LocationReminderBanner = lazy(() => import("@/components/LocationReminderBanner").then(m => ({ default: m.LocationReminderBanner })));
-const HajjCountdown = lazy(() => import("@/components/HajjCountdown").then(m => ({ default: m.HajjCountdown })));
 
 
 const HomePage = () => {
@@ -48,17 +46,7 @@ const HomePage = () => {
             <SubGroupAdvisoryCard />
           </section>
 
-          {/* Hajj Countdown */}
-          <Suspense fallback={null}>
-            <section className="animate-fade-up" style={{ animationDelay: "40ms" }}>
-              <HajjCountdown />
-            </section>
-          </Suspense>
 
-          {/* Find Makkah Building — prominent quick action */}
-          <section className="animate-fade-up" style={{ animationDelay: "60ms" }}>
-            <FindBuildingQuickAction />
-          </section>
 
 
 
