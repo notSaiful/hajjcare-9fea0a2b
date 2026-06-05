@@ -35,6 +35,7 @@ import {
   Bell,
   Search,
   Tent,
+  Smartphone,
   LucideIcon,
 } from "lucide-react";
 
@@ -166,6 +167,25 @@ export const menuSections: MenuSection[] = [
           pa: "ਟੈਲੀਕਾਮ",
         },
         route: "/telecom",
+        colorClass: "icon-sky",
+      },
+      {
+        id: "saudi-sim",
+        icon: Smartphone,
+        label: {
+          en: "Saudi SIM Update",
+          ar: "تحديث شريحة السعودية",
+          ur: "سعودی سم اپ ڈیٹ",
+          hi: "सऊदी SIM अपडेट",
+          ta: "சவுதி சிம் புதுப்பிப்பு",
+          te: "సౌదీ సిమ్ నవీకరణ",
+          mr: "सौदी सिम अपडेट",
+          bn: "সৌদি সিম আপডেট",
+          or: "ସାଉଦୀ ସିମ ଅପଡେଟ",
+          ml: "സൗദി സിം അപ്ഡേറ്റ്",
+          pa: "ਸਾਊਦੀ ਸਿਮ ਅੱਪਡੇਟ",
+        },
+        route: "/saudi-sim-update",
         colorClass: "icon-sky",
       },
       {
