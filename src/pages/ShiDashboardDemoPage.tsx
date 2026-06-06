@@ -82,6 +82,25 @@ const ShiDashboardDemoPage = () => {
   const [filter, setFilter] = useState<Status | "all">("all");
   const [selected, setSelected] = useState<Pilgrim | null>(null);
   const [broadcastMsg, setBroadcastMsg] = useState("");
+  const [showAdd, setShowAdd] = useState(false);
+  const [newP, setNewP] = useState({ name: "", age: "", gender: "M" as "M" | "F", district: "", location: "", phone: "", id: "" });
+
+  const addPilgrim = () => {
+    if (!newP.name.trim() || !newP.age || !newP.district.trim()) {
+      toast({ title: "Name, age, जिला ज़रूरी है", variant: "destructive" });
+      return;
+    }
+    const id = newP.id.trim() || `IND-2025-${String(4880 + pilgrims.length).padStart(5, "0")}`;
+    const p: Pilgrim = {
+      id, name: newP.name.trim(), age: Number(newP.age) || 0, gender: newP.gender,
+      district: newP.district.trim(), location: newP.location.trim() || "Camp",
+      phone: newP.phone.trim() || "+966 50 000 0000", status: "safe",
+    };
+    setPilgrims(prev => [p, ...prev]);
+    setShowAdd(false);
+    setNewP({ name: "", age: "", gender: "M", district: "", location: "", phone: "", id: "" });
+    toast({ title: "✅ Pilgrim जोड़ दिया", description: `${p.name} (${p.id})` });
+  };
 
   const stats = useMemo(() => ({
     total: pilgrims.length,
