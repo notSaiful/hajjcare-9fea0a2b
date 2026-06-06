@@ -189,6 +189,25 @@ export const menuSections: MenuSection[] = [
         colorClass: "icon-sky",
       },
       {
+        id: "shi-dashboard-demo",
+        icon: ShieldCheck,
+        label: {
+          en: "SHI Dashboard",
+          ar: "لوحة المفتش",
+          ur: "ایس ایچ آئی ڈیش بورڈ",
+          hi: "SHI डैशबोर्ड",
+          ta: "SHI டாஷ்போர்டு",
+          te: "SHI డాష్‌బోర్డ్",
+          mr: "SHI डॅशबोर्ड",
+          bn: "SHI ড্যাশবোর্ড",
+          or: "SHI ଡ୍ୟାସବୋର୍ଡ",
+          ml: "SHI ഡാഷ്ബോർഡ്",
+          pa: "SHI ਡੈਸ਼ਬੋਰਡ",
+        },
+        route: "/shi-dashboard-demo",
+        colorClass: "icon-emerald",
+      },
+      {
         id: "map",
         icon: Map,
         label: {
