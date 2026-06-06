@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
 import {
   Home, Users, Bell, Megaphone, UserCircle, Search, AlertTriangle,
-  Heart, MapPin, Send, CheckCircle2, Phone, Shield, Activity, Info, X
+  Heart, MapPin, Send, CheckCircle2, Phone, Shield, Activity, Info, X, UserPlus
 } from "lucide-react";
 
 type Status = "safe" | "missing" | "medical" | "nusuk";
