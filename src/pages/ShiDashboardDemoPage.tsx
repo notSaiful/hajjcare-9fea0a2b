@@ -303,13 +303,6 @@ const ShiDashboardDemoPage = () => {
                 </Button>
               ))}
             </div>
-              {(["all", "safe", "missing", "medical", "nusuk"] as const).map(f => (
-                <Button key={f} size="sm" variant={filter === f ? "default" : "outline"}
-                  onClick={() => setFilter(f)} className="shrink-0 capitalize">
-                  {f === "all" ? "सभी" : STATUS_META[f].label}
-                </Button>
-              ))}
-            </div>
 
             <div className="space-y-2">
               {filteredPilgrims.map(p => {
