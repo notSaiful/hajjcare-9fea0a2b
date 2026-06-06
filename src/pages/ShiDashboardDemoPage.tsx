@@ -262,8 +262,47 @@ const ShiDashboardDemoPage = () => {
             <div className="flex gap-2 items-center">
               <Search className="h-4 w-4 text-muted-foreground" />
               <Input placeholder="Name / जिला / ID से search…" value={search} onChange={e => setSearch(e.target.value)} />
+              <Button size="sm" onClick={() => setShowAdd(s => !s)} className="shrink-0">
+                <UserPlus className="h-4 w-4 mr-1" /> Add
+              </Button>
             </div>
+
+            {showAdd && (
+              <Card className="border-emerald-300 bg-emerald-50/50">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm flex items-center justify-between">
+                    नया हाजी जोड़ें
+                    <Button size="icon" variant="ghost" onClick={() => setShowAdd(false)}><X className="h-4 w-4" /></Button>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <Input placeholder="नाम *" value={newP.name} onChange={e => setNewP({ ...newP, name: e.target.value })} />
+                  <div className="grid grid-cols-2 gap-2">
+                    <Input type="number" placeholder="Age *" value={newP.age} onChange={e => setNewP({ ...newP, age: e.target.value })} />
+                    <div className="flex gap-1">
+                      <Button size="sm" variant={newP.gender === "M" ? "default" : "outline"} className="flex-1" onClick={() => setNewP({ ...newP, gender: "M" })}>पुरुष</Button>
+                      <Button size="sm" variant={newP.gender === "F" ? "default" : "outline"} className="flex-1" onClick={() => setNewP({ ...newP, gender: "F" })}>महिला</Button>
+                    </div>
+                  </div>
+                  <Input placeholder="जिला *" value={newP.district} onChange={e => setNewP({ ...newP, district: e.target.value })} />
+                  <Input placeholder="Location (e.g. Mina Camp-7)" value={newP.location} onChange={e => setNewP({ ...newP, location: e.target.value })} />
+                  <Input placeholder="Saudi number" value={newP.phone} onChange={e => setNewP({ ...newP, phone: e.target.value })} />
+                  <Input placeholder="Cover ID (optional)" value={newP.id} onChange={e => setNewP({ ...newP, id: e.target.value })} />
+                  <Button className="w-full bg-emerald-600 hover:bg-emerald-700" onClick={addPilgrim}>
+                    <UserPlus className="h-4 w-4 mr-1" /> जोड़ें
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
+
             <div className="flex gap-1.5 overflow-x-auto pb-1">
+              {(["all", "safe", "missing", "medical", "nusuk"] as const).map(f => (
+                <Button key={f} size="sm" variant={filter === f ? "default" : "outline"}
+                  onClick={() => setFilter(f)} className="shrink-0 capitalize">
+                  {f === "all" ? "सभी" : STATUS_META[f].label}
+                </Button>
+              ))}
+            </div>
               {(["all", "safe", "missing", "medical", "nusuk"] as const).map(f => (
                 <Button key={f} size="sm" variant={filter === f ? "default" : "outline"}
                   onClick={() => setFilter(f)} className="shrink-0 capitalize">
