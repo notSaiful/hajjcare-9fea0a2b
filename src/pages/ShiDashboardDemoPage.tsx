@@ -152,7 +152,7 @@ const ShiDashboardDemoPage = () => {
 
   return (
     <div className="min-h-screen bg-background pb-24">
-      <SimpleHeader title="SHI Dashboard" />
+      <SimpleHeader />
 
       <div className="max-w-3xl mx-auto p-3 space-y-3">
         {/* Demo banner */}
