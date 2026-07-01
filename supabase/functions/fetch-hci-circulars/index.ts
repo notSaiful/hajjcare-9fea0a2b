@@ -149,22 +149,25 @@ serve(async (req) => {
       );
     }
 
-    // Get existing circular numbers from database
+    // Dedupe against existing rows by circular_number OR source_url (URLs are stable
+    // even if our numbering scheme changes over time)
     const { data: existingCirculars, error: fetchErr } = await supabase
       .from("hajj_circulars")
-      .select("circular_number")
-      .not("circular_number", "is", null);
+      .select("circular_number, source_url");
 
     if (fetchErr) throw fetchErr;
 
     const existingNumbers = new Set(
-      (existingCirculars || []).map((c: any) => c.circular_number)
+      (existingCirculars || []).map((c: any) => c.circular_number).filter(Boolean)
+    );
+    const existingUrls = new Set(
+      (existingCirculars || []).map((c: any) => c.source_url).filter(Boolean)
     );
 
-    // Filter out circulars that already exist
     const newCirculars = foundCirculars.filter(
-      (c) => !existingNumbers.has(c.circular_number)
+      (c) => !existingNumbers.has(c.circular_number) && !existingUrls.has(c.source_url)
     );
+
 
     console.log(`${newCirculars.length} new circulars to add`);
 
