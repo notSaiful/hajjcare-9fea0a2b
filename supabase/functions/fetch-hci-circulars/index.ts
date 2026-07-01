@@ -186,9 +186,13 @@ serve(async (req) => {
       source_url: c.source_url,
       category: categorizeCircular(c.title),
       priority: detectPriority(c.title),
+      source: "HCI",
+      source_name_display: "Haj Committee of India",
+      auto_scraped: true,
       is_published: true,
       ai_processed: false,
     }));
+
 
     const { error: insertErr } = await supabase
       .from("hajj_circulars")
