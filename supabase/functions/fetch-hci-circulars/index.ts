@@ -56,63 +56,86 @@ serve(async (req) => {
 
     console.log("Fetching Haj Committee of India website...");
 
-    // Fetch the HCI homepage
-    const response = await fetch(HCI_URL, {
-      headers: {
-        "User-Agent": "HajCare-AI/1.0 (Circular Monitor)",
-        "Accept": "text/html",
-      },
-    });
+    // Fetch homepage + Haj-2027 archive page
+    const PAGES = [
+      { url: HCI_URL, year: null as string | null },
+      { url: `${HCI_URL}/circulars-haj-2027/`, year: "2027" },
+    ];
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch HCI website: ${response.status}`);
-    }
-
-    const html = await response.text();
-    console.log("HTML length:", html.length);
-    console.log("HTML first 500 chars:", html.substring(0, 500));
-    
-    // Check if page contains circulars section at all
-    const hasCircularWord = html.includes("Circular");
-    const hasUploadsCirculars = html.includes("/uploads/circulars/");
-    console.log("Contains 'Circular':", hasCircularWord, "Contains '/uploads/circulars/':", hasUploadsCirculars);
-
-    // Debug: find a sample circular anchor
-    const sampleIdx = html.indexOf("Circular-");
-    if (sampleIdx >= 0) {
-      console.log("Sample around Circular-:", html.substring(Math.max(0, sampleIdx - 100), sampleIdx + 200));
-    }
-
-    // Parse circulars from HTML using multiple regex patterns
     const foundCirculars: Array<{
       circular_number: string;
       title: string;
       source_url: string;
     }> = [];
 
-    // Pattern 1: Circular-XX | Title (most common) - handles both relative and absolute URLs
-    const regex1 = /href="((?:https?:\/\/hajcommittee\.gov\.in)?\/uploads\/circulars\/[^"]+)"[^>]*>\s*Circular-(\d+)\s*\|\s*([^<]+)/gi;
-    // Pattern 2: Circular No.XX
-    const regex2 = /href="((?:https?:\/\/hajcommittee\.gov\.in)?\/uploads\/circulars\/[^"]+)"[^>]*>\s*Circular\s*No\.?\s*(\d+)[^<]*?[|\-–]\s*([^<]+)/gi;
+    const pushUnique = (c: { circular_number: string; title: string; source_url: string }) => {
+      if (!foundCirculars.some((x) => x.circular_number === c.circular_number)) {
+        foundCirculars.push(c);
+      }
+    };
 
-    let match;
-    for (const regex of [regex1, regex2]) {
-      while ((match = regex.exec(html)) !== null) {
-        let url = match[1].trim();
-        // Make relative URLs absolute
-        if (url.startsWith("/")) {
-          url = `https://hajcommittee.gov.in${url}`;
-        }
-        const num = match[2].trim();
-        const title = match[3].trim().replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
-        const key = `Circular-${num}`;
-        if (!foundCirculars.some(c => c.circular_number === key)) {
-          foundCirculars.push({ circular_number: key, title, source_url: decodeURIComponent(url) });
-        }
+    const absolutize = (u: string) =>
+      u.startsWith("/") ? `https://hajcommittee.gov.in${u}` : u;
+
+    const detectYear = (s: string, fallback: string | null) => {
+      const m = s.match(/20(2[5-9]|3\d)/);
+      return m ? m[0] : fallback;
+    };
+
+    for (const page of PAGES) {
+      const resp = await fetch(page.url, {
+        headers: {
+          "User-Agent": "HajCare-AI/1.0 (Circular Monitor)",
+          "Accept": "text/html",
+        },
+      });
+      if (!resp.ok) {
+        console.warn(`Skip ${page.url}: ${resp.status}`);
+        continue;
+      }
+      const html = await resp.text();
+      console.log(`Fetched ${page.url} (${html.length} chars)`);
+
+      // Pattern A: Circular-XX | Title
+      const regexA = /href="((?:https?:\/\/hajcommittee\.gov\.in)?\/uploads\/circulars\/[^"]+)"[^>]*>\s*Circular[-\s]*No?\.?\s*(\d+)\s*[|\-–]\s*([^<]+)/gi;
+      let m: RegExpExecArray | null;
+      while ((m = regexA.exec(html)) !== null) {
+        const url = absolutize(decodeURIComponent(m[1].trim()));
+        const num = m[2].trim().padStart(2, "0");
+        const rawTitle = m[3].trim().replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
+        const year = detectYear(rawTitle + " " + url, page.year) ?? "unknown";
+        pushUnique({
+          circular_number: `Circular-${num}-Haj${year}`,
+          title: rawTitle,
+          source_url: url,
+        });
+      }
+
+      // Pattern B: <a href="...pdf" ...><i...></i><span>Title</span></a>  (2027 archive layout)
+      const regexB = /<a[^>]*href="((?:https?:\/\/hajcommittee\.gov\.in)?\/uploads\/circulars\/[^"]+\.pdf)"[^>]*>[\s\S]*?<span>([^<]+)<\/span>\s*<\/a>/gi;
+      while ((m = regexB.exec(html)) !== null) {
+        const url = absolutize(decodeURIComponent(m[1].trim()));
+        const title = m[2].trim().replace(/\s+/g, " ");
+        const year = detectYear(title + " " + url, page.year) ?? "unknown";
+        // Derive stable key from filename (strip numeric prefix + extension)
+        const fname = url.split("/").pop() || title;
+        const slug = fname
+          .replace(/\.pdf$/i, "")
+          .replace(/^\d+/, "")
+          .replace(/[^A-Za-z0-9]+/g, "-")
+          .replace(/^-+|-+$/g, "")
+          .toUpperCase()
+          .slice(0, 60);
+        pushUnique({
+          circular_number: `HAJ${year}-${slug}`,
+          title,
+          source_url: url,
+        });
       }
     }
-    
+
     console.log("Parsed circulars count:", foundCirculars.length);
+
 
 
 
@@ -126,22 +149,25 @@ serve(async (req) => {
       );
     }
 
-    // Get existing circular numbers from database
+    // Dedupe against existing rows by circular_number OR source_url (URLs are stable
+    // even if our numbering scheme changes over time)
     const { data: existingCirculars, error: fetchErr } = await supabase
       .from("hajj_circulars")
-      .select("circular_number")
-      .not("circular_number", "is", null);
+      .select("circular_number, source_url");
 
     if (fetchErr) throw fetchErr;
 
     const existingNumbers = new Set(
-      (existingCirculars || []).map((c: any) => c.circular_number)
+      (existingCirculars || []).map((c: any) => c.circular_number).filter(Boolean)
+    );
+    const existingUrls = new Set(
+      (existingCirculars || []).map((c: any) => c.source_url).filter(Boolean)
     );
 
-    // Filter out circulars that already exist
     const newCirculars = foundCirculars.filter(
-      (c) => !existingNumbers.has(c.circular_number)
+      (c) => !existingNumbers.has(c.circular_number) && !existingUrls.has(c.source_url)
     );
+
 
     console.log(`${newCirculars.length} new circulars to add`);
 
@@ -160,9 +186,13 @@ serve(async (req) => {
       source_url: c.source_url,
       category: categorizeCircular(c.title),
       priority: detectPriority(c.title),
+      source: "HCI",
+      source_name_display: "Haj Committee of India",
+      auto_scraped: true,
       is_published: true,
       ai_processed: false,
     }));
+
 
     const { error: insertErr } = await supabase
       .from("hajj_circulars")
