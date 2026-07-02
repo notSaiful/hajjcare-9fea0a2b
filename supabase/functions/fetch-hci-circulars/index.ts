@@ -173,6 +173,7 @@ serve(async (req) => {
     console.log(`Found ${foundCirculars.length} circulars on HCI website`);
 
     if (foundCirculars.length === 0) {
+      await logRun(true, 0, "No circulars found on page");
       return new Response(
         JSON.stringify({ success: true, message: "No circulars found on page", added: 0 }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
