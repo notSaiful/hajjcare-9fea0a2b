@@ -27,15 +27,18 @@ serve(async (req) => {
       : null;
 
     let authorized = false;
+    let triggeredBy: "cron" | "admin" | "service" | "unknown" = "unknown";
 
     if (cronSecret && providedCronSecret && providedCronSecret === cronSecret) {
       authorized = true;
+      triggeredBy = "cron";
     } else if (providedCronSecret) {
       // Fallback: compare against vault-stored cron secret (set by pg_cron)
       try {
         const { data: vaultSecret } = await supabase.rpc("get_hci_cron_secret");
         if (vaultSecret && providedCronSecret === vaultSecret) {
           authorized = true;
+          triggeredBy = "cron";
         }
       } catch (_e) {
         // ignore, fall through
@@ -44,6 +47,7 @@ serve(async (req) => {
 
     if (!authorized && bearer && bearer === serviceKey) {
       authorized = true;
+      triggeredBy = "service";
     } else if (!authorized && bearer) {
       const { data: { user }, error: authError } = await supabase.auth.getUser(bearer);
       if (!authError && user) {
@@ -53,9 +57,24 @@ serve(async (req) => {
           .eq("user_id", user.id);
         if (roles?.some((r: { role: string }) => r.role === "admin")) {
           authorized = true;
+          triggeredBy = "admin";
         }
       }
     }
+
+    const logRun = async (success: boolean, added: number, message: string) => {
+      try {
+        await supabase.from("circular_fetch_log").insert({
+          source: "HCI",
+          success,
+          added_count: added,
+          message,
+          triggered_by: triggeredBy,
+        });
+      } catch (logErr) {
+        console.error("fetch-log insert failed:", logErr);
+      }
+    };
 
 
     if (!authorized) {
