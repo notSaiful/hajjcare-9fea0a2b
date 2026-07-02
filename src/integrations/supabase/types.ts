@@ -3462,6 +3462,7 @@ export type Database = {
           user_id: string
         }[]
       }
+      get_hci_cron_secret: { Args: never; Returns: string }
       get_public_promo_code: {
         Args: { p_code: string }
         Returns: {
