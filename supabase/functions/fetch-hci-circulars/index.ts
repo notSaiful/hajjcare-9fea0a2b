@@ -30,10 +30,21 @@ serve(async (req) => {
 
     if (cronSecret && providedCronSecret && providedCronSecret === cronSecret) {
       authorized = true;
-    } else if (bearer && bearer === serviceKey) {
-      // Scheduled invocation from pg_cron using the service role key
+    } else if (providedCronSecret) {
+      // Fallback: compare against vault-stored cron secret (set by pg_cron)
+      try {
+        const { data: vaultSecret } = await supabase.rpc("get_hci_cron_secret");
+        if (vaultSecret && providedCronSecret === vaultSecret) {
+          authorized = true;
+        }
+      } catch (_e) {
+        // ignore, fall through
+      }
+    }
+
+    if (!authorized && bearer && bearer === serviceKey) {
       authorized = true;
-    } else if (bearer) {
+    } else if (!authorized && bearer) {
       const { data: { user }, error: authError } = await supabase.auth.getUser(bearer);
       if (!authError && user) {
         const { data: roles } = await supabase
