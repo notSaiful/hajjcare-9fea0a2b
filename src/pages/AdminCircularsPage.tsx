@@ -62,6 +62,45 @@ export default function AdminCircularsPage() {
     },
   });
 
+  const fetchLogQuery = useQuery({
+    queryKey: ["circular-fetch-log"],
+    enabled: isAdmin,
+    refetchInterval: 30_000,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("circular_fetch_log")
+        .select("id, ran_at, success, added_count, message, triggered_by")
+        .order("ran_at", { ascending: false })
+        .limit(5);
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const manualFetchMutation = useMutation({
+    mutationFn: async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/fetch-hci-circulars`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session?.access_token}`,
+        },
+        body: JSON.stringify({ manual: true }),
+      });
+      const json = await resp.json();
+      if (!resp.ok) throw new Error(json.error || "Fetch failed");
+      return json;
+    },
+    onSuccess: (json) => {
+      toast({ title: "Fetch complete", description: json.message });
+      queryClient.invalidateQueries({ queryKey: ["admin-circulars"] });
+      queryClient.invalidateQueries({ queryKey: ["circular-fetch-log"] });
+    },
+    onError: (e: Error) => toast({ title: "Error", description: e.message, variant: "destructive" }),
+  });
+
+
   const createMutation = useMutation({
     mutationFn: async () => {
       const { error } = await supabase.from("hajj_circulars").insert({
