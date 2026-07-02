@@ -218,9 +218,64 @@ export default function AdminCircularsPage() {
     <MainLayout>
       <PageHeader title="Manage Circulars" subtitle="Create, summarize & publish official Hajj/Umrah circulars (HCI + Saudi Govt)" />
       <div className="px-4 pb-24 max-w-2xl mx-auto space-y-4">
+        {(() => {
+          const logs = fetchLogQuery.data || [];
+          const lastSuccess = logs.find((l: any) => l.success);
+          const lastRun = logs[0];
+          return (
+            <Card className="border-primary/30 bg-primary/5">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <RefreshCw className="w-4 h-4" /> HCI Auto-Fetch Status
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2 text-xs">
+                <p className="flex items-center gap-2">
+                  <Clock className="w-3 h-3" />
+                  <span className="font-medium">Schedule:</span> Daily · 06:30 AM IST (01:00 UTC)
+                </p>
+                {lastSuccess ? (
+                  <p className="flex items-center gap-2 text-emerald-700 dark:text-emerald-400">
+                    <CheckCircle2 className="w-3 h-3" />
+                    <span className="font-medium">Last successful fetch:</span>{" "}
+                    {format(new Date(lastSuccess.ran_at), "dd MMM yyyy, HH:mm")} ·{" "}
+                    {formatDistanceToNow(new Date(lastSuccess.ran_at), { addSuffix: true })} ·{" "}
+                    +{lastSuccess.added_count} added ({lastSuccess.triggered_by})
+                  </p>
+                ) : (
+                  <p className="flex items-center gap-2 text-muted-foreground">
+                    <AlertCircle className="w-3 h-3" /> No successful fetch recorded yet.
+                  </p>
+                )}
+                {lastRun && !lastRun.success && (
+                  <p className="flex items-center gap-2 text-destructive">
+                    <AlertCircle className="w-3 h-3" />
+                    <span className="font-medium">Last error:</span> {lastRun.message}
+                  </p>
+                )}
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => manualFetchMutation.mutate()}
+                  disabled={manualFetchMutation.isPending}
+                  className="mt-1"
+                >
+                  {manualFetchMutation.isPending ? (
+                    <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+                  ) : (
+                    <RefreshCw className="w-3 h-3 mr-1" />
+                  )}
+                  Fetch Now
+                </Button>
+              </CardContent>
+            </Card>
+          );
+        })()}
+
         <Button onClick={() => setShowForm(!showForm)} variant={showForm ? "outline" : "default"}>
           <Plus className="w-4 h-4 mr-2" />{showForm ? "Cancel" : "New Circular"}
         </Button>
+
 
         {showForm && (
           <Card>
