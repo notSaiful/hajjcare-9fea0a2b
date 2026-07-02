@@ -303,6 +303,7 @@ Focus on what pilgrims need to know and any deadlines.`,
       }
     }
 
+    await logRun(true, toInsert.length, `Added ${toInsert.length} new circulars`);
     return new Response(
       JSON.stringify({
         success: true,
@@ -314,6 +315,18 @@ Focus on what pilgrims need to know and any deadlines.`,
     );
   } catch (e) {
     console.error("fetch-hci-circulars error:", e);
+    try {
+      const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+      const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+      const sb = createClient(supabaseUrl, serviceKey);
+      await sb.from("circular_fetch_log").insert({
+        source: "HCI",
+        success: false,
+        added_count: 0,
+        message: e instanceof Error ? e.message : "Unknown error",
+        triggered_by: "unknown",
+      });
+    } catch (_) { /* ignore */ }
     return new Response(
       JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
