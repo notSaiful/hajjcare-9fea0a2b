@@ -203,6 +203,7 @@ serve(async (req) => {
     console.log(`${newCirculars.length} new circulars to add`);
 
     if (newCirculars.length === 0) {
+      await logRun(true, 0, "All circulars already exist");
       return new Response(
         JSON.stringify({ success: true, message: "All circulars already exist", added: 0 }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
