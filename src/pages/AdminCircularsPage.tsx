@@ -12,8 +12,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Plus, Sparkles, Eye, EyeOff, Trash2, Pencil, Save, X } from "lucide-react";
-import { format } from "date-fns";
+import { Loader2, Plus, Sparkles, Eye, EyeOff, Trash2, Pencil, Save, X, RefreshCw, Clock, CheckCircle2, AlertCircle } from "lucide-react";
+import { format, formatDistanceToNow } from "date-fns";
 import { ForbiddenError } from "@/components/ForbiddenError";
 import type { Circular } from "@/hooks/useCirculars";
 
