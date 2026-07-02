@@ -27,15 +27,18 @@ serve(async (req) => {
       : null;
 
     let authorized = false;
+    let triggeredBy: "cron" | "admin" | "service" | "unknown" = "unknown";
 
     if (cronSecret && providedCronSecret && providedCronSecret === cronSecret) {
       authorized = true;
+      triggeredBy = "cron";
     } else if (providedCronSecret) {
       // Fallback: compare against vault-stored cron secret (set by pg_cron)
       try {
         const { data: vaultSecret } = await supabase.rpc("get_hci_cron_secret");
         if (vaultSecret && providedCronSecret === vaultSecret) {
           authorized = true;
+          triggeredBy = "cron";
         }
       } catch (_e) {
         // ignore, fall through
@@ -44,6 +47,7 @@ serve(async (req) => {
 
     if (!authorized && bearer && bearer === serviceKey) {
       authorized = true;
+      triggeredBy = "service";
     } else if (!authorized && bearer) {
       const { data: { user }, error: authError } = await supabase.auth.getUser(bearer);
       if (!authError && user) {
@@ -53,9 +57,24 @@ serve(async (req) => {
           .eq("user_id", user.id);
         if (roles?.some((r: { role: string }) => r.role === "admin")) {
           authorized = true;
+          triggeredBy = "admin";
         }
       }
     }
+
+    const logRun = async (success: boolean, added: number, message: string) => {
+      try {
+        await supabase.from("circular_fetch_log").insert({
+          source: "HCI",
+          success,
+          added_count: added,
+          message,
+          triggered_by: triggeredBy,
+        });
+      } catch (logErr) {
+        console.error("fetch-log insert failed:", logErr);
+      }
+    };
 
 
     if (!authorized) {
@@ -154,6 +173,7 @@ serve(async (req) => {
     console.log(`Found ${foundCirculars.length} circulars on HCI website`);
 
     if (foundCirculars.length === 0) {
+      await logRun(true, 0, "No circulars found on page");
       return new Response(
         JSON.stringify({ success: true, message: "No circulars found on page", added: 0 }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -183,6 +203,7 @@ serve(async (req) => {
     console.log(`${newCirculars.length} new circulars to add`);
 
     if (newCirculars.length === 0) {
+      await logRun(true, 0, "All circulars already exist");
       return new Response(
         JSON.stringify({ success: true, message: "All circulars already exist", added: 0 }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -282,6 +303,7 @@ Focus on what pilgrims need to know and any deadlines.`,
       }
     }
 
+    await logRun(true, toInsert.length, `Added ${toInsert.length} new circulars`);
     return new Response(
       JSON.stringify({
         success: true,
@@ -293,6 +315,18 @@ Focus on what pilgrims need to know and any deadlines.`,
     );
   } catch (e) {
     console.error("fetch-hci-circulars error:", e);
+    try {
+      const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+      const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+      const sb = createClient(supabaseUrl, serviceKey);
+      await sb.from("circular_fetch_log").insert({
+        source: "HCI",
+        success: false,
+        added_count: 0,
+        message: e instanceof Error ? e.message : "Unknown error",
+        triggered_by: "unknown",
+      });
+    } catch (_) { /* ignore */ }
     return new Response(
       JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }

@@ -12,8 +12,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Plus, Sparkles, Eye, EyeOff, Trash2, Pencil, Save, X } from "lucide-react";
-import { format } from "date-fns";
+import { Loader2, Plus, Sparkles, Eye, EyeOff, Trash2, Pencil, Save, X, RefreshCw, Clock, CheckCircle2, AlertCircle } from "lucide-react";
+import { format, formatDistanceToNow } from "date-fns";
 import { ForbiddenError } from "@/components/ForbiddenError";
 import type { Circular } from "@/hooks/useCirculars";
 
@@ -61,6 +61,45 @@ export default function AdminCircularsPage() {
       return data as Circular[];
     },
   });
+
+  const fetchLogQuery = useQuery({
+    queryKey: ["circular-fetch-log"],
+    enabled: isAdmin,
+    refetchInterval: 30_000,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("circular_fetch_log")
+        .select("id, ran_at, success, added_count, message, triggered_by")
+        .order("ran_at", { ascending: false })
+        .limit(5);
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const manualFetchMutation = useMutation({
+    mutationFn: async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/fetch-hci-circulars`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session?.access_token}`,
+        },
+        body: JSON.stringify({ manual: true }),
+      });
+      const json = await resp.json();
+      if (!resp.ok) throw new Error(json.error || "Fetch failed");
+      return json;
+    },
+    onSuccess: (json) => {
+      toast({ title: "Fetch complete", description: json.message });
+      queryClient.invalidateQueries({ queryKey: ["admin-circulars"] });
+      queryClient.invalidateQueries({ queryKey: ["circular-fetch-log"] });
+    },
+    onError: (e: Error) => toast({ title: "Error", description: e.message, variant: "destructive" }),
+  });
+
 
   const createMutation = useMutation({
     mutationFn: async () => {
@@ -179,9 +218,64 @@ export default function AdminCircularsPage() {
     <MainLayout>
       <PageHeader title="Manage Circulars" subtitle="Create, summarize & publish official Hajj/Umrah circulars (HCI + Saudi Govt)" />
       <div className="px-4 pb-24 max-w-2xl mx-auto space-y-4">
+        {(() => {
+          const logs = fetchLogQuery.data || [];
+          const lastSuccess = logs.find((l: any) => l.success);
+          const lastRun = logs[0];
+          return (
+            <Card className="border-primary/30 bg-primary/5">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <RefreshCw className="w-4 h-4" /> HCI Auto-Fetch Status
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2 text-xs">
+                <p className="flex items-center gap-2">
+                  <Clock className="w-3 h-3" />
+                  <span className="font-medium">Schedule:</span> Daily · 06:30 AM IST (01:00 UTC)
+                </p>
+                {lastSuccess ? (
+                  <p className="flex items-center gap-2 text-emerald-700 dark:text-emerald-400">
+                    <CheckCircle2 className="w-3 h-3" />
+                    <span className="font-medium">Last successful fetch:</span>{" "}
+                    {format(new Date(lastSuccess.ran_at), "dd MMM yyyy, HH:mm")} ·{" "}
+                    {formatDistanceToNow(new Date(lastSuccess.ran_at), { addSuffix: true })} ·{" "}
+                    +{lastSuccess.added_count} added ({lastSuccess.triggered_by})
+                  </p>
+                ) : (
+                  <p className="flex items-center gap-2 text-muted-foreground">
+                    <AlertCircle className="w-3 h-3" /> No successful fetch recorded yet.
+                  </p>
+                )}
+                {lastRun && !lastRun.success && (
+                  <p className="flex items-center gap-2 text-destructive">
+                    <AlertCircle className="w-3 h-3" />
+                    <span className="font-medium">Last error:</span> {lastRun.message}
+                  </p>
+                )}
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => manualFetchMutation.mutate()}
+                  disabled={manualFetchMutation.isPending}
+                  className="mt-1"
+                >
+                  {manualFetchMutation.isPending ? (
+                    <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+                  ) : (
+                    <RefreshCw className="w-3 h-3 mr-1" />
+                  )}
+                  Fetch Now
+                </Button>
+              </CardContent>
+            </Card>
+          );
+        })()}
+
         <Button onClick={() => setShowForm(!showForm)} variant={showForm ? "outline" : "default"}>
           <Plus className="w-4 h-4 mr-2" />{showForm ? "Cancel" : "New Circular"}
         </Button>
+
 
         {showForm && (
           <Card>

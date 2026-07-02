@@ -494,6 +494,39 @@ export type Database = {
         }
         Relationships: []
       }
+      circular_fetch_log: {
+        Row: {
+          added_count: number
+          created_at: string
+          id: string
+          message: string | null
+          ran_at: string
+          source: string
+          success: boolean
+          triggered_by: string
+        }
+        Insert: {
+          added_count?: number
+          created_at?: string
+          id?: string
+          message?: string | null
+          ran_at?: string
+          source?: string
+          success?: boolean
+          triggered_by?: string
+        }
+        Update: {
+          added_count?: number
+          created_at?: string
+          id?: string
+          message?: string | null
+          ran_at?: string
+          source?: string
+          success?: boolean
+          triggered_by?: string
+        }
+        Relationships: []
+      }
       circular_reads: {
         Row: {
           circular_id: string
@@ -3462,6 +3495,7 @@ export type Database = {
           user_id: string
         }[]
       }
+      get_hci_cron_secret: { Args: never; Returns: string }
       get_public_promo_code: {
         Args: { p_code: string }
         Returns: {
