@@ -139,6 +139,7 @@ const MinaMaktabDetailPage = lazy(() => import("./pages/MinaMaktabDetailPage"));
 const ReturnToCampPage = lazy(() => import("./pages/ReturnToCampPage"));
 const SaudiSimUpdatePage = lazy(() => import("./pages/SaudiSimUpdatePage"));
 const ShiDashboardDemoPage = lazy(() => import("./pages/ShiDashboardDemoPage"));
+const HajjTrainingVideosPage = lazy(() => import("./pages/HajjTrainingVideosPage"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
