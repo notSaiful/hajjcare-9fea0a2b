@@ -139,6 +139,7 @@ const MinaMaktabDetailPage = lazy(() => import("./pages/MinaMaktabDetailPage"));
 const ReturnToCampPage = lazy(() => import("./pages/ReturnToCampPage"));
 const SaudiSimUpdatePage = lazy(() => import("./pages/SaudiSimUpdatePage"));
 const ShiDashboardDemoPage = lazy(() => import("./pages/ShiDashboardDemoPage"));
+const HajjTrainingVideosPage = lazy(() => import("./pages/HajjTrainingVideosPage"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -207,6 +208,7 @@ function AppContent() {
       <Route path="/telecom" element={<TelecomGuidePage />} />
       <Route path="/saudi-sim-update" element={<SaudiSimUpdatePage />} />
       <Route path="/shi-dashboard-demo" element={<ShiDashboardDemoPage />} />
+      <Route path="/hajj-training-videos" element={<HajjTrainingVideosPage />} />
       <Route path="/grievances" element={<GrievancesPage />} />
       <Route path="/contacts" element={<ContactNumbersPage />} />
       <Route path="/haj-directory" element={<HajMissionDirectoryPage />} />

@@ -189,6 +189,25 @@ export const menuSections: MenuSection[] = [
         colorClass: "icon-sky",
       },
       {
+        id: "hajj-training-videos",
+        icon: Video,
+        label: {
+          en: "Video Training",
+          ar: "تدريب بالفيديو",
+          ur: "ویڈیو تربیت",
+          hi: "वीडियो प्रशिक्षण",
+          ta: "வீடியோ பயிற்சி",
+          te: "వీడియో శిక్షణ",
+          mr: "व्हिडिओ प्रशिक्षण",
+          bn: "ভিডিও প্রশিক্ষণ",
+          or: "ଭିଡିଓ ତାଲିମ",
+          ml: "വീഡിയോ പരിശീലനം",
+          pa: "ਵੀਡੀਓ ਸਿਖਲਾਈ",
+        },
+        route: "/hajj-training-videos",
+        colorClass: "icon-emerald",
+      },
+      {
         id: "shi-dashboard-demo",
         icon: ShieldCheck,
         label: {
