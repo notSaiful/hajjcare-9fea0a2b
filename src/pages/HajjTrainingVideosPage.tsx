@@ -23,7 +23,6 @@ import {
   Moon,
   Target,
   Sword,
-  Scissors,
   BookOpen,
   Sparkles,
   GraduationCap,
@@ -35,7 +34,6 @@ import {
   Flame,
   Trophy,
   HelpCircle,
-  X,
   RotateCcw,
 } from "lucide-react";
 
