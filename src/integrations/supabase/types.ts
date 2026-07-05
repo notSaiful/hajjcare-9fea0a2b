@@ -3233,6 +3233,47 @@ export type Database = {
         }
         Relationships: []
       }
+      lost_found_claims_safe: {
+        Row: {
+          claim_description: string | null
+          claimant_mobile: string | null
+          claimant_name: string | null
+          claimant_user_id: string | null
+          claimant_whatsapp: string | null
+          created_at: string | null
+          id: string | null
+          owner_response_note: string | null
+          owner_user_id: string | null
+          proof_photo_url: string | null
+          report_id: string | null
+          report_item_name: string | null
+          report_last_seen_location: string | null
+          report_person_name: string | null
+          report_photo_url: string | null
+          report_post_kind: string | null
+          report_reporter_mobile: string | null
+          report_reporter_whatsapp: string | null
+          responded_at: string | null
+          status: Database["public"]["Enums"]["claim_status"] | null
+          updated_at: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lost_found_claims_report_id_fkey"
+            columns: ["report_id"]
+            isOneToOne: false
+            referencedRelation: "lost_and_found"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lost_found_claims_report_id_fkey"
+            columns: ["report_id"]
+            isOneToOne: false
+            referencedRelation: "lost_and_found_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles_limited: {
         Row: {
           created_at: string | null
