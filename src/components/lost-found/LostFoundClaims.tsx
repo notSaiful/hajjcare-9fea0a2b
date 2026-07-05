@@ -209,23 +209,36 @@ export const ClaimsPanel = () => {
   const [loading, setLoading] = useState(false);
   const [respondNote, setRespondNote] = useState<Record<string, string>>({});
 
-  const reportSelect = "report:lost_and_found!inner(item_name,person_name,photo_url,last_seen_location,post_kind,reporter_whatsapp,reporter_mobile)";
-
+  // Read from the masked safe view. Claimant contact is null until the owner
+  // approves the claim; reporter contact is null for the claimant until approval.
   const fetchAll = useCallback(async () => {
     if (!user?.id) return;
     setLoading(true);
     const [{ data: mine }, { data: inc }] = await Promise.all([
-      supabase.from("lost_found_claims")
-        .select(`*, ${reportSelect}`)
+      supabase.from("lost_found_claims_safe" as never)
+        .select("*")
         .eq("claimant_user_id", user.id)
         .order("created_at", { ascending: false }),
-      supabase.from("lost_found_claims")
-        .select(`*, ${reportSelect}`)
+      supabase.from("lost_found_claims_safe" as never)
+        .select("*")
         .eq("owner_user_id", user.id)
         .order("created_at", { ascending: false }),
     ]);
-    setMyClaims((mine ?? []) as any);
-    setIncoming((inc ?? []) as any);
+    const shape = (rows: any[] | null | undefined): Claim[] =>
+      (rows ?? []).map((r) => ({
+        ...r,
+        report: {
+          item_name: r.report_item_name ?? null,
+          person_name: r.report_person_name ?? null,
+          photo_url: r.report_photo_url ?? null,
+          last_seen_location: r.report_last_seen_location ?? "",
+          post_kind: r.report_post_kind ?? null,
+          reporter_mobile: r.report_reporter_mobile ?? null,
+          reporter_whatsapp: r.report_reporter_whatsapp ?? null,
+        },
+      }));
+    setMyClaims(shape(mine as any));
+    setIncoming(shape(inc as any));
     setLoading(false);
   }, [user?.id]);
 
