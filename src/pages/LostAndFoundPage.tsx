@@ -282,7 +282,8 @@ const LostAndFoundPage = () => {
 
   useEffect(() => {
     fetchReports();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAdmin]);
 
   const handleMarkStatus = async (reportId: string, newStatus: "open" | "found") => {
     if (newStatus === "found" && !confirm(t.get("foundConfirm"))) return;
