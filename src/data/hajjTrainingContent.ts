@@ -19,31 +19,14 @@ export interface QuizQuestion {
 }
 
 // ─────────────────────────────────────────────
-// Helper: fill non-hi/ur/en with English fallback in quiz
+// All 6 languages required — no English fallback.
 const q = (
-  en: string,
-  hi: string,
-  ur: string,
-  optionsEn: string[],
-  optionsHi: string[],
-  optionsUr: string[],
+  question: Record<TrainingLang, string>,
+  options: Record<TrainingLang, string[]>,
   correctIndex: number,
-  explainEn: string,
-  explainHi: string,
-  explainUr: string,
-): QuizQuestion => ({
-  q: { en, hi, ur, bn: en, ta: en, ml: en },
-  options: {
-    en: optionsEn,
-    hi: optionsHi,
-    ur: optionsUr,
-    bn: optionsEn,
-    ta: optionsEn,
-    ml: optionsEn,
-  },
-  correctIndex,
-  explain: { en: explainEn, hi: explainHi, ur: explainUr, bn: explainEn, ta: explainEn, ml: explainEn },
-});
+  explain: Record<TrainingLang, string>,
+): QuizQuestion => ({ q: question, options, correctIndex, explain });
+
 
 export const topicSummaries: Record<string, TopicSummary> = {
   intro: {
