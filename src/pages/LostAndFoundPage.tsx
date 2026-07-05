@@ -260,10 +260,11 @@ const LostAndFoundPage = () => {
 
   const fetchReports = async () => {
     setLoading(true);
-    // Authenticated users get full contact details from the base table.
-    // Anonymous users get a public-safe view (no phone/whatsapp) to protect reporter privacy.
-    const { data: { session } } = await supabase.auth.getSession();
-    const query = session
+    // Only admins can read reporter contact details in bulk from the base table.
+    // Everyone else (including coordinators and non-owner authenticated users)
+    // uses the contact-free public view to protect reporter privacy. Non-admin
+    // users who need to reach a reporter must go through the claim workflow.
+    const query = isAdmin
       ? supabase.from("lost_and_found").select("*")
       : supabase.from("lost_and_found_public").select("*");
 
@@ -281,7 +282,8 @@ const LostAndFoundPage = () => {
 
   useEffect(() => {
     fetchReports();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAdmin]);
 
   const handleMarkStatus = async (reportId: string, newStatus: "open" | "found") => {
     if (newStatus === "found" && !confirm(t.get("foundConfirm"))) return;
