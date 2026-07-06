@@ -42,6 +42,9 @@ const HomePage = () => {
           {/* Hero Section */}
           <HeroSection />
 
+          {/* What's new since July 1 — links to full changelog */}
+          <WhatsNewBanner />
+
           {/* SHI Desk, Madinah — Official Advisory (with acknowledgment progress) */}
           <section className="animate-fade-up" style={{ animationDelay: "20ms" }}>
             <SubGroupAdvisoryCard />
