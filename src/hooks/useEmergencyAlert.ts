@@ -15,7 +15,7 @@ export function useEmergencyAlert(options: UseEmergencyAlertOptions = {}) {
   const audioContextRef = useRef<AudioContext | null>(null);
   const oscillatorRef = useRef<OscillatorNode | null>(null);
   const gainNodeRef = useRef<GainNode | null>(null);
-  const vibrationIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const vibrationIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Create ambulance-like siren sound
   const createSirenSound = useCallback(() => {
