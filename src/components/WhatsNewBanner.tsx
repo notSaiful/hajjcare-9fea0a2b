@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Sparkles, ArrowRight } from "lucide-react";
-import { useLanguage } from "/contexts/LanguageContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export const WhatsNewBanner = () => {
   const { t, isRTL } = useLanguage();
