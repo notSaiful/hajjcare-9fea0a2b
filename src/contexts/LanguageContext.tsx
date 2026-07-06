@@ -76,7 +76,9 @@ type TranslationKey =
   | "preparationProgress"
   | "stepComplete"
   | "stepPending"
-  | "locationStaleWarning";
+  | "locationStaleWarning"
+  | "whatsNewSinceJuly1"
+  | "seeFullChangelog";
 
 // Helper type for partial translations in data files - allows missing languages with fallback to English
 export type LocalizedString = { en: string } & Partial<Record<Exclude<Language, 'en'>, string>>;
@@ -147,6 +149,8 @@ const translations: Partial<Record<Language, Record<TranslationKey, string>>> = 
     stepComplete: "Complete",
     stepPending: "Pending",
     locationStaleWarning: "Location not updated — showing last known position",
+    whatsNewSinceJuly1: "What's new since July 1",
+    seeFullChangelog: "See full changelog",
   },
   ar: {
     hajjGuide: "دليل الحج",
@@ -208,6 +212,8 @@ const translations: Partial<Record<Language, Record<TranslationKey, string>>> = 
     stepComplete: "مكتمل",
     stepPending: "قيد الانتظار",
     locationStaleWarning: "الموقع لم يُحدَّث — يُعرض آخر موقع معروف",
+    whatsNewSinceJuly1: "ما الجديد منذ ١ يوليو",
+    seeFullChangelog: "اطلع على سجل التغييرات الكامل",
   },
   ur: {
     hajjGuide: "حج گائیڈ",
@@ -269,6 +275,8 @@ const translations: Partial<Record<Language, Record<TranslationKey, string>>> = 
     stepComplete: "مکمل",
     stepPending: "زیر التواء",
     locationStaleWarning: "Location update نہیں ہوئی — پچھلی location دکھائی جا رہی ہے",
+    whatsNewSinceJuly1: "۱ جولائی کے بعد کیا نیا ہے",
+    seeFullChangelog: "مکمل changelog دیکھیں",
   },
   hi: {
     hajjGuide: "हज गाइड",
@@ -330,6 +338,8 @@ const translations: Partial<Record<Language, Record<TranslationKey, string>>> = 
     stepComplete: "पूर्ण",
     stepPending: "लंबित",
     locationStaleWarning: "Location update नहीं हुई — पिछली location दिखाई जा रही है",
+    whatsNewSinceJuly1: "1 जुलाई के बाद क्या नया है",
+    seeFullChangelog: "पूर्ण changelog देखें",
   },
   ta: {
     hajjGuide: "ஹஜ் வழிகாட்டி",
@@ -391,6 +401,8 @@ const translations: Partial<Record<Language, Record<TranslationKey, string>>> = 
     stepComplete: "முடிந்தது",
     stepPending: "நிலுவையில்",
     locationStaleWarning: "இடம் புதுப்பிக்கப்படவில்லை — கடைசியாக அறியப்பட்ட இடம் காட்டப்படுகிறது",
+    whatsNewSinceJuly1: "ஜூலை 1 முதல் புதியது என்ன",
+    seeFullChangelog: "முழு மாற்றப் பதிவையும் காண்க",
   },
   te: {
     hajjGuide: "హజ్ గైడ్",
@@ -452,6 +464,8 @@ const translations: Partial<Record<Language, Record<TranslationKey, string>>> = 
     stepComplete: "పూర్తయింది",
     stepPending: "పెండింగ్‌లో ఉంది",
     locationStaleWarning: "స్థానం అప్‌డేట్ కాలేదు — చివరిగా తెలిసిన స్థానం చూపబడుతోంది",
+    whatsNewSinceJuly1: "జులై 1 నుండి కొత్తవి ఏమిటి",
+    seeFullChangelog: "పూర్తి changelog చూడండి",
   },
   mr: {
     hajjGuide: "हज मार्गदर्शक",
@@ -513,6 +527,8 @@ const translations: Partial<Record<Language, Record<TranslationKey, string>>> = 
     stepComplete: "पूर्ण",
     stepPending: "प्रलंबित",
     locationStaleWarning: "स्थान अपडेट झाले नाही — शेवटचे ठाऊक स्थान दाखवत आहे",
+    whatsNewSinceJuly1: "१ जुलै पासून काय नवीन आहे",
+    seeFullChangelog: "संपूर्ण changelog पहा",
   },
   bn: {
     hajjGuide: "হজ গাইড",
@@ -574,6 +590,8 @@ const translations: Partial<Record<Language, Record<TranslationKey, string>>> = 
     stepComplete: "সম্পূর্ণ",
     stepPending: "বাকি আছে",
     locationStaleWarning: "অবস্থান আপডেট হয়নি — শেষ পরিচিত অবস্থান দেখানো হচ্ছে",
+    whatsNewSinceJuly1: "১ জুলাই থেকে নতুন কী",
+    seeFullChangelog: "সম্পূর্ণ changelog দেখুন",
   },
   or: {
     hajjGuide: "ହଜ୍ଜ ଗାଇଡ୍",
@@ -635,6 +653,8 @@ const translations: Partial<Record<Language, Record<TranslationKey, string>>> = 
     stepComplete: "ସମ୍ପୂର୍ଣ୍ଣ",
     stepPending: "ବାକି ଅଛି",
     locationStaleWarning: "ସ୍ଥାନ ଅପଡେଟ୍ ହେଲା ନାହିଁ — ଶେଷ ଜଣାଥିବା ସ୍ଥାନ ଦେଖାଯାଉଛି",
+    whatsNewSinceJuly1: "ଜୁଲାଇ 1 ରୁ କଣ ନୂଆ",
+    seeFullChangelog: "ସମ୍ପୂର୍ଣ୍ଣ changelog ଦେଖନ୍ତୁ",
   },
   ml: {
     hajjGuide: "ഹജ്ജ് ഗൈഡ്",
@@ -696,6 +716,8 @@ const translations: Partial<Record<Language, Record<TranslationKey, string>>> = 
     stepComplete: "പൂർത്തിയായി",
     stepPending: "ബാക്കിയുണ്ട്",
     locationStaleWarning: "സ്ഥാനം അപ്‌ഡേറ്റ് ചെയ്തില്ല — അറിയാവുന്ന അവസാന സ്ഥാനം കാണിക്കുന്നു",
+    whatsNewSinceJuly1: "ജൂലൈ 1 മുതൽ പുതിയത് എന്ത്",
+    seeFullChangelog: "പൂർണ്ണ changelog കാണുക",
   },
   pa: {
     hajjGuide: "ਹੱਜ ਗਾਈਡ",
@@ -757,6 +779,8 @@ const translations: Partial<Record<Language, Record<TranslationKey, string>>> = 
     stepComplete: "ਪੂਰਾ",
     stepPending: "ਬਾਕੀ",
     locationStaleWarning: "ਥਾਂ ਅਪਡੇਟ ਨਹੀਂ ਹੋਈ — ਆਖਰੀ ਜਾਣੀ ਪਛਾਣੀ ਥਾਂ ਵਿਖਾਈ ਜਾ ਰਹੀ ਹੈ",
+    whatsNewSinceJuly1: "1 ਜੁਲਾਈ ਤੋਂ ਬਾਅਦ ਕੀ ਨਵਾਂ ਹੈ",
+    seeFullChangelog: "ਪੂਰਾ changelog ਵੇਖੋ",
   },
 };
 
