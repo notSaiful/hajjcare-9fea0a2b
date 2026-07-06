@@ -149,6 +149,8 @@ const translations: Partial<Record<Language, Record<TranslationKey, string>>> = 
     stepComplete: "Complete",
     stepPending: "Pending",
     locationStaleWarning: "Location not updated — showing last known position",
+    whatsNewSinceJuly1: "What's new since July 1",
+    seeFullChangelog: "See full changelog",
   },
   ar: {
     hajjGuide: "دليل الحج",
@@ -210,6 +212,8 @@ const translations: Partial<Record<Language, Record<TranslationKey, string>>> = 
     stepComplete: "مكتمل",
     stepPending: "قيد الانتظار",
     locationStaleWarning: "الموقع لم يُحدَّث — يُعرض آخر موقع معروف",
+    whatsNewSinceJuly1: "ما الجديد منذ ١ يوليو",
+    seeFullChangelog: "اطلع على سجل التغييرات الكامل",
   },
   ur: {
     hajjGuide: "حج گائیڈ",
@@ -271,6 +275,8 @@ const translations: Partial<Record<Language, Record<TranslationKey, string>>> = 
     stepComplete: "مکمل",
     stepPending: "زیر التواء",
     locationStaleWarning: "Location update نہیں ہوئی — پچھلی location دکھائی جا رہی ہے",
+    whatsNewSinceJuly1: "۱ جولائی کے بعد کیا نیا ہے",
+    seeFullChangelog: "مکمل changelog دیکھیں",
   },
   hi: {
     hajjGuide: "हज गाइड",
@@ -332,6 +338,8 @@ const translations: Partial<Record<Language, Record<TranslationKey, string>>> = 
     stepComplete: "पूर्ण",
     stepPending: "लंबित",
     locationStaleWarning: "Location update नहीं हुई — पिछली location दिखाई जा रही है",
+    whatsNewSinceJuly1: "1 जुलाई के बाद क्या नया है",
+    seeFullChangelog: "पूर्ण changelog देखें",
   },
   ta: {
     hajjGuide: "ஹஜ் வழிகாட்டி",
@@ -393,6 +401,8 @@ const translations: Partial<Record<Language, Record<TranslationKey, string>>> = 
     stepComplete: "முடிந்தது",
     stepPending: "நிலுவையில்",
     locationStaleWarning: "இடம் புதுப்பிக்கப்படவில்லை — கடைசியாக அறியப்பட்ட இடம் காட்டப்படுகிறது",
+    whatsNewSinceJuly1: "ஜூலை 1 முதல் புதியது என்ன",
+    seeFullChangelog: "முழு மாற்றப் பதிவையும் காண்க",
   },
   te: {
     hajjGuide: "హజ్ గైడ్",
@@ -454,6 +464,8 @@ const translations: Partial<Record<Language, Record<TranslationKey, string>>> = 
     stepComplete: "పూర్తయింది",
     stepPending: "పెండింగ్‌లో ఉంది",
     locationStaleWarning: "స్థానం అప్‌డేట్ కాలేదు — చివరిగా తెలిసిన స్థానం చూపబడుతోంది",
+    whatsNewSinceJuly1: "జులై 1 నుండి కొత్తవి ఏమిటి",
+    seeFullChangelog: "పూర్తి changelog చూడండి",
   },
   mr: {
     hajjGuide: "हज मार्गदर्शक",
