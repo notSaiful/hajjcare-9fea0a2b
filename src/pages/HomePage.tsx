@@ -3,6 +3,7 @@ import { SEO } from "@/components/SEO";
 
 import { SimpleHeader } from "@/components/SimpleHeader";
 import { HeroSection } from "@/components/HeroSection";
+import { WhatsNewBanner } from "@/components/WhatsNewBanner";
 import { DashboardMenu } from "@/components/DashboardMenu";
 import { EmergencyMarqueeBar } from "@/components/EmergencyMarqueeBar";
 import { SubGroupAdvisoryCard } from "@/components/inspector/SubGroupAdvisoryCard";
