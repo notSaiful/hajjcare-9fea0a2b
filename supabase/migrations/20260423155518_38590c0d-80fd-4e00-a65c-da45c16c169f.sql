@@ -85,16 +85,24 @@ $$;
 GRANT EXECUTE ON FUNCTION public.get_app_analytics_summary() TO anon, authenticated;
 
 -- 5. Realtime messages: enable RLS and restrict topic subscriptions
--- Enable RLS on realtime.messages (no-op if already enabled)
-ALTER TABLE IF EXISTS realtime.messages ENABLE ROW LEVEL SECURITY;
-
--- Allow only authenticated users to subscribe; default-deny for anon
-DROP POLICY IF EXISTS "Authenticated users can receive realtime broadcasts" ON realtime.messages;
-CREATE POLICY "Authenticated users can receive realtime broadcasts"
-ON realtime.messages
-FOR SELECT
-TO authenticated
-USING (true);
+-- NOTE: realtime.messages is a Supabase-managed table (owned by supabase_realtime_admin).
+-- The migration user is not its owner, so these statements fail on managed Supabase.
+-- Guarded: skipped if insufficient privilege / table absent. Realtime access control is
+-- primarily governed by publications + RLS on the source tables, so this is optional hardening.
+DO $$
+BEGIN
+  ALTER TABLE IF EXISTS realtime.messages ENABLE ROW LEVEL SECURITY;
+  DROP POLICY IF EXISTS "Authenticated users can receive realtime broadcasts" ON realtime.messages;
+  CREATE POLICY "Authenticated users can receive realtime broadcasts"
+  ON realtime.messages
+  FOR SELECT
+  TO authenticated
+  USING (true);
+EXCEPTION
+  WHEN insufficient_privilege OR object_not_in_prerequisite_state OR undefined_table THEN
+    RAISE NOTICE 'Skipping realtime.messages RLS hardening (not owner / absent)';
+END
+$$;
 
 -- 6. Storage: restrict listing of lost-found-photos bucket
 -- Keep individual photo URLs accessible (they're shared publicly via known URL),

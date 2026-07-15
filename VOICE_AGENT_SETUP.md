@@ -150,7 +150,7 @@ Notes:
 The secrets are already in **`creds/.env`** (gitignored). Set them on Supabase and deploy:
 
 ```bash
-# from project root — requires `supabase login` + `supabase link --project-ref qovcctfoxgvowedjioil`
+# from project root — requires `supabase login` + `supabase link --project-ref vvbbwlfzpfvgyweeggvw`
 # 1. Set secrets (values already in creds/.env):
 supabase secrets set --env-file creds/.env
 #   (or set each in Dashboard → Project Settings → Edge Functions → Secrets)
@@ -165,11 +165,11 @@ supabase functions deploy rumik-tts
 If you deploy via the Supabase Dashboard instead, upload each folder under
 `supabase/functions/<name>/` and add the secrets in Project Settings.
 
-Deployed function URLs (project ref `qovcctfoxgvowedjioil`):
-- `https://qovcctfoxgvowedjioil.supabase.co/functions/v1/voice-tts`
-- `https://qovcctfoxgvowedjioil.supabase.co/functions/v1/vapi-tool-calls`
-- `https://qovcctfoxgvowedjioil.supabase.co/functions/v1/vapi-config`
-- `https://qovcctfoxgvowedjioil.supabase.co/functions/v1/rumik-tts`
+Deployed function URLs (project ref `vvbbwlfzpfvgyweeggvw`):
+- `https://vvbbwlfzpfvgyweeggvw.supabase.co/functions/v1/voice-tts`
+- `https://vvbbwlfzpfvgyweeggvw.supabase.co/functions/v1/vapi-tool-calls`
+- `https://vvbbwlfzpfvgyweeggvw.supabase.co/functions/v1/vapi-config`
+- `https://vvbbwlfzpfvgyweeggvw.supabase.co/functions/v1/rumik-tts`
 
 The VAPI assistant (`881e1562-…`) is already configured to call `voice-tts` and
 `vapi-tool-calls` at these URLs, so once deployed it works without any VAPI-side change.

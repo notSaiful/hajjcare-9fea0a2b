@@ -37,6 +37,25 @@ USING (auth.uid() = user_id);
 -- Views inherit RLS from the base table, but we use security_invoker for explicit control
 ALTER VIEW public.profiles_limited SET (security_invoker = on);
 
+-- Step 4b: Define shares_group_with here (it is (re)declared in a later migration,
+-- but get_group_member_profile below depends on it, so create it first).
+CREATE OR REPLACE FUNCTION public.shares_group_with(target_user_id uuid)
+RETURNS boolean
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = 'public', 'pg_catalog', 'pg_temp'
+AS $$
+  SELECT EXISTS (
+    SELECT 1
+    FROM public.group_members gm1
+    JOIN public.group_members gm2 ON gm1.group_id = gm2.group_id
+    WHERE gm1.user_id = auth.uid()
+      AND gm2.user_id = target_user_id
+      AND gm1.user_id != gm2.user_id
+  )
+$$;
+
 -- Step 5: Create a secure function to get limited profile data for group members
 -- This is safer than a view as it explicitly controls returned fields
 CREATE OR REPLACE FUNCTION public.get_group_member_profile(target_user_id uuid)
