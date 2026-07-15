@@ -1,5 +1,5 @@
 // Renders PDF pages and image files into compact JPEG data URLs suitable
-// for sending to the inspector-ocr edge function (Lovable AI vision).
+// for sending to the inspector-ocr edge function (LLM vision).
 
 import * as pdfjsLib from "pdfjs-dist";
 // @ts-ignore - vite handles ?url

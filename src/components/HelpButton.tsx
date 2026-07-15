@@ -1,49 +1,31 @@
-import { useState, useCallback } from "react";
-import { useConversation } from "@elevenlabs/react";
+import { useCallback } from "react";
+import { useVapiCall } from "@/hooks/useVapiCall";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Mic, MicOff, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
-const FUNCTION_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/elevenlabs-agent-token`;
+// VAPI voice agent — STT (Deepgram) + LLM (GPT-4o) + barge-in by VAPI; the
+// assistant speaks in Rumik `muga` via the custom-voice TTS proxy edge function.
+// Replaces the previous ElevenLabs useConversation integration.
+
+const FUNCTION_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/vapi-config`;
 
 export const HelpButton = () => {
   const { t, isRTL } = useLanguage();
   const { toast } = useToast();
-  const [isConnecting, setIsConnecting] = useState(false);
-
-  const conversation = useConversation({
-    onConnect: () => {
-      toast({
-        title: t("helpConnected"),
-        description: t("helpSpeakNow"),
-      });
-    },
-    onDisconnect: () => {},
-    onError: (error) => {
-      console.error("Help error:", error);
-      toast({
-        title: t("helpError"),
-        description: t("helpTryAgain"),
-        variant: "destructive",
-      });
-    },
-  });
+  const { status, startCall, endCall } = useVapiCall();
 
   const startHelp = useCallback(async () => {
-    setIsConnecting(true);
     try {
-      // Get user session for authentication
       const { data: { session } } = await supabase.auth.getSession();
-      
       if (!session?.access_token) {
         toast({
           title: t("helpError"),
           description: "Please sign in to use voice help",
           variant: "destructive",
         });
-        setIsConnecting(false);
         return;
       }
 
@@ -56,13 +38,11 @@ export const HelpButton = () => {
           Authorization: `Bearer ${session.access_token}`,
         },
       });
-
       if (!response.ok) throw new Error("Failed to connect");
+      const { publicKey, assistantId } = await response.json();
+      if (!publicKey || !assistantId) throw new Error("Connection failed");
 
-      const data = await response.json();
-      if (!data.signed_url) throw new Error("Connection failed");
-
-      await conversation.startSession({ signedUrl: data.signed_url });
+      startCall(publicKey, assistantId);
     } catch (error) {
       console.error("Help connection failed:", error);
       toast({
@@ -70,16 +50,15 @@ export const HelpButton = () => {
         description: t("helpTryAgain"),
         variant: "destructive",
       });
-    } finally {
-      setIsConnecting(false);
     }
-  }, [conversation, t, toast]);
+  }, [t, toast, startCall]);
 
-  const stopHelp = useCallback(async () => {
-    await conversation.endSession();
-  }, [conversation]);
+  const stopHelp = useCallback(() => {
+    endCall();
+  }, [endCall]);
 
-  const isConnected = conversation.status === "connected";
+  const isConnecting = status === "connecting";
+  const isConnected = status === "active";
 
   return (
     <Button
@@ -89,19 +68,20 @@ export const HelpButton = () => {
       variant={isConnected ? "secondary" : "default"}
       className={`
         relative overflow-hidden
-        w-full h-14 sm:h-16 rounded-2xl 
+        w-full h-14 sm:h-16 rounded-2xl
         text-base sm:text-lg font-semibold
         flex items-center justify-center gap-3
         transition-all duration-300 ease-out
-        ${isConnected 
-          ? "bg-secondary hover:bg-secondary/90 text-secondary-foreground" 
+        ${isConnected
+          ? "bg-secondary hover:bg-secondary/90 text-secondary-foreground"
           : "bg-primary hover:bg-primary/90 text-primary-foreground"
         }
       `}
+      dir={isRTL ? "rtl" : "ltr"}
     >
       {/* Icon container */}
       <div className={`
-        w-10 h-10 sm:w-11 sm:h-11 rounded-xl 
+        w-10 h-10 sm:w-11 sm:h-11 rounded-xl
         flex items-center justify-center
         ${isConnected ? "bg-secondary-foreground/10" : "bg-primary-foreground/15"}
       `}>
@@ -113,14 +93,13 @@ export const HelpButton = () => {
           <Mic className="w-5 h-5 sm:w-6 sm:h-6" />
         )}
       </div>
-      
+
       <span>
         {isConnecting
           ? t("helpConnecting")
           : isConnected
           ? t("helpEndCall")
-          : t("needHelp")
-        }
+          : t("needHelp")}
       </span>
 
       {/* Subtle pulse when connected */}

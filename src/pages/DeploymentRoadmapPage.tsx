@@ -41,7 +41,7 @@ const phases = [
       "1× QA lead",
     ],
     infra: [
-      "Primary: Lovable Cloud (ap-south-1)",
+      "Primary: Supabase + Vercel (ap-south-1)",
       "Secondary: Jeddah edge (me-central-1)",
       "CDN: Cloudflare for static assets",
       "SMS: Twilio programmable messaging",

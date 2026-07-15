@@ -133,7 +133,7 @@ Deno.serve(async (req) => {
       if (subs && subs.length > 0) {
         const { default: webpush } = await import("https://esm.sh/web-push@3.6.7");
         webpush.setVapidDetails(
-          "mailto:support@hajjcare.lovable.app",
+          "mailto:support@hajjcare.app",
           VAPID_PUBLIC,
           VAPID_PRIVATE
         );

@@ -128,7 +128,7 @@ Deno.serve(async (req) => {
           payload,
           vapidPublicKey,
           vapidPrivateKey,
-          "mailto:support@hajjcare.lovable.app"
+          "mailto:support@hajjcare.app"
         );
         sent++;
       } catch (err: unknown) {

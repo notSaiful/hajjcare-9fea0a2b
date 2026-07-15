@@ -20,7 +20,7 @@ type DevRole = (typeof ROLES)[number];
 const isPreviewEnv = () => {
   if (typeof window === "undefined") return false;
   if (import.meta.env.DEV) return true;
-  // Only enable on localhost. Never on lovable.app/lovableproject.com production domains
+  // Only enable on localhost. Never on hajjcare.app production domain
   // to prevent client-side admin escalation via localStorage.
   return window.location.hostname === "localhost";
 };

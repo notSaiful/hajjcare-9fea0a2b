@@ -155,15 +155,16 @@ serve(async (req) => {
       }
 
       // Use AI for complex pattern analysis
-      const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+      const LLM_API_KEY = Deno.env.get("LLM_API_KEY");
+      const LLM_BASE_URL = (Deno.env.get("LLM_BASE_URL") || "https://openrouter.ai/api/v1").replace(/\/$/, "");
       let aiAlerts: any[] = [];
 
-      if (LOVABLE_API_KEY && enrichedLocations.length > 1) {
+      if (LLM_API_KEY && enrichedLocations.length > 1) {
         try {
-          const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+          const response = await fetch(`${LLM_BASE_URL}/chat/completions`, {
             method: "POST",
             headers: {
-              Authorization: `Bearer ${LOVABLE_API_KEY}`,
+              Authorization: `Bearer ${LLM_API_KEY}`,
               "Content-Type": "application/json",
             },
             body: JSON.stringify({

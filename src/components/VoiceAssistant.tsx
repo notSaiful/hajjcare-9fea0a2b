@@ -1,62 +1,40 @@
-import { useState, useCallback } from "react";
-import { useConversation } from "@elevenlabs/react";
+import { useCallback } from "react";
+import { useVapiCall } from "@/hooks/useVapiCall";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Mic, MicOff, Loader2, Volume2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
-const FUNCTION_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/elevenlabs-agent-token`;
+// VAPI voice agent — STT (Deepgram) + LLM (GPT-4o) + barge-in handled by VAPI;
+// the assistant speaks in Rumik `muga` via the custom-voice TTS proxy edge function.
+// Replaces the previous ElevenLabs useConversation integration.
+
+const FUNCTION_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/vapi-config`;
 
 export const VoiceAssistant = () => {
   const { isRTL } = useLanguage();
   const { toast } = useToast();
-  const [isConnecting, setIsConnecting] = useState(false);
 
-  const conversation = useConversation({
-    onConnect: () => {
-      console.log("Connected to ElevenLabs agent");
-      toast({
-        title: isRTL ? "متصل" : "Connected",
-        description: isRTL ? "يمكنك التحدث الآن" : "You can speak now",
-      });
-    },
-    onDisconnect: () => {
-      console.log("Disconnected from agent");
-    },
-    onMessage: (message) => {
-      console.log("Message:", message);
-    },
-    onError: (error) => {
-      console.error("Conversation error:", error);
-      toast({
-        title: isRTL ? "خطأ" : "Error",
-        description: isRTL ? "حدث خطأ في الاتصال" : "Connection error occurred",
-        variant: "destructive",
-      });
-    },
-  });
+  const { status, isSpeaking, startCall, endCall } = useVapiCall();
 
   const startConversation = useCallback(async () => {
-    setIsConnecting(true);
     try {
-      // Get user session for authentication
+      // Auth gate — match the existing voice flow.
       const { data: { session } } = await supabase.auth.getSession();
-      
       if (!session?.access_token) {
         toast({
           title: isRTL ? "خطأ" : "Error",
           description: isRTL ? "يرجى تسجيل الدخول أولاً" : "Please sign in first",
           variant: "destructive",
         });
-        setIsConnecting(false);
         return;
       }
 
-      // Request microphone permission
+      // Microphone permission (VAPI needs the mic).
       await navigator.mediaDevices.getUserMedia({ audio: true });
 
-      // Get signed URL from edge function
+      // Fetch the public VAPI config (auth-gated edge function).
       const response = await fetch(FUNCTION_URL, {
         method: "POST",
         headers: {
@@ -64,45 +42,34 @@ export const VoiceAssistant = () => {
           Authorization: `Bearer ${session.access_token}`,
         },
       });
+      if (!response.ok) throw new Error("Failed to get voice config");
+      const { publicKey, assistantId } = await response.json();
+      if (!publicKey || !assistantId) throw new Error("Voice not configured");
 
-      if (!response.ok) {
-        throw new Error("Failed to get conversation token");
-      }
-
-      const data = await response.json();
-
-      if (!data.signed_url) {
-        throw new Error("No signed URL received");
-      }
-
-      // Start the conversation with WebSocket
-      await conversation.startSession({
-        signedUrl: data.signed_url,
-      });
+      startCall(publicKey, assistantId);
     } catch (error) {
-      console.error("Failed to start conversation:", error);
+      console.error("Failed to start voice conversation:", error);
       toast({
         title: isRTL ? "خطأ" : "Error",
         description: isRTL ? "فشل في بدء المحادثة الصوتية" : "Failed to start voice conversation",
         variant: "destructive",
       });
-    } finally {
-      setIsConnecting(false);
     }
-  }, [conversation, isRTL, toast]);
+  }, [isRTL, toast, startCall]);
 
-  const stopConversation = useCallback(async () => {
-    await conversation.endSession();
-  }, [conversation]);
+  const stopConversation = useCallback(() => {
+    endCall();
+  }, [endCall]);
 
-  const isConnected = conversation.status === "connected";
+  const isConnecting = status === "connecting";
+  const isConnected = status === "active";
 
   return (
     <div className="flex flex-col items-center gap-3">
       {/* Status indicator */}
       {isConnected && (
         <div className="flex items-center gap-2 text-sm text-muted-foreground animate-fade-up">
-          {conversation.isSpeaking ? (
+          {isSpeaking ? (
             <>
               <Volume2 className="w-4 h-4 text-primary animate-pulse" />
               <span>{isRTL ? "المساعد يتحدث..." : "Assistant speaking..."}</span>
@@ -141,8 +108,7 @@ export const VoiceAssistant = () => {
           ? (isRTL ? "جاري الاتصال..." : "Connecting...")
           : isConnected
           ? (isRTL ? "اضغط للإنهاء" : "Tap to end")
-          : (isRTL ? "اسأل صوتياً" : "Ask by voice")
-        }
+          : (isRTL ? "اسأل صوتياً" : "Ask by voice")}
       </span>
     </div>
   );

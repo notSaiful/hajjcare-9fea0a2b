@@ -93,7 +93,7 @@ export default function RewardsPage() {
 
   const shareReferral = async () => {
     if (!stats?.code) return;
-    const text = `Join HajjCare AI – Har qadam par saath! 🕋\nUse my referral code: ${stats.code}\nGet ₹50 bonus on signup!\nhttps://hajjcare.lovable.app`;
+    const text = `Join HajjCare AI – Har qadam par saath! 🕋\nUse my referral code: ${stats.code}\nGet ₹50 bonus on signup!\nhttps://hajjcare.app`;
     if (navigator.share) {
       try { await navigator.share({ title: "HajjCare AI", text }); } catch {}
     } else {

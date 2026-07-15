@@ -224,7 +224,7 @@ const AdminInspectorUploadPage = () => {
             </div>
             <p className="text-[11px] text-muted-foreground flex items-start gap-1">
               <AlertCircle className="w-3 h-3 mt-0.5 shrink-0" />
-              AI OCR uses Lovable AI credits. Up to 12 pages per upload.
+              AI OCR uses your LLM API credits. Up to 12 pages per upload.
             </p>
           </CardContent>
         </Card>

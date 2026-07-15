@@ -101,10 +101,11 @@ Deno.serve(async (req) => {
       });
     }
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) {
+    const LLM_API_KEY = Deno.env.get("LLM_API_KEY");
+    const LLM_BASE_URL = (Deno.env.get("LLM_BASE_URL") || "https://openrouter.ai/api/v1").replace(/\/$/, "");
+    if (!LLM_API_KEY) {
       return new Response(
-        JSON.stringify({ error: "LOVABLE_API_KEY is not configured" }),
+        JSON.stringify({ error: "LLM_API_KEY is not configured" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -146,10 +147,10 @@ Deno.serve(async (req) => {
       })),
     ];
 
-    const aiRes = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const aiRes = await fetch(`${LLM_BASE_URL}/chat/completions`, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        Authorization: `Bearer ${LLM_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
@@ -173,7 +174,7 @@ Deno.serve(async (req) => {
       return new Response(
         JSON.stringify({
           error:
-            "Lovable AI credits exhausted. Add credits in Settings → Workspace → Usage.",
+            "LLM API credits exhausted. Add credits to your LLM provider account.",
         }),
         { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );

@@ -1,4 +1,4 @@
-project_id = "qovcctfoxgvowedjioil"
+project_id = "vvbbwlfzpfvgyweeggvw"
 
 [api]
 enabled = true
@@ -95,4 +95,22 @@ verify_jwt = false
 [functions.inspector-register]
 verify_jwt = false
 [functions.inspector-ocr]
+verify_jwt = false
+
+# VAPI "custom-voice" TTS proxy → Rumik Silk (muga). Returns raw PCM.
+# No JWT: VAPI calls this server-to-server; auth is the x-tts-secret header.
+[functions.voice-tts]
+verify_jwt = false
+
+# VAPI assistant tool-call webhook bridge → Hajj knowledge (building lookup).
+# No JWT: VAPI calls this server-to-server; auth is the x-vapi-secret header.
+[functions.vapi-tool-calls]
+verify_jwt = false
+
+# Returns the public VAPI config (public key + assistant id) to the browser.
+[functions.vapi-config]
+verify_jwt = false
+
+# Browser read-aloud TTS → Rumik muga (auth-gated by user JWT). Replaces elevenlabs-tts.
+[functions.rumik-tts]
 verify_jwt = false

@@ -80,7 +80,7 @@ async function sendPushNotifications(
   }
 
   const { default: webpush } = await import("https://esm.sh/web-push@3.6.7");
-  webpush.setVapidDetails("mailto:support@hajjcare.lovable.app", VAPID_PUBLIC, VAPID_PRIVATE);
+  webpush.setVapidDetails("mailto:support@hajjcare.app", VAPID_PUBLIC, VAPID_PRIVATE);
 
   const payload = JSON.stringify({ title, body, icon: "/favicon.ico", badge: "/favicon.ico", data, tag: `cascade-${Date.now()}` });
 

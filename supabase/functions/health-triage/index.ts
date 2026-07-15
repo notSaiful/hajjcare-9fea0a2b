@@ -7,7 +7,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+const LLM_API_KEY = Deno.env.get('LLM_API_KEY');
 
 // Zod schema for validating AI triage response
 const TriageSchema = z.object({
@@ -133,11 +133,11 @@ Respond in this exact JSON format:
   "suggested_zone": "makkah_medical"
 }`;
 
-    // Call Lovable AI Gateway
-    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    // Call LLM gateway (OpenAI-compatible)
+    const response = await fetch(`${LLM_BASE_URL}/chat/completions`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+        'Authorization': `Bearer ${LLM_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
