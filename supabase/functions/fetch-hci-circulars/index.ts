@@ -254,11 +254,14 @@ serve(async (req) => {
       (existingCirculars || []).map((c: any) => c.circular_number).filter(Boolean)
     );
     const existingUrls = new Set(
-      (existingCirculars || []).map((c: any) => c.source_url).filter(Boolean)
+      (existingCirculars || [])
+        .map((c: any) => c.source_url)
+        .filter(Boolean)
+        .map((u: string) => normUrl(u))
     );
 
     const newCirculars = foundCirculars.filter(
-      (c) => !existingNumbers.has(c.circular_number) && !existingUrls.has(c.source_url)
+      (c) => !existingNumbers.has(c.circular_number) && !existingUrls.has(normUrl(c.source_url))
     );
 
 
@@ -273,19 +276,29 @@ serve(async (req) => {
     }
 
     // Insert new circulars
-    const toInsert = newCirculars.map((c) => ({
-      title: `${c.circular_number} - ${c.title}`,
-      original_content: `Official circular from Haj Committee of India: ${c.title}. View the full circular at: ${c.source_url}`,
-      circular_number: c.circular_number,
-      source_url: c.source_url,
-      category: categorizeCircular(c.title),
-      priority: detectPriority(c.title),
-      source: "HCI",
-      source_name_display: "Haj Committee of India",
-      auto_scraped: true,
-      is_published: true,
-      ai_processed: false,
-    }));
+    const toInsert = newCirculars.map((c) => {
+      const isTrainer = c.source === "TRAINER";
+      return {
+        title: `${c.circular_number} - ${c.title}`,
+        original_content: isTrainer
+          ? `Trainer / training document from Haj Committee of India: ${c.title}. View the full document at: ${c.source_url}`
+          : `Official circular from Haj Committee of India: ${c.title}. View the full circular at: ${c.source_url}`,
+        circular_number: c.circular_number,
+        source_url: c.source_url,
+        category: isTrainer ? "training" : categorizeCircular(c.title),
+        priority: detectPriority(c.title),
+        source: isTrainer ? "TRAINER" : "HCI",
+        source_name_display: isTrainer
+          ? "Trainer / Training"
+          : "Haj Committee of India",
+        auto_scraped: true,
+        is_published: true,
+        ai_processed: false,
+      };
+    });
+
+    const trainerCount = toInsert.filter((c) => c.source === "TRAINER").length;
+    const hciCount = toInsert.length - trainerCount;
 
 
     const { error: insertErr } = await supabase
