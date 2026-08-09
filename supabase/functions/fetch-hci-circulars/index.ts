@@ -379,12 +379,15 @@ Focus on what pilgrims need to know and any deadlines.`,
       }
     }
 
-    await logRun(true, toInsert.length, `Added ${toInsert.length} new circulars`);
+    const summary = `Added ${toInsert.length} new circulars (HCI: ${hciCount}, Trainer: ${trainerCount})`;
+    await logRun(true, toInsert.length, summary);
     return new Response(
       JSON.stringify({
         success: true,
-        message: `Added ${toInsert.length} new circulars`,
+        message: summary,
         added: toInsert.length,
+        added_hci: hciCount,
+        added_trainer: trainerCount,
         circulars: toInsert.map((c) => c.circular_number),
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
