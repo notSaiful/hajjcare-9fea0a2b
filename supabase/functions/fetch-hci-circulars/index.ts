@@ -416,7 +416,7 @@ function categorizeCircular(title: string): string {
   if (t.includes("medical") || t.includes("screening") || t.includes("immunization") || t.includes("vaccination")) return "health";
   if (t.includes("payment") || t.includes("refund") || t.includes("pricing") || t.includes("qurbani") || t.includes("adahi") || t.includes("hady")) return "finance";
   if (t.includes("visa") || t.includes("passport")) return "visa";
-  if (t.includes("training") || t.includes("trainer") || t.includes("orientation")) return "general";
+  if (t.includes("training") || t.includes("trainer") || t.includes("orientation")) return "training";
   if (t.includes("waiting list") || t.includes("release")) return "general";
   return "general";
 }
