@@ -112,23 +112,53 @@ export default function CircularsPage() {
   const { circulars, isLoading, readIds, markRead } = useCirculars();
   const { language } = useLanguage();
   const l = (t as any)[language] || t.en;
+  const [filter, setFilter] = useState<"all" | "HCI" | "TRAINER" | "OTHER">("all");
+
+  const filters: Array<{ key: typeof filter; label: string }> = [
+    { key: "all", label: l.all },
+    { key: "HCI", label: l.hci },
+    { key: "TRAINER", label: l.trainer },
+    { key: "OTHER", label: l.other },
+  ];
+
+  const visible = circulars.filter((c) =>
+    filter === "all"
+      ? true
+      : filter === "OTHER"
+      ? c.source !== "HCI" && c.source !== "TRAINER"
+      : c.source === filter
+  );
 
   return (
     <MainLayout>
       <SEO title="Official Hajj Circulars" description="AI-summarized official Hajj circulars from the Indian Haj Committee — stay updated on policies and announcements." path="/circulars" type="website" jsonLd={{"@context":"https://schema.org","@type":"WebPage","headline":"Official Hajj Circulars","description":"AI-summarized official Hajj circulars from the Indian Haj Committee — stay updated on policies and announcements.","url":"https://hajjcare.in/circulars"}} />
       <PageHeader title={l.title} subtitle={l.subtitle} />
       <div className="px-4 pb-24 space-y-4 max-w-2xl mx-auto">
+        <div className="flex gap-2 flex-wrap">
+          {filters.map((f) => (
+            <Button
+              key={f.key}
+              size="sm"
+              variant={filter === f.key ? "default" : "outline"}
+              className="rounded-full min-h-11 px-4 text-sm"
+              onClick={() => setFilter(f.key)}
+            >
+              {f.label}
+            </Button>
+          ))}
+        </div>
+
         {isLoading ? (
           Array.from({ length: 3 }).map((_, i) => (
             <Skeleton key={i} className="h-32 w-full rounded-xl" />
           ))
-        ) : circulars.length === 0 ? (
+        ) : visible.length === 0 ? (
           <div className="text-center py-12">
             <Bell className="w-12 h-12 mx-auto text-muted-foreground/40 mb-3" />
             <p className="text-muted-foreground">{l.noCirculars}</p>
           </div>
         ) : (
-          circulars.map((c) => (
+          visible.map((c) => (
             <CircularCard
               key={c.id}
               circular={c}
