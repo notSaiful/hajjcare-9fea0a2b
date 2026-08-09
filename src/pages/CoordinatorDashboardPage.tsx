@@ -161,7 +161,7 @@ const CoordinatorDashboardPage: React.FC = () => {
     if (!selectedTicket) return;
 
     try {
-      const updates: Record<string, unknown> = {};
+      const updates: Record<string, string> = {};
       if (coordinatorNotes) updates.coordinator_notes = coordinatorNotes;
       if (professionalResponse) updates.professional_response = professionalResponse;
       if (actionTaken) updates.action_taken = actionTaken;
@@ -175,7 +175,8 @@ const CoordinatorDashboardPage: React.FC = () => {
 
       const { error } = await supabase
         .from('health_tickets')
-        .update(updates)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .update(updates as any)
         .eq('id', selectedTicket.id);
 
       if (error) throw error;
