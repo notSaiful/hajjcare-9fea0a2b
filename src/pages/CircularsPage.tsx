@@ -51,6 +51,8 @@ function CircularCard({ circular, isRead, onMarkRead, lang }: { circular: Circul
                   className={`text-xs ${
                     circular.source === "HCI"
                       ? "bg-primary/10 border-primary/30 text-primary"
+                      : circular.source === "TRAINER"
+                      ? "bg-secondary border-primary/20 text-secondary-foreground"
                       : "bg-accent/20 border-accent/40 text-accent-foreground"
                   }`}
                 >
