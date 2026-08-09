@@ -305,6 +305,7 @@ export default function AdminCircularsPage() {
                     <SelectItem value="health">Health</SelectItem>
                     <SelectItem value="finance">Finance</SelectItem>
                     <SelectItem value="visa">Visa</SelectItem>
+                    <SelectItem value="training">Training</SelectItem>
                   </SelectContent>
                 </Select>
                 <Select value={priority} onValueChange={setPriority}>
