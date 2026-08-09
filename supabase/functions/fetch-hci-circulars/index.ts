@@ -86,22 +86,40 @@ serve(async (req) => {
 
     console.log("Fetching Haj Committee of India website...");
 
-    // Fetch homepage + Haj-2027 archive page
+    // Fetch homepage + Haj-2027 archive + year-wise archive + Trainer documents
     const PAGES = [
-      { url: HCI_URL, year: null as string | null },
-      { url: `${HCI_URL}/circulars-haj-2027/`, year: "2027" },
+      { url: HCI_URL, year: null as string | null, source: "HCI" as const },
+      { url: `${HCI_URL}/circulars-haj-2027/`, year: "2027", source: "HCI" as const },
+      { url: `${HCI_URL}/circulars`, year: null as string | null, source: "HCI" as const },
+      { url: `${HCI_URL}/TrainnerDoc`, year: null as string | null, source: "TRAINER" as const },
     ];
 
-    const foundCirculars: Array<{
+    type Found = {
       circular_number: string;
       title: string;
       source_url: string;
-    }> = [];
+      source: "HCI" | "TRAINER";
+    };
 
-    const pushUnique = (c: { circular_number: string; title: string; source_url: string }) => {
-      if (!foundCirculars.some((x) => x.circular_number === c.circular_number)) {
-        foundCirculars.push(c);
+    const foundCirculars: Found[] = [];
+
+    const normUrl = (u: string) => {
+      try {
+        return decodeURIComponent(u).trim().toLowerCase();
+      } catch {
+        return u.trim().toLowerCase();
       }
+    };
+
+    const isTrainingDoc = (s: string) =>
+      /train(er|ing|ers)|orientation|master\s*trainer/i.test(s);
+
+    const pushUnique = (c: Found) => {
+      const key = normUrl(c.source_url);
+      const dup = foundCirculars.some(
+        (x) => x.circular_number === c.circular_number || normUrl(x.source_url) === key
+      );
+      if (!dup) foundCirculars.push(c);
     };
 
     const absolutize = (u: string) =>
@@ -112,13 +130,39 @@ serve(async (req) => {
       return m ? m[0] : fallback;
     };
 
+    const slugify = (url: string, fallback: string) => {
+      const fname = url.split("/").pop() || fallback;
+      return decodeURIComponent(fname)
+        .replace(/\.(pdf|docx?|pptx?)$/i, "")
+        .replace(/^\d+/, "")
+        .replace(/[^A-Za-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "")
+        .toUpperCase()
+        .slice(0, 60);
+    };
+
+    const cleanTitle = (s: string) =>
+      s
+        .replace(/<[^>]*>/g, " ")
+        .replace(/&nbsp;/gi, " ")
+        .replace(/&amp;/gi, "&")
+        .replace(/[_]+/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+
     for (const page of PAGES) {
-      const resp = await fetch(page.url, {
-        headers: {
-          "User-Agent": "HajCare-AI/1.0 (Circular Monitor)",
-          "Accept": "text/html",
-        },
-      });
+      let resp: Response;
+      try {
+        resp = await fetch(page.url, {
+          headers: {
+            "User-Agent": "HajCare-AI/1.0 (Circular Monitor)",
+            "Accept": "text/html",
+          },
+        });
+      } catch (fetchErr) {
+        console.warn(`Failed ${page.url}:`, fetchErr);
+        continue;
+      }
       if (!resp.ok) {
         console.warn(`Skip ${page.url}: ${resp.status}`);
         continue;
@@ -126,40 +170,58 @@ serve(async (req) => {
       const html = await resp.text();
       console.log(`Fetched ${page.url} (${html.length} chars)`);
 
+      const sourceFor = (text: string): "HCI" | "TRAINER" =>
+        page.source === "TRAINER" || isTrainingDoc(text) ? "TRAINER" : "HCI";
+
       // Pattern A: Circular-XX | Title
       const regexA = /href="((?:https?:\/\/hajcommittee\.gov\.in)?\/uploads\/circulars\/[^"]+)"[^>]*>\s*Circular[-\s]*No?\.?\s*(\d+)\s*[|\-–]\s*([^<]+)/gi;
       let m: RegExpExecArray | null;
       while ((m = regexA.exec(html)) !== null) {
         const url = absolutize(decodeURIComponent(m[1].trim()));
         const num = m[2].trim().padStart(2, "0");
-        const rawTitle = m[3].trim().replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
+        const rawTitle = cleanTitle(m[3]);
         const year = detectYear(rawTitle + " " + url, page.year) ?? "unknown";
         pushUnique({
           circular_number: `Circular-${num}-Haj${year}`,
           title: rawTitle,
           source_url: url,
+          source: sourceFor(rawTitle + " " + url),
         });
       }
 
       // Pattern B: <a href="...pdf" ...><i...></i><span>Title</span></a>  (2027 archive layout)
-      const regexB = /<a[^>]*href="((?:https?:\/\/hajcommittee\.gov\.in)?\/uploads\/circulars\/[^"]+\.pdf)"[^>]*>[\s\S]*?<span>([^<]+)<\/span>\s*<\/a>/gi;
+      const regexB = /<a[^>]*href="((?:https?:\/\/hajcommittee\.gov\.in)?\/uploads\/[^"]+\.pdf)"[^>]*>[\s\S]*?<span>([^<]+)<\/span>\s*<\/a>/gi;
       while ((m = regexB.exec(html)) !== null) {
         const url = absolutize(decodeURIComponent(m[1].trim()));
-        const title = m[2].trim().replace(/\s+/g, " ");
+        const title = cleanTitle(m[2]);
         const year = detectYear(title + " " + url, page.year) ?? "unknown";
-        // Derive stable key from filename (strip numeric prefix + extension)
-        const fname = url.split("/").pop() || title;
-        const slug = fname
-          .replace(/\.pdf$/i, "")
-          .replace(/^\d+/, "")
-          .replace(/[^A-Za-z0-9]+/g, "-")
-          .replace(/^-+|-+$/g, "")
-          .toUpperCase()
-          .slice(0, 60);
         pushUnique({
-          circular_number: `HAJ${year}-${slug}`,
+          circular_number: `HAJ${year}-${slugify(url, title)}`,
           title,
           source_url: url,
+          source: sourceFor(title + " " + url),
+        });
+      }
+
+      // Pattern C (generic): any document link under /uploads/, using the anchor's
+      // visible text when available, otherwise the filename.
+      const regexC = /<a[^>]*href="((?:https?:\/\/hajcommittee\.gov\.in)?\/uploads\/[^"]+\.(?:pdf|docx?|pptx?))"[^>]*>([\s\S]{0,300}?)<\/a>/gi;
+      while ((m = regexC.exec(html)) !== null) {
+        const url = absolutize(decodeURIComponent(m[1].trim()));
+        const anchorText = cleanTitle(m[2]);
+        const fromFile = cleanTitle(
+          decodeURIComponent(url.split("/").pop() || "")
+            .replace(/\.(pdf|docx?|pptx?)$/i, "")
+            .replace(/^\d+/, "")
+        );
+        const title = anchorText.length >= 8 ? anchorText : fromFile;
+        if (!title) continue;
+        const year = detectYear(title + " " + url, page.year) ?? "unknown";
+        pushUnique({
+          circular_number: `HAJ${year}-${slugify(url, title)}`,
+          title,
+          source_url: url,
+          source: sourceFor(title + " " + url),
         });
       }
     }
