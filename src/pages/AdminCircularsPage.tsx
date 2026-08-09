@@ -42,6 +42,7 @@ export default function AdminCircularsPage() {
 
   const SOURCE_LABELS: Record<string, string> = {
     HCI: "Haj Committee of India",
+    TRAINER: "Trainer / Training",
     Saudi_MoHU: "Saudi Ministry of Hajj & Umrah",
     Nusuk: "Nusuk Platform",
     GACA: "GACA (Saudi Aviation)",
