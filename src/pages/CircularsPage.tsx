@@ -12,9 +12,9 @@ import { Bell, ExternalLink, CheckCircle, AlertTriangle, Info, ChevronDown, Chev
 import { format } from "date-fns";
 
 const t = {
-  en: { title: "Official Circulars", subtitle: "HCI & Saudi Govt updates", noCirculars: "No circulars published yet.", readMore: "Read More", collapse: "Collapse", markRead: "Mark as Read", read: "Read", new: "New", urgent: "Urgent", high: "Important", source: "Source", circularNo: "Circular No." },
-  hi: { title: "आधिकारिक परिपत्र", subtitle: "HCI और सऊदी सरकार के अपडेट", noCirculars: "अभी तक कोई परिपत्र प्रकाशित नहीं हुआ।", readMore: "और पढ़ें", collapse: "बंद करें", markRead: "पढ़ा हुआ", read: "पढ़ा", new: "नया", urgent: "जरूरी", high: "महत्वपूर्ण", source: "स्रोत", circularNo: "परिपत्र संख्या" },
-  ur: { title: "سرکاری سرکلر", subtitle: "HCI اور سعودی حکومت کی اپ ڈیٹس", noCirculars: "ابھی تک کوئی سرکلر شائع نہیں ہوا۔", readMore: "مزید پڑھیں", collapse: "بند کریں", markRead: "پڑھا ہوا", read: "پڑھا", new: "نیا", urgent: "فوری", high: "اہم", source: "ماخذ", circularNo: "سرکلر نمبر" },
+  en: { title: "Official Circulars", subtitle: "HCI & Saudi Govt updates", noCirculars: "No circulars published yet.", readMore: "Read More", collapse: "Collapse", markRead: "Mark as Read", read: "Read", new: "New", urgent: "Urgent", high: "Important", source: "Source", circularNo: "Circular No.", all: "All", hci: "Haj Committee", trainer: "Trainer", other: "Other" },
+  hi: { title: "आधिकारिक परिपत्र", subtitle: "HCI और सऊदी सरकार के अपडेट", noCirculars: "अभी तक कोई परिपत्र प्रकाशित नहीं हुआ।", readMore: "और पढ़ें", collapse: "बंद करें", markRead: "पढ़ा हुआ", read: "पढ़ा", new: "नया", urgent: "जरूरी", high: "महत्वपूर्ण", source: "स्रोत", circularNo: "परिपत्र संख्या", all: "सभी", hci: "हज कमेटी", trainer: "ट्रेनर", other: "अन्य" },
+  ur: { title: "سرکاری سرکلر", subtitle: "HCI اور سعودی حکومت کی اپ ڈیٹس", noCirculars: "ابھی تک کوئی سرکلر شائع نہیں ہوا۔", readMore: "مزید پڑھیں", collapse: "بند کریں", markRead: "پڑھا ہوا", read: "پڑھا", new: "نیا", urgent: "فوری", high: "اہم", source: "ماخذ", circularNo: "سرکلر نمبر", all: "سب", hci: "حج کمیٹی", trainer: "ٹرینر", other: "دیگر" },
 };
 
 const priorityConfig: Record<string, { color: string; icon: typeof AlertTriangle }> = {
