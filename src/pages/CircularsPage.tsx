@@ -12,9 +12,9 @@ import { Bell, ExternalLink, CheckCircle, AlertTriangle, Info, ChevronDown, Chev
 import { format } from "date-fns";
 
 const t = {
-  en: { title: "Official Circulars", subtitle: "HCI & Saudi Govt updates", noCirculars: "No circulars published yet.", readMore: "Read More", collapse: "Collapse", markRead: "Mark as Read", read: "Read", new: "New", urgent: "Urgent", high: "Important", source: "Source", circularNo: "Circular No.", all: "All", hci: "Haj Committee", trainer: "Trainer", other: "Other" },
-  hi: { title: "आधिकारिक परिपत्र", subtitle: "HCI और सऊदी सरकार के अपडेट", noCirculars: "अभी तक कोई परिपत्र प्रकाशित नहीं हुआ।", readMore: "और पढ़ें", collapse: "बंद करें", markRead: "पढ़ा हुआ", read: "पढ़ा", new: "नया", urgent: "जरूरी", high: "महत्वपूर्ण", source: "स्रोत", circularNo: "परिपत्र संख्या", all: "सभी", hci: "हज कमेटी", trainer: "ट्रेनर", other: "अन्य" },
-  ur: { title: "سرکاری سرکلر", subtitle: "HCI اور سعودی حکومت کی اپ ڈیٹس", noCirculars: "ابھی تک کوئی سرکلر شائع نہیں ہوا۔", readMore: "مزید پڑھیں", collapse: "بند کریں", markRead: "پڑھا ہوا", read: "پڑھا", new: "نیا", urgent: "فوری", high: "اہم", source: "ماخذ", circularNo: "سرکلر نمبر", all: "سب", hci: "حج کمیٹی", trainer: "ٹرینر", other: "دیگر" },
+  en: { title: "Official Circulars", subtitle: "HCI & Saudi Govt updates", noCirculars: "No circulars published yet.", readMore: "Read More", collapse: "Collapse", markRead: "Mark as Read", read: "Read", new: "New", urgent: "Urgent", high: "Important", source: "Source", circularNo: "Circular No." },
+  hi: { title: "आधिकारिक परिपत्र", subtitle: "HCI और सऊदी सरकार के अपडेट", noCirculars: "अभी तक कोई परिपत्र प्रकाशित नहीं हुआ।", readMore: "और पढ़ें", collapse: "बंद करें", markRead: "पढ़ा हुआ", read: "पढ़ा", new: "नया", urgent: "जरूरी", high: "महत्वपूर्ण", source: "स्रोत", circularNo: "परिपत्र संख्या" },
+  ur: { title: "سرکاری سرکلر", subtitle: "HCI اور سعودی حکومت کی اپ ڈیٹس", noCirculars: "ابھی تک کوئی سرکلر شائع نہیں ہوا۔", readMore: "مزید پڑھیں", collapse: "بند کریں", markRead: "پڑھا ہوا", read: "پڑھا", new: "نیا", urgent: "فوری", high: "اہم", source: "ماخذ", circularNo: "سرکلر نمبر" },
 };
 
 const priorityConfig: Record<string, { color: string; icon: typeof AlertTriangle }> = {
@@ -51,8 +51,6 @@ function CircularCard({ circular, isRead, onMarkRead, lang }: { circular: Circul
                   className={`text-xs ${
                     circular.source === "HCI"
                       ? "bg-primary/10 border-primary/30 text-primary"
-                      : circular.source === "TRAINER"
-                      ? "bg-secondary border-primary/20 text-secondary-foreground"
                       : "bg-accent/20 border-accent/40 text-accent-foreground"
                   }`}
                 >
@@ -112,53 +110,23 @@ export default function CircularsPage() {
   const { circulars, isLoading, readIds, markRead } = useCirculars();
   const { language } = useLanguage();
   const l = (t as any)[language] || t.en;
-  const [filter, setFilter] = useState<"all" | "HCI" | "TRAINER" | "OTHER">("all");
-
-  const filters: Array<{ key: typeof filter; label: string }> = [
-    { key: "all", label: l.all },
-    { key: "HCI", label: l.hci },
-    { key: "TRAINER", label: l.trainer },
-    { key: "OTHER", label: l.other },
-  ];
-
-  const visible = circulars.filter((c) =>
-    filter === "all"
-      ? true
-      : filter === "OTHER"
-      ? c.source !== "HCI" && c.source !== "TRAINER"
-      : c.source === filter
-  );
 
   return (
     <MainLayout>
       <SEO title="Official Hajj Circulars" description="AI-summarized official Hajj circulars from the Indian Haj Committee — stay updated on policies and announcements." path="/circulars" type="website" jsonLd={{"@context":"https://schema.org","@type":"WebPage","headline":"Official Hajj Circulars","description":"AI-summarized official Hajj circulars from the Indian Haj Committee — stay updated on policies and announcements.","url":"https://hajjcare.in/circulars"}} />
       <PageHeader title={l.title} subtitle={l.subtitle} />
       <div className="px-4 pb-24 space-y-4 max-w-2xl mx-auto">
-        <div className="flex gap-2 flex-wrap">
-          {filters.map((f) => (
-            <Button
-              key={f.key}
-              size="sm"
-              variant={filter === f.key ? "default" : "outline"}
-              className="rounded-full min-h-11 px-4 text-sm"
-              onClick={() => setFilter(f.key)}
-            >
-              {f.label}
-            </Button>
-          ))}
-        </div>
-
         {isLoading ? (
           Array.from({ length: 3 }).map((_, i) => (
             <Skeleton key={i} className="h-32 w-full rounded-xl" />
           ))
-        ) : visible.length === 0 ? (
+        ) : circulars.length === 0 ? (
           <div className="text-center py-12">
             <Bell className="w-12 h-12 mx-auto text-muted-foreground/40 mb-3" />
             <p className="text-muted-foreground">{l.noCirculars}</p>
           </div>
         ) : (
-          visible.map((c) => (
+          circulars.map((c) => (
             <CircularCard
               key={c.id}
               circular={c}

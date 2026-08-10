@@ -12,12 +12,6 @@ dist
 dist-ssr
 *.local
 
-# Secrets — never commit. Local-only copy of edge-function secrets.
-creds/
-.env
-.env.local
-.env.*.local
-
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -28,6 +22,3 @@ creds/
 *.njsproj
 *.sln
 *.sw?
-
-# Supabase CLI working dir
-supabase/.temp/
