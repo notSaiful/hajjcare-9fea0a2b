@@ -182,7 +182,7 @@ ${statusDetails.message}
 
 ---
 Haj Care AI - Deeni Khidmat Program
-🌐 Visit: hajjcare.app`;
+🌐 Visit: hajjcare.lovable.app`;
 
     // Send WhatsApp message
     const response = await fetch(

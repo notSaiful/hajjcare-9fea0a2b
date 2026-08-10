@@ -86,40 +86,22 @@ serve(async (req) => {
 
     console.log("Fetching Haj Committee of India website...");
 
-    // Fetch homepage + Haj-2027 archive + year-wise archive + Trainer documents
+    // Fetch homepage + Haj-2027 archive page
     const PAGES = [
-      { url: HCI_URL, year: null as string | null, source: "HCI" as const },
-      { url: `${HCI_URL}/circulars-haj-2027/`, year: "2027", source: "HCI" as const },
-      { url: `${HCI_URL}/circulars`, year: null as string | null, source: "HCI" as const },
-      { url: `${HCI_URL}/TrainnerDoc`, year: null as string | null, source: "TRAINER" as const },
+      { url: HCI_URL, year: null as string | null },
+      { url: `${HCI_URL}/circulars-haj-2027/`, year: "2027" },
     ];
 
-    type Found = {
+    const foundCirculars: Array<{
       circular_number: string;
       title: string;
       source_url: string;
-      source: "HCI" | "TRAINER";
-    };
+    }> = [];
 
-    const foundCirculars: Found[] = [];
-
-    const normUrl = (u: string) => {
-      try {
-        return decodeURIComponent(u).trim().toLowerCase();
-      } catch {
-        return u.trim().toLowerCase();
+    const pushUnique = (c: { circular_number: string; title: string; source_url: string }) => {
+      if (!foundCirculars.some((x) => x.circular_number === c.circular_number)) {
+        foundCirculars.push(c);
       }
-    };
-
-    const isTrainingDoc = (s: string) =>
-      /train(er|ing|ers)|orientation|master\s*trainer/i.test(s);
-
-    const pushUnique = (c: Found) => {
-      const key = normUrl(c.source_url);
-      const dup = foundCirculars.some(
-        (x) => x.circular_number === c.circular_number || normUrl(x.source_url) === key
-      );
-      if (!dup) foundCirculars.push(c);
     };
 
     const absolutize = (u: string) =>
@@ -130,39 +112,13 @@ serve(async (req) => {
       return m ? m[0] : fallback;
     };
 
-    const slugify = (url: string, fallback: string) => {
-      const fname = url.split("/").pop() || fallback;
-      return decodeURIComponent(fname)
-        .replace(/\.(pdf|docx?|pptx?)$/i, "")
-        .replace(/^\d+/, "")
-        .replace(/[^A-Za-z0-9]+/g, "-")
-        .replace(/^-+|-+$/g, "")
-        .toUpperCase()
-        .slice(0, 60);
-    };
-
-    const cleanTitle = (s: string) =>
-      s
-        .replace(/<[^>]*>/g, " ")
-        .replace(/&nbsp;/gi, " ")
-        .replace(/&amp;/gi, "&")
-        .replace(/[_]+/g, " ")
-        .replace(/\s+/g, " ")
-        .trim();
-
     for (const page of PAGES) {
-      let resp: Response;
-      try {
-        resp = await fetch(page.url, {
-          headers: {
-            "User-Agent": "HajCare-AI/1.0 (Circular Monitor)",
-            "Accept": "text/html",
-          },
-        });
-      } catch (fetchErr) {
-        console.warn(`Failed ${page.url}:`, fetchErr);
-        continue;
-      }
+      const resp = await fetch(page.url, {
+        headers: {
+          "User-Agent": "HajCare-AI/1.0 (Circular Monitor)",
+          "Accept": "text/html",
+        },
+      });
       if (!resp.ok) {
         console.warn(`Skip ${page.url}: ${resp.status}`);
         continue;
@@ -170,58 +126,40 @@ serve(async (req) => {
       const html = await resp.text();
       console.log(`Fetched ${page.url} (${html.length} chars)`);
 
-      const sourceFor = (text: string): "HCI" | "TRAINER" =>
-        page.source === "TRAINER" || isTrainingDoc(text) ? "TRAINER" : "HCI";
-
       // Pattern A: Circular-XX | Title
       const regexA = /href="((?:https?:\/\/hajcommittee\.gov\.in)?\/uploads\/circulars\/[^"]+)"[^>]*>\s*Circular[-\s]*No?\.?\s*(\d+)\s*[|\-–]\s*([^<]+)/gi;
       let m: RegExpExecArray | null;
       while ((m = regexA.exec(html)) !== null) {
         const url = absolutize(decodeURIComponent(m[1].trim()));
         const num = m[2].trim().padStart(2, "0");
-        const rawTitle = cleanTitle(m[3]);
+        const rawTitle = m[3].trim().replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
         const year = detectYear(rawTitle + " " + url, page.year) ?? "unknown";
         pushUnique({
           circular_number: `Circular-${num}-Haj${year}`,
           title: rawTitle,
           source_url: url,
-          source: sourceFor(rawTitle + " " + url),
         });
       }
 
       // Pattern B: <a href="...pdf" ...><i...></i><span>Title</span></a>  (2027 archive layout)
-      const regexB = /<a[^>]*href="((?:https?:\/\/hajcommittee\.gov\.in)?\/uploads\/[^"]+\.pdf)"[^>]*>[\s\S]*?<span>([^<]+)<\/span>\s*<\/a>/gi;
+      const regexB = /<a[^>]*href="((?:https?:\/\/hajcommittee\.gov\.in)?\/uploads\/circulars\/[^"]+\.pdf)"[^>]*>[\s\S]*?<span>([^<]+)<\/span>\s*<\/a>/gi;
       while ((m = regexB.exec(html)) !== null) {
         const url = absolutize(decodeURIComponent(m[1].trim()));
-        const title = cleanTitle(m[2]);
+        const title = m[2].trim().replace(/\s+/g, " ");
         const year = detectYear(title + " " + url, page.year) ?? "unknown";
+        // Derive stable key from filename (strip numeric prefix + extension)
+        const fname = url.split("/").pop() || title;
+        const slug = fname
+          .replace(/\.pdf$/i, "")
+          .replace(/^\d+/, "")
+          .replace(/[^A-Za-z0-9]+/g, "-")
+          .replace(/^-+|-+$/g, "")
+          .toUpperCase()
+          .slice(0, 60);
         pushUnique({
-          circular_number: `HAJ${year}-${slugify(url, title)}`,
+          circular_number: `HAJ${year}-${slug}`,
           title,
           source_url: url,
-          source: sourceFor(title + " " + url),
-        });
-      }
-
-      // Pattern C (generic): any document link under /uploads/, using the anchor's
-      // visible text when available, otherwise the filename.
-      const regexC = /<a[^>]*href="((?:https?:\/\/hajcommittee\.gov\.in)?\/uploads\/[^"]+\.(?:pdf|docx?|pptx?))"[^>]*>([\s\S]{0,300}?)<\/a>/gi;
-      while ((m = regexC.exec(html)) !== null) {
-        const url = absolutize(decodeURIComponent(m[1].trim()));
-        const anchorText = cleanTitle(m[2]);
-        const fromFile = cleanTitle(
-          decodeURIComponent(url.split("/").pop() || "")
-            .replace(/\.(pdf|docx?|pptx?)$/i, "")
-            .replace(/^\d+/, "")
-        );
-        const title = anchorText.length >= 8 ? anchorText : fromFile;
-        if (!title) continue;
-        const year = detectYear(title + " " + url, page.year) ?? "unknown";
-        pushUnique({
-          circular_number: `HAJ${year}-${slugify(url, title)}`,
-          title,
-          source_url: url,
-          source: sourceFor(title + " " + url),
         });
       }
     }
@@ -254,14 +192,11 @@ serve(async (req) => {
       (existingCirculars || []).map((c: any) => c.circular_number).filter(Boolean)
     );
     const existingUrls = new Set(
-      (existingCirculars || [])
-        .map((c: any) => c.source_url)
-        .filter(Boolean)
-        .map((u: string) => normUrl(u))
+      (existingCirculars || []).map((c: any) => c.source_url).filter(Boolean)
     );
 
     const newCirculars = foundCirculars.filter(
-      (c) => !existingNumbers.has(c.circular_number) && !existingUrls.has(normUrl(c.source_url))
+      (c) => !existingNumbers.has(c.circular_number) && !existingUrls.has(c.source_url)
     );
 
 
@@ -276,29 +211,19 @@ serve(async (req) => {
     }
 
     // Insert new circulars
-    const toInsert = newCirculars.map((c) => {
-      const isTrainer = c.source === "TRAINER";
-      return {
-        title: `${c.circular_number} - ${c.title}`,
-        original_content: isTrainer
-          ? `Trainer / training document from Haj Committee of India: ${c.title}. View the full document at: ${c.source_url}`
-          : `Official circular from Haj Committee of India: ${c.title}. View the full circular at: ${c.source_url}`,
-        circular_number: c.circular_number,
-        source_url: c.source_url,
-        category: isTrainer ? "training" : categorizeCircular(c.title),
-        priority: detectPriority(c.title),
-        source: isTrainer ? "TRAINER" : "HCI",
-        source_name_display: isTrainer
-          ? "Trainer / Training"
-          : "Haj Committee of India",
-        auto_scraped: true,
-        is_published: true,
-        ai_processed: false,
-      };
-    });
-
-    const trainerCount = toInsert.filter((c) => c.source === "TRAINER").length;
-    const hciCount = toInsert.length - trainerCount;
+    const toInsert = newCirculars.map((c) => ({
+      title: `${c.circular_number} - ${c.title}`,
+      original_content: `Official circular from Haj Committee of India: ${c.title}. View the full circular at: ${c.source_url}`,
+      circular_number: c.circular_number,
+      source_url: c.source_url,
+      category: categorizeCircular(c.title),
+      priority: detectPriority(c.title),
+      source: "HCI",
+      source_name_display: "Haj Committee of India",
+      auto_scraped: true,
+      is_published: true,
+      ai_processed: false,
+    }));
 
 
     const { error: insertErr } = await supabase
@@ -310,9 +235,8 @@ serve(async (req) => {
     console.log(`Successfully added ${toInsert.length} new circulars`);
 
     // Try to auto-summarize new circulars using AI
-    const LLM_API_KEY = Deno.env.get("LLM_API_KEY");
-    const LLM_BASE_URL = (Deno.env.get("LLM_BASE_URL") || "https://openrouter.ai/api/v1").replace(/\/$/, "");
-    if (LLM_API_KEY) {
+    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    if (LOVABLE_API_KEY) {
       for (const circular of toInsert) {
         try {
           // Fetch the newly inserted circular's ID
@@ -324,10 +248,10 @@ serve(async (req) => {
 
           if (!inserted) continue;
 
-          const aiResponse = await fetch(`${LLM_BASE_URL}/chat/completions`, {
+          const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
             method: "POST",
             headers: {
-              Authorization: `Bearer ${LLM_API_KEY}`,
+              Authorization: `Bearer ${LOVABLE_API_KEY}`,
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
@@ -379,15 +303,12 @@ Focus on what pilgrims need to know and any deadlines.`,
       }
     }
 
-    const summary = `Added ${toInsert.length} new circulars (HCI: ${hciCount}, Trainer: ${trainerCount})`;
-    await logRun(true, toInsert.length, summary);
+    await logRun(true, toInsert.length, `Added ${toInsert.length} new circulars`);
     return new Response(
       JSON.stringify({
         success: true,
-        message: summary,
+        message: `Added ${toInsert.length} new circulars`,
         added: toInsert.length,
-        added_hci: hciCount,
-        added_trainer: trainerCount,
         circulars: toInsert.map((c) => c.circular_number),
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -419,7 +340,7 @@ function categorizeCircular(title: string): string {
   if (t.includes("medical") || t.includes("screening") || t.includes("immunization") || t.includes("vaccination")) return "health";
   if (t.includes("payment") || t.includes("refund") || t.includes("pricing") || t.includes("qurbani") || t.includes("adahi") || t.includes("hady")) return "finance";
   if (t.includes("visa") || t.includes("passport")) return "visa";
-  if (t.includes("training") || t.includes("trainer") || t.includes("orientation")) return "training";
+  if (t.includes("training") || t.includes("trainer") || t.includes("orientation")) return "general";
   if (t.includes("waiting list") || t.includes("release")) return "general";
   return "general";
 }
