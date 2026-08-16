@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { IndianRupee, Shield, Check, Info, CreditCard, Sparkles, AlertTriangle, Receipt, QrCode } from "lucide-react";
+import { IndianRupee, Shield, Check, Info, CreditCard, Sparkles, AlertTriangle, Receipt } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -361,21 +361,6 @@ export default function PaymentPage() {
               orgName="Sazo Management Private Limited"
               orgGstin={ORG_GSTIN || undefined}
             />
-
-            <div className="rounded-xl border-2 border-primary/15 bg-primary/[0.03] p-4 text-center space-y-3">
-              <div className="flex items-center justify-center gap-2 text-sm font-semibold text-foreground">
-                <QrCode className="h-4 w-4 text-primary" />
-                Pay via UPI QR
-              </div>
-              <img
-                src="/payments/service-fee-upi-qr.jpeg"
-                alt="ICICI Bank UPI QR code for HajjCare service fees"
-                className="mx-auto w-full max-w-[260px] rounded-lg border bg-white"
-              />
-              <p className="text-xs leading-relaxed text-muted-foreground">
-                Scan with any UPI app and pay ₹{totalAmount.toFixed(2)} (including GST). QR payments are not automatically verified; please keep your UTR/reference number and contact support for an invoice.
-              </p>
-            </div>
 
             {/* Pay Button */}
             <Button
