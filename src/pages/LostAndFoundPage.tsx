@@ -1,0 +1,1266 @@
+import { useState, useEffect, useMemo } from "react";
+import { Link } from "react-router-dom";
+import { z } from "zod";
+import { MainLayout } from "@/components/MainLayout";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  ArrowLeft,
+  Search,
+  Plus,
+  User,
+  Package,
+  MapPin,
+  Phone,
+  Camera,
+  Loader2,
+  CheckCircle2,
+  AlertCircle,
+  Crosshair,
+  Clock,
+  X,
+  RotateCcw,
+  FileText,
+  Paperclip,
+} from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
+import { toast } from "@/hooks/use-toast";
+import { compressImage } from "@/lib/imageCompression";
+import { useUserRole } from "@/hooks/useUserRole";
+import { useAuthContext } from "@/contexts/AuthContext";
+import { ShieldCheck, Lock, HandIcon } from "lucide-react";
+import { ClaimDialog, ClaimsPanel } from "@/components/lost-found/LostFoundClaims";
+import { PilgrimLookup, type PilgrimLookupResult } from "@/components/lost-found/PilgrimLookup";
+
+const REPORTER_STORAGE_KEY = "lost_found_reporter_v1";
+
+// Format current datetime for <input type="datetime-local">
+const nowForInput = () => {
+  const d = new Date();
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+};
+
+// Build WhatsApp click-to-chat URL with pre-filled message
+const buildWhatsAppUrl = (number: string, report: LostFoundReport) => {
+  const clean = number.replace(/\D/g, "");
+  if (!clean) return "#";
+  const subject = report.report_type === "person"
+    ? `Lost person: ${report.person_name}`
+    : `Lost item: ${report.item_name}`;
+  const msg = encodeURIComponent(
+    `Assalamu Alaikum, I saw your report on HajjCare about "${subject}". Can you please provide more details?`
+  );
+  return `https://wa.me/${clean}?text=${msg}`;
+};
+
+type ReportType = "person" | "item";
+type ReportStatus = "open" | "found" | "closed";
+type PostKind = "lost" | "found";
+
+interface LostFoundReport {
+  id: string;
+  report_type: ReportType;
+  post_kind?: PostKind;
+  status: ReportStatus;
+  user_id?: string | null;
+  person_name: string | null;
+  person_age: number | null;
+  person_gender: string | null;
+  person_description: string | null;
+  wearing_description: string | null;
+  item_name: string | null;
+  item_description: string | null;
+  last_seen_location: string;
+  last_seen_at: string | null;
+  photo_url: string | null;
+  reporter_name: string;
+  reporter_mobile?: string | null;
+  reporter_whatsapp?: string | null;
+  notes: string | null;
+  created_at: string;
+  verified_at?: string | null;
+  verified_by?: string | null;
+}
+
+type RpcResult = { success?: boolean; error?: string };
+
+const rpcFailureMessage = (data: unknown): string | undefined => {
+  if (!data || typeof data !== "object") return undefined;
+  const result = data as RpcResult;
+  return result.success === false ? result.error : undefined;
+};
+
+const errorMessage = (error: unknown, fallback: string): string =>
+  error instanceof Error ? error.message : fallback;
+
+const reportSchema = z.object({
+  report_type: z.enum(["person", "item"]),
+  post_kind: z.enum(["lost", "found"]),
+  person_name: z.string().trim().max(100).optional(),
+  person_age: z.number().int().min(0).max(120).optional(),
+  person_gender: z.string().max(20).optional(),
+  person_description: z.string().trim().max(500).optional(),
+  wearing_description: z.string().trim().max(300).optional(),
+  item_name: z.string().trim().max(100).optional(),
+  item_description: z.string().trim().max(500).optional(),
+  last_seen_location: z.string().trim().min(2, "Location required").max(200),
+  last_seen_at: z.string().optional(),
+  reporter_name: z.string().trim().min(2, "Name required").max(100),
+  reporter_mobile: z.string().trim().min(7, "Mobile required").max(20),
+  reporter_whatsapp: z.string().trim().max(20).optional(),
+  notes: z.string().trim().max(500).optional(),
+});
+
+const LostAndFoundPage = () => {
+  const { language, isRTL } = useLanguage();
+  const { isAdmin } = useUserRole();
+  const { user } = useAuthContext();
+  const [reports, setReports] = useState<LostFoundReport[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [filterType, setFilterType] = useState<"all" | ReportType>("all");
+  const [filterKind, setFilterKind] = useState<"all" | PostKind>("all");
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [pdfThumb, setPdfThumb] = useState<string | null>(null);
+  const [pdfPageCount, setPdfPageCount] = useState<number>(0);
+  const [locating, setLocating] = useState(false);
+  const [gpsCoords, setGpsCoords] = useState<{ lat: number; lng: number; accuracy: number } | null>(null);
+  const [claimTarget, setClaimTarget] = useState<LostFoundReport | null>(null);
+
+  const [form, setForm] = useState({
+    report_type: "person" as ReportType,
+    post_kind: "lost" as PostKind,
+    person_name: "",
+    person_age: "",
+    person_gender: "male",
+    person_description: "",
+    wearing_description: "",
+    item_name: "",
+    item_description: "",
+    last_seen_location: "",
+    last_seen_at: "",
+    reporter_name: "",
+    reporter_mobile: "",
+    reporter_whatsapp: "",
+    notes: "",
+  });
+
+  const applyPilgrimLookup = (pilgrim: PilgrimLookupResult) => {
+    setForm((prev) => ({
+      ...prev,
+      person_name: pilgrim.haji_name,
+      reporter_name: prev.reporter_name || pilgrim.contact_person_name || "",
+      reporter_mobile: prev.reporter_mobile || pilgrim.contact_person_mobile || "",
+      notes: [prev.notes, pilgrim.cover_number ? `Verified Cover: ${pilgrim.cover_number}` : "", pilgrim.hajj_group_number ? `Group: ${pilgrim.hajj_group_number}` : "", pilgrim.building_hotel_camp ? `Camp: ${pilgrim.building_hotel_camp}` : "", pilgrim.nationality ? `Nationality: ${pilgrim.nationality}` : ""].filter(Boolean).join(" · ").slice(0, 500),
+    }));
+  };
+
+  // Prefill reporter info + time when dialog opens
+  useEffect(() => {
+    if (!dialogOpen) return;
+    setForm((prev) => {
+      const next = { ...prev };
+      if (!next.last_seen_at) next.last_seen_at = nowForInput();
+      // Prefill from localStorage
+      try {
+        const cached = JSON.parse(localStorage.getItem(REPORTER_STORAGE_KEY) || "null");
+        if (cached) {
+          if (!next.reporter_name && cached.name) next.reporter_name = cached.name;
+          if (!next.reporter_mobile && cached.mobile) next.reporter_mobile = cached.mobile;
+          if (!next.reporter_whatsapp && cached.whatsapp) next.reporter_whatsapp = cached.whatsapp;
+        }
+      } catch {/* ignore */}
+      return next;
+    });
+    // Prefill from logged-in profile (overrides empty fields only)
+    (async () => {
+      if (!user?.id) return;
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("full_name, phone")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      if (!profile) return;
+      setForm((prev) => ({
+        ...prev,
+        reporter_name: prev.reporter_name || profile.full_name || "",
+        reporter_mobile: prev.reporter_mobile || profile.phone || "",
+      }));
+    })();
+  }, [dialogOpen, user?.id]);
+
+
+  const t = useMemo(() => {
+    const labels = {
+      title: { en: "Lost & Found", ar: "المفقودات", ur: "گم شدہ اور پایا گیا", hi: "खोया और पाया", ta: "தொலைந்தது & கிடைத்தது", te: "పోగొట్టుకున్నవి", mr: "हरवले व सापडले", bn: "হারানো ও প্রাপ্ত", or: "ହଜିଲା ଓ ମିଳିଲା", ml: "നഷ്ടപ്പെട്ടത്", pa: "ਗੁਆਚਿਆ ਅਤੇ ਮਿਲਿਆ" },
+      subtitle: { en: "Report missing pilgrims or lost items", ar: "أبلغ عن الحجاج المفقودين أو الأشياء المفقودة", ur: "گم شدہ حجاج یا اشیاء کی اطلاع دیں", hi: "लापता हाजी या खोए सामान की रिपोर्ट करें", ta: "காணாமல் போனவர்களை அறிக்கையிடுங்கள்", te: "పోగొట్టుకున్న యాత్రికులను నివేదించండి", mr: "हरवलेले हाजी किंवा वस्तू नोंदवा", bn: "হারিয়ে যাওয়া হাজী বা সামগ্রী জানান", or: "ହଜିଯାଇଥିବା ହାଜି କିମ୍ବା ସାମଗ୍ରୀ ରିପୋର୍ଟ କରନ୍ତୁ", ml: "നഷ്ടപ്പെട്ട തീർത്ഥാടകർ റിപ്പോർട്ട് ചെയ്യുക", pa: "ਗੁਆਚੇ ਹਾਜੀ ਜਾਂ ਸਮਾਨ ਦੀ ਰਿਪੋਰਟ ਕਰੋ" },
+      back: { en: "Back", ar: "رجوع", ur: "واپس", hi: "वापस", ta: "பின்", te: "వెనక్కి", mr: "मागे", bn: "ফিরে", or: "ପଛକୁ", ml: "തിരികെ", pa: "ਵਾਪਸ" },
+      reportNew: { en: "Report Lost", ar: "أبلغ عن مفقود", ur: "گم شدہ کی اطلاع دیں", hi: "खोया दर्ज करें", ta: "புகாரளி", te: "నివేదించండి", mr: "नोंदवा", bn: "রিপোর্ট", or: "ରିପୋର୍ଟ", ml: "റിപ്പോർട്ട്", pa: "ਰਿਪੋਰਟ ਕਰੋ" },
+      searchPlaceholder: { en: "Search reports...", ar: "بحث...", ur: "تلاش کریں...", hi: "खोजें...", ta: "தேடு...", te: "శోధించండి...", mr: "शोधा...", bn: "অনুসন্ধান...", or: "ସନ୍ଧାନ...", ml: "തിരയുക...", pa: "ਖੋਜੋ..." },
+      all: { en: "All", ar: "الكل", ur: "تمام", hi: "सभी", ta: "அனைத்தும்", te: "అన్నీ", mr: "सर्व", bn: "সব", or: "ସବୁ", ml: "എല്ലാം", pa: "ਸਾਰੇ" },
+      person: { en: "Person", ar: "شخص", ur: "شخص", hi: "व्यक्ति", ta: "நபர்", te: "వ్యక్తి", mr: "व्यक्ती", bn: "ব্যক্তি", or: "ବ୍ୟକ୍ତି", ml: "വ്യക്തി", pa: "ਵਿਅਕਤੀ" },
+      item: { en: "Item", ar: "شيء", ur: "چیز", hi: "सामान", ta: "பொருள்", te: "వస్తువు", mr: "वस्तू", bn: "জিনিস", or: "ସାମଗ୍ରୀ", ml: "സാധനം", pa: "ਸਮਾਨ" },
+      noReports: { en: "No reports yet. Be the first to report.", ar: "لا توجد تقارير بعد", ur: "ابھی کوئی رپورٹ نہیں", hi: "अभी कोई रिपोर्ट नहीं", ta: "இன்னும் அறிக்கை இல்லை", te: "ఇంకా నివేదికలు లేవు", mr: "अद्याप अहवाल नाहीत", bn: "এখনো কোনো রিপোর্ট নেই", or: "ଏପର୍ଯ୍ୟନ୍ତ କିଛି ନାହିଁ", ml: "ഇതുവരെ റിപ്പോർട്ടുകളില്ല", pa: "ਅਜੇ ਕੋਈ ਰਿਪੋਰਟ ਨਹੀਂ" },
+      formTitle: { en: "Report Lost Person or Item", ar: "أبلغ عن شخص أو شيء مفقود", ur: "گم شدہ شخص یا چیز کی اطلاع دیں", hi: "खोए हुए व्यक्ति या सामान की रिपोर्ट करें", ta: "தொலைந்த நபர் அல்லது பொருளை அறிக்கையிடுங்கள்", te: "పోగొట్టుకున్న వ్యక్తి లేదా వస్తువును నివేదించండి", mr: "हरवलेल्या व्यक्ती किंवा वस्तूची नोंदवा", bn: "হারিয়ে যাওয়া ব্যক্তি বা জিনিস রিপোর্ট করুন", or: "ହଜିଯାଇଥିବା ବ୍ୟକ୍ତି କିମ୍ବା ସାମଗ୍ରୀ ରିପୋର୍ଟ କରନ୍ତୁ", ml: "നഷ്ടപ്പെട്ടത് റിപ്പോർട്ട് ചെയ്യുക", pa: "ਗੁਆਚੇ ਵਿਅਕਤੀ ਜਾਂ ਸਮਾਨ ਦੀ ਰਿਪੋਰਟ ਕਰੋ" },
+      formDescription: { en: "Fill in details so others can help find them.", ar: "املأ التفاصيل ليساعد الآخرون في العثور عليه", ur: "تفصیلات بھریں تاکہ دوسرے ڈھونڈنے میں مدد کریں", hi: "विवरण भरें ताकि अन्य लोग ढूंढने में मदद कर सकें", ta: "மற்றவர்கள் கண்டுபிடிக்க உதவ விவரங்களை நிரப்பவும்", te: "ఇతరులు కనుగొనడంలో సహాయపడేలా వివరాలు పూరించండి", mr: "इतरांना शोधण्यात मदत करण्यासाठी तपशील भरा", bn: "বিস্তারিত পূরণ করুন যাতে অন্যরা খুঁজে পেতে সাহায্য করে", or: "ଅନ୍ୟମାନେ ଖୋଜିବାରେ ସାହାଯ୍ୟ କରିବାକୁ ବିବରଣୀ ପୂରଣ କରନ୍ତୁ", ml: "മറ്റുള്ളവർ കണ്ടെത്താൻ വിശദാംശങ്ങൾ പൂരിപ്പിക്കുക", pa: "ਵੇਰਵੇ ਭਰੋ ਤਾਂ ਜੋ ਦੂਜੇ ਲੋਕ ਲੱਭਣ ਵਿੱਚ ਮਦਦ ਕਰ ਸਕਣ" },
+      reportType: { en: "What is lost?", ar: "ما المفقود؟", ur: "کیا گم ہوا؟", hi: "क्या खो गया?", ta: "என்ன தொலைந்தது?", te: "ఏది పోగొట్టుకున్నారు?", mr: "काय हरवले?", bn: "কী হারিয়েছে?", or: "କଣ ହଜିଲା?", ml: "എന്താണ് നഷ്ടപ്പെട്ടത്?", pa: "ਕੀ ਗੁਆਚਿਆ?" },
+      personName: { en: "Full Name", ar: "الاسم الكامل", ur: "پورا نام", hi: "पूरा नाम", ta: "பெயர்", te: "పూర్తి పేరు", mr: "पूर्ण नाव", bn: "পুরো নাম", or: "ପୂର୍ଣ୍ଣ ନାମ", ml: "പൂർണ്ണ പേര്", pa: "ਪੂਰਾ ਨਾਮ" },
+      age: { en: "Age", ar: "العمر", ur: "عمر", hi: "उम्र", ta: "வயது", te: "వయస్సు", mr: "वय", bn: "বয়স", or: "ବୟସ", ml: "പ്രായം", pa: "ਉਮਰ" },
+      gender: { en: "Gender", ar: "الجنس", ur: "جنس", hi: "लिंग", ta: "பாலினம்", te: "లింగం", mr: "लिंग", bn: "লিঙ্গ", or: "ଲିଙ୍ଗ", ml: "ലിംഗം", pa: "ਲਿੰਗ" },
+      male: { en: "Male", ar: "ذكر", ur: "مرد", hi: "पुरुष", ta: "ஆண்", te: "పురుషుడు", mr: "पुरुष", bn: "পুরুষ", or: "ପୁରୁଷ", ml: "പുരുഷൻ", pa: "ਮਰਦ" },
+      female: { en: "Female", ar: "أنثى", ur: "عورت", hi: "महिला", ta: "பெண்", te: "స్త్రీ", mr: "महिला", bn: "মহিলা", or: "ମହିଳା", ml: "സ്ത്രീ", pa: "ਔਰਤ" },
+      personDesc: { en: "Description (height, build, identifying marks)", ar: "الوصف", ur: "تفصیل", hi: "विवरण (कद, निशान)", ta: "விவரம்", te: "వివరణ", mr: "वर्णन", bn: "বিবরণ", or: "ବର୍ଣ୍ଣନା", ml: "വിവരണം", pa: "ਵੇਰਵਾ" },
+      wearing: { en: "What were they wearing?", ar: "ماذا كان يرتدي؟", ur: "کیا پہن رکھا تھا؟", hi: "क्या पहना था?", ta: "என்ன அணிந்திருந்தார்?", te: "ఏమి ధరించారు?", mr: "काय परिधान केले होते?", bn: "কী পরেছিল?", or: "କଣ ପିନ୍ଧିଥିଲେ?", ml: "എന്ത് ധരിച്ചിരുന്നു?", pa: "ਕੀ ਪਹਿਨਿਆ ਸੀ?" },
+      itemName: { en: "Item Name", ar: "اسم الشيء", ur: "چیز کا نام", hi: "सामान का नाम", ta: "பொருள் பெயர்", te: "వస్తువు పేరు", mr: "वस्तूचे नाव", bn: "জিনিসের নাম", or: "ସାମଗ୍ରୀ ନାମ", ml: "സാധനത്തിന്റെ പേര്", pa: "ਸਮਾਨ ਦਾ ਨਾਮ" },
+      itemDesc: { en: "Description (color, brand, contents)", ar: "الوصف", ur: "تفصیل", hi: "विवरण (रंग, ब्रांड)", ta: "விவரம்", te: "వివరణ", mr: "वर्णन", bn: "বিবরণ", or: "ବର୍ଣ୍ଣନା", ml: "വിവരണം", pa: "ਵੇਰਵਾ" },
+      lastLocation: { en: "Last Seen Location", ar: "آخر موقع", ur: "آخری مقام", hi: "आखिरी जगह", ta: "கடைசி இடம்", te: "చివరి ప్రదేశం", mr: "शेवटची जागा", bn: "শেষ স্থান", or: "ଶେଷ ସ୍ଥାନ", ml: "അവസാന സ്ഥലം", pa: "ਆਖਰੀ ਸਥਾਨ" },
+      lastTime: { en: "Last Seen Time", ar: "آخر وقت", ur: "آخری وقت", hi: "आखिरी समय", ta: "கடைசி நேரம்", te: "చివరి సమయం", mr: "शेवटचा वेळ", bn: "শেষ সময়", or: "ଶେଷ ସମୟ", ml: "അവസാന സമയം", pa: "ਆਖਰੀ ਸਮਾਂ" },
+      photo: { en: "Upload Photo", ar: "رفع صورة", ur: "تصویر اپ لوڈ", hi: "फोटो अपलोड", ta: "புகைப்படம்", te: "ఫోటో", mr: "फोटो अपलोड", bn: "ছবি আপলোড", or: "ଫଟୋ", ml: "ഫോട്ടോ", pa: "ਫੋਟੋ ਅੱਪਲੋਡ" },
+      reporterName: { en: "Your Name", ar: "اسمك", ur: "آپ کا نام", hi: "आपका नाम", ta: "உங்கள் பெயர்", te: "మీ పేరు", mr: "तुमचे नाव", bn: "আপনার নাম", or: "ଆପଣଙ୍କ ନାମ", ml: "നിങ്ങളുടെ പേര്", pa: "ਤੁਹਾਡਾ ਨਾਮ" },
+      mobile: { en: "Mobile Number", ar: "رقم الجوال", ur: "موبائل نمبر", hi: "मोबाइल नंबर", ta: "மொபைல் எண்", te: "మొబైల్ నంబర్", mr: "मोबाइल क्रमांक", bn: "মোবাইল নম্বর", or: "ମୋବାଇଲ ନମ୍ବର", ml: "മൊബൈൽ", pa: "ਮੋਬਾਈਲ ਨੰਬਰ" },
+      whatsapp: { en: "WhatsApp (optional)", ar: "واتساب", ur: "واٹس ایپ", hi: "व्हाट्सएप", ta: "வாட்ஸ்அப்", te: "వాట్సాప్", mr: "व्हॉट्सअॅप", bn: "হোয়াটসঅ্যাপ", or: "ୱାଟସଆପ", ml: "വാട്ട്‌സാപ്പ്", pa: "ਵਟਸਐਪ" },
+      useGps: { en: "Use my current GPS", ar: "استخدم موقعي", ur: "میرا GPS لیں", hi: "मेरा GPS लें", ta: "எனது GPS", te: "నా GPS", mr: "माझे GPS", bn: "আমার GPS", or: "ମୋ GPS", ml: "എന്റെ GPS", pa: "ਮੇਰਾ GPS" },
+      locating: { en: "Locating…", ar: "جاري التحديد…", ur: "تلاش جاری…", hi: "ढूंढ रहे हैं…", ta: "தேடுகிறது…", te: "గుర్తిస్తోంది…", mr: "शोधत आहे…", bn: "খুঁজছি…", or: "ଖୋଜୁଛି…", ml: "കണ്ടെത്തുന്നു…", pa: "ਲੱਭ ਰਿਹਾ…" },
+      locCaptured: { en: "Location captured", ar: "تم تحديد الموقع", ur: "مقام محفوظ", hi: "स्थान कैप्चर हुआ", ta: "இடம் சேமிக்கப்பட்டது", te: "ప్రదేశం సేవ్", mr: "स्थान मिळाले", bn: "অবস্থান নেওয়া হয়েছে", or: "ସ୍ଥାନ ସଂଗୃହୀତ", ml: "സ്ഥാനം ലഭിച്ചു", pa: "ਥਾਂ ਮਿਲੀ" },
+      locError: { en: "Could not get GPS", ar: "تعذر تحديد الموقع", ur: "GPS نہیں ملا", hi: "GPS नहीं मिला", ta: "GPS கிடைக்கவில்லை", te: "GPS దొరకలేదు", mr: "GPS मिळाले नाही", bn: "GPS পাওয়া যায়নি", or: "GPS ମିଳିଲା ନାହିଁ", ml: "GPS ലഭിച്ചില്ല", pa: "GPS ਨਹੀਂ ਮਿਲਿਆ" },
+      locUnsupported: { en: "GPS not supported on this device", ar: "GPS غير مدعوم", ur: "GPS سپورٹ نہیں", hi: "GPS समर्थित नहीं", ta: "GPS ஆதரிக்கவில்லை", te: "GPS మద్దతు లేదు", mr: "GPS समर्थन नाही", bn: "GPS সমর্থিত নয়", or: "GPS ସମର୍ଥିତ ନୁହେଁ", ml: "GPS പിന്തുണയില്ല", pa: "GPS ਸਮਰਥਨ ਨਹੀਂ" },
+      takePhoto: { en: "Take photo or choose file", ar: "التقط صورة", ur: "تصویر لیں", hi: "फोटो लें या फ़ाइल चुनें", ta: "புகைப்படம் எடுக்க", te: "ఫోటో తీయండి", mr: "फोटो काढा", bn: "ছবি তুলুন", or: "ଫଟୋ ନିଅନ୍ତୁ", ml: "ഫോട്ടോ എടുക്കുക", pa: "ਫੋਟੋ ਖਿੱਚੋ" },
+      removePhoto: { en: "Remove", ar: "إزالة", ur: "ہٹائیں", hi: "हटाएं", ta: "அகற்று", te: "తీసివేయండి", mr: "काढून टाका", bn: "সরান", or: "ହଟାନ୍ତୁ", ml: "നീക്കം", pa: "ਹਟਾਓ" },
+      replacePhoto: { en: "Replace", ar: "استبدال", ur: "بدلیں", hi: "बदलें", ta: "மாற்று", te: "మార్చండి", mr: "बदला", bn: "প্রতিস্থাপন", or: "ବଦଳାନ୍ତୁ", ml: "മാറ്റുക", pa: "ਬਦਲੋ" },
+      gpsAccuracy: { en: "Accuracy", ar: "الدقة", ur: "درستگی", hi: "सटीकता", ta: "துல்லியம்", te: "ఖచ్చితత్వం", mr: "अचूकता", bn: "নির্ভুলতা", or: "ସଠିକତା", ml: "കൃത്യത", pa: "ਸਟੀਕਤਾ" },
+      prefilled: { en: "Prefilled — edit if needed", ar: "تم ملؤها — يمكن التعديل", ur: "پہلے سے بھرا — ضرورت ہو تو بدلیں", hi: "पहले से भरा — बदल सकते हैं", ta: "முன்-நிரப்பப்பட்டது", te: "ముందుగా నింపబడింది", mr: "आधीच भरले — बदल शकता", bn: "আগে থেকে পূরণ — পরিবর্তন করুন", or: "ପୂର୍ବ-ପୂରଣ", ml: "മുൻകൂട്ടി പൂരിപ്പിച്ചു", pa: "ਪਹਿਲਾਂ ਭਰਿਆ — ਬਦਲ ਸਕਦੇ ਹੋ" },
+      notes: { en: "Additional Notes", ar: "ملاحظات", ur: "اضافی نوٹس", hi: "अतिरिक्त नोट्स", ta: "குறிப்புகள்", te: "గమనికలు", mr: "टिपा", bn: "অতিরিক্ত নোট", or: "ଅତିରିକ୍ତ ଟିପ୍ପଣୀ", ml: "കുറിപ്പുകൾ", pa: "ਨੋਟਸ" },
+      submit: { en: "Submit Report", ar: "إرسال", ur: "جمع کرائیں", hi: "रिपोर्ट जमा करें", ta: "சமர்ப்பி", te: "సమర్పించండి", mr: "सबमिट करा", bn: "জমা দিন", or: "ଦାଖଲ କରନ୍ତୁ", ml: "സമർപ്പിക്കുക", pa: "ਜਮ੍ਹਾਂ ਕਰੋ" },
+      cancel: { en: "Cancel", ar: "إلغاء", ur: "منسوخ", hi: "रद्द करें", ta: "ரத்து", te: "రద్దు", mr: "रद्द", bn: "বাতিল", or: "ବାତିଲ", ml: "റദ്ദാക്കുക", pa: "ਰੱਦ" },
+      success: { en: "Report submitted successfully!", ar: "تم إرسال التقرير", ur: "رپورٹ جمع ہو گئی", hi: "रिपोर्ट जमा हो गई", ta: "அறிக்கை சமர்ப்பிக்கப்பட்டது", te: "నివేదిక సమర్పించబడింది", mr: "अहवाल सबमिट झाला", bn: "রিপোর্ট জমা হয়েছে", or: "ରିପୋର୍ଟ ଦାଖଲ ହେଲା", ml: "റിപ്പോർട്ട് സമർപ്പിച്ചു", pa: "ਰਿਪੋਰਟ ਜਮ੍ਹਾਂ ਹੋਈ" },
+      contact: { en: "Contact", ar: "اتصال", ur: "رابطہ", hi: "संपर्क", ta: "தொடர்பு", te: "సంప్రదించండి", mr: "संपर्क", bn: "যোগাযোগ", or: "ଯୋଗାଯୋଗ", ml: "ബന്ധപ്പെടുക", pa: "ਸੰਪਰਕ" },
+      whatsappContact: { en: "WhatsApp", ar: "واتساب", ur: "واٹس ایپ", hi: "व्हाट्सएप", ta: "வாட்ஸ்அப்", te: "వాట్సాప్", mr: "व्हॉट्सअॅप", bn: "হোয়াটসঅ্যাপ", or: "ୱାଟସଆପ", ml: "വാട്ട്‌സാപ്പ്", pa: "ਵਟਸਐਪ" },
+      open: { en: "Open", ar: "مفتوح", ur: "کھلا", hi: "खुला", ta: "திறந்தது", te: "ఓపెన్", mr: "उघडे", bn: "খোলা", or: "ଖୋଲା", ml: "തുറന്നു", pa: "ਖੁੱਲ੍ਹਾ" },
+      found: { en: "Found", ar: "وُجد", ur: "مل گیا", hi: "मिल गया", ta: "கிடைத்தது", te: "దొరికింది", mr: "सापडले", bn: "পাওয়া গেছে", or: "ମିଳିଲା", ml: "കണ്ടെത്തി", pa: "ਮਿਲ ਗਿਆ" },
+      markFound: { en: "Mark as Found", ar: "تم العثور عليه", ur: "مل گیا — نشان زد کریں", hi: "मिल गया — चिह्नित करें", ta: "கிடைத்தது எனக் குறி", te: "దొరికింది గా గుర్తించు", mr: "सापडले म्हणून खूण", bn: "পাওয়া গেছে চিহ্নিত", or: "ମିଳିଲା ଚିହ୍ନଟ", ml: "കണ്ടെത്തി അടയാളപ്പെടുത്തുക", pa: "ਮਿਲ ਗਿਆ ਨਿਸ਼ਾਨ ਲਾਓ" },
+      markOpen: { en: "Reopen", ar: "إعادة فتح", ur: "دوبارہ کھولیں", hi: "फिर से खोलें", ta: "மீண்டும் திற", te: "మళ్ళీ తెరువు", mr: "पुन्हा उघडा", bn: "পুনরায় খুলুন", or: "ପୁଣି ଖୋଲ", ml: "വീണ്ടും തുറക്കുക", pa: "ਮੁੜ ਖੋਲ੍ਹੋ" },
+      foundConfirm: { en: "Mark this report as found? Others searching will see it is resolved.", ar: "هل تم العثور؟", ur: "کیا یہ مل گیا؟ دوسرے دیکھ سکیں گے", hi: "क्या यह मिल गया है? दूसरे ढूंढने वालों को पता चल जाएगा", ta: "கிடைத்ததாகக் குறிக்கவா?", te: "దొరికినట్లు గుర్తించాలా?", mr: "सापडले म्हणून चिन्हांकित करायचे?", bn: "পাওয়া গেছে চিহ্নিত?", or: "ମିଳିଲା ଭାବେ ଚିହ୍ନଟ?", ml: "കണ്ടെത്തിയതായി അടയാളപ്പെടുത്തണോ?", pa: "ਮਿਲ ਗਿਆ ਵਜੋਂ ਨਿਸ਼ਾਨ?" },
+      statusUpdated: { en: "Status updated. Thank you!", ar: "تم التحديث", ur: "اسٹیٹس اپڈیٹ ہو گیا — شکریہ!", hi: "स्थिति अपडेट हुई — शुक्रिया!", ta: "புதுப்பிக்கப்பட்டது", te: "అప్‌డేట్ అయింది", mr: "स्थिती अपडेट", bn: "স্ট্যাটাস আপডেট", or: "ସ୍ଥିତି ଅପଡେଟ୍", ml: "സ്ഥിതി പുതുക്കി", pa: "ਅਪਡੇਟ ਹੋਇਆ" },
+      verify: { en: "Verify & Lock", ar: "تحقق وأقفل", ur: "تصدیق اور لاک", hi: "सत्यापित करें और लॉक करें", ta: "சரிபார்த்து பூட்டு", te: "ధృవీకరించి లాక్", mr: "सत्यापन व लॉक", bn: "যাচাই ও লক", or: "ଯାଞ୍ଚ ଓ ଲକ", ml: "പരിശോധിച്ച് ലോക്ക്", pa: "ਪੁਸ਼ਟੀ ਅਤੇ ਲਾਕ" },
+      verified: { en: "Verified", ar: "موثق", ur: "تصدیق شدہ", hi: "सत्यापित", ta: "சரிபார்க்கப்பட்டது", te: "ధృవీకరించబడింది", mr: "सत्यापित", bn: "যাচাইকৃত", or: "ଯାଞ୍ଚିତ", ml: "സ്ഥിരീകരിച്ചു", pa: "ਪੁਸ਼ਟੀਸ਼ੁਦਾ" },
+      verifyConfirm: { en: "Verify this report? Once verified, the status will be permanently locked and cannot be changed.", ar: "هل تتحقق؟ سيتم القفل بعد ذلك", ur: "تصدیق کریں؟ اس کے بعد اسٹیٹس مستقل لاک ہو جائے گا", hi: "सत्यापित करें? इसके बाद स्थिति स्थायी रूप से लॉक हो जाएगी", ta: "சரிபார்க்கவா? பின் பூட்டப்படும்", te: "ధృవీకరించాలా? లాక్ అవుతుంది", mr: "सत्यापित करायचे?", bn: "যাচাই?", or: "ଯାଞ୍ଚ?", ml: "സ്ഥിരീകരിക്കണോ?", pa: "ਪੁਸ਼ਟੀ ਕਰੀਏ?" },
+      unlock: { en: "Unlock (Admin)", ar: "إلغاء القفل", ur: "ان لاک", hi: "अनलॉक", ta: "திற", te: "అన్‌లాక్", mr: "अनलॉक", bn: "আনলক", or: "ଅନଲକ", ml: "അൺലോക്ക്", pa: "ਅਨਲਾਕ" },
+      verifiedToast: { en: "Verified and locked.", ar: "تم القفل", ur: "تصدیق ہو گئی اور لاک ہو گیا", hi: "सत्यापित और लॉक हुआ", ta: "சரிபார்க்கப்பட்டது", te: "ధృవీకరించబడింది", mr: "सत्यापित", bn: "যাচাইকৃত", or: "ଯାଞ୍ଚିତ", ml: "സ്ഥിരീകരിച്ചു", pa: "ਪੁਸ਼ਟੀ ਹੋਈ" },
+      lockedHint: { en: "Locked by verifier", ar: "مغلق", ur: "لاک شدہ", hi: "लॉक", ta: "பூட்டப்பட்டது", te: "లాక్", mr: "लॉक", bn: "লক", or: "ଲକ", ml: "ലോക്ക്", pa: "ਲਾਕ" },
+    };
+    const get = (key: keyof typeof labels) =>
+      (labels[key] as Record<string, string>)[language] || (labels[key] as Record<string, string>).en;
+    return { get };
+  }, [language]);
+
+  const fetchReports = async () => {
+    setLoading(true);
+    // Only admins can read reporter contact details in bulk from the base table.
+    // Everyone else (including coordinators and non-owner authenticated users)
+    // uses the contact-free public view to protect reporter privacy. Non-admin
+    // users who need to reach a reporter must go through the claim workflow.
+    const query = isAdmin
+      ? supabase.from("lost_and_found").select("*")
+      : supabase.from("lost_and_found_public").select("*");
+
+    const { data, error } = await query
+      .in("status", ["open", "found"])
+      .order("created_at", { ascending: false })
+      .limit(100);
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      setReports((data ?? []) as LostFoundReport[]);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchReports();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAdmin]);
+
+  const handleMarkStatus = async (reportId: string, newStatus: "open" | "found") => {
+    if (newStatus === "found" && !confirm(t.get("foundConfirm"))) return;
+    // Optimistic update
+    setReports((prev) => prev.map((r) => (r.id === reportId ? { ...r, status: newStatus } : r)));
+    const { data, error } = await supabase.rpc("mark_lost_found_status", {
+      p_report_id: reportId,
+      p_new_status: newStatus,
+    });
+    const rpcError = rpcFailureMessage(data);
+    if (error || rpcError) {
+      toast({
+        title: "Error",
+        description: error?.message || rpcError || "Could not update",
+        variant: "destructive",
+      });
+      fetchReports();
+    } else {
+      toast({ title: t.get("statusUpdated") });
+    }
+  };
+
+  const handleVerify = async (reportId: string) => {
+    if (!confirm(t.get("verifyConfirm"))) return;
+    const { data, error } = await supabase.rpc("verify_lost_found_report", { p_report_id: reportId });
+    const rpcError = rpcFailureMessage(data);
+    if (error || rpcError) {
+      toast({ title: "Error", description: error?.message || rpcError || "Could not verify", variant: "destructive" });
+    } else {
+      toast({ title: t.get("verifiedToast") });
+      fetchReports();
+    }
+  };
+
+  const handleUnverify = async (reportId: string) => {
+    const { data, error } = await supabase.rpc("unverify_lost_found_report", { p_report_id: reportId });
+    const rpcError = rpcFailureMessage(data);
+    if (error || rpcError) {
+      toast({ title: "Error", description: error?.message || rpcError || "Could not unlock", variant: "destructive" });
+    } else {
+      fetchReports();
+    }
+  };
+
+  const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 10 * 1024 * 1024) {
+      toast({ title: "File too large", description: "Max 10MB", variant: "destructive" });
+      return;
+    }
+    const isImage = file.type.startsWith("image/");
+    const isPdf = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
+    if (!isImage && !isPdf) {
+      toast({ title: "Unsupported file", description: "Only images or PDF allowed", variant: "destructive" });
+      return;
+    }
+    if (isImage) {
+      try {
+        const compressed = await compressImage(file, 2);
+        setPhotoFile(compressed);
+        setPhotoPreview(URL.createObjectURL(compressed));
+        setPdfThumb(null);
+        setPdfPageCount(0);
+        return;
+      } catch {
+        // fall through to raw
+      }
+    }
+    setPhotoFile(file);
+    setPhotoPreview(URL.createObjectURL(file));
+    setPdfThumb(null);
+    setPdfPageCount(0);
+    if (isPdf) {
+      try {
+        const pdfjsLib = await import("pdfjs-dist");
+        const workerUrl = (await import("pdfjs-dist/build/pdf.worker.min.mjs?url")).default;
+        pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl;
+        const buf = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+        setPdfPageCount(pdf.numPages);
+        const page = await pdf.getPage(1);
+        const viewport = page.getViewport({ scale: 1.5 });
+        const canvas = document.createElement("canvas");
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        const ctx = canvas.getContext("2d")!;
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        await page.render({ canvas, canvasContext: ctx, viewport }).promise;
+        setPdfThumb(canvas.toDataURL("image/jpeg", 0.8));
+      } catch (err) {
+        console.error("PDF thumbnail failed", err);
+      }
+    }
+  };
+
+  const handleRemovePhoto = () => {
+    if (photoPreview) {
+      URL.revokeObjectURL(photoPreview);
+    }
+    setPhotoFile(null);
+    setPhotoPreview(null);
+    setPdfThumb(null);
+    setPdfPageCount(0);
+  };
+
+  const handleCaptureLocation = () => {
+    if (!navigator.geolocation) {
+      toast({ title: t.get("locUnsupported"), variant: "destructive" });
+      return;
+    }
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const lat = +pos.coords.latitude.toFixed(5);
+        const lng = +pos.coords.longitude.toFixed(5);
+        const acc = Math.round(pos.coords.accuracy);
+        setGpsCoords({ lat, lng, accuracy: acc });
+        const coordStr = `(${lat}, ${lng})`;
+        setForm((prev) => {
+          const base = prev.last_seen_location.replace(/\s*\([-\d.,\s]+\)\s*$/, "").trim();
+          return { ...prev, last_seen_location: base ? `${base} ${coordStr}` : `GPS ${coordStr}` };
+        });
+        toast({ title: t.get("locCaptured"), description: `±${acc}m` });
+        setLocating(false);
+      },
+      (err) => {
+        setLocating(false);
+        toast({
+          title: t.get("locError"),
+          description: err.message,
+          variant: "destructive",
+        });
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 }
+    );
+  };
+
+  const resetForm = () => {
+    setForm({
+      report_type: "person",
+      post_kind: "lost",
+      person_name: "",
+      person_age: "",
+      person_gender: "male",
+      person_description: "",
+      wearing_description: "",
+      item_name: "",
+      item_description: "",
+      last_seen_location: "",
+      last_seen_at: "",
+      reporter_name: "",
+      reporter_mobile: "",
+      reporter_whatsapp: "",
+      notes: "",
+    });
+    setPhotoFile(null);
+    setPhotoPreview(null);
+    setGpsCoords(null);
+  };
+
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+
+    try {
+      const payload = {
+        report_type: form.report_type,
+        post_kind: form.post_kind,
+        person_name: form.report_type === "person" ? form.person_name || undefined : undefined,
+        person_age: form.report_type === "person" && form.person_age ? Number(form.person_age) : undefined,
+        person_gender: form.report_type === "person" ? form.person_gender : undefined,
+        person_description: form.report_type === "person" ? form.person_description || undefined : undefined,
+        wearing_description: form.report_type === "person" ? form.wearing_description || undefined : undefined,
+        item_name: form.report_type === "item" ? form.item_name || undefined : undefined,
+        item_description: form.report_type === "item" ? form.item_description || undefined : undefined,
+        last_seen_location: form.last_seen_location,
+        last_seen_at: form.last_seen_at || undefined,
+        reporter_name: form.reporter_name,
+        reporter_mobile: form.reporter_mobile,
+        reporter_whatsapp: form.reporter_whatsapp || undefined,
+        notes: form.notes || undefined,
+      };
+
+      const parsed = reportSchema.safeParse(payload);
+      if (!parsed.success) {
+        const firstErr = Object.values(parsed.error.flatten().fieldErrors)[0]?.[0];
+        toast({ title: "Validation Error", description: firstErr || "Check fields", variant: "destructive" });
+        setSubmitting(false);
+        return;
+      }
+
+      let photo_url: string | null = null;
+      let photoUploadFailed = false;
+      if (photoFile) {
+        try {
+          const ext = (photoFile.name.split(".").pop() || "jpg").toLowerCase();
+          const fileName = `${crypto.randomUUID()}.${ext}`;
+          const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+          const apiKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+          const { data: { session } } = await supabase.auth.getSession();
+          const authToken = session?.access_token || apiKey;
+
+          setUploadProgress(0);
+          await new Promise<void>((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", `${supabaseUrl}/storage/v1/object/lost-found-photos/${fileName}`);
+            xhr.setRequestHeader("Authorization", `Bearer ${authToken}`);
+            xhr.setRequestHeader("apikey", apiKey);
+            xhr.setRequestHeader("x-upsert", "false");
+            xhr.setRequestHeader("cache-control", "3600");
+            if (photoFile.type) xhr.setRequestHeader("Content-Type", photoFile.type);
+            xhr.upload.onprogress = (ev) => {
+              if (ev.lengthComputable) {
+                setUploadProgress(Math.round((ev.loaded / ev.total) * 100));
+              }
+            };
+            xhr.onload = () => {
+              if (xhr.status >= 200 && xhr.status < 300) {
+                setUploadProgress(100);
+                resolve();
+              } else {
+                reject(new Error(`Upload failed (${xhr.status}): ${xhr.responseText}`));
+              }
+            };
+            xhr.onerror = () => reject(new Error("Network error during upload"));
+            xhr.send(photoFile);
+          });
+
+          const { data: urlData } = supabase.storage
+            .from("lost-found-photos")
+            .getPublicUrl(fileName);
+          photo_url = urlData.publicUrl;
+        } catch (uploadError: unknown) {
+          // Don't block the report if photo upload fails (network/CORS/size).
+          console.error("Photo upload failed:", uploadError);
+          photoUploadFailed = true;
+        } finally {
+          setUploadProgress(null);
+        }
+      }
+
+      const { data: { user } } = await supabase.auth.getUser();
+      const insertPayload = {
+        ...parsed.data,
+        report_type: parsed.data.report_type ?? form.report_type,
+        post_kind: parsed.data.post_kind ?? form.post_kind,
+        last_seen_location: parsed.data.last_seen_location ?? form.last_seen_location.trim(),
+        reporter_name: parsed.data.reporter_name ?? form.reporter_name.trim(),
+        reporter_mobile: parsed.data.reporter_mobile ?? form.reporter_mobile.trim(),
+        photo_url,
+        language,
+        user_id: user?.id ?? null,
+      } satisfies Database["public"]["Tables"]["lost_and_found"]["Insert"];
+      const { error } = await supabase.from("lost_and_found").insert(insertPayload);
+      if (error) throw error;
+
+      // Persist reporter info for next time (skip if user is logged in — profile handles it)
+      try {
+        localStorage.setItem(
+          REPORTER_STORAGE_KEY,
+          JSON.stringify({
+            name: form.reporter_name,
+            mobile: form.reporter_mobile,
+            whatsapp: form.reporter_whatsapp,
+          })
+        );
+      } catch {/* ignore */}
+
+      toast({
+        title: t.get("success"),
+        description: photoUploadFailed
+          ? "Report saved, but photo upload failed (check internet)."
+          : "",
+      });
+      resetForm();
+      setDialogOpen(false);
+      fetchReports();
+    } catch (err: unknown) {
+      toast({ title: "Error", description: errorMessage(err, "Failed"), variant: "destructive" });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const filtered = reports.filter((r) => {
+    if (filterType !== "all" && r.report_type !== filterType) return false;
+    if (filterKind !== "all" && (r.post_kind || "lost") !== filterKind) return false;
+    if (!search.trim()) return true;
+    const q = search.toLowerCase();
+    return (
+      (r.person_name?.toLowerCase().includes(q)) ||
+      (r.item_name?.toLowerCase().includes(q)) ||
+      r.last_seen_location.toLowerCase().includes(q) ||
+      (r.person_description?.toLowerCase().includes(q)) ||
+      (r.item_description?.toLowerCase().includes(q))
+    );
+  });
+
+  const lostCount = reports.filter((r) => (r.post_kind || "lost") === "lost").length;
+  const foundCount = reports.filter((r) => r.post_kind === "found").length;
+
+  return (
+    <MainLayout>
+      <div className={`min-h-screen bg-gradient-to-b from-emerald-50/40 via-background to-background ${isRTL ? "rtl" : ""}`}>
+        <div className="max-w-3xl mx-auto p-4 space-y-4 pb-24">
+          {/* Header */}
+          <div className="flex items-center justify-between gap-2">
+            <Button variant="ghost" size="sm" asChild>
+              <Link to="/home">
+                {isRTL ? <ArrowLeft className="rotate-180 h-4 w-4 mr-1" /> : <ArrowLeft className="h-4 w-4 mr-1" />}
+                {t.get("back")}
+              </Link>
+            </Button>
+          </div>
+
+          <div className="text-center space-y-2 py-2">
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-emerald-500/10 text-emerald-600">
+              <Search className="h-7 w-7" />
+            </div>
+            <h1 className="text-2xl font-bold">{t.get("title")}</h1>
+            <p className="text-sm text-muted-foreground">{t.get("subtitle")}</p>
+          </div>
+
+          {/* CTA + Search */}
+          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="w-full h-12 text-base bg-emerald-600 hover:bg-emerald-700">
+                <Plus className="h-5 w-5 mr-2" />
+                {t.get("reportNew")}
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>{t.get("formTitle")}</DialogTitle>
+                <DialogDescription>{t.get("formDescription")}</DialogDescription>
+              </DialogHeader>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Lost vs Found toggle */}
+                <div>
+                  <Label>I want to report</Label>
+                  <div className="grid grid-cols-2 gap-2 mt-1">
+                    <Button
+                      type="button"
+                      variant={form.post_kind === "lost" ? "default" : "outline"}
+                      onClick={() => setForm({ ...form, post_kind: "lost" })}
+                      className="h-12"
+                    >
+                      🔍 Lost
+                    </Button>
+                    <Button
+                      type="button"
+                      variant={form.post_kind === "found" ? "default" : "outline"}
+                      onClick={() => setForm({ ...form, post_kind: "found" })}
+                      className={`h-12 ${form.post_kind === "found" ? "bg-emerald-600 hover:bg-emerald-700" : ""}`}
+                    >
+                      ✋ Found
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Report type */}
+                <div>
+                  <Label>{form.post_kind === "found" ? "What did you find?" : t.get("reportType")}</Label>
+                  <div className="grid grid-cols-2 gap-2 mt-1">
+                    <Button
+                      type="button"
+                      variant={form.report_type === "person" ? "default" : "outline"}
+                      onClick={() => setForm({ ...form, report_type: "person" })}
+                      className="h-12"
+                    >
+                      <User className="h-4 w-4 mr-2" />
+                      {t.get("person")}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant={form.report_type === "item" ? "default" : "outline"}
+                      onClick={() => setForm({ ...form, report_type: "item" })}
+                      className="h-12"
+                    >
+                      <Package className="h-4 w-4 mr-2" />
+                      {t.get("item")}
+                    </Button>
+                  </div>
+                </div>
+
+                {form.post_kind === "lost" && (
+                  <PilgrimLookup onFound={applyPilgrimLookup} />
+                )}
+
+                {/* Person fields */}
+                {form.report_type === "person" && (
+                  <div className="space-y-3">
+                    <div>
+                      <Label htmlFor="pname">{t.get("personName")} *</Label>
+                      <Input
+                        id="pname"
+                        value={form.person_name}
+                        onChange={(e) => setForm({ ...form, person_name: e.target.value })}
+                        maxLength={100}
+                        required
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <Label htmlFor="age">{t.get("age")}</Label>
+                        <Input
+                          id="age"
+                          type="number"
+                          value={form.person_age}
+                          onChange={(e) => setForm({ ...form, person_age: e.target.value })}
+                          min={0}
+                          max={120}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="gender">{t.get("gender")}</Label>
+                        <Select
+                          value={form.person_gender}
+                          onValueChange={(v) => setForm({ ...form, person_gender: v })}
+                        >
+                          <SelectTrigger id="gender">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="male">{t.get("male")}</SelectItem>
+                            <SelectItem value="female">{t.get("female")}</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    <div>
+                      <Label htmlFor="pdesc">{t.get("personDesc")}</Label>
+                      <Textarea
+                        id="pdesc"
+                        value={form.person_description}
+                        onChange={(e) => setForm({ ...form, person_description: e.target.value })}
+                        maxLength={500}
+                        rows={2}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="wear">{t.get("wearing")}</Label>
+                      <Textarea
+                        id="wear"
+                        value={form.wearing_description}
+                        onChange={(e) => setForm({ ...form, wearing_description: e.target.value })}
+                        maxLength={300}
+                        rows={2}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Item fields */}
+                {form.report_type === "item" && (
+                  <div className="space-y-3">
+                    <div>
+                      <Label htmlFor="iname">{t.get("itemName")} *</Label>
+                      <Input
+                        id="iname"
+                        value={form.item_name}
+                        onChange={(e) => setForm({ ...form, item_name: e.target.value })}
+                        maxLength={100}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="idesc">{t.get("itemDesc")}</Label>
+                      <Textarea
+                        id="idesc"
+                        value={form.item_description}
+                        onChange={(e) => setForm({ ...form, item_description: e.target.value })}
+                        maxLength={500}
+                        rows={3}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Common fields */}
+                <div>
+                  <Label htmlFor="loc">{t.get("lastLocation")} *</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      id="loc"
+                      value={form.last_seen_location}
+                      onChange={(e) => setForm({ ...form, last_seen_location: e.target.value })}
+                      maxLength={200}
+                      placeholder="Mina, Arafat, Masjid al-Haram..."
+                      required
+                      className="flex-1"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={handleCaptureLocation}
+                      disabled={locating}
+                      className="shrink-0 h-10"
+                      title={t.get("useGps")}
+                    >
+                      {locating ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Crosshair className="h-4 w-4" />
+                      )}
+                      <span className="ml-1 text-xs hidden sm:inline">
+                        {locating ? t.get("locating") : t.get("useGps")}
+                      </span>
+                    </Button>
+                  </div>
+                  {gpsCoords && (
+                    <p className="mt-1 text-xs text-emerald-700 flex items-center gap-1">
+                      <MapPin className="h-3 w-3" />
+                      {gpsCoords.lat}, {gpsCoords.lng} · {t.get("gpsAccuracy")} ±{gpsCoords.accuracy}m
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <Label htmlFor="time" className="flex items-center gap-1">
+                    <Clock className="h-3.5 w-3.5" />
+                    {t.get("lastTime")}
+                  </Label>
+                  <Input
+                    id="time"
+                    type="datetime-local"
+                    value={form.last_seen_at}
+                    onChange={(e) => setForm({ ...form, last_seen_at: e.target.value })}
+                    max={nowForInput()}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="photo" className="flex items-center gap-1">
+                    <Paperclip className="h-3.5 w-3.5" />
+                    {t.get("photo")}
+                  </Label>
+                  {!photoPreview ? (
+                    <>
+                      <Input
+                        id="photo"
+                        type="file"
+                        accept="image/*,application/pdf,.pdf"
+                        onChange={handlePhotoChange}
+                      />
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        {t.get("takePhoto")} (JPG / PNG / PDF, max 10MB)
+                      </p>
+                    </>
+                  ) : (
+                    <div className="mt-2 space-y-2">
+                       <div className="relative rounded-lg border overflow-hidden bg-muted">
+                         {photoFile?.type === "application/pdf" ? (
+                           pdfThumb ? (
+                             <div className="relative">
+                               <img
+                                 src={pdfThumb}
+                                 alt="PDF first page"
+                                 className="w-full h-52 object-contain bg-white"
+                               />
+                               <div className="absolute top-2 left-2 flex items-center gap-1 bg-primary text-primary-foreground text-xs font-semibold px-2 py-1 rounded shadow">
+                                 <FileText className="h-3 w-3" />
+                                 PDF{pdfPageCount > 1 ? ` · ${pdfPageCount} pages` : ""}
+                               </div>
+                               <div className="absolute bottom-0 inset-x-0 bg-black/60 text-white text-xs px-2 py-1 truncate">
+                                 {photoFile.name}
+                               </div>
+                             </div>
+                           ) : (
+                             <div className="w-full h-52 flex flex-col items-center justify-center gap-2 p-4">
+                               <FileText className="h-16 w-16 text-primary animate-pulse" />
+                               <p className="text-sm font-medium text-center break-all px-2">
+                                 {photoFile.name}
+                               </p>
+                               <p className="text-xs text-muted-foreground">Loading preview…</p>
+                             </div>
+                           )
+                         ) : (
+                          <img
+                            src={photoPreview}
+                            alt="preview"
+                            className="w-full h-52 object-contain"
+                          />
+                        )}
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={handleRemovePhoto}
+                          className="flex-1"
+                        >
+                          <X className="h-4 w-4 mr-1" />
+                          {t.get("removePhoto")}
+                        </Button>
+                        <label className="flex-1">
+                          <Input
+                            type="file"
+                            accept="image/*,application/pdf,.pdf"
+                            onChange={handlePhotoChange}
+                            className="hidden"
+                          />
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="w-full"
+                            asChild
+                          >
+                            <span>
+                              <RotateCcw className="h-4 w-4 mr-1" />
+                              {t.get("replacePhoto")}
+                            </span>
+                          </Button>
+                        </label>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+
+                <div className="border-t pt-3 space-y-3">
+                  {(form.reporter_name || form.reporter_mobile) && (
+                    <p className="text-xs text-emerald-700 bg-emerald-50 px-2 py-1 rounded">
+                      ✓ {t.get("prefilled")}
+                    </p>
+                  )}
+                  <div>
+                    <Label htmlFor="rname">{t.get("reporterName")} *</Label>
+                    <Input
+                      id="rname"
+                      value={form.reporter_name}
+                      onChange={(e) => setForm({ ...form, reporter_name: e.target.value })}
+                      maxLength={100}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="mob">{t.get("mobile")} *</Label>
+                    <Input
+                      id="mob"
+                      type="tel"
+                      value={form.reporter_mobile}
+                      onChange={(e) => setForm({ ...form, reporter_mobile: e.target.value })}
+                      maxLength={20}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="wa">{t.get("whatsapp")}</Label>
+                    <Input
+                      id="wa"
+                      type="tel"
+                      value={form.reporter_whatsapp}
+                      onChange={(e) => setForm({ ...form, reporter_whatsapp: e.target.value })}
+                      maxLength={20}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="notes">{t.get("notes")}</Label>
+                    <Textarea
+                      id="notes"
+                      value={form.notes}
+                      onChange={(e) => setForm({ ...form, notes: e.target.value })}
+                      maxLength={500}
+                      rows={2}
+                    />
+                  </div>
+                </div>
+
+                {uploadProgress !== null && (
+                  <div className="space-y-1 pt-2">
+                    <div className="flex justify-between text-xs text-muted-foreground">
+                      <span className="flex items-center gap-1">
+                        <Loader2 className="h-3 w-3 animate-spin" />
+                        Uploading {photoFile?.type === "application/pdf" ? "PDF" : "photo"}…
+                      </span>
+                      <span>{uploadProgress}%</span>
+                    </div>
+                    <Progress value={uploadProgress} className="h-2" />
+                  </div>
+                )}
+
+                <div className="flex gap-2 pt-2">
+                  <Button type="button" variant="outline" onClick={() => setDialogOpen(false)} className="flex-1" disabled={submitting}>
+                    {t.get("cancel")}
+                  </Button>
+                  <Button type="submit" disabled={submitting} className="flex-1 bg-emerald-600 hover:bg-emerald-700">
+                    {submitting ? (
+                      <span className="flex items-center gap-2">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        {uploadProgress !== null ? `${uploadProgress}%` : t.get("submit")}
+                      </span>
+                    ) : t.get("submit")}
+                  </Button>
+                </div>
+              </form>
+            </DialogContent>
+          </Dialog>
+
+          {/* My claims / Incoming claims */}
+          <ClaimsPanel />
+
+          {/* Lost vs Found segmented filter */}
+          <div className="grid grid-cols-3 gap-1 p-1 bg-muted rounded-lg">
+            <button
+              type="button"
+              onClick={() => setFilterKind("all")}
+              className={`h-9 rounded-md text-sm font-medium transition ${filterKind === "all" ? "bg-background shadow-sm" : "text-muted-foreground"}`}
+            >
+              {t.get("all")} ({reports.length})
+            </button>
+            <button
+              type="button"
+              onClick={() => setFilterKind("lost")}
+              className={`h-9 rounded-md text-sm font-medium transition ${filterKind === "lost" ? "bg-background shadow-sm" : "text-muted-foreground"}`}
+            >
+              🔍 Lost ({lostCount})
+            </button>
+            <button
+              type="button"
+              onClick={() => setFilterKind("found")}
+              className={`h-9 rounded-md text-sm font-medium transition ${filterKind === "found" ? "bg-emerald-600 text-white shadow-sm" : "text-muted-foreground"}`}
+            >
+              ✋ Found ({foundCount})
+            </button>
+          </div>
+
+          {/* Search */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder={t.get("searchPlaceholder")}
+              className="pl-9 h-11"
+            />
+          </div>
+
+          {/* Tabs filter */}
+          <Tabs value={filterType} onValueChange={(value) => {
+            if (value === "all" || value === "person" || value === "item") setFilterType(value);
+          }}>
+            <TabsList className="grid grid-cols-3 w-full">
+              <TabsTrigger value="all">{t.get("all")} ({reports.length})</TabsTrigger>
+              <TabsTrigger value="person">
+                <User className="h-3.5 w-3.5 mr-1" />
+                {t.get("person")}
+              </TabsTrigger>
+              <TabsTrigger value="item">
+                <Package className="h-3.5 w-3.5 mr-1" />
+                {t.get("item")}
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value={filterType} className="mt-4 space-y-3">
+              {loading ? (
+                <div className="flex justify-center py-10">
+                  <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                </div>
+              ) : filtered.length === 0 ? (
+                <Card>
+                  <CardContent className="text-center py-10 text-muted-foreground">
+                    <AlertCircle className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                    <p>{t.get("noReports")}</p>
+                  </CardContent>
+                </Card>
+              ) : (
+                filtered.map((r) => (
+                  <Card key={r.id} className="overflow-hidden">
+                    <CardContent className="p-4">
+                      <div className="flex gap-3">
+                        {r.photo_url ? (
+                          <img
+                            src={r.photo_url}
+                            alt=""
+                            className="h-20 w-20 object-cover rounded-md flex-shrink-0"
+                            loading="lazy"
+                          />
+                        ) : (
+                          <div className="h-20 w-20 rounded-md bg-muted flex items-center justify-center flex-shrink-0">
+                            {r.report_type === "person" ? (
+                              <User className="h-8 w-8 text-muted-foreground" />
+                            ) : (
+                              <Package className="h-8 w-8 text-muted-foreground" />
+                            )}
+                          </div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between gap-2">
+                            <h3 className="font-semibold truncate">
+                              {r.report_type === "person" ? r.person_name : r.item_name}
+                            </h3>
+                            <div className="flex items-center gap-1 flex-shrink-0 flex-wrap justify-end">
+                              {r.post_kind === "found" && (
+                                <Badge className="bg-emerald-600 hover:bg-emerald-600">
+                                  ✋ {t.get("found")}
+                                </Badge>
+                              )}
+                              <Badge
+                                variant={r.status === "found" ? "default" : "secondary"}
+                                className={r.status === "found" ? "bg-emerald-500" : ""}
+                              >
+                                {r.status === "found" && <CheckCircle2 className="h-3 w-3 mr-1" />}
+                                {t.get(r.status as "open" | "found")}
+                              </Badge>
+                              {r.verified_at && (
+                                <Badge className="bg-amber-500 hover:bg-amber-500">
+                                  <ShieldCheck className="h-3 w-3 mr-1" />
+                                  {t.get("verified")}
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
+                          {r.report_type === "person" && (
+                            <p className="text-xs text-muted-foreground">
+                              {r.person_age ? `${r.person_age}y • ` : ""}
+                              {r.person_gender === "female" ? t.get("female") : t.get("male")}
+                            </p>
+                          )}
+                          <p className="text-sm mt-1 line-clamp-2">
+                            {r.report_type === "person" ? r.person_description : r.item_description}
+                          </p>
+                          {r.wearing_description && (
+                            <p className="text-xs text-muted-foreground mt-1 italic">
+                              👕 {r.wearing_description}
+                            </p>
+                          )}
+                          <div className="flex items-center gap-1 text-xs text-muted-foreground mt-2">
+                            <MapPin className="h-3 w-3" />
+                            <span className="truncate">{r.last_seen_location}</span>
+                          </div>
+                          <div className="flex flex-wrap gap-2 mt-3">
+                            {r.reporter_mobile ? (
+                              <>
+                                <Button asChild size="sm" variant="outline" className="h-8">
+                                  <a href={`tel:${r.reporter_mobile}`}>
+                                    <Phone className="h-3 w-3 mr-1" />
+                                    {t.get("contact")}
+                                  </a>
+                                </Button>
+                                {/* WhatsApp button — uses explicit whatsapp number or falls back to mobile */}
+                                {(r.reporter_whatsapp || r.reporter_mobile) && (
+                                  <Button asChild size="sm" className="h-8 bg-[#25D366] hover:bg-[#1ebd5a] text-white border-0">
+                                    <a
+                                      href={buildWhatsAppUrl(r.reporter_whatsapp || r.reporter_mobile || "", r)}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                    >
+                                      <svg className="h-3.5 w-3.5 mr-1" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+                                      </svg>
+                                      {t.get("whatsappContact")}
+                                    </a>
+                                  </Button>
+                                )}
+                              </>
+                            ) : (
+                              <p className="text-xs text-muted-foreground italic">
+                                Sign in to view contact details
+                              </p>
+                            )}
+                            {r.verified_at ? (
+                              <>
+                                <Badge variant="outline" className="h-8 px-2 flex items-center gap-1 text-amber-600 border-amber-300">
+                                  <Lock className="h-3 w-3" />
+                                  {t.get("lockedHint")}
+                                </Badge>
+                                {isAdmin && (
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={() => handleUnverify(r.id)}
+                                    className="h-8"
+                                  >
+                                    {t.get("unlock")}
+                                  </Button>
+                                )}
+                              </>
+                            ) : r.status === "open" ? (
+                              <Button
+                                size="sm"
+                                onClick={() => handleMarkStatus(r.id, "found")}
+                                className="h-8 bg-emerald-600 hover:bg-emerald-700"
+                              >
+                                <CheckCircle2 className="h-3 w-3 mr-1" />
+                                {t.get("markFound")}
+                              </Button>
+                            ) : (
+                              <>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => handleMarkStatus(r.id, "open")}
+                                  className="h-8"
+                                >
+                                  {t.get("markOpen")}
+                                </Button>
+                                {(isAdmin || (user && r.user_id === user.id)) && (
+                                  <Button
+                                    size="sm"
+                                    onClick={() => handleVerify(r.id)}
+                                    className="h-8 bg-amber-600 hover:bg-amber-700"
+                                  >
+                                    <ShieldCheck className="h-3 w-3 mr-1" />
+                                    {t.get("verify")}
+                                  </Button>
+                                )}
+                              </>
+                            )}
+                            {r.post_kind === "found" && r.status !== "closed" && user && r.user_id !== user.id && (
+                              <Button
+                                size="sm"
+                                onClick={() => setClaimTarget(r)}
+                                className="h-8 bg-primary hover:bg-primary/90"
+                              >
+                                <HandIcon className="h-3 w-3 mr-1" />
+                                Claim
+                              </Button>
+                            )}
+                            {r.post_kind === "found" && !user && (
+                              <Button asChild size="sm" variant="outline" className="h-8">
+                                <Link to="/auth">Sign in to claim</Link>
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))
+              )}
+            </TabsContent>
+          </Tabs>
+        </div>
+      </div>
+      {claimTarget && (
+        <ClaimDialog
+          open={!!claimTarget}
+          onOpenChange={(v) => !v && setClaimTarget(null)}
+          report={{
+            id: claimTarget.id,
+            item_name: claimTarget.item_name,
+            person_name: claimTarget.person_name,
+            photo_url: claimTarget.photo_url,
+          }}
+          onSubmitted={fetchReports}
+        />
+      )}
+    </MainLayout>
+  );
+};
+
+export default LostAndFoundPage;

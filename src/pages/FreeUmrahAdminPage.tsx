@@ -1,0 +1,862 @@
+import { useState, useEffect, useMemo, useCallback } from "react";
+import { Link } from "react-router-dom";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useUserRole } from "@/hooks/useUserRole";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { ArrowLeft, Search, Loader2, CheckCircle, XCircle, Eye, Clock, Users, Download, MessageCircle } from "lucide-react";
+import { UnauthorizedAlert } from '@/components/UnauthorizedAlert';
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { adminContent } from "@/data/freeUmrahContent";
+import { ApplicantDetailsModal } from "@/components/ApplicantDetailsModal";
+import { FreeUmrahStats } from "@/components/FreeUmrahStats";
+
+// State code mapping for formatted identifier display
+const stateCodeMap: Record<string, string> = {
+  "Andhra Pradesh": "AP",
+  "Arunachal Pradesh": "AR",
+  "Assam": "AS",
+  "Bihar": "BR",
+  "Chhattisgarh": "CG",
+  "Goa": "GA",
+  "Gujarat": "GJ",
+  "Haryana": "HR",
+  "Himachal Pradesh": "HP",
+  "Jharkhand": "JH",
+  "Karnataka": "KA",
+  "Kerala": "KL",
+  "Madhya Pradesh": "MP",
+  "Maharashtra": "MH",
+  "Manipur": "MN",
+  "Meghalaya": "ML",
+  "Mizoram": "MZ",
+  "Nagaland": "NL",
+  "Odisha": "OD",
+  "Punjab": "PB",
+  "Rajasthan": "RJ",
+  "Sikkim": "SK",
+  "Tamil Nadu": "TN",
+  "Telangana": "TS",
+  "Tripura": "TR",
+  "Uttar Pradesh": "UP",
+  "Uttarakhand": "UK",
+  "West Bengal": "WB",
+  "Delhi": "DL",
+  "Jammu and Kashmir": "JK",
+  "Ladakh": "LA",
+  "Puducherry": "PY",
+  "Chandigarh": "CH",
+  "Andaman and Nicobar Islands": "AN",
+  "Dadra and Nagar Haveli and Daman and Diu": "DD",
+  "Lakshadweep": "LD",
+};
+
+const getStateCode = (state: string): string => {
+  return stateCodeMap[state] || state.substring(0, 2).toUpperCase();
+};
+
+const toTitleCase = (str: string): string => {
+  return str
+    .toLowerCase()
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+};
+
+const getFormattedIdentifier = (applicant: Applicant): string => {
+  const stateCode = getStateCode(applicant.state);
+  const cityName = applicant.city ? toTitleCase(applicant.city) : "";
+  if (!cityName) return applicant.application_id;
+  return `${stateCode} – ${cityName} – ${applicant.application_id}`;
+};
+
+interface Applicant {
+  id: string;
+  application_id: string;
+  full_name: string;
+  age: number;
+  mobile: string;
+  state: string;
+  city: string | null;
+  pincode: string | null;
+  role: string;
+  masjid_name: string;
+  years_of_service: number;
+  never_umrah: boolean;
+  low_income: boolean;
+  social_harmony: boolean;
+  no_money_paid: boolean;
+  proof_type: string | null;
+  proof_url: string | null;
+  status: string;
+  rejection_reason: string | null;
+  created_at: string;
+}
+
+const FreeUmrahAdminPage = () => {
+  const { language } = useLanguage();
+  const { isAdmin, isCoordinator, isLoading: roleLoading } = useUserRole();
+  const t = adminContent[language as keyof typeof adminContent] || adminContent.en;
+
+  const [applicants, setApplicants] = useState<Applicant[]>([]);
+  const [filteredApplicants, setFilteredApplicants] = useState<Applicant[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [selectedApplicant, setSelectedApplicant] = useState<Applicant | null>(null);
+  const [detailsApplicant, setDetailsApplicant] = useState<Applicant | null>(null);
+  const [actionDialog, setActionDialog] = useState<{ open: boolean; action: "approve" | "reject" | "select" | null }>({
+    open: false,
+    action: null,
+  });
+  const [rejectionReason, setRejectionReason] = useState("");
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulkSelectDialog, setBulkSelectDialog] = useState(false);
+  const [whatsappDialog, setWhatsappDialog] = useState(false);
+  const [customMessage, setCustomMessage] = useState("");
+  const [isSendingWhatsApp, setIsSendingWhatsApp] = useState(false);
+
+  // Get verified applicants for bulk selection
+  const verifiedApplicants = useMemo(
+    () => filteredApplicants.filter((a) => a.status === "VERIFIED"),
+    [filteredApplicants]
+  );
+
+  const allVerifiedSelected = verifiedApplicants.length > 0 && 
+    verifiedApplicants.every((a) => selectedIds.has(a.id));
+
+  const toggleSelectAll = () => {
+    if (allVerifiedSelected) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(verifiedApplicants.map((a) => a.id)));
+    }
+  };
+
+  const toggleSelect = (id: string) => {
+    const newSet = new Set(selectedIds);
+    if (newSet.has(id)) {
+      newSet.delete(id);
+    } else {
+      newSet.add(id);
+    }
+    setSelectedIds(newSet);
+  };
+
+  useEffect(() => {
+    fetchApplicants();
+  }, []);
+
+  const fetchApplicants = async () => {
+    setIsLoading(true);
+    const { data, error } = await supabase
+      .from("applicants")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      toast.error("Failed to load applications");
+      console.error(error);
+    } else {
+      setApplicants(data || []);
+    }
+    setIsLoading(false);
+  };
+
+  const filterApplicants = useCallback(() => {
+    let filtered = [...applicants];
+
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(
+        (a) =>
+          a.full_name.toLowerCase().includes(query) ||
+          a.application_id.toLowerCase().includes(query) ||
+          a.mobile.includes(query)
+      );
+    }
+
+    if (statusFilter !== "all") {
+      filtered = filtered.filter((a) => a.status === statusFilter);
+    }
+
+    setFilteredApplicants(filtered);
+  }, [applicants, searchQuery, statusFilter]);
+
+  useEffect(() => {
+    filterApplicants();
+  }, [filterApplicants]);
+
+  const sendWhatsAppNotification = async (applicant: Applicant, newStatus: string, rejectionReason?: string) => {
+    // Only send notifications for meaningful status changes
+    const notifiableStatuses = ['UNDER_REVIEW', 'VERIFIED', 'REJECTED', 'SELECTED'];
+    if (!notifiableStatuses.includes(newStatus)) return;
+    
+    try {
+      // Get session for authenticated API calls
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        console.error("No session for WhatsApp notification");
+        return;
+      }
+
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/free-umrah-notify`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({
+            applicationId: applicant.application_id,
+            applicantName: applicant.full_name,
+            mobile: applicant.mobile,
+            status: newStatus,
+            rejectionReason: newStatus === 'REJECTED' ? rejectionReason : undefined,
+          }),
+        }
+      );
+
+      if (response.ok) {
+        toast.success("📱 WhatsApp notification sent");
+      } else {
+        const errorData = await response.json();
+        console.error("WhatsApp notification failed:", errorData);
+        toast.error("WhatsApp notification failed");
+      }
+    } catch (err) {
+      console.error("Error sending WhatsApp notification:", err);
+    }
+  };
+
+  const updateStatus = async (newStatus: string) => {
+    if (!selectedApplicant) return;
+
+    setIsUpdating(true);
+    
+    const updateData: { status: string; rejection_reason?: string | null } = { status: newStatus };
+    
+    // Include rejection reason when rejecting
+    if (newStatus === 'REJECTED' && rejectionReason.trim()) {
+      updateData.rejection_reason = rejectionReason.trim();
+    } else if (newStatus === 'VERIFIED' || newStatus === 'SELECTED') {
+      // Clear rejection reason when approving
+      updateData.rejection_reason = null;
+    }
+    
+    const { error } = await supabase
+      .from("applicants")
+      .update(updateData)
+      .eq("id", selectedApplicant.id);
+
+    if (error) {
+      toast.error("Failed to update status");
+      console.error(error);
+    } else {
+      toast.success(t.updated);
+      setApplicants((prev) =>
+        prev.map((a) => (a.id === selectedApplicant.id ? { ...a, status: newStatus, rejection_reason: updateData.rejection_reason ?? a.rejection_reason } : a))
+      );
+      
+      // Send WhatsApp notification for status changes
+      if (['UNDER_REVIEW', 'VERIFIED', 'SELECTED', 'REJECTED'].includes(newStatus)) {
+        await sendWhatsAppNotification(selectedApplicant, newStatus, updateData.rejection_reason || undefined);
+      }
+    }
+
+    setIsUpdating(false);
+    setActionDialog({ open: false, action: null });
+    setSelectedApplicant(null);
+    setRejectionReason("");
+  };
+
+  const bulkUpdateToSelected = async () => {
+    if (selectedIds.size === 0) return;
+
+    setIsUpdating(true);
+    
+    const idsArray = Array.from(selectedIds);
+    const { error } = await supabase
+      .from("applicants")
+      .update({ status: "SELECTED", rejection_reason: null })
+      .in("id", idsArray);
+
+    if (error) {
+      toast.error("Failed to update status");
+      console.error(error);
+    } else {
+      toast.success(`${idsArray.length} applicant(s) selected successfully`);
+      setApplicants((prev) =>
+        prev.map((a) => (selectedIds.has(a.id) ? { ...a, status: "SELECTED", rejection_reason: null } : a))
+      );
+      
+      // Send WhatsApp notifications for all selected
+      const selectedApplicantsList = applicants.filter((a) => selectedIds.has(a.id));
+      for (const applicant of selectedApplicantsList) {
+        await sendWhatsAppNotification(applicant, "SELECTED");
+      }
+    }
+
+    setIsUpdating(false);
+    setBulkSelectDialog(false);
+    setSelectedIds(new Set());
+  };
+
+  // CSV Export function
+  const exportToCSV = () => {
+    const headers = [
+      "Application ID",
+      "Full Name",
+      "Age",
+      "Mobile",
+      "State",
+      "City",
+      "Pincode",
+      "Role",
+      "Masjid/Madrasa",
+      "Years of Service",
+      "Status",
+      "Created At",
+      "Rejection Reason",
+    ];
+
+    const csvRows = [
+      headers.join(","),
+      ...filteredApplicants.map((a) =>
+        [
+          a.application_id,
+          `"${a.full_name.replace(/"/g, '""')}"`,
+          a.age,
+          a.mobile,
+          a.state,
+          a.city || "",
+          a.pincode || "",
+          a.role,
+          `"${a.masjid_name.replace(/"/g, '""')}"`,
+          a.years_of_service,
+          a.status,
+          new Date(a.created_at).toLocaleDateString(),
+          a.rejection_reason ? `"${a.rejection_reason.replace(/"/g, '""')}"` : "",
+        ].join(",")
+      ),
+    ];
+
+    const csvContent = csvRows.join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `free-umrah-applications-${new Date().toISOString().split("T")[0]}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+    toast.success("CSV exported successfully");
+  };
+
+  // Send custom WhatsApp message
+  const sendCustomWhatsApp = async () => {
+    if (!customMessage.trim()) {
+      toast.error("Please enter a message");
+      return;
+    }
+
+    const recipients = filteredApplicants
+      .filter((a) => selectedIds.has(a.id))
+      .map((a) => ({
+        name: a.full_name,
+        mobile: a.mobile,
+        applicationId: a.application_id,
+      }));
+
+    if (recipients.length === 0) {
+      toast.error("No applicants selected");
+      return;
+    }
+
+    setIsSendingWhatsApp(true);
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        toast.error("Authentication required");
+        return;
+      }
+
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-custom-whatsapp`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({ recipients, message: customMessage }),
+        }
+      );
+
+      const result = await response.json();
+
+      if (response.ok) {
+        toast.success(`WhatsApp sent to ${result.sent}/${result.total} recipients`);
+        setWhatsappDialog(false);
+        setCustomMessage("");
+        setSelectedIds(new Set());
+      } else {
+        toast.error(result.error || "Failed to send messages");
+      }
+    } catch (err) {
+      console.error("WhatsApp send error:", err);
+      toast.error("Failed to send WhatsApp messages");
+    } finally {
+      setIsSendingWhatsApp(false);
+    }
+  };
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case "SUBMITTED":
+        return <Badge variant="secondary">{status}</Badge>;
+      case "UNDER_REVIEW":
+        return <Badge className="bg-accent text-accent-foreground">{status}</Badge>;
+      case "VERIFIED":
+        return <Badge className="bg-primary/10 text-primary border-primary/20">{status}</Badge>;
+      case "REJECTED":
+        return <Badge variant="destructive">{status}</Badge>;
+      case "SELECTED":
+        return <Badge className="bg-secondary text-secondary-foreground">{status}</Badge>;
+      default:
+        return <Badge variant="outline">{status}</Badge>;
+    }
+  };
+
+  if (roleLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!isAdmin && !isCoordinator) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <UnauthorizedAlert requiredRole="coordinator" pageName="Free Umrah Applications" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      <header className="sticky top-0 z-50 bg-card/95 backdrop-blur-md border-b border-border/50">
+        <div className="container max-w-6xl mx-auto px-4 h-14 flex items-center gap-3">
+          <Link to="/" className="p-2 -ml-2 rounded-lg hover:bg-muted transition-colors">
+            <ArrowLeft className="w-5 h-5" />
+          </Link>
+          <h1 className="text-lg font-semibold truncate">{t.title}</h1>
+        </div>
+      </header>
+
+      <div className="container max-w-6xl mx-auto px-4 py-6 space-y-6">
+        {/* Statistics Dashboard */}
+        <FreeUmrahStats applicants={applicants} language={language} />
+
+        <Card>
+          <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <CardTitle>{t.title}</CardTitle>
+              <CardDescription>{t.subtitle}</CardDescription>
+            </div>
+            <Button variant="outline" size="sm" onClick={exportToCSV}>
+              <Download className="w-4 h-4 mr-2" />
+              Export CSV
+            </Button>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* Filters */}
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input
+                  placeholder={t.search}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="w-full sm:w-48">
+                  <SelectValue placeholder={t.filter} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">{t.all}</SelectItem>
+                  <SelectItem value="SUBMITTED">Submitted</SelectItem>
+                  <SelectItem value="UNDER_REVIEW">Under Review</SelectItem>
+                  <SelectItem value="VERIFIED">Verified</SelectItem>
+                  <SelectItem value="REJECTED">Rejected</SelectItem>
+                  <SelectItem value="SELECTED">Selected</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Bulk Action Bar */}
+            {selectedIds.size > 0 && (
+              <div className="flex items-center gap-4 p-3 bg-primary/5 border border-primary/20 rounded-lg">
+                <span className="text-sm font-medium">
+                  {selectedIds.size} verified applicant(s) selected
+                </span>
+                <Button
+                  size="sm"
+                  onClick={() => setBulkSelectDialog(true)}
+                  className="bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                >
+                  <Users className="w-4 h-4 mr-1" />
+                  {t.select}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setWhatsappDialog(true)}
+                >
+                  <MessageCircle className="w-4 h-4 mr-1" />
+                  WhatsApp
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSelectedIds(new Set())}
+                >
+                  Clear
+                </Button>
+              </div>
+            )}
+
+            {/* Table */}
+            {isLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                <span className="ml-2 text-muted-foreground">{t.loading}</span>
+              </div>
+            ) : filteredApplicants.length === 0 ? (
+              <div className="text-center py-12 text-muted-foreground">{t.noApplications}</div>
+            ) : (
+              <div className="rounded-md border overflow-hidden">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-12">
+                        {verifiedApplicants.length > 0 && (
+                          <Checkbox
+                            checked={allVerifiedSelected}
+                            onCheckedChange={toggleSelectAll}
+                            aria-label="Select all verified"
+                          />
+                        )}
+                      </TableHead>
+                      <TableHead>{t.applicant}</TableHead>
+                      <TableHead className="hidden md:table-cell">{t.details}</TableHead>
+                      <TableHead>{t.status}</TableHead>
+                      <TableHead className="text-right">{t.actions}</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredApplicants.map((applicant) => (
+                      <TableRow key={applicant.id}>
+                        <TableCell className="w-12">
+                          {applicant.status === "VERIFIED" && (
+                            <Checkbox
+                              checked={selectedIds.has(applicant.id)}
+                              onCheckedChange={() => toggleSelect(applicant.id)}
+                              aria-label={`Select ${applicant.full_name}`}
+                            />
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <div>
+                            <p className="font-medium">{applicant.full_name}</p>
+                            <p className="text-xs text-muted-foreground font-mono break-all">
+                              {getFormattedIdentifier(applicant)}
+                            </p>
+                            <p className="text-xs text-muted-foreground">{applicant.mobile}</p>
+                          </div>
+                        </TableCell>
+                        <TableCell className="hidden md:table-cell">
+                          <div className="text-sm space-y-1">
+                            <p>
+                              <span className="text-muted-foreground">{t.role}:</span> {applicant.role}
+                            </p>
+                            <p>
+                              <span className="text-muted-foreground">{t.masjid}:</span>{" "}
+                              {applicant.masjid_name}
+                            </p>
+                            <p>
+                              <span className="text-muted-foreground">{t.service}:</span>{" "}
+                              {applicant.years_of_service} years
+                            </p>
+                          </div>
+                        </TableCell>
+                        <TableCell>{getStatusBadge(applicant.status)}</TableCell>
+                        <TableCell>
+                          <div className="flex items-center justify-end gap-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setDetailsApplicant(applicant)}
+                            >
+                              <Eye className="w-4 h-4 mr-1" />
+                              <span className="hidden sm:inline">{t.viewDetails || "Details"}</span>
+                            </Button>
+                            {applicant.status === "SUBMITTED" && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  setSelectedApplicant(applicant);
+                                  updateStatus("UNDER_REVIEW");
+                                }}
+                              >
+                                <Clock className="w-4 h-4 mr-1" />
+                                <span className="hidden sm:inline">{t.underReview}</span>
+                              </Button>
+                            )}
+                            {(applicant.status === "SUBMITTED" ||
+                              applicant.status === "UNDER_REVIEW") && (
+                              <>
+                                <Button
+                                  size="sm"
+                                  onClick={() => {
+                                    setSelectedApplicant(applicant);
+                                    setActionDialog({ open: true, action: "approve" });
+                                  }}
+                                >
+                                  <CheckCircle className="w-4 h-4 mr-1" />
+                                  <span className="hidden sm:inline">{t.approve}</span>
+                                </Button>
+                                <Button
+                                  variant="destructive"
+                                  size="sm"
+                                  onClick={() => {
+                                    setSelectedApplicant(applicant);
+                                    setActionDialog({ open: true, action: "reject" });
+                                  }}
+                                >
+                                  <XCircle className="w-4 h-4 mr-1" />
+                                  <span className="hidden sm:inline">{t.reject}</span>
+                                </Button>
+                              </>
+                            )}
+                            {applicant.status === "VERIFIED" && (
+                              <Button
+                                size="sm"
+                                className="bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                                onClick={() => {
+                                  setSelectedApplicant(applicant);
+                                  setActionDialog({ open: true, action: "select" });
+                                }}
+                              >
+                                <CheckCircle className="w-4 h-4 mr-1" />
+                                <span className="hidden sm:inline">{t.select}</span>
+                              </Button>
+                            )}
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Confirmation Dialog */}
+      <Dialog
+        open={actionDialog.open}
+        onOpenChange={(open) => {
+          setActionDialog({ open, action: null });
+          if (!open) setRejectionReason("");
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {actionDialog.action === "approve" 
+                ? t.confirmApprove 
+                : actionDialog.action === "select"
+                ? (t.confirmSelect || "Confirm Selection")
+                : t.confirmReject}
+            </DialogTitle>
+            <DialogDescription>
+              {selectedApplicant && (
+                <span>
+                  {selectedApplicant.full_name} ({selectedApplicant.application_id})
+                </span>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          
+          {/* Rejection reason input */}
+          {actionDialog.action === "reject" && (
+            <div className="space-y-2 py-2">
+              <Label htmlFor="rejection-reason">Rejection Reason (Optional)</Label>
+              <Textarea
+                id="rejection-reason"
+                placeholder="Enter reason for rejection..."
+                value={rejectionReason}
+                onChange={(e) => setRejectionReason(e.target.value)}
+                rows={3}
+              />
+            </div>
+          )}
+          
+          <DialogFooter className="gap-2">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setActionDialog({ open: false, action: null });
+                setRejectionReason("");
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant={actionDialog.action === "reject" ? "destructive" : "default"}
+              onClick={() => updateStatus(
+                actionDialog.action === "approve" 
+                  ? "VERIFIED" 
+                  : actionDialog.action === "select" 
+                  ? "SELECTED" 
+                  : "REJECTED"
+              )}
+              disabled={isUpdating}
+            >
+              {isUpdating ? (
+                <Loader2 className="w-4 h-4 animate-spin mr-2" />
+              ) : actionDialog.action === "reject" ? (
+                <XCircle className="w-4 h-4 mr-2" />
+              ) : (
+                <CheckCircle className="w-4 h-4 mr-2" />
+              )}
+              {actionDialog.action === "approve" 
+                ? t.approve 
+                : actionDialog.action === "select" 
+                ? t.select 
+                : t.reject}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Applicant Details Modal */}
+      <ApplicantDetailsModal
+        applicant={detailsApplicant}
+        open={!!detailsApplicant}
+        onOpenChange={(open) => !open && setDetailsApplicant(null)}
+        language={language}
+      />
+
+      {/* Bulk Selection Confirmation Dialog */}
+      <Dialog open={bulkSelectDialog} onOpenChange={setBulkSelectDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t.confirmBulkSelect || "Confirm Bulk Selection"}</DialogTitle>
+            <DialogDescription>
+              {selectedIds.size} applicant(s) will be marked as SELECTED.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setBulkSelectDialog(false)}>
+              Cancel
+            </Button>
+            <Button
+              className="bg-secondary text-secondary-foreground hover:bg-secondary/80"
+              onClick={bulkUpdateToSelected}
+              disabled={isUpdating}
+            >
+              {isUpdating ? (
+                <Loader2 className="w-4 h-4 animate-spin mr-2" />
+              ) : (
+                <Users className="w-4 h-4 mr-2" />
+              )}
+              {t.select}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Custom WhatsApp Dialog */}
+      <Dialog open={whatsappDialog} onOpenChange={setWhatsappDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Send WhatsApp Message</DialogTitle>
+            <DialogDescription>
+              Send a custom message to {selectedIds.size} selected applicant(s).
+              Use {"{name}"} and {"{applicationId}"} as placeholders.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <Textarea
+              placeholder="Assalamu Alaikum {name},
+
+Your application ({applicationId}) update..."
+              value={customMessage}
+              onChange={(e) => setCustomMessage(e.target.value)}
+              rows={6}
+            />
+            <p className="text-xs text-muted-foreground">
+              Tip: {"{name}"} will be replaced with the applicant's name, and {"{applicationId}"} with their ID.
+            </p>
+          </div>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setWhatsappDialog(false)}>
+              Cancel
+            </Button>
+            <Button
+              onClick={sendCustomWhatsApp}
+              disabled={isSendingWhatsApp || !customMessage.trim()}
+            >
+              {isSendingWhatsApp ? (
+                <Loader2 className="w-4 h-4 animate-spin mr-2" />
+              ) : (
+                <MessageCircle className="w-4 h-4 mr-2" />
+              )}
+              Send to {selectedIds.size}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+};
+
+export default FreeUmrahAdminPage;

@@ -1,0 +1,733 @@
+/* Fonts loaded asynchronously in index.html to avoid render blocking */
+
+/* Google Fonts loaded asynchronously in index.html */
+
+@import 'mapbox-gl/dist/mapbox-gl.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================
+   MAP PAGE CUSTOM STYLES
+   ============================================ */
+
+/* User location marker */
+.user-location-marker {
+  position: relative;
+}
+
+.user-marker-inner {
+  width: 24px;
+  height: 24px;
+  background: hsl(var(--primary));
+  border: 4px solid white;
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  position: relative;
+}
+
+.user-marker-ping {
+  position: absolute;
+  inset: -8px;
+  border: 2px solid hsl(var(--primary));
+  border-radius: 50%;
+  animation: marker-ping 1.5s cubic-bezier(0,0,0.2,1) infinite;
+  opacity: 0.75;
+}
+
+@keyframes marker-ping {
+  0% {
+    transform: scale(1);
+    opacity: 0.75;
+  }
+  75%, 100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+/* Safe area padding for iOS */
+.safe-area-top {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Hide scrollbar for location pills */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* ============================================
+   SACRED CALM DESIGN SYSTEM
+   Government-Grade • Haj 2027 (1448H)
+   "Sacred calm, silent power."
+   ============================================ */
+
+@layer base {
+  :root {
+    /* ============================================
+       HAJ CARE AI — PREMIUM ISLAMIC COLOR SYSTEM
+       Deep Emerald + Ivory + Sand Gold
+       ============================================ */
+    --background: 37 47% 96%;
+    --foreground: 160 65% 14%;
+
+    --card: 37 47% 97%;
+    --card-foreground: 160 65% 14%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 160 65% 14%;
+
+    --primary: 160 65% 14%;
+    --primary-foreground: 37 47% 96%;
+
+    --secondary: 42 45% 81%;
+    --secondary-foreground: 160 65% 14%;
+
+    --muted: 162 25% 93%;
+    --muted-foreground: 160 30% 35%;
+
+    --accent: 42 55% 55%;
+    --accent-foreground: 160 65% 14%;
+
+    --destructive: 0 66% 47%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 160 20% 80%;
+    --input: 160 20% 80%;
+    --ring: 160 65% 14%;
+
+    --radius: 0.75rem;
+
+    --status-safe: 122 46% 34%;
+    --status-safe-bg: 122 30% 94%;
+    --status-assistance: 43 95% 56%;
+    --status-assistance-bg: 43 60% 93%;
+    --status-emergency: 0 66% 47%;
+    --status-emergency-bg: 0 40% 95%;
+    --status-info: 199 98% 37%;
+    --status-info-bg: 199 40% 94%;
+
+    --calm-teal: 160 65% 9%;
+    --calm-teal-light: 160 45% 30%;
+    --calm-sand: 42 45% 81%;
+    --calm-cream: 37 47% 96%;
+    --calm-stone: 162 25% 93%;
+
+    --sacred-gold: 42 55% 55%;
+    --sacred-gold-soft: 42 40% 90%;
+
+    --shadow-soft: 0 1px 3px 0 hsl(160 25% 12% / 0.06), 0 1px 2px -1px hsl(160 25% 12% / 0.04);
+    --shadow-card: 0 4px 12px -2px hsl(160 25% 12% / 0.08), 0 2px 4px -2px hsl(160 25% 12% / 0.04);
+    --shadow-elevated: 0 10px 25px -5px hsl(160 25% 12% / 0.1), 0 4px 6px -4px hsl(160 25% 12% / 0.04);
+    --shadow-glow: 0 0 40px -8px hsl(42 55% 55% / 0.2);
+
+    --gradient-ambient-1: hsl(162 25% 93%);
+    --gradient-ambient-2: hsl(42 30% 92%);
+    --gradient-ambient-3: hsl(160 20% 94%);
+
+    --sidebar-background: 160 65% 9%;
+    --sidebar-foreground: 37 47% 96%;
+    --sidebar-primary: 42 55% 55%;
+    --sidebar-primary-foreground: 160 65% 9%;
+    --sidebar-accent: 160 45% 18%;
+    --sidebar-accent-foreground: 37 47% 96%;
+    --sidebar-border: 160 40% 20%;
+    --sidebar-ring: 42 55% 55%;
+    --chart-1: 160 65% 14%;
+    --chart-2: 42 55% 55%;
+    --chart-3: 122 46% 34%;
+    --chart-4: 43 95% 56%;
+    --chart-5: 199 98% 37%;
+    --sidebar: 160 65% 9%;
+    --font-sans: 'Space Grotesk', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+    --font-serif: ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
+    --font-mono: 'Space Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+    --shadow-2xs: 0 1px 2px 0 hsl(160 25% 12% / 0.05);
+    --shadow-xs: 0 1px 3px 0 hsl(160 25% 12% / 0.08);
+    --shadow-sm: 0 2px 6px -1px hsl(160 25% 12% / 0.1);
+    --shadow: 0 4px 12px -2px hsl(160 25% 12% / 0.1);
+    --shadow-md: 0 6px 16px -3px hsl(160 25% 12% / 0.12);
+    --shadow-lg: 0 10px 25px -5px hsl(160 25% 12% / 0.14);
+    --shadow-xl: 0 16px 40px -8px hsl(160 25% 12% / 0.16);
+    --shadow-2xl: 0 24px 50px -12px hsl(160 25% 12% / 0.2);
+    --tracking-normal: 0em;
+    --spacing: 0.25rem;
+  }
+
+  /* === SUNLIGHT MODE — Maximum outdoor contrast === */
+  .sunlight {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 0%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 0%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 0%;
+    --primary: 160 65% 14%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 42 45% 81%;
+    --secondary-foreground: 0 0% 0%;
+    --muted: 0 0% 95%;
+    --muted-foreground: 0 0% 25%;
+    --accent: 42 55% 55%;
+    --accent-foreground: 0 0% 0%;
+    --destructive: 0 66% 47%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 70%;
+    --input: 0 0% 70%;
+    --ring: 160 65% 14%;
+    --shadow-soft: 0 2px 4px 0 hsl(0 0% 0% / 0.12);
+    --shadow-card: 0 4px 8px -1px hsl(0 0% 0% / 0.15);
+    --shadow-elevated: 0 8px 16px -3px hsl(0 0% 0% / 0.2);
+    --shadow-glow: none;
+  }
+
+  /* Sunlight mode typography boost */
+  .sunlight body {
+    font-weight: 500;
+  }
+  .sunlight h1, .sunlight h2, .sunlight h3, .sunlight h4, .sunlight h5, .sunlight h6 {
+    font-weight: 700;
+  }
+  .sunlight button, .sunlight [role="button"] {
+    font-weight: 600;
+    border-width: 2px;
+  }
+
+  /* === DARK MODE — Deep Emerald night === */
+  .dark {
+    --background: 160 30% 5%;
+    --foreground: 37 30% 92%;
+    --card: 160 25% 8%;
+    --card-foreground: 37 30% 92%;
+    --popover: 160 25% 8%;
+    --popover-foreground: 37 30% 92%;
+    --primary: 42 55% 55%;
+    --primary-foreground: 160 65% 9%;
+    --secondary: 160 20% 15%;
+    --secondary-foreground: 37 30% 92%;
+    --muted: 160 15% 15%;
+    --muted-foreground: 160 10% 60%;
+    --accent: 42 45% 40%;
+    --accent-foreground: 37 30% 92%;
+    --destructive: 0 55% 40%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 160 20% 20%;
+    --input: 160 20% 20%;
+    --ring: 42 55% 55%;
+
+    --status-safe: 122 40% 42%;
+    --status-safe-bg: 122 25% 12%;
+    --status-assistance: 43 80% 50%;
+    --status-assistance-bg: 43 40% 12%;
+    --status-emergency: 0 55% 48%;
+    --status-emergency-bg: 0 35% 12%;
+    --status-info: 199 70% 45%;
+    --status-info-bg: 199 30% 12%;
+
+    --calm-teal: 160 35% 35%;
+    --calm-teal-light: 160 28% 45%;
+    --calm-sand: 42 25% 20%;
+    --calm-cream: 160 15% 10%;
+    --calm-stone: 160 12% 16%;
+
+    --sacred-gold: 42 50% 50%;
+    --sacred-gold-soft: 42 30% 18%;
+
+    --shadow-soft: 0 1px 3px 0 hsl(0 0% 0% / 0.3);
+    --shadow-card: 0 4px 12px -2px hsl(0 0% 0% / 0.35);
+    --shadow-elevated: 0 10px 25px -5px hsl(0 0% 0% / 0.4);
+    --shadow-glow: 0 0 40px -8px hsl(42 50% 50% / 0.15);
+
+    --gradient-ambient-1: hsl(160 20% 8%);
+    --gradient-ambient-2: hsl(42 15% 8%);
+    --gradient-ambient-3: hsl(160 15% 7%);
+
+    --sidebar-background: 160 30% 4%;
+    --sidebar-foreground: 37 30% 92%;
+    --sidebar-primary: 42 55% 55%;
+    --sidebar-primary-foreground: 160 65% 9%;
+    --sidebar-accent: 160 20% 12%;
+    --sidebar-accent-foreground: 37 30% 92%;
+    --sidebar-border: 160 20% 18%;
+    --sidebar-ring: 42 55% 55%;
+    --chart-1: 42 55% 55%;
+    --chart-2: 160 45% 30%;
+    --chart-3: 122 40% 42%;
+    --chart-4: 43 80% 50%;
+    --chart-5: 199 70% 45%;
+    --sidebar: 160 30% 4%;
+    --radius: 0.75rem;
+    --shadow-2xs: 0 1px 2px 0 hsl(0 0% 0% / 0.2);
+    --shadow-xs: 0 1px 3px 0 hsl(0 0% 0% / 0.25);
+    --shadow-sm: 0 2px 6px -1px hsl(0 0% 0% / 0.3);
+    --shadow: 0 4px 12px -2px hsl(0 0% 0% / 0.3);
+    --shadow-md: 0 6px 16px -3px hsl(0 0% 0% / 0.35);
+    --shadow-lg: 0 10px 25px -5px hsl(0 0% 0% / 0.4);
+    --shadow-xl: 0 16px 40px -8px hsl(0 0% 0% / 0.45);
+    --shadow-2xl: 0 24px 50px -12px hsl(0 0% 0% / 0.5);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    /* Performance: reduce paint on scroll */
+    -webkit-overflow-scrolling: touch;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Noto Sans', 'Noto Sans Arabic', 'Noto Sans Devanagari', sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+    font-weight: 400;
+  }
+
+  /* Large Text Mode for elderly pilgrims */
+  .large-text body {
+    font-size: 19px;
+    line-height: 1.8;
+    font-weight: 450;
+    letter-spacing: 0.01em;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeSpeed;
+  }
+
+  .large-text h1, .large-text h2, .large-text h3 {
+    font-weight: 700;
+  }
+  .large-text button, .large-text [role="button"] {
+    font-size: 1.05em;
+    font-weight: 600;
+  }
+
+  /* Typography - Confident, not loud */
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.3;
+  }
+
+  h1 { @apply text-2xl sm:text-3xl; }
+  h2 { @apply text-xl sm:text-2xl; }
+  h3 { @apply text-lg sm:text-xl; }
+
+  /* Performance: GPU-accelerate interactive elements */
+  button, a, [role="button"] {
+    transform: translateZ(0);
+  }
+}
+
+@layer components {
+  /* === STATUS SYSTEM === */
+  .status-safe {
+    @apply bg-[hsl(var(--status-safe-bg))] text-[hsl(var(--status-safe))];
+    border-color: hsl(var(--status-safe) / 0.25);
+  }
+
+  .status-assistance {
+    @apply bg-[hsl(var(--status-assistance-bg))] text-[hsl(var(--status-assistance))];
+    border-color: hsl(var(--status-assistance) / 0.25);
+  }
+
+  .status-emergency {
+    @apply bg-[hsl(var(--status-emergency-bg))] text-[hsl(var(--status-emergency))];
+    border-color: hsl(var(--status-emergency) / 0.25);
+  }
+
+  /* === SACRED CARD ELEVATION === */
+  .card-sacred {
+    @apply bg-card rounded-2xl;
+    box-shadow: var(--shadow-card);
+    border: 1px solid hsl(var(--border));
+  }
+
+  .card-elevated {
+    @apply bg-card rounded-2xl;
+    box-shadow: var(--shadow-elevated);
+    border: 1px solid hsl(var(--border) / 0.5);
+  }
+
+  /* === TOUCH TARGETS === */
+  .touch-target {
+    @apply min-h-[56px] min-w-[56px];
+  }
+
+  .touch-target-lg {
+    @apply min-h-[72px] min-w-[72px];
+  }
+
+  /* === SACRED BUTTONS === */
+  .btn-sacred {
+    @apply relative overflow-hidden rounded-xl font-medium;
+    @apply transition-all duration-300 ease-out;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
+  }
+
+  .btn-sacred:active {
+    transform: scale(0.98);
+  }
+
+  /* === TEXT UTILITIES === */
+  .text-high-contrast {
+    @apply text-foreground font-medium;
+  }
+
+  .text-calm {
+    @apply text-muted-foreground;
+  }
+
+  /* === RTL SUPPORT === */
+  [dir="rtl"] .rtl-flip {
+    transform: scaleX(-1);
+  }
+}
+
+@layer utilities {
+  /* === SACRED CALM ANIMATIONS === */
+
+  /* Sacred Glow — Soft golden aura for holy content */
+  .sacred-glow {
+    position: relative;
+  }
+  .sacred-glow::after {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: inherit;
+    background: radial-gradient(
+      ellipse at center,
+      hsl(var(--sacred-gold) / 0.12) 0%,
+      hsl(var(--sacred-gold) / 0.06) 40%,
+      transparent 70%
+    );
+    pointer-events: none;
+    z-index: -1;
+    animation: sacredPulse 6s ease-in-out infinite;
+  }
+  @keyframes sacredPulse {
+    0%, 100% { opacity: 0.7; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.02); }
+  }
+
+  /* Sacred Glow variant for cards */
+  .sacred-glow-card {
+    box-shadow: 0 0 20px -4px hsl(var(--sacred-gold) / 0.15),
+                0 0 40px -8px hsl(var(--sacred-gold) / 0.08);
+    border-color: hsl(var(--sacred-gold) / 0.25);
+    transition: box-shadow 0.4s ease;
+  }
+  .sacred-glow-card:hover {
+    box-shadow: 0 0 28px -4px hsl(var(--sacred-gold) / 0.22),
+                0 0 50px -8px hsl(var(--sacred-gold) / 0.12);
+  }
+
+  /* Gentle fade-in - Primary entrance */
+  .animate-fade-in {
+    animation: fadeIn 0.5s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Fade up - Staggered content */
+  .animate-fade-up {
+    animation: fadeUp 0.6s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+  }
+
+  @keyframes fadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Gentle scale - Modal/dialog entrance */
+  .animate-scale-in {
+    animation: scaleIn 0.4s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+  }
+
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.97);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  /* === AMBIENT BACKGROUND ANIMATIONS === */
+  /* Slow, barely perceptible - felt, not noticed */
+
+  .animate-ambient-shift {
+    animation: ambientShift 30s ease-in-out infinite;
+  }
+
+  @keyframes ambientShift {
+    0%, 100% {
+      opacity: 0.4;
+      transform: translate(0%, 0%) scale(1);
+    }
+    33% {
+      opacity: 0.5;
+      transform: translate(2%, -1%) scale(1.02);
+    }
+    66% {
+      opacity: 0.45;
+      transform: translate(-1%, 1%) scale(1.01);
+    }
+  }
+
+  .animate-ambient-glow {
+    animation: ambientGlow 25s ease-in-out infinite;
+  }
+
+  @keyframes ambientGlow {
+    0%, 100% {
+      opacity: 0.3;
+    }
+    50% {
+      opacity: 0.5;
+    }
+  }
+
+  .animate-ambient-drift {
+    animation: ambientDrift 40s ease-in-out infinite;
+  }
+
+  @keyframes ambientDrift {
+    0%, 100% {
+      transform: translate(0, 0) rotate(0deg);
+    }
+    25% {
+      transform: translate(3%, 2%) rotate(1deg);
+    }
+    50% {
+      transform: translate(1%, -1%) rotate(-0.5deg);
+    }
+    75% {
+      transform: translate(-2%, 1%) rotate(0.5deg);
+    }
+  }
+
+  /* === STATUS PULSE - Subtle, calming === */
+  .pulse-status {
+    animation: pulseStatus 4s ease-in-out infinite;
+  }
+
+  @keyframes pulseStatus {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.88;
+    }
+  }
+
+  /* === GLOW EFFECTS === */
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
+  }
+
+  .shadow-elevated {
+    box-shadow: var(--shadow-elevated);
+  }
+
+  /* === SACRED GOLD SHIMMER - Very rare === */
+  .shimmer-sacred {
+    background: linear-gradient(
+      110deg,
+      transparent 20%,
+      hsl(var(--sacred-gold) / 0.08) 40%,
+      hsl(var(--sacred-gold) / 0.12) 50%,
+      hsl(var(--sacred-gold) / 0.08) 60%,
+      transparent 80%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 8s ease-in-out infinite;
+  }
+
+  @keyframes shimmer {
+    0%, 100% {
+      background-position: 200% 0;
+    }
+    50% {
+      background-position: -200% 0;
+    }
+  }
+
+  /* === ISLAMIC PATTERN OVERLAY === */
+  .islamic-pattern {
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23287D7D' fill-opacity='0.03'%3E%3Cpath d='M30 0L60 30 30 60 0 30z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  /* === HERO GRADIENT — Deep emerald + turquoise + sand gold === */
+  .hero-gradient {
+    background: linear-gradient(
+      165deg,
+      hsl(160 55% 10%) 0%,
+      hsl(170 45% 14%) 25%,
+      hsl(165 40% 12%) 50%,
+      hsl(155 35% 11%) 70%,
+      hsl(38 30% 16%) 100%
+    );
+  }
+
+  /* Hero feature pills */
+  .hero-pill {
+    background: hsl(180 20% 90% / 0.12);
+    color: hsl(42 40% 85%);
+    border: 1px solid hsl(42 40% 65% / 0.15);
+    backdrop-filter: blur(8px);
+    transition: all 0.3s ease;
+  }
+  .hero-pill:hover {
+    background: hsl(180 20% 90% / 0.2);
+    border-color: hsl(42 40% 65% / 0.3);
+  }
+
+  /* Hero CTA button */
+  .hero-cta-button {
+    background: linear-gradient(135deg, hsl(42 50% 48%) 0%, hsl(38 55% 42%) 100%) !important;
+    color: hsl(42 30% 96%) !important;
+    border: 2px solid hsl(42 50% 55% / 0.3) !important;
+    transition: all 0.3s ease !important;
+  }
+  .hero-cta-button:hover {
+    background: linear-gradient(135deg, hsl(42 55% 52%) 0%, hsl(38 60% 46%) 100%) !important;
+    box-shadow: 0 8px 32px -6px hsl(42 50% 45% / 0.4) !important;
+    transform: translateY(-1px);
+  }
+  .hero-cta-button:active {
+    transform: scale(0.98) !important;
+  }
+
+  /* === COLORFUL ICON SYSTEM === */
+  .icon-vivid-teal {
+    background: linear-gradient(135deg, hsl(170 65% 35%) 0%, hsl(160 50% 28%) 100%);
+    color: hsl(170 90% 95%);
+    box-shadow: 0 4px 12px -2px hsl(170 60% 30% / 0.35);
+  }
+  .icon-vivid-gold {
+    background: linear-gradient(135deg, hsl(42 65% 50%) 0%, hsl(38 60% 42%) 100%);
+    color: hsl(42 80% 96%);
+    box-shadow: 0 4px 12px -2px hsl(42 60% 40% / 0.35);
+  }
+  .icon-vivid-blue {
+    background: linear-gradient(135deg, hsl(215 65% 50%) 0%, hsl(220 55% 42%) 100%);
+    color: hsl(215 90% 96%);
+    box-shadow: 0 4px 12px -2px hsl(215 60% 40% / 0.35);
+  }
+  .icon-vivid-coral {
+    background: linear-gradient(135deg, hsl(8 65% 55%) 0%, hsl(0 55% 48%) 100%);
+    color: hsl(8 90% 96%);
+    box-shadow: 0 4px 12px -2px hsl(8 60% 45% / 0.35);
+  }
+  .icon-vivid-saffron {
+    background: linear-gradient(135deg, hsl(30 75% 52%) 0%, hsl(25 65% 45%) 100%);
+    color: hsl(30 90% 96%);
+    box-shadow: 0 4px 12px -2px hsl(30 65% 42% / 0.35);
+  }
+  .icon-vivid-emerald {
+    background: linear-gradient(135deg, hsl(145 55% 38%) 0%, hsl(150 50% 30%) 100%);
+    color: hsl(145 80% 95%);
+    box-shadow: 0 4px 12px -2px hsl(145 55% 30% / 0.35);
+  }
+  .icon-vivid-plum {
+    background: linear-gradient(135deg, hsl(280 45% 50%) 0%, hsl(285 40% 42%) 100%);
+    color: hsl(280 80% 96%);
+    box-shadow: 0 4px 12px -2px hsl(280 45% 40% / 0.35);
+  }
+  .icon-vivid-rose {
+    background: linear-gradient(135deg, hsl(340 55% 52%) 0%, hsl(345 50% 44%) 100%);
+    color: hsl(340 85% 96%);
+    box-shadow: 0 4px 12px -2px hsl(340 55% 42% / 0.35);
+  }
+  .icon-vivid-sky {
+    background: linear-gradient(135deg, hsl(195 70% 45%) 0%, hsl(200 60% 38%) 100%);
+    color: hsl(195 90% 96%);
+    box-shadow: 0 4px 12px -2px hsl(195 65% 35% / 0.35);
+  }
+  .icon-vivid-olive {
+    background: linear-gradient(135deg, hsl(85 40% 42%) 0%, hsl(90 35% 35%) 100%);
+    color: hsl(85 70% 95%);
+    box-shadow: 0 4px 12px -2px hsl(85 40% 32% / 0.35);
+  }
+  .icon-vivid-sage {
+    background: linear-gradient(135deg, hsl(150 30% 45%) 0%, hsl(155 28% 38%) 100%);
+    color: hsl(150 60% 95%);
+    box-shadow: 0 4px 12px -2px hsl(150 30% 35% / 0.35);
+  }
+  .icon-vivid-sand {
+    background: linear-gradient(135deg, hsl(32 50% 50%) 0%, hsl(28 45% 42%) 100%);
+    color: hsl(32 70% 96%);
+    box-shadow: 0 4px 12px -2px hsl(32 50% 40% / 0.35);
+  }
+
+  /* === BREATHING ANIMATION - Emergency stillness === */
+  .breathe {
+    animation: breathe 6s ease-in-out infinite;
+  }
+
+  @keyframes breathe {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.01);
+    }
+  }
+}
+
+/* ============================================
+   AUTH PAGE STYLES
+   ============================================ */
+
+.auth-page-bg {
+  background: linear-gradient(165deg, hsl(160 55% 8%) 0%, hsl(170 45% 11%) 30%, hsl(38 25% 12%) 100%);
+}
+
+.auth-gradient-btn {
+  background: linear-gradient(135deg, hsl(160 50% 35%) 0%, hsl(170 60% 28%) 50%, hsl(38 45% 35%) 100%);
+  color: hsl(0 0% 100%);
+  box-shadow: 0 6px 20px -4px hsl(160 50% 25% / 0.4);
+  border: 1px solid hsl(160 40% 40% / 0.3);
+}
+
+.auth-gradient-btn:hover {
+  box-shadow: 0 8px 24px -4px hsl(160 50% 25% / 0.5);
+  filter: brightness(1.05);
+}
+
+.font-arabic {
+  font-family: 'Amiri', 'Noto Naskh Arabic', serif;
+}

@@ -1,0 +1,10 @@
+{
+  "name": "HajCare AI",
+  "short_name": "HajCare",
+  "description": "Multilingual Haj and Umrah guidance for Indian pilgrims.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8f5ee",
+  "theme_color": "#0d5c54",
+  "icons": [{ "src": "/favicon.ico", "sizes": "any", "type": "image/x-icon" }]
+}

@@ -1,0 +1,1 @@
+var e=`/assets/sbi-hajj-card-DxkG6ZRs.png`;export{e as t};

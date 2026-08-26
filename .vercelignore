@@ -1,0 +1,17 @@
+# Native build outputs are deployed separately and must not be uploaded with
+# the web bundle (they can exceed Vercel's per-file limit).
+android/**
+ios/**
+ios-native/**
+
+# Local media experiments and generated archives are not web runtime assets.
+tmp/**
+
+# Supabase migrations/functions are deployed through Supabase, not Vercel.
+supabase/**
+
+# Local scripts and native project metadata are not needed by the Vite build.
+scripts/**
+*.aab
+*.apk
+*.aiff

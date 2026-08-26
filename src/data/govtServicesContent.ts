@@ -1,0 +1,1197 @@
+import { LocalizedString } from "@/contexts/LanguageContext";
+
+export interface GovtService {
+  id: string;
+  icon: string;
+  title: LocalizedString;
+  description: LocalizedString;
+  provider: "india" | "saudi" | "both";
+  eligibility?: LocalizedString;
+  howToAccess: LocalizedString[];
+  locations: LocalizedString[];
+  importantNotes?: LocalizedString[];
+  contactInfo?: {
+    helpline?: string;
+    helplineLabel?: LocalizedString;
+    email?: string;
+    additionalNumbers?: { label: LocalizedString; number: string }[];
+  };
+  mapLinks?: {
+    name: LocalizedString;
+    address: LocalizedString;
+    mapUrl: string;
+    phone?: string;
+  }[];
+}
+
+export const govtServicesPageContent = {
+  title: {
+    en: "Government Services & Assistance",
+    ar: "الخدمات والمساعدات الحكومية",
+    ur: "سرکاری خدمات اور مدد",
+    hi: "सरकारी सेवाएं और सहायता",
+    ta: "அரசு சேவைகள் மற்றும் உதவி",
+    te: "ప్రభుత్వ సేవలు మరియు సహాయం",
+    mr: "सरकारी सेवा आणि मदत",
+    bn: "সরকারি সেবা ও সহায়তা",
+    ml: "സർക്കാർ സേവനങ്ങളും സഹായവും",
+    pa: "ਸਰਕਾਰੀ ਸੇਵਾਵਾਂ ਅਤੇ ਸਹਾਇਤਾ",
+    or: "ସରକାରୀ ସେବା ଏବଂ ସହାୟତା",
+  } as LocalizedString,
+  subtitle: {
+    en: "Official support services provided by Government of India and Saudi authorities",
+    ar: "خدمات الدعم الرسمية المقدمة من حكومة الهند والسلطات السعودية",
+    ur: "حکومت ہند اور سعودی حکام کی طرف سے فراہم کردہ سرکاری معاونت کی خدمات",
+    hi: "भारत सरकार और सऊदी अधिकारियों द्वारा प्रदान की जाने वाली आधिकारिक सहायता सेवाएं",
+    ta: "இந்திய அரசு மற்றும் சவுதி அதிகாரிகளால் வழங்கப்படும் அதிகாரப்பூர்வ ஆதரவு சேவைகள்",
+    te: "భారत ప్రభుత్వం మరియు సౌదీ అధికారులు అందించే అధికారిక సహాయ సేవలు",
+    mr: "भारत सरकार आणि सौदी अधिकाऱ्यांद्वारे प्रदान केलेल्या अधिकृत सहाय्य सेवा",
+    bn: "ভারত সরকার ও সৌদি কর্তৃপক্ষ দ্বারা প্রদত্ত সরকারি সহায়তা সেবা",
+    ml: "ഇന്ത്യാ ഗവൺമെന്റും സൗദി അധികാരികളും നൽകുന്ന ഔദ്യോഗിക പിന്തുണ സേവനങ്ങൾ",
+    pa: "ਭਾਰਤ ਸਰਕਾਰ ਅਤੇ ਸਾਊਦੀ ਅਧਿਕਾਰੀਆਂ ਦੁਆਰਾ ਦਿੱਤੀਆਂ ਜਾਂਦੀਆਂ ਅਧਿਕਾਰਤ ਸਹਾਇਤਾ ਸੇਵਾਵਾਂ",
+    or: "ଭାରତ ସରକାର ଏବଂ ସାଉଦି ଅଧିକାରୀଙ୍କ ଦ୍ୱାରା ପ୍ରଦାନ କରାଯାଉଥିବା ଅଧିକୃତ ସହାଯତା ସେବା",
+  } as LocalizedString,
+  disclaimer: {
+    en: "Service availability depends on official arrangements and may vary. Please verify at official counters.",
+    ar: "يعتمد توفر الخدمة على الترتيبات الرسمية وقد يختلف. يرجى التحقق من العدادات الرسمية.",
+    ur: "سروس کی دستیابی سرکاری انتظامات پر منحصر ہے اور مختلف ہو سکتی ہے۔ براہ کرم سرکاری کاؤنٹرز پر تصدیق کریں۔",
+    hi: "सेवा की उपलब्धता आधिकारिक व्यवस्थाओं पर निर्भर करती है और भिन्न हो सकती है। कृपया आधिकारिक काउंटरों पर सत्यापित करें।",
+    ta: "சேவை கிடைக்கும் தன்மை அதிகாரப்பூர்வ ஏற்பாடுகளைப் பொறுத்தது மற்றும் மாறுபடலாம். அதிகாரப்பூர்வ கவுண்டர்களில் சரிபார்க்கவும்.",
+    te: "సేవ లభ్యత అధికారిక ఏర్పాట్లపై ఆధారపడి ఉంటుంది మరియు మారవచ్చు. దయచేసి అధికారిక కౌంటర్లలో ధృవీకరించండి.",
+    mr: "सेवा उपलब्धता अधिकृत व्यवस्थांवर अवलंबून असते आणि बदलू शकते. कृपया अधिकृत काउंटरवर पडताळणी करा.",
+    bn: "সেবার প্রাপ্যতা সরকারি ব্যবস্থার উপর নির্ভর করে এবং পরিবর্তিত হতে পারে। অনুগ্রহ করে সরকারি কাউন্টারে যাচাই করুন।",
+    ml: "സേവന ലഭ്യത ഔദ്യോഗിക ക്രമീകരണങ്ങളെ ആശ്രയിച്ചിരിക്കുന്നു, മാറിയേക്കാം. ഔദ്യോഗിക കൌണ്ടറുകളിൽ പരിശോധിക്കുക.",
+    pa: "ਸੇਵਾ ਦੀ ਉਪਲਬਧਤਾ ਅਧਿਕਾਰਤ ਪ੍ਰਬੰਧਾਂ 'ਤੇ ਨਿਰਭਰ ਕਰਦੀ ਹੈ ਅਤੇ ਵੱਖ-ਵੱਖ ਹੋ ਸਕਦੀ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਅਧਿਕਾਰਤ ਕਾਊਂਟਰਾਂ 'ਤੇ ਪੁਸ਼ਟੀ ਕਰੋ।",
+    or: "ସେବା ଉପଲବ୍ଧତା ଅଧିକୃତ ବ୍ୟବସ୍ଥା ଉପରେ ନିର୍ଭର କରେ ଏବଂ ଭିନ୍ନ ହୋଇପାରେ। ଦୟାକରି ଅଧିକୃତ କାଉଣ୍ଟରରେ ଯାଞ୍ଚ କରନ୍ତୁ।",
+  } as LocalizedString,
+  headingLabels: {
+    eligibility: {
+      en: "Eligibility",
+      ar: "الأهلية",
+      ur: "اہلیت",
+      hi: "पात्रता",
+    } as LocalizedString,
+    assistanceAvailable: {
+      en: "Assistance Available",
+      ar: "المساعدة المتاحة",
+      ur: "دستیاب مدد",
+      hi: "उपलब्ध सहायता",
+    } as LocalizedString,
+    documentsRequired: {
+      en: "Documents Required",
+      ar: "المستندات المطلوبة",
+      ur: "ضروری دستاویزات",
+      hi: "आवश्यक दस्तावेज़",
+    } as LocalizedString,
+    howToAvail: {
+      en: "How to Avail",
+      ar: "كيفية الاستفادة",
+      ur: "فائدہ کیسے اٹھائیں",
+      hi: "लाभ कैसे उठाएं",
+    } as LocalizedString,
+    contactInfo: {
+      en: "Contact Information",
+      ar: "معلومات الاتصال",
+      ur: "رابطے کی تفصیلات",
+      hi: "संपर्क जानकारी",
+    } as LocalizedString,
+    helplines: {
+      en: "Helplines",
+      ar: "خطوط المساعدة",
+      ur: "ہیلپ لائنز",
+      hi: "हेल्पलाइन",
+    } as LocalizedString,
+  },
+};
+
+export const govtServices: GovtService[] = [
+  {
+    id: "wheelchairs",
+    icon: "wheelchair",
+    title: {
+      en: "Wheelchair Services",
+      ar: "خدمات الكراسي المتحركة",
+      ur: "وہیل چیئر کی خدمات",
+      hi: "व्हीलचेयर सेवाएं",
+      ta: "சக்கர நாற்காலி சேவைகள்",
+      te: "వీల్‌చైర్ సేవలు",
+      mr: "व्हीलचेअर सेवा",
+      bn: "হুইলচেয়ার সেবা",
+      ml: "വീൽച്ചെയർ സേവനങ്ങൾ",
+      pa: "ਵ੍ਹੀਲਚੇਅਰ ਸੇਵਾਵਾਂ",
+      or: "ହ୍ୱିଲଚେୟାର ସେବା",
+    } as LocalizedString,
+    description: {
+      en: "Free wheelchair assistance for elderly, disabled, and those who cannot walk long distances during Tawaf, Sa'i, and transit between holy sites.",
+      ar: "مساعدة مجانية بالكراسي المتحركة للمسنين والمعاقين ومن لا يستطيعون المشي لمسافات طويلة أثناء الطواف والسعي والتنقل بين المواقع المقدسة.",
+      ur: "بزرگوں، معذوروں اور ان لوگوں کے لیے مفت وہیل چیئر کی مدد جو طواف، سعی اور مقدس مقامات کے درمیان طویل فاصلے نہیں چل سکتے۔",
+      hi: "बुजुर्गों, विकलांगों और उन लोगों के लिए मुफ्त व्हीलचेयर सहायता जो तवाफ, साई और पवित्र स्थलों के बीच लंबी दूरी नहीं चल सकते।",
+    } as LocalizedString,
+    provider: "both",
+    eligibility: {
+      en: "Elderly (65+), physically disabled, or those with medical conditions affecting mobility",
+      ar: "كبار السن (65+)، المعاقون جسديًا، أو ذوي الحالات الطبية التي تؤثر على الحركة",
+      ur: "بزرگ (65+)، جسمانی طور پر معذور، یا نقل و حرکت کو متاثر کرنے والی طبی حالات والے",
+      hi: "बुजुर्ग (65+), शारीरिक रूप से विकलांग, या गतिशीलता को प्रभावित करने वाली चिकित्सा स्थितियों वाले",
+    } as LocalizedString,
+    howToAccess: [
+      {
+        en: "Visit the wheelchair counter near Gate 79 (King Fahd Gate) at Masjid al-Haram",
+        ar: "قم بزيارة كاونتر الكراسي المتحركة بالقرب من البوابة 79 (بوابة الملك فهد) في المسجد الحرام",
+        ur: "مسجد الحرام میں گیٹ 79 (کنگ فہد گیٹ) کے قریب وہیل چیئر کاؤنٹر پر جائیں",
+        hi: "मस्जिद अल-हरम में गेट 79 (किंग फहद गेट) के पास व्हीलचेयर काउंटर पर जाएं",
+      } as LocalizedString,
+      {
+        en: "Show your Hajj permit/ID and explain your need",
+        ar: "أظهر تصريح/هوية الحج الخاصة بك واشرح حاجتك",
+        ur: "اپنا حج پرمٹ/شناخت دکھائیں اور اپنی ضرورت بیان کریں",
+        hi: "अपना हज परमिट/आईडी दिखाएं और अपनी आवश्यकता बताएं",
+      } as LocalizedString,
+      {
+        en: "A volunteer or attendant will be assigned to assist you",
+        ar: "سيتم تعيين متطوع أو مرافق لمساعدتك",
+        ur: "آپ کی مدد کے لیے ایک رضاکار یا خادم مقرر کیا جائے گا",
+        hi: "आपकी सहायता के लिए एक स्वयंसेवक या परिचारक नियुक्त किया जाएगा",
+      } as LocalizedString,
+      {
+        en: "Return the wheelchair at the designated return point after use",
+        ar: "أعد الكرسي المتحرك إلى نقطة الإرجاع المحددة بعد الاستخدام",
+        ur: "استعمال کے بعد وہیل چیئر کو مقررہ واپسی مقام پر واپس کریں",
+        hi: "उपयोग के बाद व्हीलचेयर को निर्धारित वापसी स्थान पर लौटाएं",
+      } as LocalizedString,
+    ],
+    locations: [
+      {
+        en: "Masjid al-Haram: Gate 79, Gate 1, and basement levels",
+        ar: "المسجد الحرام: البوابة 79، البوابة 1، والأدوار السفلية",
+        ur: "مسجد الحرام: گیٹ 79، گیٹ 1، اور بیسمنٹ سطحیں",
+        hi: "मस्जिद अल-हरम: गेट 79, गेट 1, और बेसमेंट स्तर",
+      } as LocalizedString,
+      {
+        en: "Masjid an-Nabawi: Gate 5 and designated wheelchair areas",
+        ar: "المسجد النبوي: البوابة 5 ومناطق الكراسي المتحركة المخصصة",
+        ur: "مسجد نبوی: گیٹ 5 اور مخصوص وہیل چیئر علاقے",
+        hi: "मस्जिद अन-नबवी: गेट 5 और निर्धारित व्हीलचेयर क्षेत्र",
+      } as LocalizedString,
+      {
+        en: "Mina, Arafat, Muzdalifah: Indian Hajj Mission camps",
+        ar: "منى، عرفات، مزدلفة: مخيمات بعثة الحج الهندية",
+        ur: "منیٰ، عرفات، مزدلفہ: ہندوستانی حج مشن کیمپس",
+        hi: "मिना, अरफात, मुज़दलिफ़ा: भारतीय हज मिशन शिविर",
+      } as LocalizedString,
+    ],
+    importantNotes: [
+      {
+        en: "Wheelchairs are subject to availability during peak hours",
+        ar: "تخضع الكراسي المتحركة للتوفر خلال ساعات الذروة",
+        ur: "پیک اوقات میں وہیل چیئرز کی دستیابی پر منحصر ہے",
+        hi: "पीक घंटों में व्हीलचेयर उपलब्धता के अधीन है",
+      } as LocalizedString,
+      {
+        en: "Consider booking in advance through your camp coordinator",
+        ar: "فكر في الحجز مسبقًا من خلال منسق المخيم",
+        ur: "اپنے کیمپ کوآرڈینیٹر کے ذریعے پہلے سے بکنگ پر غور کریں",
+        hi: "अपने कैंप कोऑर्डिनेटर के माध्यम से पहले से बुकिंग पर विचार करें",
+      } as LocalizedString,
+    ],
+    contactInfo: {
+      helpline: "+966-59-8889-400",
+      helplineLabel: {
+        en: "Indian Hajj Mission Wheelchair Helpline",
+        ar: "خط مساعدة الكراسي المتحركة للبعثة الهندية",
+        ur: "ہندوستانی حج مشن وہیل چیئر ہیلپ لائن",
+        hi: "भारतीय हज मिशन व्हीलचेयर हेल्पलाइन",
+        ta: "இந்திய ஹஜ் மிஷன் சக்கர நாற்காலி உதவிஎண்",
+        te: "భారత హజ్ మిషన్ వీల్‌చైర్ హెల్ప్‌లైన్",
+        mr: "भारतीय हज मिशन व्हीलचेअर हेल्पलाइन",
+        bn: "ভারতীয় হজ মিশন হুইলচেয়ার হেল্পলাইন",
+        ml: "ഇന്ത്യൻ ഹജ്ജ് മിഷൻ വീൽച്ചെയർ ഹെൽപ്പ്ലൈൻ",
+        pa: "ਭਾਰਤੀ ਹੱਜ ਮਿਸ਼ਨ ਵ੍ਹੀਲਚੇਅਰ ਹੈਲਪਲਾਈਨ",
+        or: "ଭାରତୀୟ ହଜ ମିଶନ୍ ହ୍ୱିଲଚେୟାର ହେଲ୍ପଲାଇନ୍",
+      } as LocalizedString,
+      additionalNumbers: [
+        {
+          label: {
+            en: "Saudi Ministry of Health (Ambulance)",
+            ar: "وزارة الصحة السعودية (الإسعاف)",
+            ur: "سعودی وزارت صحت (ایمبولینس)",
+            hi: "सऊदी स्वास्थ्य मंत्रालय (एम्बुलेंस)",
+          } as LocalizedString,
+          number: "997",
+        },
+        {
+          label: {
+            en: "Unified Emergency Number",
+            ar: "رقم الطوارئ الموحد",
+            ur: "یونیفائیڈ ایمرجنسی نمبر",
+            hi: "एकीकृत आपातकालीन नंबर",
+          } as LocalizedString,
+          number: "911",
+        },
+      ],
+    },
+  },
+  {
+    id: "food-meals",
+    icon: "utensils",
+    title: {
+      en: "Food & Meals",
+      ar: "الطعام والوجبات",
+      ur: "کھانا اور غذا",
+      hi: "भोजन और खाना",
+      ta: "உணவு மற்றும் சாப்பாடு",
+      te: "ఆహారం మరియు భోజనం",
+      mr: "अन्न आणि जेवण",
+      bn: "খাবার ও খাদ্য",
+      ml: "ഭക്ഷണം",
+      pa: "ਭੋਜਨ ਅਤੇ ਖਾਣਾ",
+      or: "ଖାଦ୍ୟ ଏବଂ ଭୋଜନ",
+    } as LocalizedString,
+    description: {
+      en: "Meals are provided at designated times in Hajj camps. Additional food distribution points are available near holy sites. Meals are typically included in your Hajj package.",
+      ar: "يتم تقديم الوجبات في أوقات محددة في مخيمات الحج. تتوفر نقاط توزيع طعام إضافية بالقرب من المواقع المقدسة.",
+      ur: "حج کیمپس میں مقررہ اوقات میں کھانا فراہم کیا جاتا ہے۔ مقدس مقامات کے قریب اضافی کھانے کی تقسیم کے مقامات دستیاب ہیں۔",
+      hi: "हज शिविरों में निर्धारित समय पर भोजन प्रदान किया जाता है। पवित्र स्थलों के पास अतिरिक्त भोजन वितरण केंद्र उपलब्ध हैं।",
+    } as LocalizedString,
+    provider: "both",
+    howToAccess: [
+      {
+        en: "Check the meal schedule posted in your building/camp",
+        ar: "تحقق من جدول الوجبات المعلن في مبناك/مخيمك",
+        ur: "اپنی عمارت/کیمپ میں لگے کھانے کے شیڈول کو چیک کریں",
+        hi: "अपनी बिल्डिंग/कैंप में लगे भोजन कार्यक्रम की जांच करें",
+      } as LocalizedString,
+      {
+        en: "Collect your meals from the designated dining area at scheduled times",
+        ar: "استلم وجباتك من منطقة الطعام المخصصة في الأوقات المحددة",
+        ur: "مقررہ اوقات میں مخصوص کھانے کے علاقے سے اپنا کھانا لیں",
+        hi: "निर्धारित समय पर निर्दिष्ट भोजन क्षेत्र से अपना भोजन लें",
+      } as LocalizedString,
+      {
+        en: "Carry your ID card/wristband for verification",
+        ar: "احمل بطاقة هويتك/سوار المعصم للتحقق",
+        ur: "تصدیق کے لیے اپنا شناختی کارڈ/کلائی بینڈ ساتھ رکھیں",
+        hi: "सत्यापन के लिए अपना आईडी कार्ड/रिस्टबैंड साथ रखें",
+      } as LocalizedString,
+      {
+        en: "For special dietary needs, inform your group coordinator in advance",
+        ar: "للاحتياجات الغذائية الخاصة، أبلغ منسق مجموعتك مسبقًا",
+        ur: "خصوصی غذائی ضروریات کے لیے، اپنے گروپ کوآرڈینیٹر کو پہلے سے مطلع کریں",
+        hi: "विशेष आहार आवश्यकताओं के लिए, अपने समूह समन्वयक को पहले से सूचित करें",
+      } as LocalizedString,
+    ],
+    locations: [
+      {
+        en: "Makkah: Building dining halls (times vary by building)",
+        ar: "مكة: قاعات الطعام بالمباني (تختلف الأوقات حسب المبنى)",
+        ur: "مکہ: عمارت کے کھانے کے ہال (اوقات عمارت کے مطابق مختلف ہیں)",
+        hi: "मक्का: बिल्डिंग डाइनिंग हॉल (समय बिल्डिंग के अनुसार अलग)",
+      } as LocalizedString,
+      {
+        en: "Mina/Arafat/Muzdalifah: Camp meal distribution centers",
+        ar: "منى/عرفات/مزدلفة: مراكز توزيع الوجبات في المخيمات",
+        ur: "منیٰ/عرفات/مزدلفہ: کیمپ میں کھانے کی تقسیم کے مراکز",
+        hi: "मिना/अरफात/मुज़दलिफ़ा: कैंप भोजन वितरण केंद्र",
+      } as LocalizedString,
+      {
+        en: "Madinah: Hotel/accommodation dining areas",
+        ar: "المدينة: مناطق تناول الطعام في الفنادق/الإقامة",
+        ur: "مدینہ: ہوٹل/رہائش کے کھانے کے علاقے",
+        hi: "मदीना: होटल/आवास भोजन क्षेत्र",
+      } as LocalizedString,
+    ],
+  },
+  {
+    id: "accommodation",
+    icon: "building",
+    title: {
+      en: "Accommodation Support",
+      ar: "دعم الإقامة",
+      ur: "رہائش کی معاونت",
+      hi: "आवास सहायता",
+      ta: "தங்குமிட ஆதரவு",
+      te: "వసతి సహాయం",
+      mr: "निवास सहाय्य",
+      bn: "থাকার সহায়তা",
+      ml: "താമസ പിന്തുണ",
+      pa: "ਰਿਹਾਇਸ਼ ਸਹਾਇਤਾ",
+      or: "ଆବାସ ସହାୟତା",
+    } as LocalizedString,
+    description: {
+      en: "Accommodation is arranged by the Haj Committee of India. If you face any issues with your room, cleanliness, or facilities, assistance is available through your building coordinator.",
+      ar: "يتم ترتيب الإقامة من قبل لجنة الحج الهندية. إذا واجهت أي مشاكل في غرفتك أو النظافة أو المرافق، تتوفر المساعدة من خلال منسق المبنى.",
+      ur: "رہائش کا انتظام ہندوستان کی حج کمیٹی کرتی ہے۔ اگر آپ کو اپنے کمرے، صفائی، یا سہولیات میں کوئی مسئلہ ہو تو اپنے بلڈنگ کوآرڈینیٹر سے مدد حاصل کریں۔",
+      hi: "आवास का प्रबंध भारत की हज कमेटी द्वारा किया जाता है। यदि आपको अपने कमरे, सफाई या सुविधाओं में कोई समस्या हो तो अपने बिल्डिंग कोऑर्डिनेटर से सहायता प्राप्त करें।",
+    } as LocalizedString,
+    provider: "india",
+    howToAccess: [
+      {
+        en: "Contact your floor/building coordinator for any accommodation issues",
+        ar: "اتصل بمنسق الطابق/المبنى لأي مشاكل في الإقامة",
+        ur: "رہائش کے کسی بھی مسئلے کے لیے اپنے فلور/بلڈنگ کوآرڈینیٹر سے رابطہ کریں",
+        hi: "किसी भी आवास समस्या के लिए अपने फ्लोर/बिल्डिंग कोऑर्डिनेटर से संपर्क करें",
+      } as LocalizedString,
+      {
+        en: "Report problems at the Indian Hajj Mission office in your building",
+        ar: "أبلغ عن المشاكل في مكتب بعثة الحج الهندية في مبناك",
+        ur: "اپنی عمارت میں ہندوستانی حج مشن آفس میں مسائل کی اطلاع دیں",
+        hi: "अपनी बिल्डिंग में भारतीय हज मिशन कार्यालय में समस्याओं की रिपोर्ट करें",
+      } as LocalizedString,
+      {
+        en: "For urgent issues, visit the main Indian Hajj Mission office",
+        ar: "للمشاكل العاجلة، قم بزيارة مكتب بعثة الحج الهندية الرئيسي",
+        ur: "فوری مسائل کے لیے، مرکزی ہندوستانی حج مشن آفس جائیں",
+        hi: "तत्काल समस्याओं के लिए, मुख्य भारतीय हज मिशन कार्यालय जाएं",
+      } as LocalizedString,
+    ],
+    locations: [
+      {
+        en: "Building coordinator office (usually on ground floor)",
+        ar: "مكتب منسق المبنى (عادة في الطابق الأرضي)",
+        ur: "بلڈنگ کوآرڈینیٹر آفس (عام طور پر گراؤنڈ فلور پر)",
+        hi: "बिल्डिंग कोऑर्डिनेटर ऑफिस (आमतौर पर ग्राउंड फ्लोर पर)",
+      } as LocalizedString,
+      {
+        en: "Indian Hajj Mission offices in Makkah and Madinah",
+        ar: "مكاتب بعثة الحج الهندية في مكة والمدينة",
+        ur: "مکہ اور مدینہ میں ہندوستانی حج مشن آفس",
+        hi: "मक्का और मदीना में भारतीय हज मिशन कार्यालय",
+      } as LocalizedString,
+    ],
+  },
+  {
+    id: "books-guides",
+    icon: "book-open",
+    title: {
+      en: "Free Books & Guides",
+      ar: "كتب وأدلة مجانية",
+      ur: "مفت کتابیں اور رہنما",
+      hi: "मुफ्त किताबें और गाइड",
+      ta: "இலவச புத்தகங்கள் மற்றும் வழிகாட்டிகள்",
+      te: "ఉचిత పుస్తకాలు మరియు గైడ్‌లు",
+      mr: "मोफत पुस्तके आणि मार्गदर्शक",
+      bn: "বিনামূল্যে বই ও গাইড",
+      ml: "സൗജന്യ പുസ്തകങ്ങളും ഗൈഡുകളും",
+      pa: "ਮੁਫ਼ਤ ਕਿਤਾਬਾਂ ਅਤੇ ਗਾਈਡ",
+      or: "ମାଗଣା ପୁସ୍ତକ ଏବଂ ଗାଇଡ୍",
+    } as LocalizedString,
+    description: {
+      en: "Free Hajj guidebooks, Quran, and prayer books are distributed by Saudi authorities and the Indian Hajj Mission. These include step-by-step ritual guides and dua collections.",
+      ar: "يتم توزيع كتيبات الحج المجانية والقرآن وكتب الصلاة من قبل السلطات السعودية وبعثة الحج الهندية.",
+      ur: "سعودی حکام اور ہندوستانی حج مشن کی طرف سے مفت حج گائیڈ بکس، قرآن، اور نماز کی کتابیں تقسیم کی جاتی ہیں۔",
+      hi: "सऊदी अधिकारियों और भारतीय हज मिशन द्वारा मुफ्त हज गाइडबुक, कुरान और नमाज की किताबें वितरित की जाती हैं।",
+    } as LocalizedString,
+    provider: "both",
+    howToAccess: [
+      {
+        en: "Collect your Hajj kit at the embarkation camp in India (includes guidebook)",
+        ar: "استلم حقيبة الحج في معسكر الانطلاق في الهند (تتضمن كتيب الإرشاد)",
+        ur: "ہندوستان میں روانگی کیمپ میں اپنا حج کٹ حاصل کریں (گائیڈ بک شامل ہے)",
+        hi: "भारत में एम्बार्केशन कैंप में अपना हज किट लें (गाइडबुक शामिल)",
+      } as LocalizedString,
+      {
+        en: "Visit book distribution counters near Masjid al-Haram gates",
+        ar: "قم بزيارة كاونترات توزيع الكتب بالقرب من بوابات المسجد الحرام",
+        ur: "مسجد الحرام کے دروازوں کے قریب کتب کی تقسیم کے کاؤنٹرز پر جائیں",
+        hi: "मस्जिद अल-हरम गेट के पास पुस्तक वितरण काउंटर पर जाएं",
+      } as LocalizedString,
+      {
+        en: "Ask at your building's information desk",
+        ar: "اسأل في مكتب المعلومات في مبناك",
+        ur: "اپنی عمارت کے انفارمیشن ڈیسک پر پوچھیں",
+        hi: "अपनी बिल्डिंग के सूचना डेस्क पर पूछें",
+      } as LocalizedString,
+    ],
+    locations: [
+      {
+        en: "Embarkation camps in India (before departure)",
+        ar: "معسكرات الانطلاق في الهند (قبل المغادرة)",
+        ur: "ہندوستان میں روانگی کیمپس (روانگی سے پہلے)",
+        hi: "भारत में एम्बार्केशन कैंप (प्रस्थान से पहले)",
+      } as LocalizedString,
+      {
+        en: "Masjid al-Haram: Near major gates",
+        ar: "المسجد الحرام: بالقرب من البوابات الرئيسية",
+        ur: "مسجد الحرام: بڑے دروازوں کے قریب",
+        hi: "मस्जिद अल-हरम: प्रमुख गेट के पास",
+      } as LocalizedString,
+      {
+        en: "Indian Hajj Mission offices",
+        ar: "مكاتب بعثة الحج الهندية",
+        ur: "ہندوستانی حج مشن آفس",
+        hi: "भारतीय हज मिशन कार्यालय",
+      } as LocalizedString,
+    ],
+  },
+  {
+    id: "medical-services",
+    icon: "stethoscope",
+    title: {
+      en: "Medical Services",
+      ar: "الخدمات الطبية",
+      ur: "طبی خدمات",
+      hi: "चिकित्सा सेवाएं",
+      ta: "மருத்துவ சேவைகள்",
+      te: "వైద్య సేవలు",
+      mr: "वैद्यकीय सेवा",
+      bn: "চিকিৎসা সেবা",
+      ml: "മെഡിക്കൽ സേവനങ്ങൾ",
+      pa: "ਡਾਕਟਰੀ ਸੇਵਾਵਾਂ",
+      or: "ଚିକିତ୍ସା ସେବା",
+    } as LocalizedString,
+    description: {
+      en: "Free medical assistance is available through Indian Hajj Medical Mission (IHMM) dispensaries and Saudi government hospitals. Services include first aid, medicines, and emergency care.",
+      ar: "المساعدة الطبية المجانية متاحة من خلال مستوصفات بعثة الحج الطبية الهندية ومستشفيات الحكومة السعودية.",
+      ur: "مفت طبی مدد ہندوستانی حج میڈیکل مشن (IHMM) کے ڈسپنسریوں اور سعودی سرکاری ہسپتالوں کے ذریعے دستیاب ہے۔",
+      hi: "भारतीय हज मेडिकल मिशन (IHMM) डिस्पेंसरी और सऊदी सरकारी अस्पतालों के माध्यम से मुफ्त चिकित्सा सहायता उपलब्ध है।",
+    } as LocalizedString,
+    provider: "both",
+    howToAccess: [
+      {
+        en: "For minor issues: Visit the IHMM dispensary in your building or nearby",
+        ar: "للمشاكل البسيطة: قم بزيارة مستوصف IHMM في مبناك أو بالقرب منه",
+        ur: "معمولی مسائل کے لیے: اپنی عمارت میں یا قریب IHMM ڈسپنسری جائیں",
+        hi: "मामूली समस्याओं के लिए: अपनी बिल्डिंग में या पास के IHMM डिस्पेंसरी जाएं",
+      } as LocalizedString,
+      {
+        en: "For emergencies: Call 911 (Saudi emergency) or contact your group leader",
+        ar: "للطوارئ: اتصل بـ 911 (طوارئ السعودية) أو اتصل بقائد مجموعتك",
+        ur: "ہنگامی صورت میں: 911 (سعودی ایمرجنسی) کال کریں یا اپنے گروپ لیڈر سے رابطہ کریں",
+        hi: "आपातकाल के लिए: 911 (सऊदी इमरजेंसी) कॉल करें या अपने ग्रुप लीडर से संपर्क करें",
+      } as LocalizedString,
+      {
+        en: "Carry your medicines and prescriptions with you at all times",
+        ar: "احمل أدويتك ووصفاتك الطبية معك في جميع الأوقات",
+        ur: "اپنی دوائیں اور نسخے ہمیشہ اپنے ساتھ رکھیں",
+        hi: "अपनी दवाइयां और प्रिस्क्रिप्शन हमेशा अपने साथ रखें",
+      } as LocalizedString,
+      {
+        en: "For hospital referral, get a letter from the IHMM dispensary",
+        ar: "للإحالة إلى المستشفى، احصل على خطاب من مستوصف IHMM",
+        ur: "ہسپتال ریفرل کے لیے، IHMM ڈسپنسری سے خط حاصل کریں",
+        hi: "अस्पताल रेफरल के लिए, IHMM डिस्पेंसरी से पत्र लें",
+      } as LocalizedString,
+    ],
+    locations: [
+      {
+        en: "IHMM dispensaries in each pilgrim building (Makkah & Madinah)",
+        ar: "مستوصفات IHMM في كل مبنى للحجاج (مكة والمدينة)",
+        ur: "ہر حاجی عمارت میں IHMM ڈسپنسریاں (مکہ اور مدینہ)",
+        hi: "प्रत्येक तीर्थयात्री भवन में IHMM डिस्पेंसरी (मक्का और मदीना)",
+      } as LocalizedString,
+      {
+        en: "Mina/Arafat/Muzdalifah: IHMM medical camps and Saudi field hospitals",
+        ar: "منى/عرفات/مزدلفة: مخيمات IHMM الطبية والمستشفيات الميدانية السعودية",
+        ur: "منیٰ/عرفات/مزدلفہ: IHMM میڈیکل کیمپس اور سعودی فیلڈ ہسپتال",
+        hi: "मिना/अरफात/मुज़दलिफ़ा: IHMM मेडिकल कैंप और सऊदी फील्ड अस्पताल",
+      } as LocalizedString,
+      {
+        en: "Major Saudi hospitals: Ajyad Hospital, King Abdullah Medical City",
+        ar: "المستشفيات السعودية الكبرى: مستشفى أجياد، مدينة الملك عبدالله الطبية",
+        ur: "بڑے سعودی ہسپتال: اجیاد ہسپتال، کنگ عبداللہ میڈیکل سٹی",
+        hi: "प्रमुख सऊदी अस्पताल: अजयाद हॉस्पिटल, किंग अब्दुल्ला मेडिकल सिटी",
+      } as LocalizedString,
+    ],
+    importantNotes: [
+      {
+        en: "Always carry your Hajj ID and health card",
+        ar: "احمل دائمًا هوية الحج وبطاقة الصحة الخاصة بك",
+        ur: "ہمیشہ اپنا حج آئی ڈی اور ہیلتھ کارڈ ساتھ رکھیں",
+        hi: "हमेशा अपना हज आईडी और हेल्थ कार्ड साथ रखें",
+      } as LocalizedString,
+      {
+        en: "Inform the dispensary about any chronic conditions",
+        ar: "أبلغ المستوصف عن أي حالات مزمنة",
+        ur: "ڈسپنسری کو کسی بھی دائمی بیماری کے بارے میں بتائیں",
+        hi: "किसी भी पुरानी बीमारी के बारे में डिस्पेंसरी को बताएं",
+      } as LocalizedString,
+    ],
+  },
+  {
+    id: "medical",
+    icon: "stethoscope",
+    title: {
+      en: "Medical Assistance",
+      ar: "المساعدة الطبية",
+      ur: "طبی معاونت",
+      hi: "चिकित्सकीय सहायता",
+      ta: "மருத்துவ உதவி",
+      te: "వైద్య సహాయం",
+      mr: "वैद्यकीय साहाय्य",
+      bn: "চিকিৎসা সহায়তা",
+      ml: "മെഡിക്കൽ സഹായം",
+      pa: "ਤਿੱਬੀ ਸਹਾਇਤਾ",
+      or: "ଚିକିତ୍ସା ସହାୟତା",
+    } as LocalizedString,
+    description: {
+      en: "Free medical consultation, emergency treatment, and medicines at Indian Hajj Mission medical centers across Makkah and Madinah.",
+      ar: "استشارات طبية مجانية وعلاج طوارئ وأدوية في المراكز الطبية لبعثة الحج الهندية في مكة والمدينة.",
+      ur: "مکہ اور مدینہ میں ہندوستانی حج مشن کے طبی مراکز پر مفت طبی مشاورت، ایمرجنسی علاج اور ادویات۔",
+      hi: "मक्का और मदीना में भारतीय हज मिशन के चिकित्सा केंद्रों पर मुफ्त चिकित्सा परामर्श, आपातकालीन उपचार और दवाइयाँ।",
+    } as LocalizedString,
+    provider: "india",
+    eligibility: {
+      en: "All Indian Hajj pilgrims with valid Hajj permits",
+      ar: "جميع حجاج الهند الحاصلين على تصاريح حج سارية",
+      ur: "تمام ہندوستانی حاجی جن کے پاس درست حج پرمٹ ہیں",
+      hi: "सभी भारतीय हाजी जिनके पास वैध हज परमिट हैं",
+    } as LocalizedString,
+    howToAccess: [
+      {
+        en: "Visit the nearest Indian Hajj Mission medical center",
+        ar: "زيارة أقرب مركز طبي لبعثة الحج الهندية",
+        ur: "قریب ترین ہندوستانی حج مشن طبی مرکز پر جائیں",
+        hi: "निकटतम भारतीय हज मिशन चिकित्सा केंद्र पर जाएं",
+      } as LocalizedString,
+      {
+        en: "Show your Hajj ID and passport for verification",
+        ar: "أظهر هوية الحج وجواز السفر للتحقق",
+        ur: "تصدیق کے لیے اپنا حج آئی ڈی اور پاسپورٹ دکھائیں",
+        hi: "सत्यापन के लिए अपना हज आईडी और पासपोर्ट दिखाएं",
+      } as LocalizedString,
+      {
+        en: "Emergency cases are treated immediately without formalities",
+        ar: "يتم علاج حالات الطوارئ على الفور دون إجراءات رسمية",
+        ur: "ایمرجنسی کیسز کو بغیر رسمیات کے فوری طور پر علاج ملتا ہے",
+        hi: "आपातकालीन मामलों का तुरंत औपचारिकताओं के बिना इलाज किया जाता है",
+      } as LocalizedString,
+    ],
+    locations: [
+      {
+        en: "Makkah: Aziziyah Building Medical Center",
+        ar: "مكة: المركز الطبي بمبنى العزيزية",
+        ur: "مکہ: العزیزیہ بلڈنگ طبی مرکز",
+        hi: "मक्का: अज़ीज़िया बिल्डिंग चिकित्सा केंद्र",
+      } as LocalizedString,
+      {
+        en: "Madinah: Markaziya Area Medical Center",
+        ar: "المدينة: المركز الطبي بمنطقة المركزية",
+        ur: "مدینہ: مرکزیہ علاقہ طبی مرکز",
+        hi: "मदीना: मरकज़िया क्षेत्र चिकित्सा केंद्र",
+      } as LocalizedString,
+      {
+        en: "Mina: Indian Hajj Mission camp medical units",
+        ar: "منى: الوحدات الطبية بمخيم بعثة الحج الهندية",
+        ur: "منیٰ: ہندوستانی حج مشن کیمپ طبی یونٹس",
+        hi: "मिना: भारतीय हज मिशन शिविर चिकित्सा इकाइयाँ",
+      } as LocalizedString,
+      {
+        en: "Arafat: Field medical camp near Indian pilgrims' tents",
+        ar: "عرفات: مخيم طبي ميداني بالقرب من خيام الحجاج الهنود",
+        ur: "عرفات: ہندوستانی حاجیوں کے خیموں کے قریب فیلڈ طبی کیمپ",
+        hi: "अरफात: भारतीय तीर्थयात्रियों के तंबुओं के पास फील्ड चिकित्सा शिविर",
+      } as LocalizedString,
+    ],
+    importantNotes: [
+      {
+        en: "Carry your regular medications with prescriptions",
+        ar: "احمل أدويتك المعتادة مع الوصفات الطبية",
+        ur: "اپنی باقاعدہ ادویات نسخوں کے ساتھ لے کر آئیں",
+        hi: "अपनी नियमित दवाइयाँ नुस्खों के साथ ले जाएं",
+      } as LocalizedString,
+      {
+        en: "Report any chronic conditions to the medical staff",
+        ar: "أبلغ الطاقم الطبي عن أي حالات مزمنة",
+        ur: "کسی بھی دائمی بیماری کی طبی عملے کو اطلاع دیں",
+        hi: "किसी भी दीर्घकालिक स्थिति की चिकित्सा कर्मचारियों को सूचित करें",
+      } as LocalizedString,
+    ],
+    contactInfo: {
+      helpline: "+966-59-8889-400",
+      helplineLabel: {
+        en: "Indian Hajj Mission Medical Helpline",
+        ar: "خط المساعدة الطبية لبعثة الحج الهندية",
+        ur: "ہندوستانی حج مشن طبی ہیلپ لائن",
+        hi: "भारतीय हज मिशन चिकित्सा हेल्पलाइन",
+      } as LocalizedString,
+      additionalNumbers: [
+        {
+          label: {
+            en: "Saudi Ambulance (Red Crescent)",
+            ar: "الإسعاف السعودي (الهلال الأحمر)",
+            ur: "سعودی ایمبولینس (ریڈ کرسنٹ)",
+            hi: "सऊदी एम्बुलेंस (रेड क्रिसेंट)",
+          } as LocalizedString,
+          number: "997",
+        },
+        {
+          label: {
+            en: "Emergency",
+            ar: "طوارئ",
+            ur: "ایمرجنسی",
+            hi: "आपातकालीन",
+          } as LocalizedString,
+          number: "911",
+        },
+      ],
+    },
+  },
+  {
+    id: "transport",
+    icon: "bus",
+    title: {
+      en: "Transport Services",
+      ar: "خدمات النقل",
+      ur: "نقل و حمل کی خدمات",
+      hi: "परिवहन सेवाएं",
+      ta: "போக்குவரத்து சேவைகள்",
+      te: "రవాణా సేవలు",
+      mr: "वाहतूक सेवा",
+      bn: "পরিবহন পরিষেবা",
+      ml: "ഗതാഗത സേവനങ്ങൾ",
+      pa: "ਆਵਾਜਾਈ ਸੇਵਾਵਾਂ",
+      or: "ପରିବହନ ସେବା",
+    } as LocalizedString,
+    description: {
+      en: "Free shuttle buses between Makkah, Madinah, Mina, Arafat, and Muzdalifah for Indian pilgrims.",
+      ar: "حافلات مجانية بين مكة والمدينة ومنى وعرفات ومزدلفة للحجاج الهنود.",
+      ur: "ہندوستانی حاجیوں کے لیے مکہ، مدینہ، منیٰ، عرفات اور مزدلفہ کے درمیان مفت شٹل بسیں۔",
+      hi: "भारतीय तीर्थयात्रियों के लिए मक्का, मदीना, मिना, अरफात और मुज़दलिफ़ा के बीच मुफ्त शटल बसें।",
+    } as LocalizedString,
+    provider: "both",
+    howToAccess: [
+      {
+        en: "Board buses at designated pickup points in your building/camp",
+        ar: "صعد الحافلات في نقاط الالتقاط المحددة في مبناك/مخيمك",
+        ur: "اپنی عمارت/کیمپ میں مخصوص پک اپ پوائنٹس پر بسوں میں سوار ہوں",
+        hi: "अपनी बिल्डिंग/कैंप में निर्दिष्ट पिकअप बिंदुओं पर बसों में चढ़ें",
+      } as LocalizedString,
+      {
+        en: "Show your Hajj permit for boarding",
+        ar: "أظهر تصريح الحج للصعود",
+        ur: "سوار ہونے کے لیے اپنا حج پرمٹ دکھائیں",
+        hi: "चढ़ने के लिए अपना हज परमिट दिखाएं",
+      } as LocalizedString,
+      {
+        en: "Follow the schedule posted at your accommodation",
+        ar: "اتبع الجدول المعلن في إقامتك",
+        ur: "اپنی رہائش میں لگے شیڈول کی پیروی کریں",
+        hi: "अपने आवास पर पोस्ट किए गए कार्यक्रम का पालन करें",
+      } as LocalizedString,
+    ],
+    locations: [
+      {
+        en: "Makkah: Aziziyah bus terminal and building pickup points",
+        ar: "مكة: محطة الحافلات بالعزيزية ونقاط الالتقاط بالمباني",
+        ur: "مکہ: العزیزیہ بس ٹرمینل اور عمارت کے پک اپ پوائنٹس",
+        hi: "मक्का: अज़ीज़िया बस टर्मिनल और बिल्डिंग पिकअप बिंदु",
+      } as LocalizedString,
+      {
+        en: "Madinah: Central transport hub near Prophet's Mosque",
+        ar: "المدينة: محور النقل المركزي بالقرب من المسجد النبوي",
+        ur: "مدینہ: مسجد نبوی کے قریب مرکزی ٹرانسپورٹ ہب",
+        hi: "मदीना: पैगंबर की मस्जिद के पास केंद्रीय परिवहन केंद्र",
+      } as LocalizedString,
+      {
+        en: "Mina/Arafat/Muzdalifah: Camp transport coordinators",
+        ar: "منى/عرفات/مزدلفة: منسقو النقل بالمخيمات",
+        ur: "منیٰ/عرفات/مزدلفہ: کیمپ ٹرانسپورٹ کوآرڈینیٹرز",
+        hi: "मिना/अरफात/मुज़दलिफ़ा: शिविर परिवहन समन्वयक",
+      } as LocalizedString,
+    ],
+    importantNotes: [
+      {
+        en: "Buses run on fixed schedules - arrive 15 minutes early",
+        ar: "تعمل الحافلات حسب جداول زمنية ثابتة - arrive 15 minutes early",
+        ur: "بسیں طے شدہ شیڈول کے مطابق چلتی ہیں - 15 منٹ پہلے پہنچیں",
+        hi: "बसें निश्चित समय सारणी पर चलती हैं - 15 मिनट पहले पहुंचें",
+      } as LocalizedString,
+      {
+        en: "Carry water and snacks for long journeys",
+        ar: "احمل الماء والوجبات الخفيفة للرحلات الطويلة",
+        ur: "لمبے سفر کے لیے پانی اور سنیکس ساتھ رکھیں",
+        hi: "लंबी यात्राओं के लिए पानी और नाश्ते ले जाएं",
+      } as LocalizedString,
+    ],
+    contactInfo: {
+      helpline: "+966-59-8889-400",
+      helplineLabel: {
+        en: "Transport Coordination Helpline",
+        ar: "خط تنسيق النقل",
+        ur: "ٹرانسپورٹ کوآرڈینیشن ہیلپ لائن",
+        hi: "परिवहन समन्वय हेल्पलाइन",
+      } as LocalizedString,
+    },
+  },
+  {
+    id: "elderly-disabled",
+    icon: "heart-handshake",
+    title: {
+      en: "Elderly & Disabled Support",
+      ar: "دعم كبار السن والمعاقين",
+      ur: "بزرگوں اور معذوروں کی مدد",
+      hi: "बुजुर्ग और विकलांग सहायता",
+      ta: "முதியோர் மற்றும் மாற்றுத்திறனாளிகள் ஆதரவு",
+      te: "వృద్ధులు మరియు వికలాంగుల సహాయం",
+      mr: "ज्येष्ठ आणि अपंग सहाय्य",
+      bn: "বয়স্ক ও প্রতিবন্ধী সহায়তা",
+      ml: "മുതിർന്നവർക്കും വികലാംഗർക്കും പിന്തുണ",
+      pa: "ਬਜ਼ੁਰਗ ਅਤੇ ਅਪਾਹਜ ਸਹਾਇਤਾ",
+      or: "ବୟସ୍କ ଏବଂ ବିକଳାଙ୍ଗ ସହାୟତା",
+    } as LocalizedString,
+    description: {
+      en: "Special assistance programs for elderly pilgrims (65+), those with disabilities, and pilgrims requiring extra care. Includes priority services, dedicated volunteers, and special accommodation arrangements.",
+      ar: "برامج مساعدة خاصة للحجاج المسنين (65+) وذوي الإعاقة والحجاج الذين يحتاجون رعاية إضافية.",
+      ur: "بزرگ حجاج (65+)، معذور افراد، اور اضافی دیکھ بھال کی ضرورت والے حجاج کے لیے خصوصی مدد کے پروگرام۔",
+      hi: "बुजुर्ग तीर्थयात्रियों (65+), विकलांग व्यक्तियों और अतिरिक्त देखभाल की जरूरत वाले तीर्थयात्रियों के लिए विशेष सहायता कार्यक्रम।",
+    } as LocalizedString,
+    provider: "both",
+    eligibility: {
+      en: "Age 65 and above, persons with disabilities, or those with certified medical conditions requiring assistance",
+      ar: "العمر 65 فما فوق، الأشخاص ذوي الإعاقة، أو ذوي الحالات الطبية المعتمدة التي تتطلب مساعدة",
+      ur: "عمر 65 سال یا اس سے زیادہ، معذور افراد، یا تصدیق شدہ طبی حالات والے جن کو مدد کی ضرورت ہے",
+      hi: "65 वर्ष या उससे अधिक आयु, विकलांग व्यक्ति, या प्रमाणित चिकित्सा स्थितियों वाले जिन्हें सहायता की आवश्यकता है",
+    } as LocalizedString,
+    howToAccess: [
+      {
+        en: "Register as a 'special needs' pilgrim at the embarkation camp in India",
+        ar: "سجل كحاج 'ذوي احتياجات خاصة' في معسكر الانطلاق في الهند",
+        ur: "ہندوستان میں روانگی کیمپ میں 'خصوصی ضروریات' والے حاجی کے طور پر رجسٹر کریں",
+        hi: "भारत में एम्बार्केशन कैंप में 'विशेष जरूरतों' वाले तीर्थयात्री के रूप में पंजीकरण करें",
+      } as LocalizedString,
+      {
+        en: "Inform your group coordinator about your specific needs",
+        ar: "أبلغ منسق مجموعتك باحتياجاتك المحددة",
+        ur: "اپنے گروپ کوآرڈینیٹر کو اپنی مخصوص ضروریات سے آگاہ کریں",
+        hi: "अपने समूह समन्वयक को अपनी विशिष्ट आवश्यकताओं के बारे में सूचित करें",
+      } as LocalizedString,
+      {
+        en: "Request ground floor accommodation if needed",
+        ar: "اطلب إقامة في الطابق الأرضي إذا لزم الأمر",
+        ur: "اگر ضرورت ہو تو گراؤنڈ فلور رہائش کی درخواست کریں",
+        hi: "यदि आवश्यक हो तो ग्राउंड फ्लोर आवास का अनुरोध करें",
+      } as LocalizedString,
+      {
+        en: "Ask for volunteer escort assistance for rituals",
+        ar: "اطلب مساعدة مرافقة متطوع للشعائر",
+        ur: "رسومات کے لیے رضاکار ایسکورٹ مدد کی درخواست کریں",
+        hi: "अनुष्ठानों के लिए स्वयंसेवक एस्कॉर्ट सहायता मांगें",
+      } as LocalizedString,
+    ],
+    locations: [
+      {
+        en: "Building welfare desks",
+        ar: "مكاتب الرعاية في المباني",
+        ur: "عمارت ویلفیئر ڈیسک",
+        hi: "बिल्डिंग वेलफेयर डेस्क",
+      } as LocalizedString,
+      {
+        en: "Indian Hajj Mission special assistance counters",
+        ar: "كاونترات المساعدة الخاصة ببعثة الحج الهندية",
+        ur: "ہندوستانی حج مشن خصوصی مدد کاؤنٹرز",
+        hi: "भारतीय हज मिशन विशेष सहायता काउंटर",
+      } as LocalizedString,
+      {
+        en: "Masjid al-Haram: Special needs gates and areas",
+        ar: "المسجد الحرام: بوابات ومناطق ذوي الاحتياجات الخاصة",
+        ur: "مسجد الحرام: خصوصی ضروریات کے دروازے اور علاقے",
+        hi: "मस्जिद अल-हरम: विशेष जरूरतों वाले गेट और क्षेत्र",
+      } as LocalizedString,
+    ],
+  },
+  {
+    id: "help-desks",
+    icon: "info",
+    title: {
+      en: "Help Desks & Information Centers",
+      ar: "مكاتب المساعدة ومراكز المعلومات",
+      ur: "ہیلپ ڈیسک اور معلوماتی مراکز",
+      hi: "हेल्प डेस्क और सूचना केंद्र",
+      ta: "உதவி மையங்கள் மற்றும் தகவல் மையங்கள்",
+      te: "హెల్ప్ డెస్క్‌లు మరియు సమాచార కేంద్రాలు",
+      mr: "मदत केंद्रे आणि माहिती केंद्रे",
+      bn: "হেল্প ডেস্ক ও তথ্য কেন্দ্র",
+      ml: "ഹെൽപ്പ് ഡെസ്‌കുകളും വിവര കേന്ദ്രങ്ങളും",
+      pa: "ਹੈਲਪ ਡੈਸਕ ਅਤੇ ਜਾਣਕਾਰੀ ਕੇਂਦਰ",
+      or: "ହେଲ୍ପ ଡେସ୍କ ଏବଂ ସୂଚନା କେନ୍ଦ୍ର",
+    } as LocalizedString,
+    description: {
+      en: "Information and assistance centers are available at multiple locations to help pilgrims with questions, lost items, directions, and general support.",
+      ar: "تتوفر مراكز المعلومات والمساعدة في مواقع متعددة لمساعدة الحجاج في الأسئلة والمفقودات والاتجاهات والدعم العام.",
+      ur: "سوالات، گمشدہ اشیاء، سمتوں، اور عمومی معاونت میں حجاج کی مدد کے لیے متعدد مقامات پر معلومات اور مدد کے مراکز دستیاب ہیں۔",
+      hi: "सवालों, खोई हुई वस्तुओं, दिशाओं और सामान्य सहायता में तीर्थयात्रियों की मदद के लिए कई स्थानों पर सूचना और सहायता केंद्र उपलब्ध हैं।",
+    } as LocalizedString,
+    provider: "both",
+    howToAccess: [
+      {
+        en: "Look for 'Information' or 'Help Desk' signs (usually green with Arabic/English text)",
+        ar: "ابحث عن لافتات 'معلومات' أو 'مكتب المساعدة' (عادة خضراء بنص عربي/إنجليزي)",
+        ur: "انفارمیشن' یا 'ہیلپ ڈیسک' کے نشانات تلاش کریں (عام طور پر سبز عربی/انگریزی متن کے ساتھ)",
+        hi: "'सूचना' या 'हेल्प डेस्क' चिह्न देखें (आमतौर पर अरबी/अंग्रेजी टेक्स्ट के साथ हरा)",
+      } as LocalizedString,
+      {
+        en: "Approach any uniformed volunteer (usually wearing vests)",
+        ar: "اقترب من أي متطوع يرتدي زيًا موحدًا (عادة يرتدي سترات)",
+        ur: "کسی بھی یونیفارم والے رضاکار کے پاس جائیں (عام طور پر واسکٹ پہنے ہوئے)",
+        hi: "किसी भी यूनिफॉर्म वाले स्वयंसेवक से संपर्क करें (आमतौर पर जैकेट पहने हुए)",
+      } as LocalizedString,
+      {
+        en: "Ask at your building's reception or information desk",
+        ar: "اسأل في استقبال المبنى أو مكتب المعلومات",
+        ur: "اپنی عمارت کے ریسپشن یا انفارمیشن ڈیسک پر پوچھیں",
+        hi: "अपनी बिल्डिंग के रिसेप्शन या सूचना डेस्क पर पूछें",
+      } as LocalizedString,
+    ],
+    locations: [
+      {
+        en: "Every pilgrim building has an information desk",
+        ar: "كل مبنى للحجاج لديه مكتب معلومات",
+        ur: "ہر حاجی عمارت میں انفارمیشن ڈیسک ہے",
+        hi: "हर तीर्थयात्री बिल्डिंग में सूचना डेस्क है",
+      } as LocalizedString,
+      {
+        en: "Masjid al-Haram: Multiple help desks at major gates",
+        ar: "المسجد الحرام: مكاتب مساعدة متعددة عند البوابات الرئيسية",
+        ur: "مسجد الحرام: بڑے دروازوں پر متعدد ہیلپ ڈیسک",
+        hi: "मस्जिद अल-हरम: प्रमुख गेट पर कई हेल्प डेस्क",
+      } as LocalizedString,
+      {
+        en: "Mina/Arafat: Indian camp information tents",
+        ar: "منى/عرفات: خيام معلومات المخيم الهندي",
+        ur: "منیٰ/عرفات: ہندوستانی کیمپ انفارمیشن ٹینٹ",
+        hi: "मिना/अरफात: भारतीय कैंप सूचना टेंट",
+      } as LocalizedString,
+      {
+        en: "Indian Hajj Mission main offices",
+        ar: "مكاتب بعثة الحج الهندية الرئيسية",
+        ur: "ہندوستانی حج مشن مرکزی دفاتر",
+        hi: "भारतीय हज मिशन मुख्य कार्यालय",
+      } as LocalizedString,
+    ],
+  },
+  {
+    id: "lost-found",
+    icon: "search",
+    title: {
+      en: "Lost & Found",
+      ar: "المفقودات",
+      ur: "گمشدہ اشیا",
+      hi: "खोया और पाया",
+      ta: "இழந்த மற்றும் கண்டுபிடித்தல்",
+      te: "పోగొట్టుకున్న మరియు దొరికినవి",
+      mr: "हरवलेले आढळलेले",
+      bn: "হারানো ও পাওয়া",
+      ml: "കാണാതായവ & കണ്ടെത്തിയവ",
+      pa: "ਗੁਆਚੇ ਅਤੇ ਲੱਭੇ",
+      or: "ହରାଇଥିବା ଏବଂ ମିଳିଥିବା",
+    } as LocalizedString,
+    description: {
+      en: "Report lost items or search for found belongings at official lost and found centers.",
+      ar: "الإبلاغ عن الأشياء المفقودة أو البحث عن الممتلكات الموجودة في مراكز المفقودات الرسمية.",
+      ur: "گمشدہ اشیا کی رپورٹ کریں یا سرکاری گمشدہ اشیا کے مراکز پر ملنے والی اشیاء تلاش کریں۔",
+      hi: "खोई हुई वस्तुओं की रिपोर्ट करें या आधिकारिक खोया और पाया केंद्रों पर मिली संपत्तियों की खोज करें।",
+    } as LocalizedString,
+    provider: "saudi",
+    howToAccess: [
+      {
+        en: "Report lost items immediately to your group coordinator",
+        ar: "أبلغ عن الأشياء المفقودة فوراً لمنسق مجموعتك",
+        ur: "فوری طور پر اپنے گروپ کوآرڈینیٹر کو گمشدہ اشیا کی اطلاع دیں",
+        hi: "तुरंत अपने समूह समन्वयक को खोई हुई वस्तुओं की रिपोर्ट करें",
+      } as LocalizedString,
+      {
+        en: "Visit the Lost & Found office at Masjid al-Haram (Gate 45)",
+        ar: "زيارة مكتب المفقودات في المسجد الحرام (الباب 45)",
+        ur: "مسجد الحرام میں گمشدہ اشیا کا دفتر دیکھیں (گیٹ 45)",
+        hi: "मस्जिद अल-हरम में खोया और पाया कार्यालय जाएं (गेट 45)",
+      } as LocalizedString,
+      {
+        en: "Provide detailed description and your contact information",
+        ar: "قدم وصفاً تفصيلياً ومعلومات الاتصال الخاصة بك",
+        ur: "تفصیلی تفصیل اور اپنی رابطہ معلومات فراہم کریں",
+        hi: "विस्तृत विवरण और अपनी संपर्क जानकारी प्रदान करें",
+      } as LocalizedString,
+    ],
+    locations: [
+      {
+        en: "Masjid al-Haram: Gate 45 Lost & Found Counter",
+        ar: "المسجد الحرام: كاونتر المفقودات بالباب 45",
+        ur: "مسجد الحرام: گیٹ 45 گمشدہ اشیا کا کاؤنٹر",
+        hi: "मस्जिद अल-हरम: गेट 45 खोया और पाया काउंटर",
+      } as LocalizedString,
+      {
+        en: "Masjid an-Nabawi: Near Gate 6",
+        ar: "المسجد النبوي: بالقرب من الباب 6",
+        ur: "مسجد نبوی: گیٹ 6 کے قریب",
+        hi: "मस्जिद अन-नबवी: गेट 6 के पास",
+      } as LocalizedString,
+      {
+        en: "Mina camps: Contact your group leader",
+        ar: "مخيمات منى: اتصل بقائد مجموعتك",
+        ur: "منیٰ کیمپس: اپنے گروپ لیڈر سے رابطہ کریں",
+        hi: "मिना शिविर: अपने समूह नेता से संपर्क करें",
+      } as LocalizedString,
+    ],
+    importantNotes: [
+      {
+        en: "Keep valuables in the safe at your accommodation",
+        ar: "احتفظ بالأشياء الثمينة في الخزنة في إقامتك",
+        ur: "قیمتی اشیاء کو اپنی رہائش کے سیف میں رکھیں",
+        hi: "कीमती सामान अपने आवास के तिजोरी में रखें",
+      } as LocalizedString,
+      {
+        en: "Label all your belongings with name and contact",
+        ar: "ضع ملصقات على جميع ممتلكاتك مع الاسم والاتصال",
+        ur: "اپنی تمام اشیاء پر نام اور رابطہ نمبر لکھیں",
+        hi: "अपनी सभी वस्तुओं पर नाम और संपर्क लिखें",
+      } as LocalizedString,
+    ],
+  },
+  {
+    id: "haj-mission-office",
+    icon: "building",
+    title: {
+      en: "Indian Haj Mission Office (Makkah & Madinah)",
+      ar: "مكتب بعثة الحج الهندية (مكة والمدينة)",
+      ur: "ہندوستانی حج مشن آفس (مکہ اور مدینہ)",
+      hi: "भारतीय हज मिशन कार्यालय (मक्का और मदीना)",
+      ta: "இந்திய ஹஜ் மிஷன் அலுவலகம் (மக்கா மற்றும் மதீனா)",
+      te: "ఇండియన్ హజ్ మిషన్ కార్యాలయం (మక్కా & మదీనా)",
+      mr: "भारतीय हज मिशन कार्यालय (मक्का आणि मदीना)",
+      bn: "ভারতীয় হজ মিশন অফিস (মক্কা ও মদিনা)",
+      ml: "ഇന്ത്യൻ ഹജ്ജ് മിഷൻ ഓഫീസ് (മക്കയും മദീനയും)",
+      pa: "ਭਾਰਤੀ ਹੱਜ ਮਿਸ਼ਨ ਦਫ਼ਤਰ (ਮੱਕਾ ਅਤੇ ਮਦੀਨਾ)",
+      or: "ଭାରତୀୟ ହଜ ମିଶନ୍ ଅଫିସ୍ (ମକ୍କା ଏବଂ ମଦୀନା)",
+    } as LocalizedString,
+    description: {
+      en: "Official Government of India Haj Mission offices in Makkah and Madinah. Tap the map link to navigate directly via Google Maps for documents, complaints, lost passport, medical aid, and emergency support.",
+      ar: "مكاتب بعثة الحج الرسمية لحكومة الهند في مكة والمدينة. انقر على رابط الخريطة للتوجه مباشرة عبر خرائط جوجل.",
+      ur: "حکومت ہند کے سرکاری حج مشن آفسز مکہ اور مدینہ میں۔ دستاویزات، شکایات، گمشدہ پاسپورٹ، طبی امداد اور ایمرجنسی مدد کے لیے گوگل میپس پر براہ راست نیویگیٹ کرنے کے لیے میپ لنک پر ٹیپ کریں۔",
+      hi: "मक्का और मदीना में भारत सरकार के आधिकारिक हज मिशन कार्यालय। दस्तावेज़, शिकायत, खोया पासपोर्ट, चिकित्सा सहायता और आपातकालीन सहायता के लिए सीधे Google Maps पर नेविगेट करने के लिए मैप लिंक पर टैप करें।",
+    } as LocalizedString,
+    provider: "india",
+    eligibility: {
+      en: "All Indian Hajj pilgrims",
+      ar: "جميع حجاج الهند",
+      ur: "تمام ہندوستانی حج زائرین",
+      hi: "सभी भारतीय हज यात्री",
+    } as LocalizedString,
+    howToAccess: [
+      {
+        en: "Tap the Google Maps link below for the city you are in",
+        ar: "انقر على رابط خرائط جوجل أدناه للمدينة التي تتواجد فيها",
+        ur: "اپنے شہر کے لیے نیچے دیے گئے گوگل میپس لنک پر ٹیپ کریں",
+        hi: "जिस शहर में आप हैं उसके लिए नीचे दिए गए Google Maps लिंक पर टैप करें",
+      } as LocalizedString,
+      {
+        en: "Carry your passport, visa, and Haj ID card",
+        ar: "احمل جواز سفرك وتأشيرتك وبطاقة الحج",
+        ur: "اپنا پاسپورٹ، ویزا اور حج آئی ڈی کارڈ ساتھ رکھیں",
+        hi: "अपना पासपोर्ट, वीज़ा और हज आईडी कार्ड साथ रखें",
+      } as LocalizedString,
+      {
+        en: "Office hours: Generally 9 AM – 9 PM (24/7 emergency desk)",
+        ar: "ساعات العمل: 9 صباحاً - 9 مساءً (طوارئ على مدار الساعة)",
+        ur: "آفس اوقات: 9 صبح تا 9 شام (24/7 ایمرجنسی ڈیسک)",
+        hi: "कार्यालय समय: सुबह 9 बजे – रात 9 बजे (24/7 आपातकालीन डेस्क)",
+      } as LocalizedString,
+      {
+        en: "For urgent help, call the Indian Hajj Mission helpline first",
+        ar: "للمساعدة العاجلة، اتصل بخط المساعدة لبعثة الحج الهندية أولاً",
+        ur: "فوری مدد کے لیے، پہلے ہندوستانی حج مشن ہیلپ لائن پر کال کریں",
+        hi: "तत्काल मदद के लिए, पहले भारतीय हज मिशन हेल्पलाइन पर कॉल करें",
+      } as LocalizedString,
+    ],
+    locations: [
+      {
+        en: "Makkah Office: Indian Consulate Building, Aziziyah, Makkah",
+        ar: "مكتب مكة: مبنى القنصلية الهندية، العزيزية، مكة المكرمة",
+        ur: "مکہ آفس: انڈین قونصلیٹ بلڈنگ، عزیزیہ، مکہ مکرمہ",
+        hi: "मक्का कार्यालय: भारतीय वाणिज्य दूतावास भवन, अज़ीज़िया, मक्का",
+      } as LocalizedString,
+      {
+        en: "Madinah Office: Near Markaziyah area, close to Masjid an-Nabawi",
+        ar: "مكتب المدينة: بالقرب من المنطقة المركزية، قريب من المسجد النبوي",
+        ur: "مدینہ آفس: مرکزیہ علاقے کے قریب، مسجد نبوی کے نزدیک",
+        hi: "मदीना कार्यालय: मरकज़िया क्षेत्र के पास, मस्जिद अन-नबवी के नज़दीक",
+      } as LocalizedString,
+    ],
+    contactInfo: {
+      helpline: "+966-59-8889-400",
+      helplineLabel: {
+        en: "Indian Hajj Mission 24/7 Helpline",
+        ar: "خط مساعدة بعثة الحج الهندية على مدار الساعة",
+        ur: "ہندوستانی حج مشن 24/7 ہیلپ لائن",
+        hi: "भारतीय हज मिशन 24/7 हेल्पलाइन",
+      } as LocalizedString,
+      additionalNumbers: [
+        {
+          label: {
+            en: "Makkah Control Room",
+            ar: "غرفة تحكم مكة",
+            ur: "مکہ کنٹرول روم",
+            hi: "मक्का कंट्रोल रूम",
+          } as LocalizedString,
+          number: "+966-12-542-0019",
+        },
+        {
+          label: {
+            en: "Madinah Control Room",
+            ar: "غرفة تحكم المدينة",
+            ur: "مدینہ کنٹرول روم",
+            hi: "मदीना कंट्रोल रूम",
+          } as LocalizedString,
+          number: "+966-14-822-0033",
+        },
+        {
+          label: {
+            en: "Saudi Emergency",
+            ar: "الطوارئ السعودية",
+            ur: "سعودی ایمرجنسی",
+            hi: "सऊदी आपातकाल",
+          } as LocalizedString,
+          number: "911",
+        },
+      ],
+    },
+    mapLinks: [
+      {
+        name: {
+          en: "Indian Haj Mission – Makkah",
+          ar: "بعثة الحج الهندية - مكة",
+          ur: "انڈین حج مشن - مکہ",
+          hi: "भारतीय हज मिशन – मक्का",
+        } as LocalizedString,
+        address: {
+          en: "Aziziyah, Makkah, Saudi Arabia",
+          ar: "العزيزية، مكة المكرمة، المملكة العربية السعودية",
+          ur: "عزیزیہ، مکہ مکرمہ، سعودی عرب",
+          hi: "अज़ीज़िया, मक्का, सऊदी अरब",
+        } as LocalizedString,
+        mapUrl: "https://www.google.com/maps/search/?api=1&query=Indian+Haj+Mission+Makkah+Aziziyah",
+        phone: "+966-12-542-0019",
+      },
+      {
+        name: {
+          en: "Indian Haj Mission – Madinah",
+          ar: "بعثة الحج الهندية - المدينة المنورة",
+          ur: "انڈین حج مشن - مدینہ منورہ",
+          hi: "भारतीय हज मिशन – मदीना",
+        } as LocalizedString,
+        address: {
+          en: "Markaziyah, Madinah, Saudi Arabia",
+          ar: "المركزية، المدينة المنورة، المملكة العربية السعودية",
+          ur: "مرکزیہ، مدینہ منورہ، سعودی عرب",
+          hi: "मरकज़िया, मदीना, सऊदी अरब",
+        } as LocalizedString,
+        mapUrl: "https://www.google.com/maps/search/?api=1&query=Indian+Haj+Mission+Madinah+Markaziyah",
+        phone: "+966-14-822-0033",
+      },
+    ],
+    importantNotes: [
+      {
+        en: "Always carry a copy of your passport when visiting the office",
+        ar: "احمل دائماً نسخة من جواز سفرك عند زيارة المكتب",
+        ur: "آفس جاتے وقت ہمیشہ اپنے پاسپورٹ کی کاپی ساتھ رکھیں",
+        hi: "कार्यालय जाते समय हमेशा अपने पासपोर्ट की कॉपी साथ रखें",
+      } as LocalizedString,
+      {
+        en: "For lost passport, report immediately to the Mission office",
+        ar: "في حالة فقدان جواز السفر، أبلغ على الفور مكتب البعثة",
+        ur: "پاسپورٹ گم ہونے پر فوراً مشن آفس کو اطلاع دیں",
+        hi: "पासपोर्ट खो जाने पर तुरंत मिशन कार्यालय को सूचित करें",
+      } as LocalizedString,
+      {
+        en: "Free service – never pay any agent or middleman",
+        ar: "خدمة مجانية - لا تدفع أبداً لأي وكيل أو وسيط",
+        ur: "مفت سروس - کبھی کسی ایجنٹ یا بیچوان کو ادائیگی نہ کریں",
+        hi: "मुफ्त सेवा – किसी भी एजेंट या बिचौलिए को कभी भुगतान न करें",
+      } as LocalizedString,
+    ],
+  },
+  {
+    id: "ihpo-madinah-desk",
+    icon: "Phone",
+    title: {
+      en: "IHPO Madinah – Desk Officials (Haj 2026)",
+      ar: "مكتب الحج الهندي بالمدينة - مسؤولو المكتب (حج 2026)",
+      ur: "آئی ایچ پی او مدینہ - ڈیسک افسران (حج 2026)",
+      hi: "IHPO मदीना – डेस्क अधिकारी (हज 2026)",
+      ta: "IHPO மதீனா – டெஸ்க் அதிகாரிகள் (ஹஜ் 2026)",
+      te: "IHPO మదీనా – డెస్క్ అధికారులు (హజ్ 2026)",
+      mr: "IHPO मदीना – डेस्क अधिकारी (हज 2026)",
+      bn: "IHPO মদিনা – ডেস্ক কর্মকর্তা (হজ ২০২৬)",
+      ml: "IHPO മദീന – ഡെസ്ക് ഉദ്യോഗസ്ഥർ (ഹജ് 2026)",
+      pa: "IHPO ਮਦੀਨਾ – ਡੈਸਕ ਅਫਸਰ (ਹੱਜ 2026)",
+      or: "IHPO ମଦିନା – ଡେସ୍କ ଅଧିକାରୀ (ହଜ୍ 2026)",
+    } as LocalizedString,
+    description: {
+      en: "Direct mobile numbers of all 10 desk officials at the Indian Haj Pilgrims Office, Madinah – for SHI, Coordination, Welfare, Arrival, Airport, Lost Baggage, Computer Cell, Reception & Dispensary.",
+      ar: "أرقام الجوال المباشرة لجميع مسؤولي المكتب العشرة في مكتب الحجاج الهنود بالمدينة المنورة.",
+      ur: "انڈین حج پلگرمز آفس مدینہ کے تمام 10 ڈیسک افسران کے براہ راست موبائل نمبر۔",
+      hi: "भारतीय हज तीर्थयात्री कार्यालय, मदीना के सभी 10 डेस्क अधिकारियों के सीधे मोबाइल नंबर।",
+      ta: "மதீனாவில் உள்ள இந்திய ஹஜ் யாத்ரீகர் அலுவலகத்தில் உள்ள 10 டெஸ்க் அதிகாரிகளின் நேரடி மொபைல் எண்கள்.",
+      te: "మదీనాలోని ఇండియన్ హజ్ తీర్థయాత్రికుల కార్యాలయంలోని 10 డెస్క్ అధికారుల ప్రత్యక్ష మొబైల్ నంబర్లు.",
+      mr: "मदीनास्थ इंडियन हज पिलग्रिम्स ऑफिसमधील सर्व 10 डेस्क अधिकाऱ्यांचे थेट मोबाईल नंबर.",
+      bn: "মদিনায় ভারতীয় হজ যাত্রী অফিসের সমস্ত ১০ জন ডেস্ক কর্মকর্তার সরাসরি মোবাইল নম্বর।",
+      ml: "മദീനയിലെ ഇന്ത്യൻ ഹജ് യാത്രികർ ഓഫീസിലെ 10 ഡെസ്ക് ഉദ്യോഗസ്ഥരുടെ നേരിട്ടുള്ള മൊബൈൽ നമ്പറുകൾ.",
+      pa: "ਮਦੀਨਾ ਵਿੱਚ ਭਾਰਤੀ ਹੱਜ ਯਾਤਰੀ ਦਫ਼ਤਰ ਦੇ ਸਾਰੇ 10 ਡੈਸਕ ਅਫਸਰਾਂ ਦੇ ਸਿੱਧੇ ਮੋਬਾਈਲ ਨੰਬਰ।",
+      or: "ମଦିନାରେ ଭାରତୀୟ ହଜ୍ ଯାତ୍ରୀ କାର୍ଯ୍ୟାଳୟର ସମସ୍ତ 10 ଡେସ୍କ ଅଧିକାରୀଙ୍କର ସିଧାସଳଖ ମୋବାଇଲ୍ ନମ୍ବର।",
+    } as LocalizedString,
+    provider: "india",
+    howToAccess: [
+      {
+        en: "Tap any number below to call directly – Saudi country code (+966) is auto-prefixed",
+        ar: "اضغط على أي رقم أدناه للاتصال مباشرة - يتم إضافة رمز البلد السعودي (+966) تلقائيًا",
+        ur: "براہ راست کال کرنے کے لیے نیچے دیئے گئے کسی بھی نمبر پر ٹیپ کریں – سعودی کنٹری کوڈ (+966) خودکار طور پر شامل ہو جاتا ہے",
+        hi: "सीधे कॉल करने के लिए नीचे दिए गए किसी भी नंबर पर टैप करें – सऊदी कंट्री कोड (+966) स्वतः जुड़ जाता है",
+      } as LocalizedString,
+      {
+        en: "Always mention your Cover Number, Building Number and concern in short",
+        ar: "اذكر دائمًا رقم الغلاف ورقم المبنى ومشكلتك باختصار",
+        ur: "ہمیشہ اپنا کور نمبر، عمارت کا نمبر اور مسئلہ مختصراً بتائیں",
+        hi: "हमेशा अपना कवर नंबर, बिल्डिंग नंबर और समस्या संक्षेप में बताएं",
+      } as LocalizedString,
+    ],
+    locations: [
+      {
+        en: "Indian Haj Pilgrims Office (IHPO), Markaziya, Madinah Munawwarah",
+        ar: "مكتب الحجاج الهنود (IHPO)، المركزية، المدينة المنورة",
+        ur: "انڈین حج پلگرمز آفس (IHPO)، مرکزیہ، مدینہ منورہ",
+        hi: "भारतीय हज तीर्थयात्री कार्यालय (IHPO), मरकज़िया, मदीना मुनव्वरा",
+      } as LocalizedString,
+    ],
+    contactInfo: {
+      helpline: "+966148220033",
+      helplineLabel: {
+        en: "Main IHPO Madinah Control Room",
+        ar: "غرفة التحكم الرئيسية IHPO المدينة",
+        ur: "مین IHPO مدینہ کنٹرول روم",
+        hi: "मुख्य IHPO मदीना कंट्रोल रूम",
+      } as LocalizedString,
+      additionalNumbers: [
+        { label: { en: "1. SHI", ar: "1. SHI", ur: "1. SHI", hi: "1. SHI" } as LocalizedString, number: "+966567460891" },
+        { label: { en: "2. Co-ordination", ar: "2. التنسيق", ur: "2. کوآرڈینیشن", hi: "2. समन्वय" } as LocalizedString, number: "+966564277602" },
+        { label: { en: "3. Welfare", ar: "3. الرعاية", ur: "3. ویلفیئر", hi: "3. कल्याण" } as LocalizedString, number: "+966541897098" },
+        { label: { en: "4. Arrival Desk", ar: "4. مكتب الوصول", ur: "4. آمد ڈیسک", hi: "4. आगमन डेस्क" } as LocalizedString, number: "+966543160438" },
+        { label: { en: "5. Airport", ar: "5. المطار", ur: "5. ایئرپورٹ", hi: "5. एयरपोर्ट" } as LocalizedString, number: "+966541471626" },
+        { label: { en: "6. Misplaced Baggage – Desk", ar: "6. الأمتعة المفقودة - المكتب", ur: "6. گمشدہ سامان - ڈیسک", hi: "6. खोया सामान – डेस्क" } as LocalizedString, number: "+966543991342" },
+        { label: { en: "7. Misplaced Baggage – Field", ar: "7. الأمتعة المفقودة - الميدان", ur: "7. گمشدہ سامان - فیلڈ", hi: "7. खोया सामान – फील्ड" } as LocalizedString, number: "+966567519806" },
+        { label: { en: "8. Computer Cell", ar: "8. خلية الكمبيوتر", ur: "8. کمپیوٹر سیل", hi: "8. कंप्यूटर सेल" } as LocalizedString, number: "+966542800316" },
+        { label: { en: "9. Reception", ar: "9. الاستقبال", ur: "9. استقبالیہ", hi: "9. रिसेप्शन" } as LocalizedString, number: "+966567480631" },
+        { label: { en: "10. Reception – Dispensary", ar: "10. الاستقبال - المستوصف", ur: "10. استقبالیہ - ڈسپنسری", hi: "10. रिसेप्शन – डिस्पेंसरी" } as LocalizedString, number: "+966546463143" },
+      ],
+    },
+    importantNotes: [
+      {
+        en: "Use the relevant desk number for fastest response (e.g. baggage issue → numbers 6/7).",
+        ar: "استخدم رقم المكتب ذي الصلة للحصول على أسرع استجابة (مثل مشكلة الأمتعة ← الأرقام 6/7).",
+        ur: "تیز ترین جواب کے لیے متعلقہ ڈیسک نمبر استعمال کریں (مثلاً سامان کا مسئلہ ← نمبر 6/7)۔",
+        hi: "सबसे तेज़ प्रतिक्रिया के लिए संबंधित डेस्क नंबर का उपयोग करें (जैसे सामान की समस्या → नंबर 6/7)।",
+      } as LocalizedString,
+      {
+        en: "Free service – never pay any agent or middleman.",
+        ar: "خدمة مجانية - لا تدفع أبداً لأي وكيل أو وسيط.",
+        ur: "مفت سروس - کبھی کسی ایجنٹ یا بیچوان کو ادائیگی نہ کریں۔",
+        hi: "मुफ्त सेवा – किसी भी एजेंट या बिचौलिए को कभी भुगतान न करें।",
+      } as LocalizedString,
+      {
+        en: "Source: Official IHPO Madinah notice, Haj 2026.",
+        ar: "المصدر: الإشعار الرسمي لـ IHPO المدينة، حج 2026.",
+        ur: "ماخذ: IHPO مدینہ کا سرکاری نوٹس، حج 2026۔",
+        hi: "स्रोत: आधिकारिक IHPO मदीना सूचना, हज 2026।",
+      } as LocalizedString,
+    ],
+  },
+];
+

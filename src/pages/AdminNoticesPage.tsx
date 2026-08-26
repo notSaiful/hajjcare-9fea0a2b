@@ -1,0 +1,63 @@
+import { useMemo, useState } from "react";
+import { Archive, Copy, Eye, EyeOff, Loader2, Pencil, Plus, Save, Trash2 } from "lucide-react";
+import { format } from "date-fns";
+import { MainLayout } from "@/components/MainLayout";
+import { PageHeader } from "@/components/PageHeader";
+import { ForbiddenError } from "@/components/ForbiddenError";
+import { useUserRole } from "@/hooks/useUserRole";
+import { useAuth } from "@/hooks/useAuth";
+import { useNotices, type Notice } from "@/hooks/useNotices";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { INDIA_DISTRICT_CATALOG } from "@/data/indiaDistricts";
+import { reviewStatusLabel } from "@/lib/circularNoticeLifecycle";
+
+const STATES = Array.from(new Map(INDIA_DISTRICT_CATALOG.map((item) => [item.stateCode, item.state])).entries()).sort((a, b) => a[1].localeCompare(b[1]));
+const CATEGORIES = ["official_circular", "hajj_2027", "government_notification", "training", "online_meeting", "volunteer", "medical", "travel", "accommodation", "flight", "application", "emergency", "state_update", "district_update", "general_announcement"];
+const emptyForm = { title: "", message: "", category: "general_announcement", hajj_year: "2027", state_code: "", state_name: "", district: "", priority: "normal", status: "draft", published_at: "", expires_at: "", source_name: "HajCare AI", source_url: "", document_url: "", image_url: "" };
+type FormState = typeof emptyForm;
+
+export default function AdminNoticesPage() {
+  const { isAdmin } = useUserRole();
+  const { user } = useAuth();
+  const { notices, isLoading, refetch } = useNotices({ admin: true });
+  const { toast } = useToast();
+  const [form, setForm] = useState<FormState>(emptyForm);
+  const [editing, setEditing] = useState<string | null>(null);
+  const [showForm, setShowForm] = useState(false);
+  const [search, setSearch] = useState("");
+  const [saving, setSaving] = useState(false);
+  const visible = useMemo(() => notices.filter((notice) => `${notice.notice_id} ${notice.title} ${notice.category} ${notice.state_name || ""}`.toLowerCase().includes(search.toLowerCase())), [notices, search]);
+  const update = (key: keyof FormState, value: string) => setForm((current) => ({ ...current, [key]: value }));
+  const selectedState = STATES.find(([code]) => code === form.state_code)?.[1] || "";
+  const districts = form.state_code ? INDIA_DISTRICT_CATALOG.filter((item) => item.stateCode === form.state_code).sort((a, b) => a.name.localeCompare(b.name)) : [];
+
+  const editNotice = (notice: Notice) => { setEditing(notice.id); setShowForm(true); setForm({ title: notice.title, message: notice.message, category: notice.category, hajj_year: notice.hajj_year, state_code: notice.state_code || "", state_name: notice.state_name || "", district: notice.district || "", priority: notice.priority, status: notice.status, published_at: notice.published_at ? notice.published_at.slice(0, 16) : "", expires_at: notice.expires_at ? notice.expires_at.slice(0, 16) : "", source_name: notice.source_name || "", source_url: notice.source_url || "", document_url: notice.document_url || "", image_url: notice.image_url || "" }); };
+  const save = async () => {
+    if (!form.title.trim() || !form.message.trim()) { toast({ title: "Title and message are required", variant: "destructive" }); return; }
+    setSaving(true);
+    try {
+      const payload = { ...form, notice_id: editing ? undefined : `NOTICE-${new Date().getFullYear()}-${crypto.randomUUID().slice(0, 8).toUpperCase()}`, created_by: user?.id || null, state_name: selectedState || null, state_code: form.state_code || null, district: form.district || null, hajj_year: form.hajj_year || "unknown", published_at: form.published_at ? new Date(form.published_at).toISOString() : null, expires_at: form.expires_at ? new Date(form.expires_at).toISOString() : null };
+      const result = editing ? await supabase.from("notices").update(payload).eq("id", editing) : await supabase.from("notices").insert(payload);
+      if (result.error) throw result.error;
+      toast({ title: editing ? "Notice updated" : "Notice created" }); setForm(emptyForm); setEditing(null); setShowForm(false); await refetch();
+    } catch (error) { toast({ title: "Could not save notice", description: error instanceof Error ? error.message : "Please try again", variant: "destructive" }); } finally { setSaving(false); }
+  };
+  const mutateStatus = async (notice: Notice, status: string) => { const { error } = await supabase.from("notices").update({ status, published_at: status === "published" ? (notice.published_at || new Date().toISOString()) : notice.published_at }).eq("id", notice.id); if (error) toast({ title: "Update failed", description: error.message, variant: "destructive" }); else await refetch(); };
+  const duplicate = async (notice: Notice) => { const { error } = await supabase.from("notices").insert({ ...notice, id: undefined, notice_id: `NOTICE-${new Date().getFullYear()}-${crypto.randomUUID().slice(0, 8).toUpperCase()}`, status: "draft", created_at: undefined, updated_at: undefined }); if (error) toast({ title: "Duplicate failed", description: error.message, variant: "destructive" }); else await refetch(); };
+  const remove = async (notice: Notice) => { if (!window.confirm("Delete this notice permanently? Archive is safer for official records.")) return; const { error } = await supabase.from("notices").delete().eq("id", notice.id); if (error) toast({ title: "Delete failed", description: error.message, variant: "destructive" }); else await refetch(); };
+
+  if (!isAdmin) return <MainLayout><ForbiddenError /></MainLayout>;
+  return <MainLayout><PageHeader title="Notice Board Management" subtitle="Create, schedule and publish trustworthy notices without changing official circular records" /><div className="mx-auto max-w-6xl space-y-5 px-4 pb-24">
+    <Card className="border-primary/20 bg-primary/5"><CardContent className="flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between"><div><p className="text-sm font-semibold">Automation status</p><p className="text-xs text-muted-foreground">Official circulars automatically create reviewable notices. Scheduled notices are published every 15 minutes and expired notices remain archived.</p></div><Button onClick={() => { setShowForm(!showForm); setEditing(null); setForm(emptyForm); }}><Plus className="mr-2 h-4 w-4" />{showForm ? "Close form" : "New notice"}</Button></CardContent></Card>
+    {showForm && <Card><CardHeader><CardTitle>{editing ? "Edit notice" : "Create notice"}</CardTitle></CardHeader><CardContent className="grid gap-3 md:grid-cols-2"><Input className="md:col-span-2" placeholder="Title" value={form.title} onChange={(e) => update("title", e.target.value)} /><Textarea className="md:col-span-2 min-h-32" placeholder="Full notice message" value={form.message} onChange={(e) => update("message", e.target.value)} /><Select value={form.category} onValueChange={(v) => update("category", v)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{CATEGORIES.map((item) => <SelectItem key={item} value={item}>{item.replace(/_/g, " ")}</SelectItem>)}</SelectContent></Select><Select value={form.hajj_year} onValueChange={(v) => update("hajj_year", v)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="2027">Hajj 2027</SelectItem><SelectItem value="2026">Hajj 2026</SelectItem><SelectItem value="2025">Hajj 2025</SelectItem><SelectItem value="unknown">Unknown / archive</SelectItem></SelectContent></Select><Select value={form.priority} onValueChange={(v) => update("priority", v)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="normal">Normal</SelectItem><SelectItem value="important">Important</SelectItem><SelectItem value="urgent">Urgent</SelectItem></SelectContent></Select><Select value={form.status} onValueChange={(v) => update("status", v)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="draft">Draft</SelectItem><SelectItem value="scheduled">Scheduled</SelectItem><SelectItem value="published">Published</SelectItem><SelectItem value="unpublished">Unpublished</SelectItem><SelectItem value="archived">Archived</SelectItem></SelectContent></Select><Select value={form.state_code || "all"} onValueChange={(v) => { update("state_code", v === "all" ? "" : v); update("district", ""); }}><SelectTrigger><SelectValue placeholder="All India" /></SelectTrigger><SelectContent><SelectItem value="all">All India</SelectItem>{STATES.map(([code, name]) => <SelectItem key={code} value={code}>{name}</SelectItem>)}</SelectContent></Select><Select value={form.district || "all"} onValueChange={(v) => update("district", v === "all" ? "" : v)}><SelectTrigger><SelectValue placeholder="All districts" /></SelectTrigger><SelectContent><SelectItem value="all">All districts</SelectItem>{districts.map((item) => <SelectItem key={item.districtCode} value={item.name}>{item.name}</SelectItem>)}</SelectContent></Select><Input type="datetime-local" value={form.published_at} onChange={(e) => update("published_at", e.target.value)} placeholder="Publish date/time" /><Input type="datetime-local" value={form.expires_at} onChange={(e) => update("expires_at", e.target.value)} placeholder="Expiry date/time" /><Input placeholder="Official source name" value={form.source_name} onChange={(e) => update("source_name", e.target.value)} /><Input placeholder="Official source URL" type="url" value={form.source_url} onChange={(e) => update("source_url", e.target.value)} /><Input placeholder="PDF / document URL" type="url" value={form.document_url} onChange={(e) => update("document_url", e.target.value)} /><Input placeholder="Image URL (optional)" type="url" value={form.image_url} onChange={(e) => update("image_url", e.target.value)} /><div className="md:col-span-2"><Button onClick={() => void save()} disabled={saving}>{saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}Save notice</Button></div></CardContent></Card>}
+    <Card><CardContent className="p-4"><Input placeholder="Search notice ID, title, category or state" value={search} onChange={(e) => setSearch(e.target.value)} /></CardContent></Card>
+    <div className="space-y-3">{isLoading ? <p className="text-sm text-muted-foreground">Loading notices…</p> : visible.map((notice) => <Card key={notice.id}><CardContent className="flex flex-col gap-4 p-4 lg:flex-row lg:items-center lg:justify-between"><div className="min-w-0"><div className="mb-2 flex flex-wrap gap-2"><Badge variant="outline">{notice.notice_id}</Badge><Badge variant="secondary">{notice.circular_id && notice.status === "draft" ? reviewStatusLabel("pending_review") : reviewStatusLabel(notice.status, notice.status === "published")}</Badge><Badge variant={notice.priority === "urgent" ? "destructive" : "outline"}>{notice.priority}</Badge><Badge variant="outline">Hajj {notice.hajj_year}</Badge></div><h3 className="font-semibold">{notice.title}</h3><p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{notice.message}</p><p className="mt-2 text-xs text-muted-foreground">{notice.state_name || "All India"}{notice.district ? ` · ${notice.district}` : ""} · {format(new Date(notice.updated_at), "dd MMM yyyy, HH:mm")}</p></div><div className="flex flex-wrap gap-2">{notice.status !== "published" && <Button size="sm" onClick={() => void mutateStatus(notice, "published")}><Eye className="mr-1 h-4 w-4" />Publish</Button>}{notice.status === "published" && <Button size="sm" variant="outline" onClick={() => void mutateStatus(notice, "unpublished")}><EyeOff className="mr-1 h-4 w-4" />Unpublish</Button>}<Button size="sm" variant="outline" onClick={() => editNotice(notice)}><Pencil className="mr-1 h-4 w-4" />Edit</Button><Button size="sm" variant="outline" onClick={() => void duplicate(notice)}><Copy className="mr-1 h-4 w-4" />Duplicate</Button><Button size="sm" variant="ghost" onClick={() => void mutateStatus(notice, "archived")}><Archive className="mr-1 h-4 w-4" />Archive</Button><Button size="sm" variant="ghost" onClick={() => void remove(notice)}><Trash2 className="mr-1 h-4 w-4" />Delete</Button></div></CardContent></Card>)}</div>
+  </div></MainLayout>;
+}
