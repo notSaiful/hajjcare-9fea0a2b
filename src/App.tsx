@@ -37,6 +37,7 @@ import LandingPage from "./pages/LandingPage";
 
 // Lazy load all other pages
 const HomePage = lazy(() => import("./pages/HomePage"));
+const IslamicLibraryPage = lazy(() => import("./pages/IslamicLibraryPage"));
 const PreparePage = lazy(() => import("./pages/PreparePage"));
 const RitualDetailPage = lazy(() => import("./pages/RitualDetailPage"));
 const RulesBriefingPage = lazy(() => import("./pages/RulesBriefingPage"));
@@ -193,6 +194,7 @@ function AppContent() {
 
       {/* Public routes — open without login */}
       <Route path="/home" element={<HomePage />} />
+      <Route path="/library" element={<IslamicLibraryPage />} />
       <Route path="/prepare" element={<PreparePage />} />
       <Route path="/prepare/:ritualId" element={<RitualDetailPage />} />
       <Route path="/umrah" element={<UmrahGuidePage />} />
