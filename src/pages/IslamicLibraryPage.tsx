@@ -57,7 +57,7 @@ const sources: LibrarySource[] = [
     category: "fiqh",
     description: "Read published fatwa responses from Darul Ifta.",
     descriptionHi: "दारुल इफ़्ता के प्रकाशित फ़तवे मूल वेबसाइट पर पढ़ें।",
-    url: "https://www.darulifta-deoband.com/home",
+    url: "https://www.darulifta-deoband.com/en",
   },
   {
     title: "SeekersGuidance eBooks",
