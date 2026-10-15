@@ -30,6 +30,7 @@ const PALETTE = {
 
 const FEATURES = [
   { icon: BookOpen, title: "Ritual Guide", desc: "Step-by-step Hajj & Umrah flow with stage tracking" },
+  { icon: BookOpen, title: "Islamic Digital Library", desc: "Explore original Hadith, Fiqh, Fatwa and Hajj learning sources" },
   { icon: Bot, title: "AI Assistant", desc: "Ask anything in your language — answers in seconds" },
   { icon: Bell, title: "Smart Reminders", desc: "Never miss vaccinations, flights, or rituals" },
   { icon: Heart, title: "Duas & Adhkar", desc: "Curated supplications for every stage" },
@@ -247,6 +248,17 @@ const LandingPage = () => {
               </div>
               <h3 className="text-lg font-semibold mb-1.5" style={{ color: PALETTE.emerald }}>{f.title}</h3>
               <p className="text-sm leading-relaxed" style={{ color: `${PALETTE.emerald}99` }}>{f.desc}</p>
+
+              {f.title === "Islamic Digital Library" && (
+                <Button
+                  onClick={() => navigate("/library")}
+                  variant="outline"
+                  className="mt-4 rounded-xl"
+                  style={{ borderColor: PALETTE.gold, color: PALETTE.emerald }}
+                >
+                  Browse Library <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              )}
             </div>
           ))}
         </div>
