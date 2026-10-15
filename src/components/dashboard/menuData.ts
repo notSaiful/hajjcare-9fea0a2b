@@ -2,6 +2,7 @@ import {
   Plane,
   ClipboardList,
   ScrollText,
+  BookOpen,
   HeartPulse,
   Banknote,
   Wifi,
@@ -57,6 +58,46 @@ export interface MenuSection {
 
 // Spiritual, calm color classes using design system tokens
 export const menuSections: MenuSection[] = [
+
+  // PUBLIC LIBRARY — links to original scholarly sources only.
+  {
+    id: "islamic-library",
+    title: {
+      en: "Islamic Library",
+      ar: "المكتبة الإسلامية",
+      ur: "اسلامی لائبریری",
+      hi: "इस्लामिक लाइब्रेरी",
+      ta: "இஸ்லாமிய நூலகம்",
+      te: "ఇస్లామిక్ గ్రంథాలయం",
+      mr: "इस्लामिक लायब्ररी",
+      bn: "ইসলামিক লাইব্রেরি",
+      or: "ଇସଲାମିକ ପାଠାଗାର",
+      ml: "ഇസ്ലാമിക ലൈബ്രറി",
+      pa: "ਇਸਲਾਮੀ ਲਾਇਬ੍ਰੇਰੀ",
+    },
+    items: [
+      {
+        id: "islamic-digital-library",
+        icon: BookOpen,
+        label: {
+          en: "Explore Books",
+          ar: "تصفح الكتب",
+          ur: "کتابیں دیکھیں",
+          hi: "किताबें देखें",
+          ta: "புத்தகங்கள்",
+          te: "పుస్తకాలు",
+          mr: "पुस्तके पाहा",
+          bn: "বই দেখুন",
+          or: "ପୁସ୍ତକ ଦେଖନ୍ତୁ",
+          ml: "പുസ്തകങ്ങൾ",
+          pa: "ਕਿਤਾਬਾਂ ਵੇਖੋ",
+        },
+        route: "/library",
+        colorClass: "icon-emerald",
+      },
+    ],
+  },
+
   // SECTION A – BEFORE HAJJ
   {
     id: "before-hajj",
