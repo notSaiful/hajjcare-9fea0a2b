@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Phone, Loader2, CheckCircle2, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
+import { getFreshPosition, isUsableCoordinate, pickCoordinates } from "@/lib/freshPosition";
 
 type SOSStatus = "idle" | "confirming" | "sending" | "success" | "error";
 
@@ -63,6 +64,9 @@ const playAlertSound = () => {
 };
 
 const labels = {
+  noLocation: {
+    en: "Location unavailable — the alert is sent without GPS and responders will call you.",
+  },
   sosButton: {
     en: "Emergency SOS",
     ar: "طوارئ SOS",
@@ -155,8 +159,13 @@ export const EmergencySOS = () => {
     setStatus("sending");
 
     try {
-      // Refresh location to get latest coordinates
+      // Refresh location and wait (bounded) for a fresh fix. Fall back to the
+      // last known fix; if neither exists send null — never fake (0,0).
       refresh();
+      const coords = pickCoordinates(await getFreshPosition(6000), { lat, lng });
+      const sosLat = coords?.lat ?? null;
+      const sosLng = coords?.lng ?? null;
+      if (!coords) toast.warning(getLabel("noLocation"));
       
       const zone = determineZone(stage);
       const emergencyDescription = `EMERGENCY SOS - Immediate assistance required. Location: ${stage || "Unknown"} area.`;
@@ -169,8 +178,8 @@ export const EmergencySOS = () => {
           description: emergencyDescription,
           symptoms: ["emergency", "sos", "immediate_help"],
           original_language: language,
-          location_lat: lat,
-          location_lng: lng,
+          location_lat: sosLat,
+          location_lng: sosLng,
           zone: zone,
           ai_urgency_level: "critical",
           ai_triage_summary: "EMERGENCY SOS ALERT - Critical priority. Pilgrim has activated emergency button and requires immediate medical assistance.",
@@ -189,8 +198,9 @@ export const EmergencySOS = () => {
         const { data: allocation, error: allocError } = await supabase.functions.invoke("allocate-responder", {
           body: {
             ticket_id: ticket.id,
-            lat: lat || 0,
-            lng: lng || 0,
+            lat: sosLat,
+            lng: sosLng,
+            location_available: coords !== null,
             zone: zone,
             escalation_level: 1,
           },
@@ -214,7 +224,7 @@ export const EmergencySOS = () => {
           summary: emergencyDescription,
           arabicText: "تنبيه طوارئ SOS - أولوية حرجة. قام الحاج بتفعيل زر الطوارئ ويحتاج إلى مساعدة طبية فورية.",
           category: "emergency",
-          location: lat && lng ? { lat, lng } : undefined,
+          location: coords ?? undefined,
         },
       });
 
@@ -302,13 +312,17 @@ export const EmergencySOS = () => {
             <AlertDialogDescription className="text-center text-sm sm:text-base text-muted-foreground leading-relaxed">
               {getLabel("confirmDesc")}
             </AlertDialogDescription>
-            {lat && lng && (
+            {isUsableCoordinate(lat, lng) ? (
               <div className="text-center text-xs text-muted-foreground/70 bg-muted/30 rounded-lg p-2">
                 📍 GPS: {lat.toFixed(5)}, {lng.toFixed(5)}
                 {stage && ` • ${stage}`}
                 {isStale && (
                   <span className="block text-amber-600 mt-1 font-medium">⚠️ {t("locationStaleWarning")}</span>
                 )}
+              </div>
+            ) : (
+              <div role="status" className="text-center text-xs text-amber-700 bg-amber-50 rounded-lg p-2">
+                ⚠️ {getLabel("noLocation")}
               </div>
             )}
           </AlertDialogHeader>

@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { PilgrimStatus } from "@/data/familyDashboardContent";
+import { getFreshPosition } from "@/lib/freshPosition";
 
 const GROUP_ID_KEY = "hajj_group_id";
 
@@ -82,14 +83,35 @@ export const usePilgrimStatus = (): UsePilgrimStatusResult => {
     }
 
     try {
-      // Use the RPC function to update status along with location
-      const { error } = await supabase.rpc("upsert_member_location", {
-        p_group_id: groupId,
-        p_latitude: 0,
-        p_longitude: 0,
-        p_current_stage: null,
-        p_pilgrim_status: newStatus,
-      });
+      // 1) Status-only update on the existing row: keeps the member's real last
+      //    known coordinates instead of overwriting them with (0,0).
+      const { data: updatedRows, error: updateError } = await supabase
+        .from("member_locations")
+        .update({ pilgrim_status: newStatus })
+        .eq("group_id", groupId)
+        .eq("user_id", user.id)
+        .select("id");
+
+      let error = updateError;
+      if (!updateError && (!updatedRows || updatedRows.length === 0)) {
+        // 2) No row yet: we need a genuine fix to create one. Never send (0,0).
+        const position = await getFreshPosition(8000);
+        if (!position) {
+          toast({
+            title: "Location needed",
+            description: "Turn on location so your family can see your status on the map.",
+            variant: "destructive",
+          });
+          return;
+        }
+        ({ error } = await supabase.rpc("upsert_member_location", {
+          p_group_id: groupId,
+          p_latitude: position.lat,
+          p_longitude: position.lng,
+          p_current_stage: null,
+          p_pilgrim_status: newStatus,
+        }));
+      }
 
       if (error) throw error;
 
