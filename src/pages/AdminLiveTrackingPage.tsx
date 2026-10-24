@@ -84,7 +84,7 @@ const LANDMARKS = [
   { id: "madinah", label: "Madinah", coord: { lat: 24.4672, lng: 39.6112 } },
 ] as const;
 
-const navigationItems = [
+const navigationItems: { label: string; icon: typeof LayoutDashboard; active?: boolean; href?: string }[] = [
   { label: "Dashboard", icon: LayoutDashboard, active: true },
   { label: "Live Tracking", icon: RadioTower },
   { label: "Pilgrim List", icon: UsersRound },
@@ -97,7 +97,7 @@ const navigationItems = [
   { label: "Messages", icon: MessageSquare, href: "/chat" },
   { label: "AI Assistant", icon: Bot, href: "/chat" },
   { label: "Settings", icon: Settings2, href: "/security-settings" },
-] as const;
+];
 
 const isActiveLocation = (updatedAt: string) => Date.now() - new Date(updatedAt).getTime() < ACTIVE_WINDOW_MS;
 const minutesSince = (updatedAt: string) => Math.max(0, Math.round((Date.now() - new Date(updatedAt).getTime()) / 60000));
@@ -135,7 +135,7 @@ const AdminLiveTrackingPage = () => {
         .order("updated_at", { ascending: false })
         .limit(1000),
       supabase.from("group_members").select("id", { count: "exact", head: true }),
-      supabase.from("user_roles").select("user_id", { count: "exact", head: true }).eq("role", "inspector"),
+      supabase.from("user_roles").select("user_id", { count: "exact", head: true }).eq("role", "inspector" as never) // NOTE: "inspector" is not in the generated app_role enum; verify DB enum,
     ]);
 
     if (locationsResult.error) console.error("Sukoon live locations:", locationsResult.error);
