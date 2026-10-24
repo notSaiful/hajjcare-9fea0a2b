@@ -112,7 +112,7 @@ export function EmailAuthForm({ onSuccess }: EmailAuthFormProps) {
         const { error, requiresEmailVerification } = await signUp(email, password, fullName, embarkationPoint);
         if (error) {
           console.error("HajCare account creation failed.", error);
-          if (error.code === "auth/email-already-in-use" || error.code === "auth/too-many-requests") {
+          if ((error as { code?: string }).code === "auth/email-already-in-use" || (error as { code?: string }).code === "auth/too-many-requests") {
             setVerificationSent(true);
             setIsSignUp(false);
           }
@@ -133,7 +133,7 @@ export function EmailAuthForm({ onSuccess }: EmailAuthFormProps) {
         if (error) {
           console.error("HajCare sign-in failed.", error);
           const description = getAuthErrorMessage(error);
-          if (error.code === "auth/email-not-verified" || /not verified/i.test(description)) setVerificationSent(true);
+          if ((error as { code?: string }).code === "auth/email-not-verified" || /not verified/i.test(description)) setVerificationSent(true);
           toast({ title: "Sign-in failed", description: isRTL ? "بيانات الدخول غير صحيحة" : description, variant: "destructive" });
         } else {
           // Check if user has MFA enrolled

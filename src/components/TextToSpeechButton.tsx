@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Volume2, VolumeX } from "lucide-react";
 import { useTextToSpeech } from "@/hooks/useTextToSpeech";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage, type Language } from "@/contexts/LanguageContext";
 
 interface TextToSpeechButtonProps {
   text: string;
@@ -38,7 +38,7 @@ export const TextToSpeechButton = ({
     <Button
       variant={variant}
       size={size}
-      onClick={() => speak(text, languageCode)}
+      onClick={() => speak(text, languageCode as Language | undefined)}
       className={`gap-2 ${isSpeaking ? "bg-primary text-primary-foreground" : ""} ${className}`}
       aria-label={label}
       title={error || undefined}
