@@ -75,6 +75,7 @@ const HajjBuildingsPage = lazy(() => import("./pages/HajjBuildingsPage"));
 const MedicalFacilitiesPage = lazy(() => import("./pages/MedicalFacilitiesPage"));
 const OpenAppPage = lazy(() => import("./pages/OpenAppPage"));
 const AuthPage = lazy(() => import("./pages/AuthPage"));
+const ResetPasswordPage = lazy(() => import("./pages/ResetPasswordPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const ChatPage = lazy(() => import("./pages/ChatPage"));
 const TawafCounterPage = lazy(() => import("./pages/TawafCounterPage"));
@@ -193,6 +194,7 @@ function AppContent() {
       <Route path="/" element={<LandingPage />} />
       <Route path="/auth" element={<AuthPage />} />
       <Route path="/login" element={<AuthPage />} />
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
 
       {/* Public routes — open without login */}
       <Route path="/home" element={<HomePage />} />
