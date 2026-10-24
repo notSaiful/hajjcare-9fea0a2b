@@ -33,6 +33,7 @@ import { Progress } from "@/components/ui/progress";
 import { dailyHajjTraining, type DailyLesson } from "@/data/dailyHajjTraining";
 import { useLanguage, type Language } from "@/contexts/LanguageContext";
 import { getZoyaLanguage } from "@/lib/zoyaLanguages";
+import { useTrainingSync } from "@/hooks/useTrainingSync";
 import zoyaApprovedImage from "@/assets/ai/zoya-hajj-companion.jpeg";
 
 const PROGRAMME_DAYS = 100;
@@ -1106,21 +1107,11 @@ const DailySession = ({
 export default function DailyHajjTrainingPage() {
   const { language, isRTL } = useLanguage();
   const copy = getTrainingCopy(language);
-  const [completed, setCompleted] = useState<number[]>([]);
+  // localStorage is the offline cache; signed-in users are mirrored to Supabase when available.
+  const { completed, setCompleted: done } = useTrainingSync(STORAGE_KEY);
   const [day, setDay] = useState(1);
   const [activeVideo, setActiveVideo] = useState<DayOneVideo | null>(null);
   const [showZoyaIntro, setShowZoyaIntro] = useState(false);
-  useEffect(() => {
-    try {
-      setCompleted(JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"));
-    } catch {
-      setCompleted([]);
-    }
-  }, []);
-  const done = (next: number[]) => {
-    setCompleted(next);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-  };
   const lesson = dailyHajjTraining[day - 1];
   const percentage = Math.round((completed.length / PROGRAMME_DAYS) * 100);
   const phases = useMemo(
