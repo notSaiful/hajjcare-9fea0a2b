@@ -1,5 +1,6 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { takePendingInvite, familyInvitePath } from "@/lib/familyInvite";
 import { useAuth } from "@/hooks/useAuth";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { AmbientBackground } from "@/components/AmbientBackground";
@@ -24,12 +25,21 @@ const AuthPage = () => {
   const navigate = useNavigate();
 
   const t = titleLabels[language as keyof typeof titleLabels] || titleLabels.en;
+  const [params] = useSearchParams();
+
+  const destination = () => {
+    const next = params.get("next");
+    if (next && next.startsWith("/") && !next.startsWith("//")) return next;
+    const pending = takePendingInvite();
+    if (pending) return familyInvitePath(pending);
+    return "/home";
+  };
 
   useEffect(() => {
     if (!loading && isAuthenticated) {
-      navigate("/home");
+      navigate(destination());
     }
-  }, [isAuthenticated, loading, navigate]);
+  }, [isAuthenticated, loading, navigate, params]);
 
   if (loading) {
     return (
@@ -91,7 +101,7 @@ const AuthPage = () => {
         <div className="h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
 
         <CardContent className="px-5 sm:px-6 py-6">
-          <EmailAuthForm onSuccess={() => navigate("/home")} />
+          <EmailAuthForm onSuccess={() => navigate(destination())} />
           
         </CardContent>
       </Card>

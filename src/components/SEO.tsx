@@ -8,6 +8,7 @@ interface SEOProps {
   description: string;
   path: string;
   type?: "website" | "article";
+  noindex?: boolean;
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
 }
 
@@ -15,7 +16,7 @@ interface SEOProps {
  * Per-route SEO head. Sets unique title, description, canonical, og:* tags
  * and optional JSON-LD structured data.
  */
-export function SEO({ title, description, path, type = "website", jsonLd }: SEOProps) {
+export function SEO({ title, description, path, type = "website", noindex = false, jsonLd }: SEOProps) {
   const url = `${SITE_URL}${path}`;
   const fullTitle = title.includes(SITE_NAME) ? title : `${title} — ${SITE_NAME}`;
   const trimmedTitle = fullTitle.length > 60 ? fullTitle.slice(0, 57) + "..." : fullTitle;
@@ -27,6 +28,7 @@ export function SEO({ title, description, path, type = "website", jsonLd }: SEOP
       <title>{trimmedTitle}</title>
       <meta name="description" content={trimmedDesc} />
       <link rel="canonical" href={url} />
+      {noindex && <meta name="robots" content="noindex, nofollow" />}
       <meta property="og:title" content={trimmedTitle} />
       <meta property="og:description" content={trimmedDesc} />
       <meta property="og:url" content={url} />
