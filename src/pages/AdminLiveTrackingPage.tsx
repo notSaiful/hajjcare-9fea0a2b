@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { supabase } from "@/integrations/supabase/client";
+import { fetchMapboxToken } from "@/lib/mapboxToken";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { useUserRole } from "@/hooks/useUserRole";
 import { Navigate, Link } from "react-router-dom";
@@ -39,6 +40,7 @@ const AdminLiveTrackingPage = () => {
   const map = useRef<mapboxgl.Map | null>(null);
   const markers = useRef<Record<string, mapboxgl.Marker>>({});
   const [mapToken, setMapToken] = useState<string | null>(null);
+  const [mapError, setMapError] = useState<string | null>(null);
   const [locations, setLocations] = useState<LiveLocation[]>([]);
   const [loading, setLoading] = useState(true);
   const [mapReady, setMapReady] = useState(false);
@@ -50,16 +52,10 @@ const AdminLiveTrackingPage = () => {
     if (!canAccess) return;
     (async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session?.access_token) return;
-        const res = await fetch(
-          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-mapbox-token`,
-          { headers: { Authorization: `Bearer ${session.access_token}` } }
-        );
-        const d = await res.json();
-        setMapToken(d.token);
+        setMapToken(await fetchMapboxToken());
       } catch (e) {
         console.error("mapbox token", e);
+        setMapError(e instanceof Error ? e.message : "The live map is unavailable.");
       }
     })();
   }, [canAccess]);
@@ -206,8 +202,12 @@ const AdminLiveTrackingPage = () => {
         <Card className="overflow-hidden">
           <div className="relative" style={{ height: "calc(100vh - 340px)", minHeight: 400 }}>
             {!mapToken && (
-              <div className="absolute inset-0 flex items-center justify-center bg-muted">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              <div className="absolute inset-0 flex items-center justify-center bg-muted p-6 text-center">
+                {mapError ? (
+                  <p className="text-sm text-muted-foreground max-w-sm">{mapError}</p>
+                ) : (
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                )}
               </div>
             )}
             <div ref={mapContainer} className="absolute inset-0" />

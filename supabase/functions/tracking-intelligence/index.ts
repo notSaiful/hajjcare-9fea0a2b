@@ -155,7 +155,7 @@ serve(async (req) => {
       }
 
       // Use AI for complex pattern analysis
-      const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+      const LOVABLE_API_KEY = (Deno.env.get("LLM_API_KEY") || Deno.env.get("LOVABLE_API_KEY"));
       let aiAlerts: any[] = [];
 
       if (LOVABLE_API_KEY && enrichedLocations.length > 1) {

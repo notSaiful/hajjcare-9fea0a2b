@@ -7,6 +7,7 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import { useHajjLocation, HAJJ_LOCATIONS, HAJJ_STAGES } from "@/hooks/useHajjLocation";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
+import { fetchMapboxToken } from "@/lib/mapboxToken";
 import { useFamilyGroup } from "@/hooks/useFamilyGroup";
 import { useGeofencedTracking } from "@/hooks/useGeofencedTracking";
 import { useGeofenceMonitor } from "@/hooks/useGeofenceMonitor";
@@ -145,27 +146,11 @@ const MapPage = () => {
   useEffect(() => {
     const fetchToken = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session?.access_token) {
-          setMapError("Please log in to view the map");
-          setMapLoading(false);
-          return;
-        }
-        
-        const response = await fetch(
-          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-mapbox-token`,
-          {
-            headers: {
-              Authorization: `Bearer ${session.access_token}`,
-            },
-          }
-        );
-        if (!response.ok) throw new Error("Failed to get map token");
-        const data = await response.json();
-        setMapToken(data.token);
+        const token = await fetchMapboxToken();
+        setMapToken(token);
       } catch (err) {
         console.error("Error fetching Mapbox token:", err);
-        setMapError("Unable to load map");
+        setMapError(err instanceof Error ? err.message : "Unable to load map");
         setMapLoading(false);
       }
     };

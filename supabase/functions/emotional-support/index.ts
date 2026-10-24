@@ -89,8 +89,8 @@ serve(async (req) => {
       });
     }
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
+    const LOVABLE_API_KEY = (Deno.env.get("LLM_API_KEY") || Deno.env.get("LOVABLE_API_KEY"));
+    if (!LOVABLE_API_KEY) throw new Error("LLM_API_KEY or LOVABLE_API_KEY is not configured");
 
     // Step 1: Detect emotion
     const detectResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {

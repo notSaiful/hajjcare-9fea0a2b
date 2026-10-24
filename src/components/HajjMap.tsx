@@ -3,7 +3,7 @@ import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { useHajjLocation, HAJJ_LOCATIONS, HAJJ_STAGES } from "@/hooks/useHajjLocation";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { supabase } from "@/integrations/supabase/client";
+import { fetchMapboxToken } from "@/lib/mapboxToken";
 import { Link } from "react-router-dom";
 import { MapPin, Navigation, RefreshCw, Loader2, AlertCircle, Maximize2, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -25,35 +25,22 @@ const HajjMap = ({ isExpanded = false, onToggleExpand }: HajjMapProps) => {
 
   const isArabic = language === "ar" || language === "ur";
 
-  // Fetch Mapbox token from edge function with proper authentication
   useEffect(() => {
-    const fetchToken = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session?.access_token) {
-          setMapError("Please log in to view the map");
-          setMapLoading(false);
-          return;
-        }
-
-        const response = await fetch(
-          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-mapbox-token`,
-          {
-            headers: {
-              Authorization: `Bearer ${session.access_token}`,
-            },
-          }
-        );
-        if (!response.ok) throw new Error("Failed to get map token");
-        const data = await response.json();
-        setMapToken(data.token);
-      } catch (err) {
+    let cancelled = false;
+    fetchMapboxToken()
+      .then((token) => {
+        if (!cancelled) setMapToken(token);
+      })
+      .catch((err: unknown) => {
         console.error("Error fetching Mapbox token:", err);
-        setMapError("Unable to load map");
-        setMapLoading(false);
-      }
+        if (!cancelled) {
+          setMapError(err instanceof Error ? err.message : "Unable to load map");
+          setMapLoading(false);
+        }
+      });
+    return () => {
+      cancelled = true;
     };
-    fetchToken();
   }, []);
 
   // Initialize map
