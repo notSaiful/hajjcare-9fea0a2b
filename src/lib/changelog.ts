@@ -56,7 +56,7 @@ function parseTranslation(value: unknown): ChangelogTranslation | null {
 
   const items = translation.items.map(parseItem);
   if (items.some((item) => item === null)) return null;
-  return { heading: translation.heading, ...(translation.date ? { date: translation.date } : {}), items: items as ChangelogItem[] };
+  return { heading: translation.heading, ...(translation.date ? { date: translation.date as string } : {}), items: items as ChangelogItem[] };
 }
 
 /** Parses untrusted CMS/JSON content before it is rendered in the app. */

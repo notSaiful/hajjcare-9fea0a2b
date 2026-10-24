@@ -175,7 +175,7 @@ const statusStyle: Record<string, { label: keyof typeof labels.en; className: st
   archived: { label: "archived", className: "border-slate-300 bg-slate-100 text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300" },
 };
 
-const statusLabel = (status: string, l: typeof labels.en) => {
+const statusLabel = (status: string, l: { [K in keyof typeof labels.en]: string }) => {
   const key = statusStyle[status]?.label;
   return key === "new" ? l.new : key === "updated" ? l.updated : key === "important" ? l.important : l.archived;
 };

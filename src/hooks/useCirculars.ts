@@ -178,13 +178,13 @@ async function fetchPublishedCirculars(page = 0): Promise<CircularPage> {
   // the Circular screen.
   if (error && /hajj_year|official_url|document_url|issuing_authority|last_checked_at|content_hash|status|review_status|detected_at|is_current_version|attachment_path/i.test(error.message || "")) {
     console.warn("[circulars] Versioning columns unavailable; using published circular fallback", error);
-    ({ data, error } = await supabase
+    ({ data, error } = (await supabase
       .from("hajj_circulars")
       .select("id,title,title_hi,title_ur,original_content,summary_en,summary_hi,summary_ur,source_url,circular_number,circular_date,category,priority,is_published,ai_processed,created_at,source,source_name_display,auto_scraped")
       .eq("is_published", true)
       .order("circular_date", { ascending: false, nullsFirst: false })
       .order("created_at", { ascending: false })
-      .range(from, to));
+      .range(from, to)) as unknown as { data: typeof data; error: typeof error }); // legacy-schema fallback: missing columns stay undefined
   }
   if (error) {
     console.error("[circulars] Supabase fetch failed", error);
