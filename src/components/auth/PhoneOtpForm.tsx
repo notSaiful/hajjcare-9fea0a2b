@@ -102,7 +102,7 @@ export function PhoneOtpForm({ onSuccess }: PhoneOtpFormProps) {
     try {
       const { error } = await supabase.auth.verifyOtp({ phone: fullPhone, token: otpCode, type: "sms" });
       if (error) throw error;
-      toast({ title: t.otpSuccess, description: isRTL ? "مرحباً بك في حج كير" : "Welcome to Haj Care AI" });
+      toast({ title: t.otpSuccess, description: isRTL ? "مرحباً بك في حج كير" : "Welcome to HajCare" });
       onSuccess();
     } catch (error) {
       toast({ title: "Error", description: error instanceof Error ? error.message : "Invalid OTP", variant: "destructive" });

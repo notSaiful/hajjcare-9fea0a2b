@@ -23,7 +23,7 @@ Respond with JSON (no markdown):
   "needs_professional_help": <boolean>
 }`;
 
-const SPIRITUAL_SUPPORT_PROMPT = `You are the Emotional & Spiritual Support Engine of HajjCare AI. A pilgrim is experiencing emotional distress. Provide compassionate, faith-based support.
+const SPIRITUAL_SUPPORT_PROMPT = `You are the Emotional & Spiritual Support Engine of HajCare. A pilgrim is experiencing emotional distress. Provide compassionate, faith-based support.
 
 DETECTED EMOTION: {emotion}
 SUPPORT TYPE: {support_type}

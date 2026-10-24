@@ -47,7 +47,7 @@ const FoodGuidePage = () => {
       iftar: "Iftar/Dinner",
       lateNight: "Late Night",
       foodAwareness: "Food Rules",
-      foodAwarenessSubtitle: "Important food rules from Haj Committee of India for Hajj 2026",
+      foodAwarenessSubtitle: "Important food rules from Haj Committee of India for Hajj 2027",
       rateList: "Rate List",
       rateListSubtitle: "Market prices of food items in Makkah & Madinah",
     },
@@ -79,7 +79,7 @@ const FoodGuidePage = () => {
       iftar: "الإفطار/العشاء",
       lateNight: "وجبة متأخرة",
       foodAwareness: "قواعد الطعام",
-      foodAwarenessSubtitle: "قواعد الطعام المهمة من لجنة الحج الهندية لحج 2026",
+      foodAwarenessSubtitle: "قواعد الطعام المهمة من لجنة الحج الهندية لحج 2027",
       rateList: "قائمة الأسعار",
       rateListSubtitle: "أسعار السوق للمواد الغذائية في مكة والمدينة",
     },
@@ -111,7 +111,7 @@ const FoodGuidePage = () => {
       iftar: "افطار/رات کا کھانا",
       lateNight: "رات کا کھانا",
       foodAwareness: "کھانے کے قواعد",
-      foodAwarenessSubtitle: "حج 2026 کے لیے ہج کمیٹی آف انڈیا کے اہم کھانے کے قواعد",
+      foodAwarenessSubtitle: "حج 2027 کے لیے ہج کمیٹی آف انڈیا کے اہم کھانے کے قواعد",
       rateList: "ریٹ لسٹ",
       rateListSubtitle: "مکہ و مدینہ میں کھانے کی اشیاء کے بازار ریٹ",
     },
@@ -143,7 +143,7 @@ const FoodGuidePage = () => {
       iftar: "इफ्तार/रात का खाना",
       lateNight: "देर रात का खाना",
       foodAwareness: "खाने के नियम",
-      foodAwarenessSubtitle: "हज 2026 के लिए हज कमेटी ऑफ इंडिया के महत्वपूर्ण खाने के नियम",
+      foodAwarenessSubtitle: "हज 2027 के लिए हज कमेटी ऑफ इंडिया के महत्वपूर्ण खाने के नियम",
       rateList: "रेट लिस्ट",
       rateListSubtitle: "मक्का और मदीना में खाने की चीज़ों के बाज़ार भाव",
     },
@@ -175,7 +175,7 @@ const FoodGuidePage = () => {
       iftar: "இஃப்தார்/இரவு உணவு",
       lateNight: "இரவு நேர உணவு",
       foodAwareness: "உணவு விதிகள்",
-      foodAwarenessSubtitle: "ஹஜ் 2026 க்கான ஹஜ் கமிட்டி ஆஃப் இந்தியாவின் முக்கிய உணவு விதிகள்",
+      foodAwarenessSubtitle: "ஹஜ் 2027 க்கான ஹஜ் கமிட்டி ஆஃப் இந்தியாவின் முக்கிய உணவு விதிகள்",
       rateList: "விலை பட்டியல்",
       rateListSubtitle: "மக்கா & மதீனாவில் உணவுப் பொருட்களின் சந்தை விலை",
     },
@@ -207,7 +207,7 @@ const FoodGuidePage = () => {
       iftar: "ఇఫ్తార్/డిన్నర్",
       lateNight: "రాత్రి భోజనం",
       foodAwareness: "ఆహార నియమాలు",
-      foodAwarenessSubtitle: "హజ్ 2026 కోసం హజ్ కమిటీ ఆఫ్ ఇండియా ముఖ్యమైన ఆహార నియమాలు",
+      foodAwarenessSubtitle: "హజ్ 2027 కోసం హజ్ కమిటీ ఆఫ్ ఇండియా ముఖ్యమైన ఆహార నియమాలు",
       rateList: "ధరల జాబితా",
       rateListSubtitle: "మక్కా & మదీనాలో ఆహార వస్తువుల మార్కెట్ ధరలు",
     },
@@ -239,7 +239,7 @@ const FoodGuidePage = () => {
       iftar: "इफ्तार/रात्रीचे जेवण",
       lateNight: "उशिरा रात्रीचे जेवण",
       foodAwareness: "अन्न नियम",
-      foodAwarenessSubtitle: "हज 2026 साठी हज कमिटी ऑफ इंडियाचे महत्त्वाचे अन्न नियम",
+      foodAwarenessSubtitle: "हज 2027 साठी हज कमिटी ऑफ इंडियाचे महत्त्वाचे अन्न नियम",
       rateList: "दर सूची",
       rateListSubtitle: "मक्का व मदीनामध्ये अन्नपदार्थांचे बाजारभाव",
     },
@@ -271,7 +271,7 @@ const FoodGuidePage = () => {
       iftar: "ইফতার/রাতের খাবার",
       lateNight: "রাতের খাবার",
       foodAwareness: "খাবারের নিয়ম",
-      foodAwarenessSubtitle: "হজ 2026 এর জন্য হজ কমিটি অফ ইন্ডিয়ার গুরুত্বপূর্ণ খাবারের নিয়ম",
+      foodAwarenessSubtitle: "হজ 2027 এর জন্য হজ কমিটি অফ ইন্ডিয়ার গুরুত্বপূর্ণ খাবারের নিয়ম",
       rateList: "রেট তালিকা",
       rateListSubtitle: "মক্কা ও মদিনায় খাবারের বাজার দাম",
     },
@@ -367,7 +367,7 @@ const FoodGuidePage = () => {
       iftar: "ਇਫ਼ਤਾਰ/ਰਾਤ ਦਾ ਖਾਣਾ",
       lateNight: "ਦੇਰ ਰਾਤ ਦਾ ਖਾਣਾ",
       foodAwareness: "ਭੋਜਨ ਨਿਯਮ",
-      foodAwarenessSubtitle: "ਹੱਜ 2026 ਲਈ ਹੱਜ ਕਮੇਟੀ ਆਫ਼ ਇੰਡੀਆ ਦੇ ਮਹੱਤਵਪੂਰਨ ਭੋਜਨ ਨਿਯਮ",
+      foodAwarenessSubtitle: "ਹੱਜ 2027 ਲਈ ਹੱਜ ਕਮੇਟੀ ਆਫ਼ ਇੰਡੀਆ ਦੇ ਮਹੱਤਵਪੂਰਨ ਭੋਜਨ ਨਿਯਮ",
       rateList: "ਰੇਟ ਲਿਸਟ",
       rateListSubtitle: "ਮੱਕਾ ਤੇ ਮਦੀਨਾ ਵਿੱਚ ਖਾਣੇ ਦੀਆਂ ਕੀਮਤਾਂ",
     },
@@ -748,7 +748,7 @@ const FoodGuidePage = () => {
                 <CardHeader>
                   <CardTitle className="text-lg flex items-center gap-2 text-destructive">
                     <AlertTriangle className="w-5 h-5" />
-                    {t.foodAwareness} — Hajj 2026
+                    {t.foodAwareness} — Hajj 2027
                   </CardTitle>
                   <p className="text-sm text-muted-foreground">{t.foodAwarenessSubtitle}</p>
                 </CardHeader>

@@ -196,8 +196,9 @@ const journeyImages = [
   },
 ];
 
-const HajjJourneyVisuals = () => {
+const HajjJourneyVisuals = ({ includeUmrah = true }: { includeUmrah?: boolean }) => {
   const { language, isRTL } = useLanguage();
+  const slides = includeUmrah ? journeyImages : journeyImages.filter((slide) => slide.id !== "umrah");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isZoomed, setIsZoomed] = useState(false);
 
@@ -231,14 +232,15 @@ const HajjJourneyVisuals = () => {
   };
 
   const goToPrevious = () => {
-    setCurrentIndex((prev) => (prev === 0 ? journeyImages.length - 1 : prev - 1));
+    setCurrentIndex((prev) => (prev === 0 ? slides.length - 1 : prev - 1));
   };
 
   const goToNext = () => {
-    setCurrentIndex((prev) => (prev === journeyImages.length - 1 ? 0 : prev + 1));
+    setCurrentIndex((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
   };
 
-  const currentImage = journeyImages[currentIndex];
+  const safeIndex = Math.min(currentIndex, Math.max(slides.length - 1, 0));
+  const currentImage = slides[safeIndex];
 
   return (
     <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
@@ -310,12 +312,12 @@ const HajjJourneyVisuals = () => {
 
         {/* Dot Indicators */}
         <div className="flex justify-center gap-1.5">
-          {journeyImages.map((_, index) => (
+          {slides.map((_, index) => (
             <button
               key={index}
               onClick={() => setCurrentIndex(index)}
               className={`h-2 rounded-full transition-all ${
-                index === currentIndex
+                index === safeIndex
                   ? "w-6 bg-primary"
                   : "w-2 bg-muted-foreground/30 hover:bg-muted-foreground/50"
               }`}

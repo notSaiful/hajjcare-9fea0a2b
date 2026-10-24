@@ -1,8 +1,8 @@
-# HajCare AI
+# HajCare
 
 > Your complete digital companion for a peaceful & organized Hajj and Umrah journey. Smart guidance, AI assistance, multilingual content in 11 languages, and spiritual support for pilgrims from India.
 
-HajCare AI offers ritual guidance, official Hajj circulars, building & tent locators, medical facility directories, Saudi rules briefings, multilingual duas, and AI-powered Q&A — built specifically for Indian Hajj pilgrims.
+HajCare offers ritual guidance, official Hajj circulars, building & tent locators, medical facility directories, Saudi rules briefings, multilingual duas, and AI-powered Q&A — built specifically for Indian Hajj pilgrims.
 
 ## Guides
 

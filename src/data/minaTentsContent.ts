@@ -34,7 +34,7 @@ export type MinaTentsLabels = {
 
 const en: MinaTentsLabels = {
   title: "Mina Tent Locations",
-  subtitle: "Hajj 2026 Maktab directory",
+  subtitle: "Hajj 2027 Maktab directory",
   back: "Back",
   mapBtn: "Map",
   unofficial: "Unofficial directory.",
@@ -64,7 +64,7 @@ const en: MinaTentsLabels = {
 
 const ar: MinaTentsLabels = {
   title: "مواقع خيام منى",
-  subtitle: "دليل المكاتب لحج 2026",
+  subtitle: "دليل المكاتب لحج 2027",
   back: "رجوع",
   mapBtn: "الخريطة",
   unofficial: "دليل غير رسمي.",
@@ -94,7 +94,7 @@ const ar: MinaTentsLabels = {
 
 const ur: MinaTentsLabels = {
   title: "منیٰ خیمہ مقامات",
-  subtitle: "حج 2026 مکتب ڈائریکٹری",
+  subtitle: "حج 2027 مکتب ڈائریکٹری",
   back: "واپس",
   mapBtn: "نقشہ",
   unofficial: "غیر سرکاری ڈائریکٹری۔",
@@ -124,7 +124,7 @@ const ur: MinaTentsLabels = {
 
 const hi: MinaTentsLabels = {
   title: "मीना तंबू स्थान",
-  subtitle: "हज 2026 मक्तब निर्देशिका",
+  subtitle: "हज 2027 मक्तब निर्देशिका",
   back: "वापस",
   mapBtn: "नक्शा",
   unofficial: "अनधिकृत निर्देशिका।",
@@ -154,7 +154,7 @@ const hi: MinaTentsLabels = {
 
 const ta: MinaTentsLabels = {
   title: "மினா கூடார இடங்கள்",
-  subtitle: "ஹஜ் 2026 மக்தப் அடைவு",
+  subtitle: "ஹஜ் 2027 மக்தப் அடைவு",
   back: "பின்",
   mapBtn: "வரைபடம்",
   unofficial: "அதிகாரப்பூர்வமற்ற அடைவு.",
@@ -184,7 +184,7 @@ const ta: MinaTentsLabels = {
 
 const te: MinaTentsLabels = {
   title: "మీనా టెంట్ స్థానాలు",
-  subtitle: "హజ్ 2026 మక్తబ్ డైరెక్టరీ",
+  subtitle: "హజ్ 2027 మక్తబ్ డైరెక్టరీ",
   back: "వెనుకకు",
   mapBtn: "మ్యాప్",
   unofficial: "అనధికారిక డైరెక్టరీ.",
@@ -214,7 +214,7 @@ const te: MinaTentsLabels = {
 
 const mr: MinaTentsLabels = {
   title: "मीना तंबू स्थाने",
-  subtitle: "हज 2026 मक्तब निर्देशिका",
+  subtitle: "हज 2027 मक्तब निर्देशिका",
   back: "मागे",
   mapBtn: "नकाशा",
   unofficial: "अनधिकृत निर्देशिका.",
@@ -304,7 +304,7 @@ const or: MinaTentsLabels = {
 
 const ml: MinaTentsLabels = {
   title: "മിന ടെന്റ് സ്ഥാനങ്ങൾ",
-  subtitle: "ഹജ്ജ് 2026 മക്തബ് ഡയറക്ടറി",
+  subtitle: "ഹജ്ജ് 2027 മക്തബ് ഡയറക്ടറി",
   back: "തിരികെ",
   mapBtn: "മാപ്പ്",
   unofficial: "അനൗദ്യോഗിക ഡയറക്ടറി.",
@@ -334,7 +334,7 @@ const ml: MinaTentsLabels = {
 
 const pa: MinaTentsLabels = {
   title: "ਮੀਨਾ ਤੰਬੂ ਸਥਾਨ",
-  subtitle: "ਹੱਜ 2026 ਮਕਤਬ ਡਾਇਰੈਕਟਰੀ",
+  subtitle: "ਹੱਜ 2027 ਮਕਤਬ ਡਾਇਰੈਕਟਰੀ",
   back: "ਵਾਪਸ",
   mapBtn: "ਨਕਸ਼ਾ",
   unofficial: "ਅਣਅਧਿਕਾਰਤ ਡਾਇਰੈਕਟਰੀ।",

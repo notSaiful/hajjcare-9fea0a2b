@@ -64,7 +64,7 @@ const HajjBuildingsPage = () => {
 
   const labels = {
     en: {
-      title: "Indian Hajj Buildings", subtitle: "Makkah & Madinah 2026", makkah: "Makkah", madinah: "Madinah", all: "All",
+      title: "Indian Hajj Buildings", subtitle: "Makkah & Madinah 2027", makkah: "Makkah", madinah: "Madinah", all: "All",
       search: "Search buildings...", emergency: "Emergency Contacts", office: "Main Office", medical: "Medical", emb: "Indian Embassy",
       findBuilding: "Find Your Building", enterNumber: "Enter building number (101-1880)",
       findBtn: "Find Location", yourBuilding: "Your Building", zone: "Zone", area: "Area",
@@ -211,14 +211,14 @@ const HajjBuildingsPage = () => {
 
   return (
     <div className="min-h-screen bg-background" dir={isRTL ? "rtl" : "ltr"}>
-      <SEO title="Hajj Buildings Directory 2026" description="Search official Indian Hajj accommodation buildings in Makkah and Madinah with maps, contacts, and zones." path="/hajj-buildings" type="website" />
+      <SEO title="Hajj Buildings Directory 2027" description="Search official Indian Hajj accommodation buildings in Makkah and Madinah with maps, contacts, and zones." path="/hajj-buildings" type="website" />
       <SimpleHeader />
       <main className="container max-w-2xl mx-auto px-4 py-5 space-y-5">
         {/* Header */}
         <div className="text-center space-y-1">
           <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3 py-1.5 rounded-full text-xs font-medium">
             <Building className="w-3.5 h-3.5" />
-            Hajj 2026
+            Hajj 2027
           </div>
           <h1 className="text-xl font-bold">{t.title}</h1>
           <p className="text-sm text-muted-foreground">{t.subtitle}</p>
@@ -525,7 +525,7 @@ const HajjBuildingsPage = () => {
           </section>
         )}
 
-        {/* ===== MADINAH HOTELS DIRECTORY (Hajj 2026) ===== */}
+        {/* ===== MADINAH HOTELS DIRECTORY (Hajj 2027) ===== */}
         <section className="bg-emerald-500/5 border-2 border-emerald-500/20 rounded-2xl p-4 space-y-3">
           <div className="flex items-center justify-between gap-2">
             <h2 className="text-base font-bold flex items-center gap-2">

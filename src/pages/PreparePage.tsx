@@ -77,7 +77,7 @@ const PreparePage = () => {
         )}
 
         {/* Hajj Journey Visual Guide */}
-        <HajjJourneyVisuals />
+        <HajjJourneyVisuals includeUmrah={false} />
 
         {/* Ritual List */}
         <div className="space-y-2.5 sm:space-y-3">

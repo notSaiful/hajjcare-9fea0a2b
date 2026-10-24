@@ -70,7 +70,7 @@ const buildWhatsAppUrl = (number: string, report: LostFoundReport) => {
     ? `Lost person: ${report.person_name}`
     : `Lost item: ${report.item_name}`;
   const msg = encodeURIComponent(
-    `Assalamu Alaikum, I saw your report on HajjCare about "${subject}". Can you please provide more details?`
+    `Assalamu Alaikum, I saw your report on HajCare about "${subject}". Can you please provide more details?`
   );
   return `https://wa.me/${clean}?text=${msg}`;
 };

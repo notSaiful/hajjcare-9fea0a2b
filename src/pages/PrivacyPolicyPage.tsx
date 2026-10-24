@@ -7,12 +7,12 @@ import { ShieldCheck } from "lucide-react";
 export default function PrivacyPolicyPage() {
   return (
     <MainLayout>
-      <SEO title="Privacy Policy" description="How HajCare AI collects, uses, and protects your data — DPDP-aligned privacy practices for pilgrims." path="/privacy-policy" type="website" jsonLd={{"@context":"https://schema.org","@type":"WebPage","headline":"Privacy Policy","description":"How HajCare AI collects, uses, and protects your data — DPDP-aligned privacy practices for pilgrims.","url":"https://hajjcare.in/privacy-policy"}} />
+      <SEO title="Privacy Policy" description="How HajCare collects, uses, and protects your data — DPDP-aligned privacy practices for pilgrims." path="/privacy-policy" type="website" jsonLd={{"@context":"https://schema.org","@type":"WebPage","headline":"Privacy Policy","description":"How HajCare collects, uses, and protects your data — DPDP-aligned privacy practices for pilgrims.","url":"https://hajjcare.in/privacy-policy"}} />
       <ScrollArea className="h-[calc(100vh-3.5rem)]">
         <div className="container max-w-3xl mx-auto px-4 py-8 pb-24">
           <PageHeader
             title="Privacy Policy"
-            subtitle="Your privacy is important to us. This page explains how HajCare AI collects, uses, and protects your information."
+            subtitle="Your privacy is important to us. This page explains how HajCare collects, uses, and protects your information."
             backLink="/"
             icon={ShieldCheck}
             iconVariant="primary"
@@ -87,7 +87,7 @@ export default function PrivacyPolicyPage() {
             <section>
               <h2 className="text-lg font-semibold text-foreground mb-3">6. Changes to This Policy</h2>
               <p className="text-muted-foreground leading-relaxed">
-                This privacy policy may be updated occasionally. Users will be notified if significant changes occur. Continued use of HajCare AI after changes constitutes acceptance of the updated policy.
+                This privacy policy may be updated occasionally. Users will be notified if significant changes occur. Continued use of HajCare after changes constitutes acceptance of the updated policy.
               </p>
             </section>
 

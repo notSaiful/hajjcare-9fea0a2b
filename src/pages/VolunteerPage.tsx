@@ -249,7 +249,7 @@ const VolunteerPage = () => {
   if (success) {
     return (
       <>
-        <SEO title="Volunteer Registration" description="Register as a Hajj volunteer with HajCare AI — serve pilgrims with multilingual support and on-ground assistance." path="/volunteer" type="website" jsonLd={{"@context":"https://schema.org","@type":"WebPage","headline":"Volunteer Registration","description":"Register as a Hajj volunteer with HajCare AI — serve pilgrims with multilingual support and on-ground assistance.","url":"https://hajjcare.in/volunteer"}} />
+        <SEO title="Volunteer Registration" description="Register as a Hajj volunteer with HajCare — serve pilgrims with multilingual support and on-ground assistance." path="/volunteer" type="website" jsonLd={{"@context":"https://schema.org","@type":"WebPage","headline":"Volunteer Registration","description":"Register as a Hajj volunteer with HajCare — serve pilgrims with multilingual support and on-ground assistance.","url":"https://hajjcare.in/volunteer"}} />
         <div className="min-h-screen bg-background" dir={isRTL ? "rtl" : "ltr"}>
         <SimpleHeader />
         <main className="container max-w-2xl mx-auto px-4 py-8">
@@ -279,7 +279,7 @@ const VolunteerPage = () => {
 
   return (
     <div className="min-h-screen bg-background" dir={isRTL ? "rtl" : "ltr"}>
-      <SEO title="Volunteer Registration" description="Register as a Hajj volunteer with HajCare AI — serve pilgrims with multilingual support and on-ground assistance." path="/volunteer" type="website" />
+      <SEO title="Volunteer Registration" description="Register as a Hajj volunteer with HajCare — serve pilgrims with multilingual support and on-ground assistance." path="/volunteer" type="website" />
       <SimpleHeader />
       <main className="container max-w-2xl mx-auto px-4 py-6 space-y-6">
 
@@ -313,7 +313,7 @@ const VolunteerPage = () => {
                 </div>
 
                 <p className="text-sm text-muted-foreground">
-                  तो <span className="font-semibold text-foreground">HajjCare AI Support Volunteer Team</span> से जुड़िए।
+                  तो <span className="font-semibold text-foreground">HajCare Support Volunteer Team</span> से जुड़िए।
                 </p>
                 <p className="text-xs text-muted-foreground">👉 नीचे फॉर्म भरें — हमारी टीम आपसे संपर्क करेगी</p>
 

@@ -70,18 +70,18 @@ serve(async (req) => {
     let message = "";
     if (eventType === "new_claim") {
       message =
-        `🕌 HajjCare — New claim on ${subject}\n\n` +
+        `🕌 HajCare — New claim on ${subject}\n\n` +
         `Claimant: ${claim.claimant_name}\n` +
         `Contact: ${claim.claimant_mobile}\n` +
         `Details: ${claim.claim_description}\n\n` +
         `Open the app to approve or reject this claim.`;
     } else if (eventType === "claim_responded") {
       message =
-        `🕌 HajjCare — Your claim on "${subject}" was ${claim.status}.\n` +
+        `🕌 HajCare — Your claim on "${subject}" was ${claim.status}.\n` +
         (claim.owner_response_note ? `Note: ${claim.owner_response_note}\n` : "") +
         `\nOpen the app for next steps.`;
     } else {
-      message = `🕌 HajjCare — Update on claim for "${subject}".`;
+      message = `🕌 HajCare — Update on claim for "${subject}".`;
     }
 
     let waResult: any = { skipped: true };

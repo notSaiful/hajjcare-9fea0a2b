@@ -63,7 +63,7 @@ const tourSteps: TourStep[] = [
     icon: <Sparkles className="w-10 h-10" />,
     color: "from-emerald-500 to-teal-600",
     titleKey: L(
-      "Welcome to HajjCare AI",
+      "Welcome to HajCare",
       "مرحباً بك في حج كير",
       "حج کیئر میں خوش آمدید",
       "हज केयर AI में आपका स्वागत है",

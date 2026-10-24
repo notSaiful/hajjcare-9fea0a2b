@@ -201,7 +201,7 @@ const labels: Record<string, Record<Lang, string>> = {
     pa: "ਵੈਟਰਨਰੀ ਨਿਗਰਾਨੀ ਨਾਲ ਸਰਕਾਰੀ-ਆਡਿਟ ਕੀਤੇ ਜ਼ਬ੍ਹਾਖ਼ਾਨੇ"
   },
   disclaimer: {
-    en: "HajjCare does not process payments. This is an educational guide to the official Saudi Adahi system.",
+    en: "HajCare does not process payments. This is an educational guide to the official Saudi Adahi system.",
     ar: "حج كير لا يعالج المدفوعات. هذا دليل تعليمي لنظام الأضاحي السعودي الرسمي.",
     ur: "حج کیئر ادائیگیاں نہیں کرتا۔ یہ سعودی اضحی نظام کی معلوماتی رہنمائی ہے۔",
     hi: "हज केयर भुगतान प्रोसेस नहीं करता। यह आधिकारिक सऊदी अधही प्रणाली की शैक्षिक मार्गदर्शिका है।",

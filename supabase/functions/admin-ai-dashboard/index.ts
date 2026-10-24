@@ -6,7 +6,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const DECISION_SUPPORT_PROMPT = `You are an Admin Decision Support AI for HajjCare AI. Analyze the provided operational data and produce actionable insights for national-level Hajj management.
+const DECISION_SUPPORT_PROMPT = `You are an Admin Decision Support AI for HajCare. Analyze the provided operational data and produce actionable insights for national-level Hajj management.
 
 Analyze:
 1. Emergency trends and prioritization

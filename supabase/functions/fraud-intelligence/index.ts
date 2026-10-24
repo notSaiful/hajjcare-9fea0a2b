@@ -6,7 +6,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const FRAUD_ANALYSIS_PROMPT = `You are a Fraud Intelligence Engine for HajjCare AI. Analyze the provided operator data and produce a fraud risk assessment.
+const FRAUD_ANALYSIS_PROMPT = `You are a Fraud Intelligence Engine for HajCare. Analyze the provided operator data and produce a fraud risk assessment.
 
 You will receive:
 - Operator profile (name, company, license, verification status)

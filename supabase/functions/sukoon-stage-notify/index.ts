@@ -193,7 +193,7 @@ Assalamu Alaikum! 🤲
 May Allah accept their Hajj and keep them safe. 🤲
 
 ---
-_HajjCare AI - Sukoon Tracking System_
+_HajCare - Sukoon Tracking System_
 _"Haji Saudi mein, Ghar wale sukoon mein"_`;
 
     // Send WhatsApp messages

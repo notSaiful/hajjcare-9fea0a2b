@@ -1,17 +1,17 @@
 import { useState, useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Landmark } from "lucide-react";
+import { HAJJ_DAY_8_ISO, HAJJ_YEAR_CE } from "@/config/hajjSeason";
 
 const labels: Record<string, { title: string; days: string; hours: string; mins: string; secs: string }> = {
-  en: { title: "Hajj 2026 Countdown", days: "Days", hours: "Hours", mins: "Min", secs: "Sec" },
-  ur: { title: "حج 2026 الٹی گنتی", days: "دن", hours: "گھنٹے", mins: "منٹ", secs: "سیکنڈ" },
-  hi: { title: "हज 2026 उलटी गिनती", days: "दिन", hours: "घंटे", mins: "मिनट", secs: "सेकंड" },
-  ar: { title: "العد التنازلي للحج 2026", days: "أيام", hours: "ساعات", mins: "دقائق", secs: "ثوانٍ" },
+  en: { title: `Hajj ${HAJJ_YEAR_CE} Countdown`, days: "Days", hours: "Hours", mins: "Min", secs: "Sec" },
+  ur: { title: `حج ${HAJJ_YEAR_CE} الٹی گنتی`, days: "دن", hours: "گھنٹے", mins: "منٹ", secs: "سیکنڈ" },
+  hi: { title: `हज ${HAJJ_YEAR_CE} उलटी गिनती`, days: "दिन", hours: "घंटे", mins: "मिनट", secs: "सेकंड" },
+  ar: { title: `العد التنازلي للحج ${HAJJ_YEAR_CE}`, days: "أيام", hours: "ساعات", mins: "دقائق", secs: "ثوانٍ" },
 };
 
-// Hajj 2026 (1447 AH) — 8 Dhul Hijjah falls on 26 May 2026
-// (Yawm al-Arafah: 27 May 2026; Eid al-Adha: 28 May 2026 — Umm al-Qura calendar)
-const HAJJ_DATE = new Date("2026-05-26T00:00:00+03:00");
+// 8 Dhul Hijjah for the upcoming season. See src/config/hajjSeason.ts.
+const HAJJ_DATE = new Date(HAJJ_DAY_8_ISO);
 
 function getTimeLeft() {
   const diff = HAJJ_DATE.getTime() - Date.now();

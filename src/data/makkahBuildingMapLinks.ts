@@ -1,5 +1,5 @@
 /**
- * Direct Google Maps location links for individual Makkah Hajj 2026 building numbers.
+ * Direct Google Maps location links for individual Makkah Hajj 2027 building numbers.
  *
  * Source: "HAJ-2026 ALL BUILDINGS LOCATION LIST – MAKKAH-AL-MUKARRAMAH"
  * compiled by Mohammed Salman (+91-91752 09903) from the official Haj Suvidha App data.

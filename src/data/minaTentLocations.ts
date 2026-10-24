@@ -1,4 +1,4 @@
-// Hajj 2026 Mina Maktab Information (Unofficial)
+// Hajj 2027 Mina Maktab Information (Unofficial)
 // Source: Mina_Tent_Locations PDF — for errors contact +91 9796762333
 
 export interface MaktabContact {

@@ -42,7 +42,7 @@ export function InvoicePreview({
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#39;");
     const html = `
-      <!DOCTYPE html><html><head><title>Invoice Preview - HajjCare</title>
+      <!DOCTYPE html><html><head><title>Invoice Preview - HajCare</title>
       <style>
         body{font-family:system-ui,sans-serif;max-width:700px;margin:40px auto;padding:20px;color:#1a1a1a}
         .header{display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid #16a34a;padding-bottom:16px;margin-bottom:24px}

@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { SEO } from "@/components/SEO";
 import { MainLayout } from "@/components/MainLayout";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { LANGUAGES, useLanguage } from "@/contexts/LanguageContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { IndianRupee, Gift, Check, Info, ArrowLeft, ArrowRight, CreditCard, Shield } from "lucide-react";
@@ -38,14 +38,14 @@ export default function PricingDisclosurePage() {
     "AI-powered chat assistance",
     "Health and preparation guides",
     "Emergency contact directory",
-    "Multi-language support (11+ languages)",
+    `Multi-language support (${LANGUAGES.length} languages)`,
     "Offline access to key content",
     "Real-time family coordination",
   ];
 
   return (
     <MainLayout>
-      <SEO title="Pricing & Service Fees" description="Transparent pricing and service fee disclosure for HajCare AI premium features." path="/pricing" type="website" jsonLd={{"@context":"https://schema.org","@type":"WebPage","headline":"Pricing & Service Fees","description":"Transparent pricing and service fee disclosure for HajCare AI premium features.","url":"https://hajjcare.in/pricing"}} />
+      <SEO title="Pricing & Service Fees" description="Transparent pricing and service fee disclosure for HajCare premium features." path="/pricing" type="website" jsonLd={{"@context":"https://schema.org","@type":"WebPage","headline":"Pricing & Service Fees","description":"Transparent pricing and service fee disclosure for HajCare premium features.","url":"https://hajjcare.in/pricing"}} />
       <div className="container max-w-2xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
         {/* Back Button */}
         <Link to="/">
@@ -79,7 +79,7 @@ export default function PricingDisclosurePage() {
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground mb-4">
-                HajjCare's core features are <strong>completely free</strong>. We believe every pilgrim deserves access to quality guidance and support, regardless of their financial situation.
+                HajCare's core features are <strong>completely free</strong>. We believe every pilgrim deserves access to quality guidance and support, regardless of their financial situation.
               </p>
               <div className="grid gap-2 md:grid-cols-2">
                 {freeFeatures.map((feature, index) => (
@@ -102,7 +102,7 @@ export default function PricingDisclosurePage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-muted-foreground">
-                If you find HajjCare helpful and wish to support app maintenance, you can pay an optional service fee. These contributions help us:
+                If you find HajCare helpful and wish to support app maintenance, you can pay an optional service fee. These contributions help us:
               </p>
               <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
                 <li>Maintain and improve the platform</li>
@@ -164,7 +164,7 @@ export default function PricingDisclosurePage() {
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground">
-                All prices and service fees on HajjCare are displayed and processed in <strong>Indian Rupees (₹ / INR)</strong>.
+                All prices and service fees on HajCare are displayed and processed in <strong>Indian Rupees (₹ / INR)</strong>.
               </p>
             </CardContent>
           </Card>

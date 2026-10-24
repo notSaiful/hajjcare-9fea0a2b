@@ -261,10 +261,10 @@ const MashairMapPage = () => {
   };
 
   const titles: Record<string, string> = {
-    en: "Mashair Map — Hajj 2026",
-    hi: "मशा'इर मानचित्र — हज 2026",
-    ur: "مشاعر کا نقشہ — حج 2026",
-    ar: "خريطة المشاعر — حج 2026",
+    en: "Mashair Map — Hajj 2027",
+    hi: "मशा'इर मानचित्र — हज 2027",
+    ur: "مشاعر کا نقشہ — حج 2027",
+    ar: "خريطة المشاعر — حج 2027",
   };
   const subtitles: Record<string, string> = {
     en: "Mina · Arafat · Muzdalifah · Jamarat — with day-wise flow",

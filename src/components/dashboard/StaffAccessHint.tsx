@@ -84,7 +84,7 @@ export const StaffAccessHint = memo(function StaffAccessHint() {
       whatsapp: "WhatsApp",
       email: "Email",
       requestMsg:
-        "Assalamu Alaikum, I would like to request a staff role (Inspector / Coordinator / Admin) on HajjCare. Please guide me through the process.",
+        "Assalamu Alaikum, I would like to request a staff role (Inspector / Coordinator / Admin) on HajCare. Please guide me through the process.",
       dialogTitle: "Request Staff Role",
       dialogDesc:
         "Submit a request to become Inspector, Coordinator, or Admin. An administrator will review it.",
@@ -109,7 +109,7 @@ export const StaffAccessHint = memo(function StaffAccessHint() {
       whatsapp: "WhatsApp",
       email: "ईमेल",
       requestMsg:
-        "अस्सलामु अलैकुम, मैं HajjCare पर स्टाफ भूमिका (इंस्पेक्टर / समन्वयक / व्यवस्थापक) का अनुरोध करना चाहता/चाहती हूँ। कृपया मार्गदर्शन करें।",
+        "अस्सलामु अलैकुम, मैं HajCare पर स्टाफ भूमिका (इंस्पेक्टर / समन्वयक / व्यवस्थापक) का अनुरोध करना चाहता/चाहती हूँ। कृपया मार्गदर्शन करें।",
       dialogTitle: "स्टाफ भूमिका के लिए अनुरोध",
       dialogDesc:
         "इंस्पेक्टर, समन्वयक, या व्यवस्थापक बनने के लिए अनुरोध भेजें। व्यवस्थापक इसकी समीक्षा करेगा।",
@@ -134,7 +134,7 @@ export const StaffAccessHint = memo(function StaffAccessHint() {
       whatsapp: "WhatsApp",
       email: "ای میل",
       requestMsg:
-        "السلام علیکم، میں HajjCare پر اسٹاف کردار (انسپکٹر / کوآرڈینیٹر / ایڈمن) کی درخواست کرنا چاہتا/چاہتی ہوں۔ براہ کرم رہنمائی فرمائیں۔",
+        "السلام علیکم، میں HajCare پر اسٹاف کردار (انسپکٹر / کوآرڈینیٹر / ایڈمن) کی درخواست کرنا چاہتا/چاہتی ہوں۔ براہ کرم رہنمائی فرمائیں۔",
       dialogTitle: "اسٹاف کردار کی درخواست",
       dialogDesc:
         "انسپکٹر، کوآرڈینیٹر، یا ایڈمن بننے کی درخواست بھیجیں۔ منتظم اس کا جائزہ لے گا۔",
@@ -158,7 +158,7 @@ export const StaffAccessHint = memo(function StaffAccessHint() {
       whatsapp: "واتساب",
       email: "البريد",
       requestMsg:
-        "السلام عليكم، أرغب في طلب دور موظف (مفتش / منسق / مسؤول) على HajjCare. يرجى إرشادي.",
+        "السلام عليكم، أرغب في طلب دور موظف (مفتش / منسق / مسؤول) على HajCare. يرجى إرشادي.",
       dialogTitle: "طلب دور موظف",
       dialogDesc: "أرسل طلبًا لتصبح مفتشًا أو منسقًا أو مسؤولًا. سيقوم المسؤول بمراجعته.",
       roleLabel: "الدور المطلوب",
@@ -177,7 +177,7 @@ export const StaffAccessHint = memo(function StaffAccessHint() {
   const t = copy[language] || copy.en;
   const waUrl = `https://wa.me/${ADMIN_WHATSAPP}?text=${encodeURIComponent(t.requestMsg)}`;
   const mailUrl = `mailto:${ADMIN_EMAIL}?subject=${encodeURIComponent(
-    "Staff Role Request — HajjCare"
+    "Staff Role Request — HajCare"
   )}&body=${encodeURIComponent(t.requestMsg)}`;
 
   const roleLabel: Record<RequestedRole, string> = {

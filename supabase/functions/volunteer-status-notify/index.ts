@@ -32,16 +32,16 @@ Deno.serve(async (req) => {
     }
 
     const statusMessages: Record<string, string> = {
-      registered: `✅ Your volunteer registration (${volunteer_id}) has been received. We will review it shortly. - HajCare AI`,
-      screening: `🔍 Your volunteer application (${volunteer_id}) is now under screening. Please keep your documents ready. - HajCare AI`,
-      shortlisted: `🎉 Congratulations! Your application (${volunteer_id}) has been shortlisted for Hajj volunteer service. Training details will follow. - HajCare AI`,
-      training: `📚 Dear ${volunteer_name}, you are now enrolled for volunteer training (${volunteer_id}). Check the app for schedule. - HajCare AI`,
-      assessed: `✅ Your training assessment for ${volunteer_id} is complete. Results will be shared soon. - HajCare AI`,
-      deployed: `🕋 Alhamdulillah! You (${volunteer_id}) have been deployed for Hajj duty. Report to your assigned location. - HajCare AI`,
-      rejected: `We regret to inform you that your volunteer application (${volunteer_id}) could not be accepted at this time. - HajCare AI`,
+      registered: `✅ Your volunteer registration (${volunteer_id}) has been received. We will review it shortly. - HajCare`,
+      screening: `🔍 Your volunteer application (${volunteer_id}) is now under screening. Please keep your documents ready. - HajCare`,
+      shortlisted: `🎉 Congratulations! Your application (${volunteer_id}) has been shortlisted for Hajj volunteer service. Training details will follow. - HajCare`,
+      training: `📚 Dear ${volunteer_name}, you are now enrolled for volunteer training (${volunteer_id}). Check the app for schedule. - HajCare`,
+      assessed: `✅ Your training assessment for ${volunteer_id} is complete. Results will be shared soon. - HajCare`,
+      deployed: `🕋 Alhamdulillah! You (${volunteer_id}) have been deployed for Hajj duty. Report to your assigned location. - HajCare`,
+      rejected: `We regret to inform you that your volunteer application (${volunteer_id}) could not be accepted at this time. - HajCare`,
     };
 
-    const message = statusMessages[new_status] || `Your volunteer status (${volunteer_id}) has been updated to: ${new_status}. - HajCare AI`;
+    const message = statusMessages[new_status] || `Your volunteer status (${volunteer_id}) has been updated to: ${new_status}. - HajCare`;
 
     const whatsappToken = Deno.env.get("WHATSAPP_TOKEN");
     const phoneId = Deno.env.get("WHATSAPP_PHONE_ID");

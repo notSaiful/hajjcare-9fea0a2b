@@ -100,7 +100,7 @@ const QurbaniPage = () => {
 
   return (
     <>
-      <SEO title="Qurbani Booking" description="Book Qurbani for Hajj 2026 with live tracking, coupon lookup, and multilingual support." path="/qurbani" type="website" jsonLd={{"@context":"https://schema.org","@type":"WebPage","headline":"Qurbani Booking","description":"Book Qurbani for Hajj 2026 with live tracking, coupon lookup, and multilingual support.","url":"https://hajjcare.in/qurbani"}} />
+      <SEO title="Qurbani Booking" description="Book Qurbani for Hajj 2027 with live tracking, coupon lookup, and multilingual support." path="/qurbani" type="website" jsonLd={{"@context":"https://schema.org","@type":"WebPage","headline":"Qurbani Booking","description":"Book Qurbani for Hajj 2027 with live tracking, coupon lookup, and multilingual support.","url":"https://hajjcare.in/qurbani"}} />
       <div className="min-h-screen bg-background" dir={isRTL ? "rtl" : "ltr"}>
       <SimpleHeader />
 

@@ -13,7 +13,7 @@ const EMERGENCY_CONTACTS = [
   { label: { en: "Saudi Police / Emergency", hi: "सऊदी पुलिस / आपातकाल", ur: "سعودی پولیس / ایمرجنسی" }, number: "911" },
   { label: { en: "Saudi Civil Defence (Fire)", hi: "सिविल डिफेंस (आग)", ur: "سول ڈیفنس (آگ)" }, number: "998" },
   { label: { en: "MOIA 24/7 Helpline India", hi: "MOIA 24/7 हेल्पलाइन भारत", ur: "MOIA 24/7 ہیلپ لائن انڈیا" }, number: "+911124300666" },
-  { label: { en: "HajjCare Support", hi: "हज केयर सपोर्ट", ur: "حج کیئر سپورٹ" }, number: "+917588113830" },
+  { label: { en: "HajCare Support", hi: "हज केयर सपोर्ट", ur: "حج کیئر سپورٹ" }, number: "+917588113830" },
 ];
 
 export function EmergencyMarqueeBar() {

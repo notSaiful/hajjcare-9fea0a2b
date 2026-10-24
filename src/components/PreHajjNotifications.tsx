@@ -56,7 +56,7 @@ const NOTIFICATIONS: Notification[] = [
       pa: "ਹੱਜ 2026 ਅੰਤਿਮ ਭੁਗਤਾਨ ਮਿਤੀ",
     },
     message: {
-      en: "Final Hajj payment of ₹3,21,000 must be deposited by March 15, 2026. Pay via Haj Committee portal or designated bank branches.",
+      en: "Passed (Hajj 2026 season). Final Hajj payment of ₹3,21,000 was due by March 15, 2026. This is the published 2026 notice, not a 2027 deadline.",
       ar: "يجب إيداع دفعة الحج النهائية البالغة ₹3,21,000 بحلول 15 مارس 2026.",
       ur: "حج کی آخری ادائیگی ₹3,21,000 مارچ 15، 2026 تک جمع کروائیں۔ حج کمیٹی پورٹل یا مقررہ بینک شاخوں سے ادائیگی کریں۔",
       hi: "हज की अंतिम राशि ₹3,21,000 मार्च 15, 2026 तक जमा करें। हज कमेटी पोर्टल या निर्धारित बैंक शाखाओं से भुगतान करें।",
@@ -69,7 +69,7 @@ const NOTIFICATIONS: Notification[] = [
       pa: "₹3,21,000 ਅੰਤਿਮ ਹੱਜ ਭੁਗਤਾਨ 15 ਮਾਰਚ 2026 ਤੱਕ ਜਮ੍ਹਾਂ ਕਰੋ।",
     },
     date: "2026-02-08",
-    isNew: true,
+    isNew: false,
   },
   {
     id: "2",

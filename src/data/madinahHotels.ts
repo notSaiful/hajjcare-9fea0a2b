@@ -1,4 +1,4 @@
-// Madinah Hotels Directory — Hajj 2026
+// Madinah Hotels Directory — Hajj 2027
 // Source: Official MOH/CGI Jeddah PDF (Madina_Munawwar_Building_List_With_BuildingNo.pdf)
 // 381 unique hotels with Saudi MOH madTashee codes and Madinah_code (1-381).
 // All hotels are in Madinah Markaziya (Central Area, walking distance to Masjid an-Nabawi).

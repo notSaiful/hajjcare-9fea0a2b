@@ -36,7 +36,7 @@ const mapStageToZone = (stage: string | null): LocationZone => {
 };
 
 // Determine current phase based on date and time
-// For Hajj 2026, dates would be configured from official calendar
+// For Hajj 2027, dates would be configured from official calendar
 const determinePhase = (): HajjPhase => {
   const now = new Date();
   const hours = now.getHours();

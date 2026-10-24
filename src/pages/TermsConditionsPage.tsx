@@ -9,7 +9,7 @@ export default function TermsConditionsPage() {
 
   return (
     <MainLayout>
-      <SEO title="Terms & Conditions" description="HajCare AI terms of service for pilgrims using the platform." path="/terms-conditions" type="website" jsonLd={{"@context":"https://schema.org","@type":"WebPage","headline":"Terms & Conditions","description":"HajCare AI terms of service for pilgrims using the platform.","url":"https://hajjcare.in/terms-conditions"}} />
+      <SEO title="Terms & Conditions" description="HajCare terms of service for pilgrims using the platform." path="/terms-conditions" type="website" jsonLd={{"@context":"https://schema.org","@type":"WebPage","headline":"Terms & Conditions","description":"HajCare terms of service for pilgrims using the platform.","url":"https://hajjcare.in/terms-conditions"}} />
       <ScrollArea className="h-[calc(100vh-3.5rem)]">
         <div className="container max-w-4xl mx-auto px-4 py-8 pb-24">
           <div className="flex items-center gap-3 mb-6">

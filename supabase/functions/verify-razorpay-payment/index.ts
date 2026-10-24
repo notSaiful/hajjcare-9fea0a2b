@@ -94,7 +94,7 @@ serve(async (req) => {
       // strip control chars and HTML-significant characters
       return s.replace(/[\u0000-\u001F\u007F<>"'`]/g, "");
     };
-    const safe_service_name = safeText(service_name, 120) ?? "HajjCare App Maintenance Service Fee";
+    const safe_service_name = safeText(service_name, 120) ?? "HajCare App Maintenance Service Fee";
     const safe_customer_name = safeText(customer_name, 100);
     const safe_customer_email = safeText(customer_email, 254, /^[^\s@]+@[^\s@]+\.[^\s@]+$/);
     const safe_org_gstin = safeText(org_gstin, 20, /^[0-9A-Z]+$/);

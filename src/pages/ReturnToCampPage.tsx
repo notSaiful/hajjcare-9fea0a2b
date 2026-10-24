@@ -248,7 +248,7 @@ export default function ReturnToCampPage() {
         "",
         locUrl ? `📍 Live location: ${locUrl}` : "📍 Location unavailable",
         "",
-        "— Sent from HajjCare SafeReturn",
+        "— Sent from HajCare SafeReturn",
       ].filter(Boolean).join("\n");
       return lines;
     };

@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 
 // Core languages supported in UI, plus tr/ru for backwards compatibility with data files
 export type Language = "en" | "ar" | "ur" | "hi" | "ta" | "te" | "mr" | "bn" | "or" | "ml" | "pa" | "tr" | "ru";
@@ -777,6 +777,11 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   const currentLang = LANGUAGES.find(l => l.code === language)!;
   const dir = currentLang.dir;
   const isRTL = dir === "rtl";
+
+  useEffect(() => {
+    document.documentElement.lang = language === "tr" || language === "ru" ? "en" : language;
+    document.documentElement.dir = dir;
+  }, [language, dir]);
 
   return (
     <LanguageContext.Provider value={{ language, setLanguage, t, dir, isRTL }}>

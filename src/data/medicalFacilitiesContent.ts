@@ -1,4 +1,4 @@
-// IHPO Makkah — Medical Wing — Haj 2026
+// IHPO Makkah — Medical Wing — Haj 2027
 // Source: Indian Haj Pilgrims' Office, Makkah (official PDF)
 
 export interface MedicalFacility {
@@ -135,17 +135,17 @@ export const MEDICAL_FACILITIES_LABELS = {
     pa: "ਮੈਡੀਕਲ ਸਹੂਲਤਾਂ - ਮੱਕਾ",
   },
   subtitle: {
-    en: "Official IHPO Medical Wing — Haj 2026",
-    ar: "الجناح الطبي الرسمي لمكتب الحج الهندي - حج 2026",
-    ur: "آفیشل آئی ایچ پی او میڈیکل ونگ - حج 2026",
-    hi: "आधिकारिक IHPO मेडिकल विंग - हज 2026",
-    ta: "உத்தியோகபூர்வ IHPO மருத்துவ பிரிவு - ஹஜ் 2026",
-    te: "అధికారిక IHPO మెడికల్ వింగ్ - హజ్ 2026",
-    mr: "अधिकृत IHPO वैद्यकीय विभाग - हज 2026",
-    bn: "অফিসিয়াল IHPO মেডিকেল উইং - হজ 2026",
+    en: "Official IHPO Medical Wing — Haj 2027",
+    ar: "الجناح الطبي الرسمي لمكتب الحج الهندي - حج 2027",
+    ur: "آفیشل آئی ایچ پی او میڈیکل ونگ - حج 2027",
+    hi: "आधिकारिक IHPO मेडिकल विंग - हज 2027",
+    ta: "உத்தியோகபூர்வ IHPO மருத்துவ பிரிவு - ஹஜ் 2027",
+    te: "అధికారిక IHPO మెడికల్ వింగ్ - హజ్ 2027",
+    mr: "अधिकृत IHPO वैद्यकीय विभाग - हज 2027",
+    bn: "অফিসিয়াল IHPO মেডিকেল উইং - হজ 2027",
     or: "ଆଧିକାରିକ IHPO ମେଡିକାଲ ୱିଂ - ହଜ 2026",
-    ml: "ഔദ്യോഗിക IHPO മെഡിക്കൽ വിഭാഗം - ഹജ്ജ് 2026",
-    pa: "ਅਧਿਕਾਰਤ IHPO ਮੈਡੀਕਲ ਵਿੰਗ - ਹੱਜ 2026",
+    ml: "ഔദ്യോഗിക IHPO മെഡിക്കൽ വിഭാഗം - ഹജ്ജ് 2027",
+    pa: "ਅਧਿਕਾਰਤ IHPO ਮੈਡੀਕਲ ਵਿੰਗ - ਹੱਜ 2027",
   },
   emergency: {
     en: "Medical Emergency",

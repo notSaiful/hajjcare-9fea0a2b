@@ -53,7 +53,7 @@ export function MfaEnrollForm() {
   const handleEnroll = async () => {
     setIsLoading(true);
     try {
-      const { data, error } = await supabase.auth.mfa.enroll({ factorType: "totp", friendlyName: "Haj Care Authenticator" });
+      const { data, error } = await supabase.auth.mfa.enroll({ factorType: "totp", friendlyName: "HajCare Authenticator" });
       if (error) throw error;
       setFactorId(data.id);
       setQrCode(data.totp.qr_code);
