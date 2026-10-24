@@ -374,7 +374,7 @@ const or: ReturnToCampLabels = { ...en, qaTitle: "ହଜିଗଲେ? ଶିବ�
 const ml: ReturnToCampLabels = { ...en, qaTitle: "നഷ്ടപ്പെട്ടോ? ക്യാമ്പിലേക്ക്", qaSubtitle: "സേഫ്‌റിട്ടേൺ · ഒറ്റ ടാപ്പിൽ വഴി, ലീഡർ & അറബി സഹായം", qaCta: "സേഫ്‌റിട്ടേൺ തുറക്കുക", qaBadge: "അടിയന്തരം" };
 const pa: ReturnToCampLabels = { ...en, qaTitle: "ਗੁਆਚੇ? ਕੈਂਪ ਵਾਪਸ", qaSubtitle: "ਸੇਫ਼ ਰਿਟਰਨ · ਇੱਕ ਟੈਪ 'ਤੇ ਰਸਤਾ, ਲੀਡਰ ਤੇ ਅਰਬੀ ਮਦਦ", qaCta: "ਸੇਫ਼ ਰਿਟਰਨ ਖੋਲ੍ਹੋ", qaBadge: "ਐਮਰਜੈਂਸੀ" };
 
-const MAP: Record<Language, ReturnToCampLabels> = {
+const MAP: Partial<Record<Language, ReturnToCampLabels>> = {
   en, ar, ur, hi, ta, te, mr, bn, or, ml, pa,
   tr: en, ru: en,
 };

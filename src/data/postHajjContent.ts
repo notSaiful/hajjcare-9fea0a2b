@@ -1,6 +1,9 @@
-import { Language } from "@/contexts/LanguageContext";
+import { Language, LANGUAGES } from "@/contexts/LanguageContext";
 
-type LocalizedString = Record<Language, string>;
+// English is mandatory; other languages are optional. Missing languages fall
+// back to English at runtime (see withEnglishFallback) — no machine-invented
+// translations are added here.
+type LocalizedString = Partial<Record<Language, string>> & { en: string };
 
 export interface DailyPrompt {
   day: number;
@@ -19,7 +22,7 @@ export interface PostHajjSection {
   icon: string;
 }
 
-export const postHajjSections: PostHajjSection[] = [
+const rawPostHajjSections: PostHajjSection[] = [
   {
     id: "daily-reflections",
     title: {
@@ -124,7 +127,7 @@ export const postHajjSections: PostHajjSection[] = [
   }
 ];
 
-export const pageLabels = {
+const rawPageLabels = {
   title: {
     en: "Haj Mabroor",
     ar: "الحج المبرور",
@@ -263,7 +266,7 @@ export const pageLabels = {
 };
 
 // 40-Day Daily Prompts with full translations
-export const dailyPrompts: DailyPrompt[] = [
+const rawDailyPrompts: DailyPrompt[] = [
   {
     day: 1,
     title: {
@@ -695,3 +698,24 @@ export const dailyPrompts: DailyPrompt[] = [
   // Covering themes like: Charity, Family Rights, Forgiveness, Patience, Gratitude,
   // Community Service, Avoiding Sin, Night Prayers, Fasting, Good Character, etc.
 ];
+
+/** Recursively fill any `{ en: string, ... }` record with English for missing languages. */
+function withEnglishFallback<T>(value: T): T {
+  if (Array.isArray(value)) return value.map((v) => withEnglishFallback(v)) as unknown as T;
+  if (value && typeof value === "object") {
+    const obj = value as Record<string, unknown>;
+    if (typeof obj.en === "string") {
+      const filled: Record<string, unknown> = { ...obj };
+      for (const code of [...LANGUAGES.map((l) => l.code), "tr", "ru"]) if (typeof filled[code] !== "string") filled[code] = obj.en;
+      return filled as T;
+    }
+    const out: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(obj)) out[k] = withEnglishFallback(v);
+    return out as T;
+  }
+  return value;
+}
+
+export const postHajjSections: PostHajjSection[] = withEnglishFallback(rawPostHajjSections);
+export const pageLabels = withEnglishFallback(rawPageLabels) as { [K in keyof typeof rawPageLabels]: Record<Language, string> };
+export const dailyPrompts: DailyPrompt[] = withEnglishFallback(rawDailyPrompts);

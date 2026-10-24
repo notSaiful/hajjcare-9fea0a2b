@@ -362,7 +362,7 @@ const pa: MinaTentsLabels = {
   tipsPartial: "ਨਾਮ ਜਾਂ ਗਲੀ ਨੰਬਰ ਦਾ ਹਿੱਸਾ ਹੀ ਕਾਫ਼ੀ ਹੈ — ‘25/56’ ਜਾਂ ‘ਰਯਾਨ’ ਅਜ਼ਮਾਓ।",
 };
 
-const MAP: Record<Language, MinaTentsLabels> = {
+const MAP: Partial<Record<Language, MinaTentsLabels>> = {
   en, ar, ur, hi, ta, te, mr, bn, or, ml, pa,
   tr: en, ru: en,
 };
