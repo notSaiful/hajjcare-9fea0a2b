@@ -18,10 +18,12 @@ import {
   Clock,
   CheckCircle2,
   XCircle,
+  AlertCircle,
   RefreshCw,
   Radio,
 } from "lucide-react";
 import { UnauthorizedAlert } from '@/components/UnauthorizedAlert';
+import { normalizePilgrimStatus } from "@/lib/pilgrimStatus";
 
 const STAGE_LABELS: Record<string, string> = {
   arrival: "Arrival",
@@ -124,7 +126,7 @@ export default function SukoonTrackingMetricsPage() {
   // Compute status distribution
   const statusDistribution = activeSessions.reduce<Record<string, number>>(
     (acc, s) => {
-      const status = s.pilgrim_status || "normal";
+      const status = normalizePilgrimStatus(s.pilgrim_status);
       acc[status] = (acc[status] || 0) + 1;
       return acc;
     },
@@ -236,7 +238,7 @@ export default function SukoonTrackingMetricsPage() {
               />
               <HealthRow
                 label="WhatsApp API"
-                status="healthy"
+                status="unverified"
                 note="Requires WHATSAPP_TOKEN"
               />
               <HealthRow
@@ -309,16 +311,10 @@ export default function SukoonTrackingMetricsPage() {
                 {Object.entries(statusDistribution).map(([status, count]) => (
                   <Badge
                     key={status}
-                    variant={
-                      status === "emergency"
-                        ? "destructive"
-                        : status === "needs_help"
-                        ? "default"
-                        : "secondary"
-                    }
+                    variant={status === "emergency_managed" ? "destructive" : status === "assisted" ? "default" : "secondary"}
                     className="text-xs"
                   >
-                    {status === "normal" ? "✅ Normal" : status === "emergency" ? "🚨 Emergency" : status === "needs_help" ? "🆘 Needs Help" : status}: {count}
+                    {status === "normal" ? "✅ Normal" : status === "emergency_managed" ? "🚨 Emergency" : "🆘 Needs help"}: {count}
                   </Badge>
                 ))}
               </div>
@@ -351,9 +347,9 @@ export default function SukoonTrackingMetricsPage() {
                     <div className="flex items-center gap-2">
                       <div
                         className={`w-2 h-2 rounded-full ${
-                          session.pilgrim_status === "emergency"
+                          normalizePilgrimStatus(session.pilgrim_status) === "emergency_managed"
                             ? "bg-destructive"
-                            : session.pilgrim_status === "needs_help"
+                            : normalizePilgrimStatus(session.pilgrim_status) === "assisted"
                             ? "bg-amber-500"
                             : "bg-green-500"
                         }`}
@@ -419,7 +415,7 @@ function HealthRow({
   note,
 }: {
   label: string;
-  status: "healthy" | "paused" | "checking" | "error" | "info";
+  status: "healthy" | "paused" | "checking" | "error" | "info" | "unverified";
   note?: string;
 }) {
   return (
@@ -443,6 +439,9 @@ function HealthRow({
         )}
         {status === "info" && (
           <Activity className="w-3.5 h-3.5 text-primary" />
+        )}
+        {status === "unverified" && (
+          <AlertCircle className="w-3.5 h-3.5 text-amber-500" />
         )}
       </div>
     </div>

@@ -8,6 +8,7 @@ import { useHajjLocation, HAJJ_LOCATIONS, HAJJ_STAGES } from "@/hooks/useHajjLoc
 import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import { fetchMapboxToken } from "@/lib/mapboxToken";
+import { isEmergencyStatus, pilgrimStatusColor, pilgrimStatusLabel } from "@/lib/pilgrimStatus";
 import { useFamilyGroup } from "@/hooks/useFamilyGroup";
 import { useGeofencedTracking } from "@/hooks/useGeofencedTracking";
 import { useGeofenceMonitor } from "@/hooks/useGeofenceMonitor";
@@ -376,25 +377,8 @@ const MapPage = () => {
     });
   }, [lat, lng]);
 
-  // Status color mapping for family members
-  const getStatusColor = (status: string) => {
-    switch (status?.toLowerCase()) {
-      case "emergency": return "#ef4444";
-      case "help": case "missing": return "#f59e0b";
-      case "hospital": return "#3b82f6";
-      default: return "#22c55e"; // normal
-    }
-  };
-
-  const getStatusLabel = (status: string) => {
-    switch (status?.toLowerCase()) {
-      case "emergency": return language === "ar" ? "طوارئ" : "Emergency";
-      case "help": return language === "ar" ? "يحتاج مساعدة" : "Needs Help";
-      case "missing": return language === "ar" ? "مفقود" : "Missing";
-      case "hospital": return language === "ar" ? "مستشفى" : "Hospital";
-      default: return language === "ar" ? "طبيعي" : "Normal";
-    }
-  };
+  const getStatusColor = (status: string) => pilgrimStatusColor(status);
+  const getStatusLabel = (status: string) => pilgrimStatusLabel(status, language === "ar" || language === "ur");
 
   const getTimeSinceUpdate = (updatedAt: string) => {
     const diff = Math.floor((Date.now() - new Date(updatedAt).getTime()) / 60000);
@@ -409,7 +393,7 @@ const MapPage = () => {
     if (!map.current || !showFamily) return;
 
     memberLocations.forEach((loc) => {
-      if (loc.member_id === memberId) return;
+      if (loc.user_id === memberId || loc.member_id === memberId) return;
 
       const statusColor = getStatusColor(loc.pilgrim_status);
       const statusLabel = getStatusLabel(loc.pilgrim_status);
@@ -421,7 +405,7 @@ const MapPage = () => {
             : loc.current_stage)
         : (language === "ar" ? "غير محدد" : "Unknown");
       const timeAgo = getTimeSinceUpdate(loc.updated_at);
-      const isEmergency = ["emergency", "help", "missing"].includes(loc.pilgrim_status?.toLowerCase());
+      const isEmergency = isEmergencyStatus(loc.pilgrim_status);
 
       const existingMarker = familyMarkers.current.get(loc.member_id);
       
@@ -547,13 +531,13 @@ const MapPage = () => {
     jamarat: { ar: "الجمرات", en: "Jamarat" },
   };
 
-  const otherMembers = memberLocations.filter(l => l.member_id !== memberId);
+  const otherMembers = memberLocations.filter((l) => l.user_id !== memberId && l.member_id !== memberId);
 
   // Enhanced Error State
   if (mapError) {
     return (
       <>
-        <SEO title="Official Hajj Maps" description="Official maps of Mina, Arafat, Muzdalifah, and the Haram for 2026 pilgrims." path="/map" type="website" jsonLd={{"@context":"https://schema.org","@type":"WebPage","headline":"Official Hajj Maps","description":"Official maps of Mina, Arafat, Muzdalifah, and the Haram for 2026 pilgrims.","url":"https://hajjcare.in/map"}} />
+        <SEO title="Official Hajj Maps" description="Official maps of Mina, Arafat, Muzdalifah, and the Haram for 2027 pilgrims." path="/map" type="website" jsonLd={{"@context":"https://schema.org","@type":"WebPage","headline":"Official Hajj Maps","description":"Official maps of Mina, Arafat, Muzdalifah, and the Haram for 2027 pilgrims.","url":"https://hajjcare.in/map"}} />
         <div className="min-h-screen bg-gradient-to-b from-background via-background to-primary/5 flex flex-col items-center justify-center p-6" dir={isRTL ? "rtl" : "ltr"}>
         {/* Ambient Background */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -603,7 +587,7 @@ const MapPage = () => {
 
   return (
     <div className="h-screen w-screen relative overflow-hidden bg-background" dir={isRTL ? "rtl" : "ltr"}>
-      <SEO title="Official Hajj Maps" description="Official maps of Mina, Arafat, Muzdalifah, and the Haram for 2026 pilgrims." path="/map" type="website" />
+      <SEO title="Official Hajj Maps" description="Official maps of Mina, Arafat, Muzdalifah, and the Haram for 2027 pilgrims." path="/map" type="website" />
       {/* Map Container */}
       <div ref={mapContainer} className="absolute inset-0 w-full h-full" />
       
@@ -1029,10 +1013,9 @@ const MapPage = () => {
               {/* Status Legend */}
               <div className="flex flex-wrap gap-2 mb-3 pb-3 border-b border-border/30">
                 {[
-                  { color: "#22c55e", label: language === "ar" ? "طبيعي" : "Normal" },
-                  { color: "#ef4444", label: language === "ar" ? "طوارئ" : "Emergency" },
-                  { color: "#f59e0b", label: language === "ar" ? "تنبيه" : "Alert" },
-                  { color: "#3b82f6", label: language === "ar" ? "مستشفى" : "Hospital" },
+                  { color: "#16a34a", label: language === "ar" ? "طبيعي" : "Normal" },
+                  { color: "#d97706", label: language === "ar" ? "يحتاج مساعدة" : "Needs help" },
+                  { color: "#dc2626", label: language === "ar" ? "طوارئ" : "Emergency" },
                 ].map(({ color, label }) => (
                   <div key={color} className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
                     <div className="w-2 h-2 rounded-full" style={{ backgroundColor: color }} />

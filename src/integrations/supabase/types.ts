@@ -3585,6 +3585,13 @@ export type Database = {
         Args: { p_report_id: string }
         Returns: Json
       }
+      set_pilgrim_status: {
+        Args: {
+          p_group_id: string
+          p_pilgrim_status: string
+        }
+        Returns: undefined
+      }
       upsert_member_location: {
         Args: {
           p_current_stage: string

@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { PilgrimStatus } from "@/data/familyDashboardContent";
+import { normalizePilgrimStatus, publishPilgrimStatus } from "@/lib/pilgrimStatus";
 
 const GROUP_ID_KEY = "hajj_group_id";
 
@@ -53,7 +54,7 @@ export const usePilgrimStatus = (): UsePilgrimStatusResult => {
           .maybeSingle();
 
         if (locationData) {
-          setStatus((locationData.pilgrim_status as PilgrimStatus) || "normal");
+          setStatus(normalizePilgrimStatus(locationData.pilgrim_status));
           setLastUpdated(locationData.updated_at);
         }
       }
@@ -82,16 +83,15 @@ export const usePilgrimStatus = (): UsePilgrimStatusResult => {
     }
 
     try {
-      // Use the RPC function to update status along with location
-      const { error } = await supabase.rpc("upsert_member_location", {
-        p_group_id: groupId,
-        p_latitude: 0,
-        p_longitude: 0,
-        p_current_stage: null,
-        p_pilgrim_status: newStatus,
-      });
-
-      if (error) throw error;
+      const result = await publishPilgrimStatus(newStatus, groupId);
+      if (!result.ok) {
+        toast({
+          title: "Error",
+          description: result.message,
+          variant: "destructive",
+        });
+        return;
+      }
 
       setStatus(newStatus);
       setLastUpdated(new Date().toISOString());

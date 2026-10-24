@@ -8,6 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useFamilyGroup } from "@/hooks/useFamilyGroup";
 import { usePilgrimStatus } from "@/hooks/usePilgrimStatus";
 import { DASHBOARD_LABELS, CALMING_MESSAGE, PilgrimStatus } from "@/data/familyDashboardContent";
+import { normalizePilgrimStatus } from "@/lib/pilgrimStatus";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -70,7 +71,7 @@ const FamilyDashboardPage = () => {
         
         // FAIL-SAFE: Default to "normal" if no data - per silence protocol
         statuses[member.member_id] = {
-          status: (location?.pilgrim_status as PilgrimStatus) || "normal",
+          status: normalizePilgrimStatus(location?.pilgrim_status) as PilgrimStatus,
           name: member.member_name,
           sharingEnabled,
         };

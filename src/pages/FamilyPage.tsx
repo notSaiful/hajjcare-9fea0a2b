@@ -1,7 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { LocationPermissionFlow } from "@/components/LocationPermissionFlow";
 import { LocationReminderBanner } from "@/components/LocationReminderBanner";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { clearPendingInvite, rememberPendingInvite } from "@/lib/familyInvite";
+import { isEmergencyStatus, pilgrimStatusColor, pilgrimStatusLabel } from "@/lib/pilgrimStatus";
 import { useAuth } from "@/hooks/useAuth";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useFamilyGroup } from "@/hooks/useFamilyGroup";
@@ -21,10 +23,13 @@ const SELECTABLE_STAGES: HajjStage[] = ["kaaba", "safa_marwa", "mina", "arafat",
 
 const FamilyPage = () => {
   const { t, isRTL, language } = useLanguage();
-  const { group, memberLocations, memberId, updateLocation } = useFamilyGroup();
+  const { group, memberLocations, memberId, updateLocation, joinGroup } = useFamilyGroup();
+  const [searchParams] = useSearchParams();
+  const joinAttempted = useRef(false);
   const { lat, lng, stage, stageInfo, isLoading: locationLoading } = useHajjLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { isAuthenticated } = useAuth();
   
   // Manual stage override for testing
   const [manualStage, setManualStage] = useState<HajjStage | null>(null);
@@ -61,10 +66,18 @@ const FamilyPage = () => {
     }
   };
 
-  // Auth is optional — render the page directly. Child components show login prompts where needed.
+  const inviteCode = searchParams.get("join")?.trim() || "";
 
+  useEffect(() => {
+    if (!inviteCode) return;
+    rememberPendingInvite(inviteCode);
+    if (!isAuthenticated || joinAttempted.current) return;
+    joinAttempted.current = true;
+    joinGroup(inviteCode).finally(() => clearPendingInvite());
+  }, [inviteCode, isAuthenticated, joinGroup]);
 
-  const otherMembers = memberLocations.filter(l => l.member_id !== memberId);
+  // member_id is a random UUID. The signed-in user is user_id / memberId.
+  const otherMembers = memberLocations.filter((l) => l.user_id !== memberId);
 
   const getStageLabel = (stageKey: string | null) => {
     if (!stageKey) return "-";
@@ -81,24 +94,8 @@ const FamilyPage = () => {
     return stageData?.color || "#808080";
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status?.toLowerCase()) {
-      case "emergency": return "#ef4444";
-      case "help": case "missing": return "#f59e0b";
-      case "hospital": return "#3b82f6";
-      default: return "#22c55e";
-    }
-  };
-
-  const getStatusLabel = (status: string) => {
-    switch (status?.toLowerCase()) {
-      case "emergency": return isRTL ? "طوارئ" : "Emergency";
-      case "help": return isRTL ? "يحتاج مساعدة" : "Needs Help";
-      case "missing": return isRTL ? "مفقود" : "Missing";
-      case "hospital": return isRTL ? "مستشفى" : "Hospital";
-      default: return isRTL ? "طبيعي" : "Normal";
-    }
-  };
+  const getStatusColor = (status: string) => pilgrimStatusColor(status);
+  const getStatusLabel = (status: string) => pilgrimStatusLabel(status, isRTL);
 
   return (
     <div className="min-h-screen bg-background" dir={isRTL ? "rtl" : "ltr"}>
@@ -342,10 +339,9 @@ const FamilyPage = () => {
               {/* Status Legend */}
               <div className="flex flex-wrap gap-3 mb-3 pb-3 border-b border-border/30">
                 {[
-                  { color: "#22c55e", label: isRTL ? "طبيعي" : "Normal" },
-                  { color: "#ef4444", label: isRTL ? "طوارئ" : "Emergency" },
-                  { color: "#f59e0b", label: isRTL ? "تنبيه" : "Alert" },
-                  { color: "#3b82f6", label: isRTL ? "مستشفى" : "Hospital" },
+                  { color: "#16a34a", label: isRTL ? "طبيعي" : "Normal" },
+                  { color: "#d97706", label: isRTL ? "يحتاج مساعدة" : "Needs help" },
+                  { color: "#dc2626", label: isRTL ? "طوارئ" : "Emergency" },
                 ].map(({ color, label }) => (
                   <div key={color} className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
                     <div className="w-2 h-2 rounded-full" style={{ backgroundColor: color }} />
@@ -358,7 +354,7 @@ const FamilyPage = () => {
                 {otherMembers.map((loc) => {
                   const statusColor = getStatusColor(loc.pilgrim_status);
                   const statusLabel = getStatusLabel(loc.pilgrim_status);
-                  const isEmergency = ["emergency", "help", "missing"].includes(loc.pilgrim_status?.toLowerCase());
+                  const isEmergency = isEmergencyStatus(loc.pilgrim_status);
                   return (
                     <div 
                       key={loc.member_id}
