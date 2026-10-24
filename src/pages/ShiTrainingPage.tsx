@@ -93,7 +93,7 @@ const trainingMaterials: TrainingMaterial[] = [
     id: "train-trainers-pptx",
     icon: BookOpen,
     title: { en: "Train the Trainers (PPTX)", ar: "تدريب المدربين", ur: "ٹرینرز کی تربیت", hi: "प्रशिक्षकों का प्रशिक्षण" },
-    description: { en: "Haj 2026 presentation for training sessions", ar: "عرض الحج 2026 للتدريب", ur: "حج 2026 تربیتی پریزنٹیشن", hi: "हज 2026 प्रशिक्षण प्रस्तुति" },
+    description: { en: "Haj 2027 presentation for training sessions", ar: "عرض الحج 2027 للتدريب", ur: "حج 2027 تربیتی پریزنٹیشن", hi: "हज 2027 प्रशिक्षण प्रस्तुति" },
     file: "/training/haj-2026-train-trainers.pptx",
     color: "violet",
   },
@@ -110,25 +110,25 @@ const trainingMaterials: TrainingMaterial[] = [
 const translations = {
   en: {
     title: "SHI Training Materials",
-    subtitle: "State Haj Inspector training resources for Haj 2026",
+    subtitle: "State Haj Inspector training resources for Haj 2027",
     download: "Download",
     materials: "Training Materials",
   },
   ar: {
     title: "مواد تدريب SHI",
-    subtitle: "موارد تدريب مفتش الحج للحج 2026",
+    subtitle: "موارد تدريب مفتش الحج للحج 2027",
     download: "تحميل",
     materials: "مواد التدريب",
   },
   ur: {
     title: "SHI ٹریننگ مواد",
-    subtitle: "حج 2026 کے لیے ریاستی حج انسپکٹر کے تربیتی وسائل",
+    subtitle: "حج 2027 کے لیے ریاستی حج انسپکٹر کے تربیتی وسائل",
     download: "ڈاؤن لوڈ",
     materials: "تربیتی مواد",
   },
   hi: {
     title: "SHI प्रशिक्षण सामग्री",
-    subtitle: "हज 2026 के लिए राज्य हज इंस्पेक्टर प्रशिक्षण संसाधन",
+    subtitle: "हज 2027 के लिए राज्य हज इंस्पेक्टर प्रशिक्षण संसाधन",
     download: "डाउनलोड",
     materials: "प्रशिक्षण सामग्री",
   },

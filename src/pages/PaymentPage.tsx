@@ -97,7 +97,7 @@ export default function PaymentPage() {
             base_amount: Math.round(baseAmount * 100),
             gst_amount: Math.round(gstAmount * 100),
             total_amount: Math.round(totalAmount * 100),
-            service_name: "HajjCare App Maintenance Service Fee",
+            service_name: "HajCare App Maintenance Service Fee",
             customer_name: user?.user_metadata?.full_name || null,
             customer_email: user?.email || null,
             org_gstin: ORG_GSTIN || null,
@@ -357,7 +357,7 @@ export default function PaymentPage() {
               gstRate={18}
               gstAmount={gstAmount}
               totalAmount={totalAmount}
-              serviceName="HajjCare App Maintenance Service Fee"
+              serviceName="HajCare App Maintenance Service Fee"
               orgName="Sazo Management Private Limited"
               orgGstin={ORG_GSTIN || undefined}
             />

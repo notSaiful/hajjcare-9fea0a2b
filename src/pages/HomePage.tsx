@@ -27,7 +27,7 @@ const HomePage = () => {
 
   return (
     <>
-      <SEO title="HajCare AI Dashboard" description="Your personal Hajj dashboard — guidance, building locator, Tawaf counter, circulars and AI support, all in one place." path="/home" type="website" jsonLd={{"@context":"https://schema.org","@type":"WebPage","headline":"HajCare AI Dashboard","description":"Your personal Hajj dashboard — guidance, building locator, Tawaf counter, circulars and AI support, all in one place.","url":"https://hajjcare.in/home"}} />
+      <SEO title="HajCare Dashboard" description="Your personal Hajj dashboard — guidance, building locator, Tawaf counter, circulars and AI support, all in one place." path="/home" type="website" jsonLd={{"@context":"https://schema.org","@type":"WebPage","headline":"HajCare Dashboard","description":"Your personal Hajj dashboard — guidance, building locator, Tawaf counter, circulars and AI support, all in one place.","url":"https://hajjcare.in/home"}} />
       <div className="min-h-screen bg-background" dir={isRTL ? "rtl" : "ltr"}>
       {/* Persistent emergency contacts ticker — always visible at top */}
       <EmergencyMarqueeBar />

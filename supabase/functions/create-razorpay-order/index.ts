@@ -91,7 +91,7 @@ serve(async (req) => {
         currency: currency,
         receipt: `hc_${user.id.slice(0, 8)}_${Date.now().toString(36)}`,
         notes: {
-          purpose: "HajjCare App Maintenance Donation",
+          purpose: "HajCare App Maintenance Donation",
           user_id: user.id,
         },
       }),

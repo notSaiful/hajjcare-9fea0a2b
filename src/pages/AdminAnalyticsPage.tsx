@@ -131,7 +131,7 @@ const AdminAnalyticsPage = () => {
           <div>
             <h1 className="text-2xl font-bold flex items-center gap-2">
               <BarChart3 className="w-6 h-6 text-primary" />
-              HajjCare Analytics
+              HajCare Analytics
             </h1>
             <p className="text-muted-foreground text-sm">
               Cohort retention &amp; user journey funnel

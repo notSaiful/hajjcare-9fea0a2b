@@ -23,7 +23,7 @@ const OpenAppPage = () => {
 
   const t = {
     en: {
-      title: "Open HajjCare", subtitle: "The official website is live at hajjcare.in",
+      title: "Open HajCare", subtitle: "The official website is live at hajjcare.in",
       visit: "Visit Website Now", copy: "Copy Link", copied: "Copied!",
       iosTitle: "iPhone / Apple users",
       iosSteps: [
@@ -149,7 +149,7 @@ const OpenAppPage = () => {
   const handleShare = async () => {
     if (navigator.share) {
       try {
-        await navigator.share({ title: "HajjCare", text: t.subtitle, url: SITE_URL });
+        await navigator.share({ title: "HajCare", text: t.subtitle, url: SITE_URL });
       } catch { /* user cancelled */ }
     } else {
       handleCopy();
@@ -247,7 +247,7 @@ const OpenAppPage = () => {
               <QrCode className="w-3.5 h-3.5" />
               {t.scan}
             </p>
-            <img src={QR_URL} alt="HajjCare QR Code" className="w-44 h-44 rounded-xl bg-white p-2 shadow-sm" loading="lazy" />
+            <img src={QR_URL} alt="HajCare QR Code" className="w-44 h-44 rounded-xl bg-white p-2 shadow-sm" loading="lazy" />
           </div>
 
           <div className="grid grid-cols-2 gap-2">

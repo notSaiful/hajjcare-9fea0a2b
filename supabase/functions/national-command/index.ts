@@ -166,7 +166,7 @@ serve(async (req) => {
     }
 
     // AI analysis
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    const LOVABLE_API_KEY = (Deno.env.get("LLM_API_KEY") || Deno.env.get("LOVABLE_API_KEY"));
     if (!LOVABLE_API_KEY) {
       return new Response(JSON.stringify({ ...rawData, ai_analysis: null }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },

@@ -321,19 +321,19 @@ Deno.serve(async (req) => {
 
       if (alertType === "geofence_exit") {
         pushTitle = `🚨 ${hajiName} — Left Safe Zone!`;
-        whatsAppMessage = `🚨 *Sukoon Safety Alert*\n\nAssalamu Alaikum! ⚠️\n\n*${hajiName}* has left the designated safe zone.\n\n📍 *Zone:* ${geofenceDetails.zoneName}\n🇸🇦 ${zoneName}\n📏 *Distance:* ${distKm} km from zone center\n\nPlease check on them. 🤲\n\n_HajjCare AI — Sukoon Safety_`;
-        smsMessage = `HajjCare ALERT: ${hajiName} left safe zone (${geofenceDetails.zoneName}), ${distKm}km away. Please check.`;
+        whatsAppMessage = `🚨 *Sukoon Safety Alert*\n\nAssalamu Alaikum! ⚠️\n\n*${hajiName}* has left the designated safe zone.\n\n📍 *Zone:* ${geofenceDetails.zoneName}\n🇸🇦 ${zoneName}\n📏 *Distance:* ${distKm} km from zone center\n\nPlease check on them. 🤲\n\n_HajCare — Sukoon Safety_`;
+        smsMessage = `HajCare ALERT: ${hajiName} left safe zone (${geofenceDetails.zoneName}), ${distKm}km away. Please check.`;
       } else {
         pushTitle = `⚠️ ${hajiName} — Not Moving`;
-        whatsAppMessage = `⚠️ *Sukoon Safety Alert*\n\nAssalamu Alaikum! 🤲\n\n*${hajiName}* has not moved for an extended period.\n\n📍 *Zone:* ${geofenceDetails.zoneName}\n🇸🇦 ${zoneName}\n\nThey may need assistance. 🤲\n\n_HajjCare AI — Sukoon Safety_`;
-        smsMessage = `HajjCare ALERT: ${hajiName} hasn't moved at ${geofenceDetails.zoneName}. They may need help.`;
+        whatsAppMessage = `⚠️ *Sukoon Safety Alert*\n\nAssalamu Alaikum! 🤲\n\n*${hajiName}* has not moved for an extended period.\n\n📍 *Zone:* ${geofenceDetails.zoneName}\n🇸🇦 ${zoneName}\n\nThey may need assistance. 🤲\n\n_HajCare — Sukoon Safety_`;
+        smsMessage = `HajCare ALERT: ${hajiName} hasn't moved at ${geofenceDetails.zoneName}. They may need help.`;
       }
       pushData = { url: "/family", alertType, zone: geofenceDetails.zoneName };
     } else {
       const stageInfo = STAGE_LABELS[newStage] || { en: newStage, ar: newStage, ur: newStage, hi: newStage };
       pushTitle = `🕋 ${hajiName} — ${stageInfo.en}`;
-      whatsAppMessage = `🕋 *Sukoon Tracking Update*\n\nAssalamu Alaikum! 🤲\n\n*${hajiName}* has reached:\n\n📍 *${stageInfo.en}*\n🇸🇦 ${stageInfo.ar}\n\nMay Allah accept their Hajj. 🤲\n\n_HajjCare AI — Sukoon Tracking_`;
-      smsMessage = `HajjCare: ${hajiName} has reached ${stageInfo.en}. May Allah accept their Hajj.`;
+      whatsAppMessage = `🕋 *Sukoon Tracking Update*\n\nAssalamu Alaikum! 🤲\n\n*${hajiName}* has reached:\n\n📍 *${stageInfo.en}*\n🇸🇦 ${stageInfo.ar}\n\nMay Allah accept their Hajj. 🤲\n\n_HajCare — Sukoon Tracking_`;
+      smsMessage = `HajCare: ${hajiName} has reached ${stageInfo.en}. May Allah accept their Hajj.`;
       pushData = { url: "/hajj-progress", stage: newStage };
     }
 

@@ -4,6 +4,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { MapPin, Hash, ArrowRight, Building } from "lucide-react";
+import { hajjSeasonLabel } from "@/config/hajjSeason";
 
 /**
  * Prominent home-page quick action: "Find My Makkah Building".
@@ -26,7 +27,7 @@ export const FindBuildingQuickAction = () => {
       placeholder: "Building number (101–1880)",
       find: "Find Location",
       browse: "Browse all zones & Rubaths",
-      badge: "Hajj 2026",
+      badge: hajjSeasonLabel("en"),
     },
     hi: {
       title: "अपनी मक्का बिल्डिंग खोजें",
@@ -34,7 +35,7 @@ export const FindBuildingQuickAction = () => {
       placeholder: "बिल्डिंग नंबर (101–1880)",
       find: "लोकेशन खोजें",
       browse: "सभी ज़ोन और रुबाथ देखें",
-      badge: "हज 2026",
+      badge: hajjSeasonLabel("hi"),
     },
     ur: {
       title: "اپنی مکہ بلڈنگ تلاش کریں",
@@ -42,7 +43,7 @@ export const FindBuildingQuickAction = () => {
       placeholder: "بلڈنگ نمبر (101–1880)",
       find: "لوکیشن تلاش کریں",
       browse: "تمام زون اور رباط دیکھیں",
-      badge: "حج 2026",
+      badge: hajjSeasonLabel(lang),
     },
     ar: {
       title: "ابحث عن مبنى مكة الخاص بك",
@@ -50,7 +51,7 @@ export const FindBuildingQuickAction = () => {
       placeholder: "رقم المبنى (101–1880)",
       find: "ابحث عن الموقع",
       browse: "تصفح جميع المناطق والأربطة",
-      badge: "حج 2026",
+      badge: hajjSeasonLabel(lang),
     },
   }[lang];
 

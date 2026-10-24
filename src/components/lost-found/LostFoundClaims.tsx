@@ -317,7 +317,7 @@ export const ClaimsPanel = () => {
                     <p className="text-sm whitespace-pre-wrap break-words">{c.claim_description}</p>
                     {(() => {
                       const subject = c.report?.item_name || c.report?.person_name || "your report";
-                      const msg = `Assalamu Alaikum ${c.claimant_name}, regarding your claim on HajjCare for "${subject}" — let's coordinate the handover.`;
+                      const msg = `Assalamu Alaikum ${c.claimant_name}, regarding your claim on HajCare for "${subject}" — let's coordinate the handover.`;
                       const url = buildWaUrl(c.claimant_whatsapp || c.claimant_mobile, msg);
                       return url ? (
                         <div className="flex gap-2">
@@ -377,7 +377,7 @@ export const ClaimsPanel = () => {
                     )}
                     {(() => {
                       const subject = c.report?.item_name || c.report?.person_name || "this report";
-                      const msg = `Assalamu Alaikum, I submitted a claim on HajjCare for "${subject}". Could we coordinate the handover please?`;
+                      const msg = `Assalamu Alaikum, I submitted a claim on HajCare for "${subject}". Could we coordinate the handover please?`;
                       const url = buildWaUrl(c.report?.reporter_whatsapp || c.report?.reporter_mobile, msg);
                       return url ? (
                         <div className="flex gap-2">

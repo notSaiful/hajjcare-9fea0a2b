@@ -6,7 +6,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const TRACKING_ANALYSIS_PROMPT = `You are a Tracking Intelligence Engine for HajjCare AI. Analyze pilgrim movement data and detect safety concerns.
+const TRACKING_ANALYSIS_PROMPT = `You are a Tracking Intelligence Engine for HajCare. Analyze pilgrim movement data and detect safety concerns.
 
 Given location data, detect:
 1. LOST: Pilgrim far from group, no movement toward group
@@ -155,7 +155,7 @@ serve(async (req) => {
       }
 
       // Use AI for complex pattern analysis
-      const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+      const LOVABLE_API_KEY = (Deno.env.get("LLM_API_KEY") || Deno.env.get("LOVABLE_API_KEY"));
       let aiAlerts: any[] = [];
 
       if (LOVABLE_API_KEY && enrichedLocations.length > 1) {

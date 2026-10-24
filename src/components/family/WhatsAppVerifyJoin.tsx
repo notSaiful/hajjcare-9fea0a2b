@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { familyInviteUrl } from "@/lib/familyInvite";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -112,7 +113,7 @@ export const WhatsAppVerifyJoin = () => {
 
   const copyInviteLink = () => {
     if (!result?.invite_code) return;
-    const link = `${window.location.origin}/family?join=${result.invite_code}`;
+    const link = familyInviteUrl(result.invite_code);
     navigator.clipboard.writeText(link);
     toast({
       title: isRTL ? "تم النسخ" : "Copied!",
@@ -122,10 +123,10 @@ export const WhatsAppVerifyJoin = () => {
 
   const shareViaWhatsApp = () => {
     if (!result?.invite_code) return;
-    const link = `${window.location.origin}/family?join=${result.invite_code}`;
+    const link = familyInviteUrl(result.invite_code);
     const message = isRTL
       ? `السلام عليكم، انضم إلى مجموعتنا العائلية في حج كير!\n\nالمجموعة: ${result.group_name}\nكود الدعوة: ${result.invite_code}\nالرابط: ${link}\n\n⏳ صالح لمدة 72 ساعة`
-      : `Assalamu Alaikum! Join our HajjCare family group.\n\nGroup: ${result.group_name}\nInvite Code: ${result.invite_code}\nLink: ${link}\n\n⏳ Valid for 72 hours`;
+      : `Assalamu Alaikum! Join our HajCare family group.\n\nGroup: ${result.group_name}\nInvite Code: ${result.invite_code}\nLink: ${link}\n\n⏳ Valid for 72 hours`;
     const waUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
     window.open(waUrl, "_blank");
   };

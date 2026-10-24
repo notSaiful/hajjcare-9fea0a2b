@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { supabase } from "@/integrations/supabase/client";
+import { fetchMapboxToken } from "@/lib/mapboxToken";
 
 interface MashairSite {
   id: string;
@@ -131,29 +131,22 @@ const MashairMapPage = () => {
   const getRouteLabel = (r: typeof ROUTE_ORDER[number]) =>
     lang === "hi" ? r.labelHi : lang === "ur" || lang === "ar" ? r.labelUr : r.labelEn;
 
-  // Fetch Mapbox token (reuses existing edge function, falls back to public mode if not logged in)
   useEffect(() => {
-    const fetchToken = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        const headers: Record<string, string> = {};
-        if (session?.access_token) {
-          headers.Authorization = `Bearer ${session.access_token}`;
-        }
-        const response = await fetch(
-          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-mapbox-token`,
-          { headers }
-        );
-        if (!response.ok) throw new Error("token unavailable");
-        const data = await response.json();
-        setMapToken(data.token);
-      } catch (err) {
+    let cancelled = false;
+    fetchMapboxToken()
+      .then((token) => {
+        if (!cancelled) setMapToken(token);
+      })
+      .catch((err) => {
         console.error("Mapbox token error:", err);
-        setMapError("static");
-        setMapLoading(false);
-      }
+        if (!cancelled) {
+          setMapError("static");
+          setMapLoading(false);
+        }
+      });
+    return () => {
+      cancelled = true;
     };
-    fetchToken();
   }, []);
 
   // Initialize map
@@ -268,10 +261,10 @@ const MashairMapPage = () => {
   };
 
   const titles: Record<string, string> = {
-    en: "Mashair Map — Hajj 2026",
-    hi: "मशा'इर मानचित्र — हज 2026",
-    ur: "مشاعر کا نقشہ — حج 2026",
-    ar: "خريطة المشاعر — حج 2026",
+    en: "Mashair Map — Hajj 2027",
+    hi: "मशा'इर मानचित्र — हज 2027",
+    ur: "مشاعر کا نقشہ — حج 2027",
+    ar: "خريطة المشاعر — حج 2027",
   };
   const subtitles: Record<string, string> = {
     en: "Mina · Arafat · Muzdalifah · Jamarat — with day-wise flow",

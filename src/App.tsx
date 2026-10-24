@@ -3,7 +3,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { RouteFallbackSEO } from "@/components/RouteFallbackSEO";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
@@ -72,6 +73,7 @@ const HajjBuildingsPage = lazy(() => import("./pages/HajjBuildingsPage"));
 const MedicalFacilitiesPage = lazy(() => import("./pages/MedicalFacilitiesPage"));
 const OpenAppPage = lazy(() => import("./pages/OpenAppPage"));
 const AuthPage = lazy(() => import("./pages/AuthPage"));
+const ResetPasswordPage = lazy(() => import("./pages/ResetPasswordPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const ChatPage = lazy(() => import("./pages/ChatPage"));
 const TawafCounterPage = lazy(() => import("./pages/TawafCounterPage"));
@@ -182,6 +184,11 @@ function useCriticalPreload() {
   }, []);
 }
 
+function RedirectKeepSearch({ to }: { to: string }) {
+  const { search, hash } = useLocation();
+  return <Navigate to={`${to}${search}${hash}`} replace />;
+}
+
 function AppContent() {
   useCriticalPreload();
 
@@ -190,6 +197,8 @@ function AppContent() {
       {/* Public routes */}
       <Route path="/" element={<LandingPage />} />
       <Route path="/auth" element={<AuthPage />} />
+      <Route path="/login" element={<Navigate to="/auth" replace />} />
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
 
       {/* Public routes — open without login */}
       <Route path="/home" element={<HomePage />} />
@@ -216,15 +225,17 @@ function AppContent() {
       <Route path="/rules/:sectionId" element={<RulesSectionPage />} />
       <Route path="/family-status" element={<FamilyViewPage />} />
       <Route path="/family-dashboard" element={<FamilyDashboardPage />} />
+      <Route path="/sukoon-dashboard" element={<RedirectKeepSearch to="/family-dashboard" />} />
       <Route path="/family" element={<FamilyPage />} />
+      <Route path="/sukoon-tracking" element={<RedirectKeepSearch to="/family" />} />
       <Route path="/map" element={<MapPage />} />
       <Route path="/hajj-buildings" element={<HajjBuildingsPage />} />
       <Route path="/medical-facilities" element={<MedicalFacilitiesPage />} />
-      <Route path="/open" element={<OpenAppPage />} />
+      <Route path="/open" element={<Navigate to="/share" replace />} />
       <Route path="/share" element={<OpenAppPage />} />
       <Route path="/chat" element={<ChatPage />} />
       <Route path="/tawaf-counter" element={<TawafCounterPage />} />
-      <Route path="/counter" element={<TawafCounterPage />} />
+      <Route path="/counter" element={<Navigate to="/tawaf-counter" replace />} />
       <Route path="/pre-hajj-india" element={<PreHajjIndiaPage />} />
       <Route path="/pre-hajj-india/:sectionId" element={<PreHajjIndiaDetailPage />} />
       <Route path="/post-hajj" element={<PostHajjGuidePage />} />
@@ -233,7 +244,7 @@ function AppContent() {
       <Route path="/video-call" element={<VideoCallPage />} />
       <Route path="/qurbani" element={<QurbaniPage />} />
       <Route path="/food-guide" element={<FoodGuidePage />} />
-      <Route path="/food" element={<FoodGuidePage />} />
+      <Route path="/food" element={<Navigate to="/food-guide" replace />} />
       <Route path="/help" element={<HealthHelpPage />} />
       <Route path="/coordinator" element={<CoordinatorDashboardPage />} />
       <Route path="/medical-alerts" element={<MedicalAlertsPage />} />
@@ -249,7 +260,7 @@ function AppContent() {
       <Route path="/admin/inspectors/upload" element={<AdminOnlyRoute><AdminInspectorUploadPage /></AdminOnlyRoute>} />
       <Route path="/inspector-group" element={<InspectorGroupManagePage />} />
         <Route path="/haj-inspector-register" element={<InspectorRegisterPage />} />
-        <Route path="/inspector-register" element={<InspectorRegisterPage />} />
+        <Route path="/inspector-register" element={<Navigate to="/haj-inspector-register" replace />} />
         <Route path="/join-group" element={<HajiJoinGroupPage />} />
         <Route path="/my-hajj-group" element={<HajiGroupDashboardPage />} />
       <Route path="/shi-training" element={<ShiTrainingPage />} />
@@ -297,10 +308,10 @@ function AppContent() {
       <Route path="/mashair-map" element={<MashairMapPage />} />
       <Route path="/madinah-hotels" element={<MadinahHotelsPage />} />
       <Route path="/mina-tents" element={<MinaTentLocationsPage />} />
-      <Route path="/mina-tent-locations" element={<MinaTentLocationsPage />} />
+      <Route path="/mina-tent-locations" element={<Navigate to="/mina-tents" replace />} />
       <Route path="/mina-tents/:maktabId" element={<MinaMaktabDetailPage />} />
       <Route path="/return-to-camp" element={<ReturnToCampPage />} />
-      <Route path="/lost" element={<ReturnToCampPage />} />
+      <Route path="/lost" element={<Navigate to="/return-to-camp" replace />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
@@ -315,6 +326,7 @@ const App = () => (
             <Toaster />
             <Sonner />
             <BrowserRouter>
+              <RouteFallbackSEO />
               <Suspense fallback={<PageLoader />}>
                 <AppContent />
               </Suspense>

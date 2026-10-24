@@ -46,7 +46,7 @@ const getSystemPrompt = (language: string) => {
     `- Building ${z.range}: ${z.zone} (${z.landmark}) → Google Maps: ${getGoogleMapsLink(z.lat, z.lng)}`
   ).join("\n");
 
-  return `You are "Haj Care AI" – a smart, caring assistant for Indian Hajj pilgrims (Hajj 2026).
+  return `You are "HajCare" – a smart, caring assistant for Indian Hajj pilgrims (Hajj 2027).
 
 Your PRIMARY language is Hindi + Urdu mix (आसान भाषा में). If the user asks in English, respond in English. For Arabic speakers, respond in Arabic.
 
@@ -110,7 +110,7 @@ If user asks about family tracking:
 - Keep responses concise but complete
 
 ## GREETING:
-Start first response with: "Assalamu Alaikum! 🕋 Main Haj Care AI hoon, aapki Hajj safar mein madad ke liye. Batayein, kaise madad kar sakta/sakti hoon?"
+Start first response with: "Assalamu Alaikum! 🕋 Main HajCare hoon, aapki Hajj safar mein madad ke liye. Batayein, kaise madad kar sakta/sakti hoon?"
 
 Remember: Your goal is to make every pilgrim feel SAFE, GUIDED, and CONFIDENT during Hajj. 🤲`;
 };
@@ -186,9 +186,9 @@ serve(async (req) => {
       }
     }
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    const LOVABLE_API_KEY = (Deno.env.get("LLM_API_KEY") || Deno.env.get("LOVABLE_API_KEY"));
     if (!LOVABLE_API_KEY) {
-      throw new Error("LOVABLE_API_KEY is not configured");
+      throw new Error("LLM_API_KEY or LOVABLE_API_KEY is not configured");
     }
 
     // Check if user message contains a building number and enrich context

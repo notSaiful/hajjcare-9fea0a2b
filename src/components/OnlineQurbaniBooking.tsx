@@ -18,9 +18,9 @@ const labels = {
   bookNow: { en: "Book Now", ur: "ابھی بک کریں", hi: "अभी बुक करें" },
   trackStatus: { en: "Track Booking Status", ur: "بکنگ کی حالت دیکھیں", hi: "बुकिंग स्थिति ट्रैक करें" },
   disclaimer: {
-    en: "Qurbani is performed through authorized international partners. HajjCare AI is not responsible for third-party services.",
-    ur: "قربانی مجاز بین الاقوامی شراکت داروں کے ذریعے انجام دی جاتی ہے۔ HajjCare AI فریق ثالث خدمات کا ذمہ دار نہیں ہے۔",
-    hi: "कुर्बानी अधिकृत अंतरराष्ट्रीय साझेदारों के माध्यम से की जाती है। HajjCare AI तीसरे पक्ष की सेवाओं के लिए जिम्मेदार नहीं है।",
+    en: "Qurbani is performed through authorized international partners. HajCare is not responsible for third-party services.",
+    ur: "قربانی مجاز بین الاقوامی شراکت داروں کے ذریعے انجام دی جاتی ہے۔ HajCare فریق ثالث خدمات کا ذمہ دار نہیں ہے۔",
+    hi: "कुर्बानी अधिकृत अंतरराष्ट्रीय साझेदारों के माध्यम से की जाती है। HajCare तीसरे पक्ष की सेवाओं के लिए जिम्मेदार नहीं है।",
   },
   priceLabel: { en: "Starting from", ur: "شروع قیمت", hi: "शुरुआती कीमत" },
   confirmationTitle: { en: "Booking Confirmed!", ur: "بکنگ کی تصدیق!", hi: "बुकिंग की पुष्टि!" },

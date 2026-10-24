@@ -15,11 +15,11 @@ type PermissionState = "not_requested" | "denied" | "permanently_denied" | "gran
 const translations = {
   en: {
     preTitle: "Enable Location for Your Safety",
-    preMessage: "To ensure your safety and allow your family to track your journey in real time, HajCare AI requires access to your location.",
+    preMessage: "To ensure your safety and allow your family to track your journey in real time, HajCare requires access to your location.",
     preDetail: "Your location is used only for live tracking, emergency assistance, and safety alerts during Hajj & Umrah. We never misuse, sell, or share your data.",
     preButton: "👉 Allow Location Access",
     deniedTitle: "Location Access Needed",
-    deniedMessage: "Location access is essential for live tracking, emergency help, and family updates. Without location, HajCare AI cannot protect or support you properly.",
+    deniedMessage: "Location access is essential for live tracking, emergency help, and family updates. Without location, HajCare cannot protect or support you properly.",
     deniedEnable: "👉 Enable Location",
     deniedSkip: "Continue Without Tracking (Not Recommended)",
     blockedTitle: "Location Access Blocked",

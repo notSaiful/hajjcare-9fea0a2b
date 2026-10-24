@@ -1,4 +1,4 @@
-// Bus point / branch mapping for Indian Hajj 2026 pilgrims (Azizia area)
+// Bus point / branch mapping for Indian Hajj 2027 pilgrims (Azizia area)
 // "(U)" marker = building was assigned to this bus point as a LATER UPDATE
 // (originally not in the list, added later). Bus service & branch remain the same.
 

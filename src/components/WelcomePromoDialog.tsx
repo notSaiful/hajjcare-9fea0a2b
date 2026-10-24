@@ -18,17 +18,17 @@ const WELCOME_DIALOG_KEY = "hajjcare_welcome_shown";
 
 const labels = {
   title: {
-    en: "Welcome to HajjCare AI 🕋",
+    en: "Welcome to HajCare 🕋",
     ar: "مرحباً في حج كير AI 🕋",
     ur: "حج کیئر AI میں خوش آمدید 🕋",
-    hi: "HajjCare AI में स्वागत है 🕋",
-    ta: "HajjCare AI-க்கு வரவேற்பு 🕋",
-    te: "HajjCare AI కి స్వాగతం 🕋",
-    mr: "HajjCare AI मध्ये स्वागत 🕋",
-    bn: "HajjCare AI তে স্বাগতম 🕋",
-    or: "HajjCare AI କୁ ସ୍ୱାଗତ 🕋",
-    ml: "HajjCare AI ലേക്ക് സ്വാഗതം 🕋",
-    pa: "HajjCare AI ਵਿੱਚ ਜੀ ਆਇਆਂ ਨੂੰ 🕋",
+    hi: "HajCare में स्वागत है 🕋",
+    ta: "HajCare-க்கு வரவேற்பு 🕋",
+    te: "HajCare కి స్వాగతం 🕋",
+    mr: "HajCare मध्ये स्वागत 🕋",
+    bn: "HajCare তে স্বাগতম 🕋",
+    or: "HajCare କୁ ସ୍ୱାଗତ 🕋",
+    ml: "HajCare ലേക്ക് സ്വാഗതം 🕋",
+    pa: "HajCare ਵਿੱਚ ਜੀ ਆਇਆਂ ਨੂੰ 🕋",
   },
   tagline: {
     en: "Har qadam par saath.",

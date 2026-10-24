@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { SimpleHeader } from '@/components/SimpleHeader';
+import { SEO } from '@/components/SEO';
 
 interface ErrorState {
   statusCode?: number;
@@ -50,6 +51,7 @@ const ForbiddenPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO title={config.title} description={config.reason} path={location.pathname} noindex />
       <SimpleHeader />
       <main className="container max-w-2xl mx-auto px-4 py-16">
         <div className="flex flex-col items-center gap-6">

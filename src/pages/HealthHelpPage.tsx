@@ -354,6 +354,19 @@ const HealthHelpPage = () => {
         }
       );
 
+      if (!triageResponse.ok) {
+        toast({
+          title: language === "hi" ? "दर्ज हो गई, ट्राइएज नहीं चला" : "Saved, but triage did not run",
+          description: language === "hi"
+            ? "आपकी दर्ज हो गई है, पर स्वास्थ्य ट्राइएज सेवा उपलब्ध नहीं है। आपात स्थिति में 911 या 997 पर कॉल करें।"
+            : "Your request was saved, but the health-triage service did not respond. If this is urgent, call 911 (police) or 997 (ambulance) in Saudi Arabia.",
+          variant: "destructive",
+        });
+        setDescription("");
+        setIsSubmitting(false);
+        return;
+      }
+
       if (triageResponse.ok) {
         const triageData = await triageResponse.json();
         const triage = triageData.triage;
@@ -374,8 +387,9 @@ const HealthHelpPage = () => {
 
         // Step 4: For high/critical urgency, trigger WhatsApp alert
         if (triage.urgency_level === 'critical' || triage.urgency_level === 'high') {
+          let alerted = false;
           try {
-            await fetch(
+            const alertResponse = await fetch(
               `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/whatsapp-alert`,
               {
                 method: 'POST',
@@ -393,9 +407,21 @@ const HealthHelpPage = () => {
                 }),
               }
             );
+            alerted = alertResponse.ok;
           } catch (alertErr) {
             console.error('WhatsApp alert error:', alertErr);
-            // Non-blocking - ticket is still saved
+          }
+          if (!alerted) {
+            setDescription("");
+            toast({
+              title: language === "hi" ? "दर्ज हो गई, अलर्ट नहीं गया" : "Saved, but nobody was alerted",
+              description: language === "hi"
+                ? "ट्राइएज हो गया, पर व्हाट्सऐप अलर्ट नहीं भेजा जा सका। आपात स्थिति में 911 या 997 पर कॉल करें।"
+                : "Triage finished, but the WhatsApp alert did not send. If this is urgent, call 911 or 997.",
+              variant: "destructive",
+            });
+            setIsSubmitting(false);
+            return;
           }
         }
       }

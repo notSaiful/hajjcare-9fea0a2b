@@ -6,7 +6,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const BRAIN_SYSTEM_PROMPT = `You are the Central AI Brain for HajjCare — a national-level Hajj management intelligence system.
+const BRAIN_SYSTEM_PROMPT = `You are the Central AI Brain for HajCare — a national-level Hajj management intelligence system.
 
 Given operational data from multiple modules (tracking, health, fraud, notifications), produce a unified situational assessment.
 
@@ -173,7 +173,7 @@ serve(async (req) => {
     }
 
     // ── Module 4: AI situational assessment ──
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    const LOVABLE_API_KEY = (Deno.env.get("LLM_API_KEY") || Deno.env.get("LOVABLE_API_KEY"));
 
     if (!LOVABLE_API_KEY) {
       return new Response(JSON.stringify({

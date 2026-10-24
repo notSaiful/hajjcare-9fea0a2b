@@ -22,7 +22,7 @@ const getSystemPrompt = (language: string) => {
     pa: "ਤੁਹਾਨੂੰ ਹਮੇਸ਼ਾ ਸਿਰਫ਼ ਪੰਜਾਬੀ ਵਿੱਚ ਜਵਾਬ ਦੇਣਾ ਚਾਹੀਦਾ ਹੈ।",
   };
 
-  return `You are "HajjCare FAQ Bot", a friendly and knowledgeable assistant that answers frequently asked questions about Hajj 2026 for Indian pilgrims.
+  return `You are "HajCare FAQ Bot", a friendly and knowledgeable assistant that answers frequently asked questions about Hajj 2027 for Indian pilgrims.
 
 SCOPE — Only answer questions related to:
 1. **Hajj rituals** — Ihram, Tawaf, Sa'i, Arafat, Muzdalifah, Jamarat, sacrifice, Tawaf al-Ifadah, etc.
@@ -115,9 +115,9 @@ serve(async (req) => {
       }
     }
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    const LOVABLE_API_KEY = (Deno.env.get("LLM_API_KEY") || Deno.env.get("LOVABLE_API_KEY"));
     if (!LOVABLE_API_KEY) {
-      throw new Error("LOVABLE_API_KEY is not configured");
+      throw new Error("LLM_API_KEY or LOVABLE_API_KEY is not configured");
     }
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {

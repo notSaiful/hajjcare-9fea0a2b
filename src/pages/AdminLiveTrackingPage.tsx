@@ -2,6 +2,8 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { supabase } from "@/integrations/supabase/client";
+import { fetchMapboxToken } from "@/lib/mapboxToken";
+import { isEmergencyStatus, normalizePilgrimStatus } from "@/lib/pilgrimStatus";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { useUserRole } from "@/hooks/useUserRole";
 import { Navigate, Link } from "react-router-dom";
@@ -39,6 +41,7 @@ const AdminLiveTrackingPage = () => {
   const map = useRef<mapboxgl.Map | null>(null);
   const markers = useRef<Record<string, mapboxgl.Marker>>({});
   const [mapToken, setMapToken] = useState<string | null>(null);
+  const [mapError, setMapError] = useState<string | null>(null);
   const [locations, setLocations] = useState<LiveLocation[]>([]);
   const [loading, setLoading] = useState(true);
   const [mapReady, setMapReady] = useState(false);
@@ -50,16 +53,10 @@ const AdminLiveTrackingPage = () => {
     if (!canAccess) return;
     (async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session?.access_token) return;
-        const res = await fetch(
-          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-mapbox-token`,
-          { headers: { Authorization: `Bearer ${session.access_token}` } }
-        );
-        const d = await res.json();
-        setMapToken(d.token);
+        setMapToken(await fetchMapboxToken());
       } catch (e) {
         console.error("mapbox token", e);
+        setMapError(e instanceof Error ? e.message : "The live map is unavailable.");
       }
     })();
   }, [canAccess]);
@@ -110,9 +107,11 @@ const AdminLiveTrackingPage = () => {
 
     locations.forEach((loc) => {
       seenIds.add(loc.id);
-      const color = STATUS_COLOR[loc.pilgrim_status] || "#0B3D2E";
+      const canonical = normalizePilgrimStatus(loc.pilgrim_status);
+      const color = STATUS_COLOR[canonical] || "#0B3D2E";
       const active = isActive(loc.updated_at);
-      const opacity = active ? 1 : 0.4;
+      const sos = isEmergencyStatus(loc.pilgrim_status);
+      const opacity = sos || active ? 1 : 0.4;
 
       if (markers.current[loc.id]) {
         markers.current[loc.id].setLngLat([loc.longitude, loc.latitude]);
@@ -122,7 +121,7 @@ const AdminLiveTrackingPage = () => {
         const popup = new mapboxgl.Popup({ offset: 14 }).setHTML(`
           <div style="font-family:system-ui;font-size:13px;min-width:160px">
             <div style="font-weight:600;color:#0B3D2E;margin-bottom:4px">Pilgrim #${loc.member_id.slice(0, 8)}</div>
-            <div>Status: <strong style="color:${color}">${loc.pilgrim_status}</strong></div>
+            <div>Status: <strong style="color:${color}">${canonical}${sos && !active ? " (stale SOS)" : ""}</strong></div>
             ${loc.current_stage ? `<div>Stage: ${loc.current_stage}</div>` : ""}
             <div style="color:#666;font-size:11px;margin-top:4px">Updated: ${new Date(loc.updated_at).toLocaleString()}</div>
           </div>
@@ -160,9 +159,22 @@ const AdminLiveTrackingPage = () => {
   }
 
   const active = locations.filter((l) => isActive(l.updated_at));
-  const emergency = active.filter((l) => l.pilgrim_status === "emergency_managed").length;
-  const assisted = active.filter((l) => l.pilgrim_status === "assisted").length;
-  const normal = active.filter((l) => l.pilgrim_status === "normal").length;
+  const emergencyRows = locations.filter((l) => isEmergencyStatus(l.pilgrim_status));
+  const staleEmergency = emergencyRows.filter((l) => !isActive(l.updated_at)).length;
+  const emergency = emergencyRows.length;
+  const assisted = active.filter((l) => normalizePilgrimStatus(l.pilgrim_status) === "assisted").length;
+  const normal = active.filter((l) => normalizePilgrimStatus(l.pilgrim_status) === "normal").length;
+  const ranked = [...locations].sort((a, b) => {
+    const rank = (l: LiveLocation) => {
+      const sos = isEmergencyStatus(l.pilgrim_status);
+      const fresh = isActive(l.updated_at);
+      if (sos && !fresh) return 0;
+      if (sos) return 1;
+      if (fresh) return 2;
+      return 3;
+    };
+    return rank(a) - rank(b);
+  });
 
   return (
     <div className="min-h-screen bg-background">
@@ -188,7 +200,7 @@ const AdminLiveTrackingPage = () => {
           <StatCard icon={<Users />} label="Total Devices" value={locations.length} color="#0B3D2E" />
           <StatCard icon={<Activity />} label="Active (30m)" value={active.length} color="#0B3D2E" />
           <StatCard icon={<MapPin />} label="Assisted" value={assisted} color="#C8A951" />
-          <StatCard icon={<AlertTriangle />} label="Emergency" value={emergency} color="#dc2626" />
+          <StatCard icon={<AlertTriangle />} label={staleEmergency ? `Emergency (${staleEmergency} stale)` : "Emergency"} value={emergency} color="#dc2626" />
         </div>
 
         {/* Legend */}
@@ -198,7 +210,7 @@ const AdminLiveTrackingPage = () => {
             <LegendDot color="#0B3D2E" label={`Normal (${normal})`} />
             <LegendDot color="#C8A951" label={`Assisted (${assisted})`} />
             <LegendDot color="#dc2626" label={`Emergency (${emergency})`} />
-            <span className="text-muted-foreground ml-auto">Faded = offline &gt; 30 min</span>
+            <span className="text-muted-foreground ml-auto">Emergency stays counted after 30 min. Faded = offline, not SOS.</span>
           </CardContent>
         </Card>
 
@@ -206,8 +218,12 @@ const AdminLiveTrackingPage = () => {
         <Card className="overflow-hidden">
           <div className="relative" style={{ height: "calc(100vh - 340px)", minHeight: 400 }}>
             {!mapToken && (
-              <div className="absolute inset-0 flex items-center justify-center bg-muted">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              <div className="absolute inset-0 flex items-center justify-center bg-muted p-6 text-center">
+                {mapError ? (
+                  <p className="text-sm text-muted-foreground max-w-sm">{mapError}</p>
+                ) : (
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                )}
               </div>
             )}
             <div ref={mapContainer} className="absolute inset-0" />
@@ -231,19 +247,19 @@ const AdminLiveTrackingPage = () => {
         </Card>
 
         {/* Recent list */}
-        {active.length > 0 && (
+        {ranked.length > 0 && (
           <Card>
             <CardContent className="p-3">
               <h3 className="font-semibold text-sm mb-2 flex items-center gap-2">
-                <Activity className="h-4 w-4 text-emerald-700" /> Recently active pilgrims
+                <Activity className="h-4 w-4 text-emerald-700" /> Pilgrims, SOS first
               </h3>
               <div className="space-y-1.5 max-h-64 overflow-y-auto">
-                {active.slice(0, 50).map((l) => (
+                {ranked.slice(0, 50).map((l) => (
                   <div key={l.id} className="flex items-center justify-between gap-2 p-2 rounded border text-xs">
                     <div className="flex items-center gap-2 min-w-0">
                       <span
                         className="w-2.5 h-2.5 rounded-full flex-shrink-0"
-                        style={{ background: STATUS_COLOR[l.pilgrim_status] }}
+                        style={{ background: STATUS_COLOR[normalizePilgrimStatus(l.pilgrim_status)] || "#0B3D2E" }}
                       />
                       <span className="font-mono truncate">#{l.member_id.slice(0, 12)}</span>
                     </div>

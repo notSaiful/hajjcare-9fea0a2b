@@ -90,7 +90,7 @@ export function EmailAuthForm({ onSuccess }: EmailAuthFormProps) {
         if (error) {
           toast({ title: "Error", description: error.message.includes("already registered") ? "Email already registered" : error.message, variant: "destructive" });
         } else {
-          toast({ title: isRTL ? "تم إنشاء الحساب" : "Account Created", description: isRTL ? "مرحباً بك" : "Welcome to Haj Care AI" });
+          toast({ title: isRTL ? "تم إنشاء الحساب" : "Account Created", description: isRTL ? "مرحباً بك" : "Welcome to HajCare" });
           onSuccess();
         }
       } else {

@@ -167,7 +167,7 @@ export default function MinaMaktabDetailPage() {
           </Link>
           <div className="flex-1 min-w-0">
             <h1 className="text-lg font-bold leading-tight">Maktab #{m.maktab}</h1>
-            <p className="text-xs text-muted-foreground">Mina Tent — Hajj 2026</p>
+            <p className="text-xs text-muted-foreground">Mina Tent — Hajj 2027</p>
           </div>
         </div>
       </header>

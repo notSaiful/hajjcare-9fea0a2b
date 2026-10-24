@@ -6,7 +6,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const DECISION_SUPPORT_PROMPT = `You are an Admin Decision Support AI for HajjCare AI. Analyze the provided operational data and produce actionable insights for national-level Hajj management.
+const DECISION_SUPPORT_PROMPT = `You are an Admin Decision Support AI for HajCare. Analyze the provided operational data and produce actionable insights for national-level Hajj management.
 
 Analyze:
 1. Emergency trends and prioritization
@@ -133,8 +133,8 @@ serve(async (req) => {
     }
 
     // AI-powered analysis
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
+    const LOVABLE_API_KEY = (Deno.env.get("LLM_API_KEY") || Deno.env.get("LOVABLE_API_KEY"));
+    if (!LOVABLE_API_KEY) throw new Error("LLM_API_KEY or LOVABLE_API_KEY is not configured");
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",

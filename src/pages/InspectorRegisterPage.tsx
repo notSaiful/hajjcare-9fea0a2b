@@ -134,7 +134,7 @@ const InspectorRegisterPage = () => {
       setIsSuccess(true);
       toast.success(
         result.data.role === 'haj_inspector'
-          ? 'Aapko HajjCare AI Help Directory mein Haj Inspector ke roop mein successfully add kar diya gaya hai.'
+          ? 'Aapko HajCare Help Directory mein Haj Inspector ke roop mein successfully add kar diya gaya hai.'
           : isHindi ? 'आपका पंजीकरण सफल रहा। एडमिन द्वारा सत्यापन के बाद डायरेक्टरी में जोड़ा जाएगा।' : 'Registration successful. You will be added after admin verification.'
       );
     } catch {
@@ -157,7 +157,7 @@ const InspectorRegisterPage = () => {
           </h1>
           <p className="text-muted-foreground">
             {form.role === 'haj_inspector'
-              ? 'Aapko HajjCare AI Help Directory mein Haj Inspector ke roop mein successfully add kar diya gaya hai.'
+              ? 'Aapko HajCare Help Directory mein Haj Inspector ke roop mein successfully add kar diya gaya hai.'
               : isHindi ? 'आपका पंजीकरण प्राप्त हो गया है। एडमिन सत्यापन के बाद डायरेक्टरी में शामिल किया जाएगा।' : 'Your registration has been received. You will be added after admin verification.'}
           </p>
           <Card className="border-emerald-200 dark:border-emerald-800">
@@ -186,7 +186,7 @@ const InspectorRegisterPage = () => {
           <CardContent className="p-4 flex items-center gap-3">
             <MessageCircle className="w-8 h-8 text-emerald-600 shrink-0" />
             <div className="flex-1">
-              <p className="font-semibold text-sm">{isHindi ? 'HajjCare आधिकारिक WhatsApp ग्रुप' : 'HajjCare Official WhatsApp Group'}</p>
+              <p className="font-semibold text-sm">{isHindi ? 'HajCare आधिकारिक WhatsApp ग्रुप' : 'HajCare Official WhatsApp Group'}</p>
               <p className="text-xs text-muted-foreground">{isHindi ? 'ग्रुप से जुड़ने के बाद नीचे फॉर्म भरें' : 'Join the group, then fill the form below'}</p>
             </div>
             <Button asChild size="sm" variant="outline" className="border-emerald-300 shrink-0">

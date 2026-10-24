@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { SEO } from "@/components/SEO";
 import { useAuthContext } from "@/contexts/AuthContext";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { LANGUAGES, useLanguage } from "@/contexts/LanguageContext";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -83,13 +83,13 @@ const LandingPage = () => {
       dir={isRTL ? "rtl" : "ltr"}
     >
       <SEO
-        title="HajCare AI — Your Digital Hajj Companion"
-        description="Your complete digital companion for a peaceful & organized Hajj. Smart guidance, AI assistance, reminders, and spiritual support in 11 languages."
+        title="HajCare — Your Digital Hajj Companion"
+        description={`Your complete digital companion for a peaceful & organized Hajj. Smart guidance, AI assistance, reminders, and spiritual support in ${LANGUAGES.length} languages.`}
         path="/"
         jsonLd={{
           "@context": "https://schema.org",
           "@type": "WebApplication",
-          name: "HajCare AI",
+          name: "HajCare",
           applicationCategory: "TravelApplication",
           operatingSystem: "Web, iOS, Android",
           description: "Digital Hajj & Umrah companion for Indian pilgrims.",
@@ -131,7 +131,7 @@ const LandingPage = () => {
               />
               <img
                 src={logo}
-                alt="HajCare AI"
+                alt="HajCare"
                 className="w-24 h-24 sm:w-28 sm:h-28 rounded-full shadow-xl relative z-10"
                 style={{ boxShadow: `0 0 0 3px ${PALETTE.gold}55, 0 12px 40px ${PALETTE.emerald}33` }}
                 loading="eager"
@@ -196,7 +196,7 @@ const LandingPage = () => {
             {[
               { v: "50K+", l: "Pilgrims" },
               { v: "24/7", l: "AI Support" },
-              { v: "11", l: "Languages" },
+              { v: String(LANGUAGES.length), l: "Languages" },
             ].map((s) => (
               <div
                 key={s.l}
@@ -317,7 +317,7 @@ const LandingPage = () => {
               <Bot className="w-5 h-5" />
             </div>
             <div className="flex-1 text-left">
-              <p className="text-sm font-semibold">HajCare AI</p>
+              <p className="text-sm font-semibold">HajCare</p>
               <p className="text-xs opacity-75 flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" /> Online
               </p>
@@ -460,7 +460,7 @@ const LandingPage = () => {
         <p className="text-base mb-2">
           Made with <span style={{ color: PALETTE.gold }}>♥</span> for the Ummah
         </p>
-        <p className="text-xs opacity-60">© 2026 HajCare AI · Your trusted Hajj & Umrah companion</p>
+        <p className="text-xs opacity-60">© 2026 HajCare · Your trusted Hajj & Umrah companion</p>
       </footer>
     </div>
   );

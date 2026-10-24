@@ -1,7 +1,7 @@
 /**
  * IHPO (Indian Haj Pilgrim Officers) — Makkah Desk Directory for HAJ 2026.
  *
- * Source: Official IHPO Makkah Mobile Numbers list (Haj 2026).
+ * Source: Official IHPO Makkah Mobile Numbers list (Haj 2027).
  * All numbers are Saudi local mobile numbers — UI prepends +966 for dial/WhatsApp.
  */
 

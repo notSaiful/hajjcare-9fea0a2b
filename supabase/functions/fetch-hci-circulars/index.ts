@@ -235,7 +235,7 @@ serve(async (req) => {
     console.log(`Successfully added ${toInsert.length} new circulars`);
 
     // Try to auto-summarize new circulars using AI
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    const LOVABLE_API_KEY = (Deno.env.get("LLM_API_KEY") || Deno.env.get("LOVABLE_API_KEY"));
     if (LOVABLE_API_KEY) {
       for (const circular of toInsert) {
         try {

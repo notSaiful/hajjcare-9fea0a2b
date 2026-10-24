@@ -3,6 +3,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
 import { useHajjLocation } from "@/hooks/useHajjLocation";
 import { supabase } from "@/integrations/supabase/client";
+import { publishPilgrimStatus } from "@/lib/pilgrimStatus";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -182,28 +183,23 @@ export const EmergencySOS = () => {
 
       if (ticketError) throw ticketError;
 
-      // Auto-allocate nearest responder
-      try {
-        const { data: allocation, error: allocError } = await supabase.functions.invoke("allocate-responder", {
-          body: {
-            ticket_id: ticket.id,
-            lat: lat || 0,
-            lng: lng || 0,
-            zone: zone,
-            escalation_level: 1,
-          },
-        });
-
-        if (!allocError && allocation?.allocated) {
-          console.log("Responder allocated:", allocation.responder?.name, "at", allocation.responder?.distance_meters, "m");
-        } else {
-          console.warn("No responder allocated, falling back to WhatsApp alert");
-        }
-      } catch (allocErr) {
-        console.error("Allocation error (non-blocking):", allocErr);
+      const statusResult = await publishPilgrimStatus("emergency_managed");
+      if (!statusResult.ok) {
+        console.warn("Family status was not updated:", statusResult.message);
       }
 
-      // Also trigger WhatsApp alert as backup
+      // Auto-allocate nearest responder. invoke() returns { error } on 404; it does not throw.
+      const { data: allocation, error: allocError } = await supabase.functions.invoke("allocate-responder", {
+        body: {
+          ticket_id: ticket.id,
+          lat: lat || null,
+          lng: lng || null,
+          zone: zone,
+          escalation_level: 1,
+        },
+      });
+      const responderAllocated = !allocError && allocation?.allocated;
+
       const { error: alertError } = await supabase.functions.invoke("whatsapp-alert", {
         body: {
           ticketId: ticket.id,
@@ -216,13 +212,24 @@ export const EmergencySOS = () => {
         },
       });
 
-      if (alertError) {
-        console.error("WhatsApp alert error:", alertError);
+      if (!responderAllocated && alertError) {
+        console.error("SOS alert failed", { allocError, alertError, statusResult });
+        setStatus("error");
+        triggerHaptic("error");
+        toast.error(
+          "Your SOS was saved, but no responder was notified and no WhatsApp alert was sent. Call 911 or 997 now.",
+        );
+        setTimeout(() => setStatus("idle"), 8000);
+        return;
       }
 
       setStatus("success");
       triggerHaptic("success");
-      toast.success(getLabel("success"));
+      toast.success(
+        responderAllocated
+          ? getLabel("success")
+          : "SOS saved and the alert was sent. If nobody reaches you, call 911 or 997.",
+      );
 
       // Reset after 5 seconds
       setTimeout(() => setStatus("idle"), 5000);

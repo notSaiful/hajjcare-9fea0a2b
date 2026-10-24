@@ -181,7 +181,7 @@ Assalamu Alaikum ${applicantName},
 ${statusDetails.message}
 
 ---
-Haj Care AI - Deeni Khidmat Program
+HajCare - Deeni Khidmat Program
 🌐 Visit: hajjcare.lovable.app`;
 
     // Send WhatsApp message

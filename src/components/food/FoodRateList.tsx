@@ -171,7 +171,7 @@ export function FoodRateList({ language }: Props) {
           <Info className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
           <div className="text-sm space-y-1">
             <p className="font-semibold text-foreground">
-              Makkah & Madinah ke aam bazaar rates (Hajj 2026 estimate)
+              Makkah & Madinah ke aam bazaar rates (Hajj 2027 estimate)
             </p>
             <p className="text-muted-foreground text-xs leading-relaxed">
               Daam Saudi Riyal (SAR) mein hain. <strong>1 SAR ≈ ₹{SAR_TO_INR}</strong>.

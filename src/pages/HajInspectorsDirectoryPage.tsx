@@ -189,7 +189,7 @@ const HajInspectorsDirectoryPage = () => {
       networkHint: 'Quick lookup view — find any inspector at a glance',
     },
     ar: {
-      title: 'مفتشو الحج 2026',
+      title: 'مفتشو الحج 2027',
       subtitle: 'المرشحون المختارون مصنفون حسب الولاية',
       selectState: 'اختر الولاية',
       searchPlaceholder: 'ابحث بالاسم، الرقم، رقم الغلاف، الجوال أو المبنى...',

@@ -4,7 +4,7 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import { Loader2, AlertCircle, ExternalLink, MapPin, Footprints } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { supabase } from "@/integrations/supabase/client";
+import { fetchMapboxToken } from "@/lib/mapboxToken";
 import { madinahHotels, getMadinahMapUrl, type MadinahHotel } from "@/data/madinahHotels";
 import { getHotelLocation, MASJID_NABAWI, formatDistance } from "@/data/madinahHotelCoords";
 
@@ -40,27 +40,22 @@ const MadinahHotelsMap = ({ hotels, heightClass = "h-80" }: MadinahHotelsMapProp
     [data]
   );
 
-  // Fetch Mapbox token (works anonymously too)
   useEffect(() => {
-    const fetchToken = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        const headers: Record<string, string> = {};
-        if (session?.access_token) headers.Authorization = `Bearer ${session.access_token}`;
-        const response = await fetch(
-          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-mapbox-token`,
-          { headers }
-        );
-        if (!response.ok) throw new Error("token unavailable");
-        const j = await response.json();
-        setMapToken(j.token);
-      } catch (err) {
+    let cancelled = false;
+    fetchMapboxToken()
+      .then((token) => {
+        if (!cancelled) setMapToken(token);
+      })
+      .catch((err) => {
         console.error("Mapbox token error:", err);
-        setMapError("static");
-        setMapLoading(false);
-      }
+        if (!cancelled) {
+          setMapError("static");
+          setMapLoading(false);
+        }
+      });
+    return () => {
+      cancelled = true;
     };
-    fetchToken();
   }, []);
 
   // Initialize map

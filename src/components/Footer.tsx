@@ -40,7 +40,7 @@ export function Footer() {
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {/* Brand */}
           <div className="sm:col-span-2 lg:col-span-1">
-            <h3 className="font-bold text-lg text-foreground mb-3">HajjCare</h3>
+            <h3 className="font-bold text-lg text-foreground mb-3">HajCare</h3>
             <p className="text-sm text-muted-foreground leading-relaxed mb-4">
               A digital guidance and support platform for Hajj and Umrah pilgrims.
             </p>
@@ -114,7 +114,7 @@ export function Footer() {
         <div className="container mx-auto px-4 py-4">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-xs text-muted-foreground">
-              © {new Date().getFullYear()} HajjCare. All rights reserved.
+              © {new Date().getFullYear()} HajCare. All rights reserved.
             </p>
             
             {/* Compact Footer Links for Mobile */}
@@ -139,7 +139,7 @@ export function Footer() {
 
           {/* Disclaimer */}
           <p className="text-[10px] text-muted-foreground/70 text-center mt-4 leading-relaxed">
-            <strong>Disclaimer:</strong> HajjCare is a digital information platform. We do not provide religious rulings, medical advice, or legal advice.
+            <strong>Disclaimer:</strong> HajCare is a digital information platform. We do not provide religious rulings, medical advice, or legal advice.
           </p>
         </div>
       </div>

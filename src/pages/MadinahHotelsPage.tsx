@@ -23,7 +23,7 @@ const MadinahHotelsPage = () => {
 
   const labels = {
     en: {
-      title: "Madinah Hotels — Hajj 2026",
+      title: "Madinah Hotels — Hajj 2027",
       subtitle: "381 official MOH/CGI Jeddah hotels in Markaziya",
       search: "Search by name, code, or Tashee...",
       sortCode: "Code",
@@ -42,7 +42,7 @@ const MadinahHotelsPage = () => {
       sourceNote: "Source: Official MOH/CGI Jeddah list. Some marker positions are approximate within Markaziya.",
     },
     hi: {
-      title: "मदीना होटल — हज 2026",
+      title: "मदीना होटल — हज 2027",
       subtitle: "मरकज़िया में 381 आधिकारिक MOH/CGI जेद्दा होटल",
       search: "नाम, कोड, या तशी से खोजें...",
       sortCode: "कोड",
@@ -61,7 +61,7 @@ const MadinahHotelsPage = () => {
       sourceNote: "स्रोत: आधिकारिक MOH/CGI जेद्दा सूची। कुछ मार्कर मरकज़िया में अनुमानित हैं।",
     },
     ur: {
-      title: "مدینہ ہوٹل — حج 2026",
+      title: "مدینہ ہوٹل — حج 2027",
       subtitle: "مرکزیہ میں 381 آفیشل MOH/CGI جدہ ہوٹل",
       search: "نام، کوڈ، یا تشی سے تلاش کریں...",
       sortCode: "کوڈ",
@@ -80,7 +80,7 @@ const MadinahHotelsPage = () => {
       sourceNote: "ماخذ: آفیشل MOH/CGI جدہ فہرست۔ کچھ مارکر مرکزیہ کے اندر تخمینی ہیں۔",
     },
     ar: {
-      title: "فنادق المدينة — حج 2026",
+      title: "فنادق المدينة — حج 2027",
       subtitle: "381 فندقًا رسميًا من قائمة MOH/CGI جدة في مركزية المدينة",
       search: "ابحث بالاسم أو الرقم أو التشي...",
       sortCode: "الرقم",

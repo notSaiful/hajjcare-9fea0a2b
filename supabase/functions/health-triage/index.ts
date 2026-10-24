@@ -7,7 +7,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+const LOVABLE_API_KEY = (Deno.env.get('LLM_API_KEY') || Deno.env.get('LOVABLE_API_KEY'));
 
 // Zod schema for validating AI triage response
 const TriageSchema = z.object({

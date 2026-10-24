@@ -76,7 +76,7 @@ const AdminAIDashboardPage = () => {
         {/* Header Actions */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold">HajjCare AI Command Center</h1>
+            <h1 className="text-2xl font-bold">HajCare Command Center</h1>
             <p className="text-muted-foreground text-sm">
               National-level intelligence overview
               {data?.generated_at && ` • Updated ${new Date(data.generated_at).toLocaleTimeString()}`}

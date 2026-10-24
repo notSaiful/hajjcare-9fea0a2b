@@ -93,9 +93,9 @@ export default function RewardsPage() {
 
   const shareReferral = async () => {
     if (!stats?.code) return;
-    const text = `Join HajjCare AI – Har qadam par saath! 🕋\nUse my referral code: ${stats.code}\nGet ₹50 bonus on signup!\nhttps://hajjcare.lovable.app`;
+    const text = `Join HajCare – Har qadam par saath! 🕋\nUse my referral code: ${stats.code}\nGet ₹50 bonus on signup!\nhttps://hajjcare.lovable.app`;
     if (navigator.share) {
-      try { await navigator.share({ title: "HajjCare AI", text }); } catch {}
+      try { await navigator.share({ title: "HajCare", text }); } catch {}
     } else {
       navigator.clipboard.writeText(text);
       toast({ title: "Copied!", description: "Referral message copied" });
@@ -109,7 +109,7 @@ export default function RewardsPage() {
       <div className="min-h-screen bg-background pb-24">
         <PageHeader
           title={{ en: "Rewards & Wallet", ar: "المكافآت والمحفظة", ur: "انعامات اور والیٹ", hi: "रिवॉर्ड्स और वॉलेट" }}
-          subtitle={{ en: "Earn, share & save with HajjCare AI", ar: "اكسب وشارك ووفر", ur: "کمائیں، شیئر کریں اور بچائیں", hi: "कमाएं, शेयर करें और बचाएं" }}
+          subtitle={{ en: "Earn, share & save with HajCare", ar: "اكسب وشارك ووفر", ur: "کمائیں، شیئر کریں اور بچائیں", hi: "कमाएं, शेयर करें और बचाएं" }}
         />
 
         <div className="px-4 max-w-lg mx-auto space-y-5">
@@ -140,7 +140,7 @@ export default function RewardsPage() {
                   <span className="font-semibold text-lg">My Wallet</span>
                 </div>
                 <Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground/80 text-xs">
-                  HajjCare AI
+                  HajCare
                 </Badge>
               </div>
               {isLoading ? (

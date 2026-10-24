@@ -148,7 +148,7 @@ export const StateGroupedInspectors = ({
                     The official HCOI Annexure-I inspector list for{" "}
                     <span className="font-medium text-foreground">{state}</span>{" "}
                     has not been published yet, or has not been uploaded to
-                    Haj Care. As soon as it is released, the names will appear
+                    HajCare. As soon as it is released, the names will appear
                     here automatically.
                   </div>
                 ) : (

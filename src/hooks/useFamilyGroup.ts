@@ -36,6 +36,11 @@ export interface MemberLocation {
 }
 
 const GROUP_ID_KEY = "hajj_group_id";
+const GROUP_CHANGED_EVENT = "hajj-group-changed";
+
+function notifyGroupChanged() {
+  window.dispatchEvent(new Event(GROUP_CHANGED_EVENT));
+}
 
 export const useFamilyGroup = () => {
   const [group, setGroup] = useState<FamilyGroup | null>(null);
@@ -56,7 +61,12 @@ export const useFamilyGroup = () => {
     if (!user) return;
 
     const groupId = localStorage.getItem(GROUP_ID_KEY);
-    if (!groupId) return;
+    if (!groupId) {
+      setGroup(null);
+      setMembers([]);
+      setMemberLocations([]);
+      return;
+    }
 
     setIsLoading(true);
     try {
@@ -103,6 +113,11 @@ export const useFamilyGroup = () => {
 
   useEffect(() => {
     loadGroup();
+    const onChange = () => {
+      void loadGroup();
+    };
+    window.addEventListener(GROUP_CHANGED_EVENT, onChange);
+    return () => window.removeEventListener(GROUP_CHANGED_EVENT, onChange);
   }, [loadGroup]);
 
   // Subscribe to realtime location updates with connection resilience
@@ -233,6 +248,7 @@ export const useFamilyGroup = () => {
       }]);
       
       toast({ title: "Success", description: "Family group created!" });
+      notifyGroupChanged();
       return groupData;
     } catch (error) {
       console.error("Error creating group:", error);
@@ -287,6 +303,7 @@ export const useFamilyGroup = () => {
           toast({ title: "Info", description: "You're already in this group" });
           localStorage.setItem(GROUP_ID_KEY, groupData.id);
           await loadGroup();
+          notifyGroupChanged();
           return groupData;
         }
         throw memberError;
@@ -296,6 +313,7 @@ export const useFamilyGroup = () => {
       await loadGroup();
       
       toast({ title: "Success", description: "Joined family group!" });
+      notifyGroupChanged();
       return groupData;
     } catch (error) {
       console.error("Error joining group:", error);
@@ -327,6 +345,7 @@ export const useFamilyGroup = () => {
       setGroup(null);
       setMembers([]);
       setMemberLocations([]);
+      notifyGroupChanged();
       
       toast({ title: "Success", description: "Left the group" });
     } catch (error) {

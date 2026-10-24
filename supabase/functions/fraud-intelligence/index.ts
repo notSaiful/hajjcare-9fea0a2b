@@ -6,7 +6,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const FRAUD_ANALYSIS_PROMPT = `You are a Fraud Intelligence Engine for HajjCare AI. Analyze the provided operator data and produce a fraud risk assessment.
+const FRAUD_ANALYSIS_PROMPT = `You are a Fraud Intelligence Engine for HajCare. Analyze the provided operator data and produce a fraud risk assessment.
 
 You will receive:
 - Operator profile (name, company, license, verification status)
@@ -122,8 +122,8 @@ serve(async (req) => {
 });
 
 async function analyzeOperator(serviceClient: any, operatorId: string, operatorData?: any) {
-  const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-  if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
+  const LOVABLE_API_KEY = (Deno.env.get("LLM_API_KEY") || Deno.env.get("LOVABLE_API_KEY"));
+  if (!LOVABLE_API_KEY) throw new Error("LLM_API_KEY or LOVABLE_API_KEY is not configured");
 
   // Fetch operator if not provided
   let operator = operatorData;
