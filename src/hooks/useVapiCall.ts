@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import VapiSdk from "@vapi-ai/web";
-import type { AssistantOverrides } from "@vapi-ai/web";
+// The SDK does not re-export AssistantOverrides by name; derive it from start().
+type AssistantOverrides = Parameters<InstanceType<typeof VapiSdk>["start"]>[1];
 
 // VAPI web call hook — VAPI owns STT (Deepgram) + LLM (GPT-4o) + transport + barge-in;
 // the assistant's TTS leg is managed by Vapi. This hook only drives the browser side: start/end
