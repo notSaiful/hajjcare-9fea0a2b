@@ -1,7 +1,8 @@
 import { Helmet } from "react-helmet-async";
 
 const SITE_URL = "https://hajjcare.in";
-const SITE_NAME = "HajCare AI";
+const SITE_NAME = "HajCare";
+const OG_IMAGE = `${SITE_URL}/og-image.png`;
 
 interface SEOProps {
   title: string;
@@ -34,9 +35,13 @@ export function SEO({ title, description, path, type = "website", noindex = fals
       <meta property="og:url" content={url} />
       <meta property="og:type" content={type} />
       <meta property="og:site_name" content={SITE_NAME} />
-      <meta name="twitter:card" content="summary" />
+      <meta property="og:image" content={OG_IMAGE} />
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
+      <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={trimmedTitle} />
       <meta name="twitter:description" content={trimmedDesc} />
+      <meta name="twitter:image" content={OG_IMAGE} />
       {schemas.map((schema, i) => (
         <script key={i} type="application/ld+json">{JSON.stringify(schema)}</script>
       ))}

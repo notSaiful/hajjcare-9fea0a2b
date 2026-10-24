@@ -1,5 +1,15 @@
 # Deploy edge functions and secrets
 
+## This repository is older than production
+
+`main` was last pushed on 15 Oct 2026. The bundle live at https://hajjcare.in is newer. Production voice uses **Vapi** (`vapi-config`) and **rumik-tts**. Those functions are not in this repository. This repository still has ElevenLabs code (`elevenlabs-tts`, `elevenlabs-agent-token`, `VoiceAssistant`, `useTextToSpeech`).
+
+Do not delete `vapi-config` or `rumik-tts` on the production project. Do not edit or remove the ElevenLabs files in this repo to "match" production, and do not add stub Vapi functions here. `supabase functions deploy <name>` only updates the named function; it does not delete the others. Replacing the whole Lovable project from this older tree would drop the production voice code.
+
+The owner is syncing the latest project from Lovable. Deploy voice from that sync. Treat this branch as the source for the auth, SOS, content, and SEO fixes, not as the voice source of truth.
+
+`supabase/config.toml` names project `qovcctfoxgvowedjioil`. Live hajjcare.in preconnects to **`begtqcmwruvwposocnsr`**. Deploy to the project in production `VITE_SUPABASE_URL`.
+
 The frontend calls Supabase Edge Functions by name. In this repository every name it calls has a folder under `supabase/functions/`. The October 2026 audit of production got **404** for almost all of them, which means they are not deployed on the project the live site uses. A 404 is not a missing secret (that is a 500) and not a bad JWT (that is 401).
 
 This agent cannot deploy to the owner's Supabase project or set secrets. Run the commands below on a machine where `supabase login` has been done.
@@ -59,7 +69,7 @@ supabase secrets set --project-ref "$SUPABASE_PROJECT_REF" \
 | `WHATSAPP_TOKEN`, `WHATSAPP_PHONE_ID` | `whatsapp-alert`, `whatsapp-api-proxy`, `send-custom-whatsapp`, `free-umrah-notify`, `notification-cascade`, `volunteer-status-notify`, `lost-found-claim-notify`, `sukoon-stage-notify` | SOS can record a ticket but no WhatsApp message is sent. The UI now says so instead of "success". |
 | `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` | `get-vapid-key`, `notification-cascade`, `link-request-notify`, `fraud-alert-notify` | Web push cannot subscribe or send. |
 | `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET` | `create-razorpay-order`, `verify-razorpay-payment` | Optional maintenance-fee payments fail. Core guides do not depend on this. |
-| `ELEVENLABS_API_KEY`, `ELEVENLABS_AGENT_ID` | `elevenlabs-tts`, `elevenlabs-agent-token` | Read-aloud and the voice agent fail. |
+| `ELEVENLABS_API_KEY`, `ELEVENLABS_AGENT_ID` | `elevenlabs-tts`, `elevenlabs-agent-token` in this repo | This repo's read-aloud and voice agent fail. Production voice is Vapi / rumik-tts; do not delete those functions to satisfy this row. |
 | `STREAM_API_KEY`, `STREAM_API_SECRET` | `stream-video-token` | `/video-call` cannot start a call. |
 | `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_PHONE_NUMBER` | `notification-cascade` | SMS/voice fallback in the cascade is skipped. WhatsApp and push still run if those secrets exist. |
 | `CRON_SECRET` | `fetch-hci-circulars` | Scheduled fetches that send the cron header are rejected. A signed-in admin call can still work. |
@@ -70,7 +80,9 @@ supabase secrets set --project-ref "$SUPABASE_PROJECT_REF" \
 
 Every directory under `supabase/functions/` is a function the repo owns. The frontend calls the ones marked **called**. The others are in the repo and should be deployed with the same command so admin tools and future callers do not 404.
 
-Names the October audit mentioned that are **not** in this source and are **not** called: `vapi-config`, `rumik-tts`, `translate-start-here`, `hajj-training-registration`, `cover-id-ocr`, `publish-circular`. Do not invent those functions. Training registration and "WhatsApp verify" in this repo are database RPCs (`whatsapp_verify_and_join`), not edge functions.
+Production already has `vapi-config` and `rumik-tts`. They are absent from this older source and are not called by this frontend. Leave them deployed. Also absent here, and not called by this frontend: `translate-start-here`, `hajj-training-registration`, `cover-id-ocr`, `publish-circular`. Do not invent those four. Training registration and "WhatsApp verify" in this repo are database RPCs (`whatsapp_verify_and_join`), not edge functions.
+
+ElevenLabs secrets below belong to the voice code that is still in this repo. Production's live voice path is Vapi / rumik-tts. Set ElevenLabs secrets only if you deploy this repo's voice functions. Do not remove the production Vapi secrets while doing that.
 
 | Function | Called from | Extra secrets |
 |---|---|---|

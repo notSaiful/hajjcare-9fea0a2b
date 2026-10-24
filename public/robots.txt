@@ -1,16 +1,14 @@
-User-agent: Googlebot
-Allow: /
-
-User-agent: Bingbot
-Allow: /
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: facebookexternalhit
-Allow: /
-
 User-agent: *
-Allow: /
+Disallow: /admin
+Disallow: /auth
+Disallow: /login
+Disallow: /reset-password
+Disallow: /error
+Disallow: /profile
+Disallow: /security-settings
+Disallow: /payment
+Disallow: /billing-history
+Disallow: /command-center
+Disallow: /national-command
 
 Sitemap: https://hajjcare.in/sitemap.xml

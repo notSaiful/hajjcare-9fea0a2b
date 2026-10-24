@@ -18,6 +18,8 @@ The site deployed to hajjcare.in (HTML last-modified 16 Oct 2026, Supabase host 
 
 That dual-gate code is **not** in this repository. Shipping this branch to hajjcare.in removes it. Do not add Firebase back.
 
+The same age gap applies to voice. Production has Vapi (`vapi-config`) and `rumik-tts`. This repo still has ElevenLabs and does not contain those functions. Do not delete them on production, and do not treat this tree as the voice source of truth. Sync the latest Lovable project first. See the top of `DEPLOY.md`.
+
 This repo's `supabase/config.toml` names project `qovcctfoxgvowedjioil`. Production HTML preconnects to a **different** project, `begtqcmwruvwposocnsr`. Deploy and secrets must target the project in the production `VITE_SUPABASE_URL`, or the reset page and the edge functions will talk to the wrong database.
 
 ## Existing users are not locked out by this change

@@ -8,12 +8,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Loader2, Star } from "lucide-react";
 import logo from "@/assets/logo.jpeg";
 import { EmailAuthForm } from "@/components/auth/EmailAuthForm";
+import { SEO } from "@/components/SEO";
 
 import { IslamicPattern } from "@/components/auth/IslamicPattern";
 import { MosqueSilhouette } from "@/components/auth/MosqueSilhouette";
 
 const titleLabels = {
-  en: { appName: "Haj Care AI", tagline: "Your Trusted Hajj & Umrah Companion", bismillah: "بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ" },
+  en: { appName: "HajCare", tagline: "Your Trusted Hajj & Umrah Companion", bismillah: "بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ" },
   ar: { appName: "حج كير", tagline: "رفيقك الموثوق للحج والعمرة", bismillah: "بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ" },
   ur: { appName: "حج کیئر", tagline: "حج و عمرہ کا آپ کا ساتھی", bismillah: "بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ" },
   hi: { appName: "हज केयर AI", tagline: "आपका विश्वसनीय हज और उमरा साथी", bismillah: "बिस्मिल्लाहिर्रहमानिर्रहीम" },
@@ -55,6 +56,7 @@ const AuthPage = () => {
       className="relative min-h-screen flex flex-col items-center justify-center px-4 py-6 sm:p-6 auth-page-bg overflow-hidden"
       dir={isRTL ? "rtl" : "ltr"}
     >
+      <SEO title="Sign in" description="Sign in to HajCare." path="/auth" noindex />
       {/* Layered backgrounds */}
       <AmbientBackground variant="warm" />
       <IslamicPattern />
@@ -79,7 +81,7 @@ const AuthPage = () => {
           <div className="absolute inset-0 rounded-full bg-primary/20 blur-2xl -z-10 scale-150 animate-ambient-glow" />
           <img
             src={logo}
-            alt="Haj Care AI"
+            alt="HajCare"
             className="w-22 h-22 sm:w-28 sm:h-28 rounded-full shadow-elevated ring-[3px] ring-primary/25"
           />
           <div className="absolute -bottom-1 -right-1 bg-primary rounded-full p-1.5 shadow-lg">

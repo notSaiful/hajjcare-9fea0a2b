@@ -1,0 +1,429 @@
+[
+  {
+    "path": "/",
+    "title": "HajCare — Your Digital Hajj Companion",
+    "description": "Guidance, family tracking, and emergency help for Hajj and Umrah pilgrims.",
+    "changefreq": "weekly",
+    "priority": "1.0"
+  },
+  {
+    "path": "/home",
+    "title": "Pilgrim dashboard",
+    "description": "Personal Hajj dashboard with guidance, the building locator, Tawaf counter, and circulars.",
+    "changefreq": "weekly",
+    "priority": "0.9"
+  },
+  {
+    "path": "/prepare",
+    "title": "Hajj preparation guide",
+    "description": "Step-by-step Hajj preparation: packing, documents, vaccinations, and ritual readiness.",
+    "changefreq": "weekly",
+    "priority": "0.8"
+  },
+  {
+    "path": "/umrah",
+    "title": "Umrah guide",
+    "description": "Step-by-step Umrah: Ihram, Tawaf, Sai, and Tahallul, with duas.",
+    "changefreq": "weekly",
+    "priority": "0.8"
+  },
+  {
+    "path": "/makkah-guide",
+    "title": "Makkah guide",
+    "description": "Haram zones, prayer times, buildings, and transport for pilgrims in Makkah.",
+    "changefreq": "weekly",
+    "priority": "0.8"
+  },
+  {
+    "path": "/madinah-guide",
+    "title": "Madinah guide",
+    "description": "Visits, hotels, prayer times, and key sites in Madinah.",
+    "changefreq": "weekly",
+    "priority": "0.8"
+  },
+  {
+    "path": "/preparation",
+    "title": "Preparation checklist",
+    "description": "Documents, packing, and departure checklist before you travel.",
+    "changefreq": "weekly",
+    "priority": "0.7"
+  },
+  {
+    "path": "/dua",
+    "title": "Hajj and Umrah duas",
+    "description": "Duas for Hajj and Umrah with translations.",
+    "changefreq": "weekly",
+    "priority": "0.7"
+  },
+  {
+    "path": "/health",
+    "title": "Hajj health guide",
+    "description": "Heat, hygiene, medicines, and when to ask for medical help.",
+    "changefreq": "weekly",
+    "priority": "0.7"
+  },
+  {
+    "path": "/money",
+    "title": "Money guide",
+    "description": "Currency, cards, and everyday money guidance for pilgrims.",
+    "changefreq": "monthly",
+    "priority": "0.6"
+  },
+  {
+    "path": "/telecom",
+    "title": "Saudi SIM and telecom",
+    "description": "SIM, data, and calling guidance for pilgrims in Saudi Arabia.",
+    "changefreq": "monthly",
+    "priority": "0.6"
+  },
+  {
+    "path": "/saudi-sim-update",
+    "title": "Saudi SIM update",
+    "description": "How to keep a Saudi SIM working during Hajj.",
+    "changefreq": "monthly",
+    "priority": "0.5"
+  },
+  {
+    "path": "/hajj-training-videos",
+    "title": "Hajj training videos",
+    "description": "Training videos for pilgrims and inspectors.",
+    "changefreq": "weekly",
+    "priority": "0.6"
+  },
+  {
+    "path": "/grievances",
+    "title": "Grievances",
+    "description": "How to raise a grievance with the Hajj mission.",
+    "changefreq": "monthly",
+    "priority": "0.5"
+  },
+  {
+    "path": "/contacts",
+    "title": "Emergency contacts",
+    "description": "Emergency and helpline numbers in Saudi Arabia and India.",
+    "changefreq": "weekly",
+    "priority": "0.7"
+  },
+  {
+    "path": "/haj-directory",
+    "title": "Indian Haj Mission directory",
+    "description": "Indian Haj Mission offices in Makkah, Madinah, and Jeddah.",
+    "changefreq": "weekly",
+    "priority": "0.7"
+  },
+  {
+    "path": "/rules",
+    "title": "Saudi rules briefing",
+    "description": "Conduct and safety rules pilgrims need in Saudi Arabia.",
+    "changefreq": "weekly",
+    "priority": "0.7"
+  },
+  {
+    "path": "/family",
+    "title": "Family tracking",
+    "description": "Live family location and SOS status for your pilgrim group.",
+    "changefreq": "weekly",
+    "priority": "0.7"
+  },
+  {
+    "path": "/family-dashboard",
+    "title": "Family dashboard",
+    "description": "Family view of pilgrim status during Hajj.",
+    "changefreq": "weekly",
+    "priority": "0.6"
+  },
+  {
+    "path": "/family-status",
+    "title": "Family status",
+    "description": "Shared status for family members following a pilgrim.",
+    "changefreq": "weekly",
+    "priority": "0.5"
+  },
+  {
+    "path": "/map",
+    "title": "Official Hajj maps",
+    "description": "Maps of Mina, Arafat, Muzdalifah, and the Haram.",
+    "changefreq": "weekly",
+    "priority": "0.7"
+  },
+  {
+    "path": "/hajj-buildings",
+    "title": "Hajj buildings directory",
+    "description": "Indian Hajj accommodation buildings in Makkah and Madinah.",
+    "changefreq": "weekly",
+    "priority": "0.7"
+  },
+  {
+    "path": "/medical-facilities",
+    "title": "Hospital directory",
+    "description": "Hospitals in Makkah and Madinah with phone numbers.",
+    "changefreq": "weekly",
+    "priority": "0.7"
+  },
+  {
+    "path": "/share",
+    "title": "Open HajCare",
+    "description": "Open HajCare and share it with other pilgrims.",
+    "changefreq": "monthly",
+    "priority": "0.4"
+  },
+  {
+    "path": "/chat",
+    "title": "Hajj chat",
+    "description": "Ask practical Hajj questions in your language.",
+    "changefreq": "weekly",
+    "priority": "0.6"
+  },
+  {
+    "path": "/tawaf-counter",
+    "title": "Tawaf counter",
+    "description": "Count Tawaf and Sai circuits.",
+    "changefreq": "weekly",
+    "priority": "0.6"
+  },
+  {
+    "path": "/pre-hajj-india",
+    "title": "Pre-Hajj India formalities",
+    "description": "Orientation, documents, and vaccinations before departure from India.",
+    "changefreq": "weekly",
+    "priority": "0.7"
+  },
+  {
+    "path": "/post-hajj",
+    "title": "Post-Hajj guide",
+    "description": "After Hajj: return travel, Zamzam, and settling back home.",
+    "changefreq": "monthly",
+    "priority": "0.6"
+  },
+  {
+    "path": "/women",
+    "title": "Women pilgrim guidance",
+    "description": "Health, privacy, and ritual notes for women pilgrims.",
+    "changefreq": "weekly",
+    "priority": "0.6"
+  },
+  {
+    "path": "/socials",
+    "title": "HajCare social channels",
+    "description": "Official HajCare channels for updates.",
+    "changefreq": "monthly",
+    "priority": "0.4"
+  },
+  {
+    "path": "/qurbani",
+    "title": "Qurbani guide",
+    "description": "How Qurbani booking and tracking works for pilgrims.",
+    "changefreq": "weekly",
+    "priority": "0.6"
+  },
+  {
+    "path": "/food-guide",
+    "title": "Food guide",
+    "description": "Food rules and market notes for Makkah and Madinah.",
+    "changefreq": "weekly",
+    "priority": "0.6"
+  },
+  {
+    "path": "/help",
+    "title": "Health help",
+    "description": "Ask for health help and alert responders when you need them.",
+    "changefreq": "weekly",
+    "priority": "0.7"
+  },
+  {
+    "path": "/haj-inspectors",
+    "title": "Haj inspectors",
+    "description": "Find a state Haj inspector.",
+    "changefreq": "weekly",
+    "priority": "0.6"
+  },
+  {
+    "path": "/inspector-directory",
+    "title": "Inspector directory",
+    "description": "Directory of Haj inspectors.",
+    "changefreq": "weekly",
+    "priority": "0.6"
+  },
+  {
+    "path": "/haj-inspector-register",
+    "title": "Inspector registration",
+    "description": "Register as a Haj inspector.",
+    "changefreq": "monthly",
+    "priority": "0.5"
+  },
+  {
+    "path": "/join-group",
+    "title": "Join a Hajj group",
+    "description": "Join the group your inspector created.",
+    "changefreq": "weekly",
+    "priority": "0.5"
+  },
+  {
+    "path": "/shi-training",
+    "title": "Inspector training",
+    "description": "Training material for state Haj inspectors.",
+    "changefreq": "monthly",
+    "priority": "0.5"
+  },
+  {
+    "path": "/hajj-progress",
+    "title": "Hajj progress",
+    "description": "Follow ritual progress through the days of Hajj.",
+    "changefreq": "weekly",
+    "priority": "0.5"
+  },
+  {
+    "path": "/privacy-policy",
+    "title": "Privacy policy",
+    "description": "How HajCare collects and protects pilgrim data.",
+    "changefreq": "yearly",
+    "priority": "0.3"
+  },
+  {
+    "path": "/terms-conditions",
+    "title": "Terms and conditions",
+    "description": "Terms for using HajCare.",
+    "changefreq": "yearly",
+    "priority": "0.3"
+  },
+  {
+    "path": "/refund-policy",
+    "title": "Refund policy",
+    "description": "Refund terms for optional HajCare service fees.",
+    "changefreq": "yearly",
+    "priority": "0.3"
+  },
+  {
+    "path": "/shipping-policy",
+    "title": "Shipping policy",
+    "description": "Shipping terms for HajCare.",
+    "changefreq": "yearly",
+    "priority": "0.2"
+  },
+  {
+    "path": "/contact-us",
+    "title": "Contact HajCare",
+    "description": "Email and phone for HajCare support.",
+    "changefreq": "yearly",
+    "priority": "0.4"
+  },
+  {
+    "path": "/about-us",
+    "title": "About HajCare",
+    "description": "What HajCare is and which languages it supports.",
+    "changefreq": "yearly",
+    "priority": "0.4"
+  },
+  {
+    "path": "/pricing",
+    "title": "Pricing",
+    "description": "What is free on HajCare and what the optional service fee covers.",
+    "changefreq": "monthly",
+    "priority": "0.5"
+  },
+  {
+    "path": "/govt-services",
+    "title": "Government services",
+    "description": "Official Hajj services and desks for Indian pilgrims.",
+    "changefreq": "weekly",
+    "priority": "0.6"
+  },
+  {
+    "path": "/rewards",
+    "title": "Rewards",
+    "description": "Referral rewards for sharing HajCare.",
+    "changefreq": "monthly",
+    "priority": "0.4"
+  },
+  {
+    "path": "/sukoon-rd",
+    "title": "Sukoon tracking",
+    "description": "How family tracking and SOS work.",
+    "changefreq": "monthly",
+    "priority": "0.5"
+  },
+  {
+    "path": "/hajj-faq",
+    "title": "Hajj FAQ",
+    "description": "Answers to common Hajj questions.",
+    "changefreq": "weekly",
+    "priority": "0.7"
+  },
+  {
+    "path": "/hajj-wizard",
+    "title": "Hajj question wizard",
+    "description": "A guided way to ask a Hajj question.",
+    "changefreq": "weekly",
+    "priority": "0.5"
+  },
+  {
+    "path": "/circulars",
+    "title": "Official circulars",
+    "description": "Haj Committee circulars and short summaries.",
+    "changefreq": "daily",
+    "priority": "0.7"
+  },
+  {
+    "path": "/free-umrah",
+    "title": "Free Umrah application",
+    "description": "Apply for a sponsored Umrah place.",
+    "changefreq": "weekly",
+    "priority": "0.6"
+  },
+  {
+    "path": "/free-umrah/status",
+    "title": "Application status",
+    "description": "Check a Free Umrah application.",
+    "changefreq": "weekly",
+    "priority": "0.4"
+  },
+  {
+    "path": "/volunteer",
+    "title": "Volunteer registration",
+    "description": "Register to volunteer with pilgrims.",
+    "changefreq": "weekly",
+    "priority": "0.5"
+  },
+  {
+    "path": "/lost-and-found",
+    "title": "Lost and found",
+    "description": "Report or claim a lost item.",
+    "changefreq": "weekly",
+    "priority": "0.5"
+  },
+  {
+    "path": "/mashair-map",
+    "title": "Mashair map",
+    "description": "Map of Mina, Arafat, and Muzdalifah.",
+    "changefreq": "weekly",
+    "priority": "0.6"
+  },
+  {
+    "path": "/madinah-hotels",
+    "title": "Madinah hotels",
+    "description": "Hotel directory for Madinah.",
+    "changefreq": "weekly",
+    "priority": "0.6"
+  },
+  {
+    "path": "/mina-tents",
+    "title": "Mina tent locations",
+    "description": "Maktab-wise Mina tent locations.",
+    "changefreq": "weekly",
+    "priority": "0.6"
+  },
+  {
+    "path": "/return-to-camp",
+    "title": "Return to camp",
+    "description": "Directions back to your Mina camp.",
+    "changefreq": "weekly",
+    "priority": "0.5"
+  },
+  {
+    "path": "/deployment-roadmap",
+    "title": "Deployment roadmap",
+    "description": "What is live and what still needs an owner deploy.",
+    "changefreq": "monthly",
+    "priority": "0.3"
+  }
+]
