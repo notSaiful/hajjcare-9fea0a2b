@@ -3,10 +3,13 @@ import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import { getZoyaLanguage } from "@/lib/zoyaLanguages";
+import { extractCitations, mergeCitations, type Citation } from "@/lib/zoyaCitations";
 
-type Message = {
+export type Message = {
   role: "user" | "assistant";
   content: string;
+  /** Optional sources streamed by the orchestrator (see docs/ZOYA_CITATIONS_BACKEND.md). */
+  sources?: Citation[];
 };
 
 type AIModule = "official" | "ilm" | "fraud" | "tracking" | "emotional" | "general";
@@ -51,6 +54,17 @@ export const useAIOrchestrator = (selectedLanguageCode?: string) => {
       });
     };
 
+    const addSources = (incoming: Citation[]) => {
+      if (incoming.length === 0) return;
+      setMessages((prev) => {
+        const last = prev[prev.length - 1];
+        if (last?.role === "assistant") {
+          return prev.map((m, i) => (i === prev.length - 1 ? { ...m, sources: mergeCitations(m.sources, incoming) } : m));
+        }
+        return [...prev, { role: "assistant", content: assistantContent, sources: mergeCitations(undefined, incoming) }];
+      });
+    };
+
     try {
       console.info("[zoya-chat]", { event: "request_started", at: new Date().toISOString() });
       // Get auth session
@@ -66,7 +80,7 @@ export const useAIOrchestrator = (selectedLanguageCode?: string) => {
         },
         body: JSON.stringify({
           message: userMessage,
-          messages,
+          messages: messages.map(({ role, content }) => ({ role, content })),
           language: responseLanguage.code,
           language_locale: responseLanguage.locale,
           response_language_name: responseLanguage.name,
@@ -118,6 +132,7 @@ export const useAIOrchestrator = (selectedLanguageCode?: string) => {
             const parsed = JSON.parse(jsonStr);
             const content = parsed.choices?.[0]?.delta?.content as string | undefined;
             if (content) updateAssistant(content);
+            addSources(extractCitations(parsed));
           } catch {
             buffer = line + "\n" + buffer;
             break;
@@ -137,6 +152,7 @@ export const useAIOrchestrator = (selectedLanguageCode?: string) => {
             const parsed = JSON.parse(jsonStr);
             const content = parsed.choices?.[0]?.delta?.content as string | undefined;
             if (content) updateAssistant(content);
+            addSources(extractCitations(parsed));
           } catch { /* ignore */ }
         }
       }

@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { getZoyaLanguage, ZOYA_LANGUAGES } from "@/lib/zoyaLanguages";
 import ChatMessage from "@/components/ChatMessage";
 import ChatInput from "@/components/ChatInput";
+import { CitationChips } from "@/components/CitationChips";
 import { VoiceAssistant } from "@/components/VoiceAssistant";
 import WelcomeScreen from "@/components/WelcomeScreen";
 
@@ -339,8 +340,8 @@ const ChatPage = () => {
                   <ScrollArea className="h-[calc(100vh-320px)]" ref={scrollRef}>
                     <div className="space-y-4 pr-2">
                       {messages.map((message, index) => (
+                        <div key={index}>
                         <ChatMessage
-                          key={index}
                           role={message.role}
                           content={message.content}
                           languageCode={zoyaLanguageCode}
@@ -350,6 +351,8 @@ const ChatPage = () => {
                             message.role === "assistant"
                           }
                         />
+                        {message.role === "assistant" && <CitationChips sources={message.sources} />}
+                        </div>
                       ))}
                     </div>
                   </ScrollArea>
