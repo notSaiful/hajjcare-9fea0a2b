@@ -13,6 +13,7 @@ import { useUserRole } from "@/hooks/useUserRole";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { detectVideoPlatform, formatSeconds, isSupportedExternalVideoUrl } from "@/lib/externalVideo";
+import { LessonOneVideoUpload } from "@/components/admin/LessonOneVideoUpload";
 import { CheckCircle2, ExternalLink, Eye, Plus, Trash2, Video } from "lucide-react";
 
 type VideoLink = { id: string; title: string; external_url: string; platform: string; language: string; duration_seconds: number | null; lesson_number: number; lesson_order: number; published: boolean; description: string | null };
@@ -55,8 +56,9 @@ export default function AdminTrainingVideosPage() {
 
   if (!isAdmin) return <MainLayout><ForbiddenError /></MainLayout>;
   const visible = (videos.data ?? []).filter((video) => `${video.title} ${video.language} ${video.lesson_number}`.toLowerCase().includes(filter.toLowerCase()));
-  return <MainLayout><PageHeader title="External Video Library" subtitle="Only metadata is stored in HajCare. Publish only verified lessons from approved providers." />
+  return <MainLayout><PageHeader title="External Video Library" subtitle="Video 1 can be attached as an MP4 draft. Other lessons stay external links until you publish them." />
     <div className="mx-auto max-w-2xl space-y-4 px-4 pb-24">
+      <LessonOneVideoUpload enabled={isAdmin} onSaved={() => { refresh(); queryClient.invalidateQueries({ queryKey: ["published-external-video-links"] }); }} />
       <Card className="border-primary/20"><CardContent className="space-y-3 p-4"><div className="flex items-center gap-2 font-semibold"><Plus className="h-4 w-4 text-primary" />Add external lesson</div>
         <Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Lesson title" />
         <Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Short lesson description" />
