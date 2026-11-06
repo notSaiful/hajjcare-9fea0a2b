@@ -14,7 +14,10 @@ import { useTrainingProgress } from "@/hooks/useTrainingProgress";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useUserRole } from "@/hooks/useUserRole";
+import { LessonOneVideoUpload } from "@/components/admin/LessonOneVideoUpload";
 import { externalVideoEmbedUrl, formatSeconds } from "@/lib/externalVideo";
+import { isLessonOneUploadedUrl, withLessonOneGuestFallback } from "@/lib/lessonOneVideoUpload";
 import { getZoyaLanguage } from "@/lib/zoyaLanguages";
 import { topicSummaries, topicQuizzes, type TrainingLang } from "@/data/hajjTrainingContent";
 import { toast } from "@/hooks/use-toast";
@@ -78,10 +81,8 @@ const expertGuestSessions: ApprovedTrainingVideo[] = [{
   lesson_number: 1,
 }];
 
-const includeExpertGuestSessions = (videos: ApprovedTrainingVideo[]) => [
-  ...expertGuestSessions,
-  ...videos.filter((video) => !expertGuestSessions.some((guest) => guest.external_url === video.external_url)),
-];
+const includeExpertGuestSessions = (videos: ApprovedTrainingVideo[]) =>
+  withLessonOneGuestFallback(videos, expertGuestSessions);
 
 const topics: Topic[] = [
   { id: "intro", icon: Sparkles, color: "gold", order: 1, duration: "8 min", difficulty: "Beginner",
@@ -283,6 +284,7 @@ const QuizPanel = ({ topicId, lang, uiLang, onFinish }: {
 const HajjTrainingVideosPage = () => {
   const { language, isRTL } = useLanguage();
   const { user } = useAuth();
+  const { isAdmin } = useUserRole();
   const [videoLang, setVideoLang] = useState<Lang>(() => {
     if (language === "ur") return "ur";
     if (language === "bn") return "bn";
@@ -554,6 +556,8 @@ const HajjTrainingVideosPage = () => {
             <span>{ui.order}</span>
           </div>
 
+          {isAdmin && <LessonOneVideoUpload enabled />}
+
           {/* Topic list */}
           <div className="space-y-3">
             {approvedVideosQuery.isLoading && <Card><CardContent className="p-4 text-sm text-muted-foreground">Loading approved lessons…</CardContent></Card>}
@@ -723,7 +727,7 @@ const HajjTrainingVideosPage = () => {
               <PlayCircle className="w-5 h-5 text-primary shrink-0 mt-0.5" />
               <div className="text-xs text-muted-foreground leading-relaxed space-y-1">
                 <p>{uiLang === "hi" ? "वीडियो YouTube के भरोसेमंद Hajj चैनलों से।" : uiLang === "ur" ? "ویڈیوز یوٹیوب کے قابل اعتماد چینلز سے۔" : "Videos are curated from trusted YouTube Hajj channels."}</p>
-                <p className="flex items-center gap-1"><Download className="h-3.5 w-3.5" />Downloadable lesson notes work offline. Video downloads depend on the provider and are not stored by HajCare AI.</p>
+                <p className="flex items-center gap-1"><Download className="h-3.5 w-3.5" />Downloadable lesson notes work offline. Video 1 plays from HajCare after an admin publishes an upload. Other lessons stay with their original provider.</p>
                 {(uiLang === "bn" || uiLang === "ta" || uiLang === "ml") && <p>{ui.quizNote}</p>}
               </div>
             </CardContent>
@@ -739,7 +743,16 @@ const HajjTrainingVideosPage = () => {
               </DialogTitle>
             </DialogHeader>
             <div className="aspect-video w-full bg-black">
-              {playerTopic && (
+              {playerTopic && isLessonOneUploadedUrl(playerTopic.videoUrl || "") ? (
+                <video
+                  key={playerTopic.id}
+                  src={playerTopic.videoUrl}
+                  controls
+                  playsInline
+                  className="h-full w-full"
+                  title={playerTopic.title[contentLang] ?? playerTopic.title.en}
+                />
+              ) : playerTopic ? (
                 <iframe
                   key={`${playerTopic.id}-${videoLang}`}
                   src={playerTopic.videoUrl ? externalVideoEmbedUrl(playerTopic.videoUrl, undefined, { captionLocale: getZoyaLanguage(language).locale }) : `${buildYouTubeEmbedUrl(playerTopic.searchQuery[videoLang] || playerTopic.searchQuery.hi)}&cc_load_policy=1&cc_lang_pref=${encodeURIComponent(getZoyaLanguage(language).locale)}`}
@@ -748,7 +761,7 @@ const HajjTrainingVideosPage = () => {
                   allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
                 />
-              )}
+              ) : null}
             </div>
             <div className="p-3 flex flex-wrap gap-2 justify-between items-center">
               <p className="text-xs text-muted-foreground">
