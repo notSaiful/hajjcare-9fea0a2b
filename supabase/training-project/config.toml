@@ -1,0 +1,8 @@
+# Isolated from supabase/config.toml. Link and deploy this folder only to pwtmrddreqmhyluqbfgi.
+project_id = "pwtmrddreqmhyluqbfgi"
+
+[functions.training-enroll]
+# Current docs: the gateway verify_jwt check only accepts legacy JWT keys.
+# A publishable key in Authorization is rejected as Invalid JWT.
+# This function checks the apikey header itself and refuses the service role key.
+verify_jwt = false

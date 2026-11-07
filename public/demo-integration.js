@@ -1,6 +1,7 @@
 /* Honest bridge from the approved demo screens to existing HajCare pages.
-   Training enrollment has no server table. Volunteer registration keeps the
-   existing signed-in form. Video 1 stays in the demo's browser storage. */
+   100-day training saves only after the training server returns a receipt.
+   Volunteer registration keeps the existing signed-in form.
+   Video 1 stays in the demo's browser storage. */
 (function (root) {
   var LIVE = {
     circulars: ["/circulars", "Circulars"],
@@ -70,11 +71,11 @@
     };
   }
 
-  function trainingMessage() {
+  function trainingStatus() {
     if (en()) {
-      return "<b>Nothing was submitted.</b> HajCare does not have a training-enrollment record, so this form is not saved and is not a registration. <a href=\"/auth?next=/home\">Create a HajCare account or sign in</a>. An account does not enroll you in the 100-day training.";
+      return "Free enrollment is only for a registered haji. This form does not check your cover number against a Haj Committee list, so free eligibility is not confirmed. A receipt appears only after the server saves the request. No email or SMS is sent.";
     }
-    return "<b>कुछ भी जमा नहीं हुआ।</b> HajCare के पास ट्रेनिंग-एनरोलमेंट का रिकॉर्ड नहीं है, इसलिए यह फ़ॉर्म सेव नहीं होता और रजिस्ट्रेशन नहीं है। <a href=\"/auth?next=/home\">HajCare खाता बनाएँ या साइन इन करें</a>। खाता 100 दिन की ट्रेनिंग में दाख़िला नहीं है।";
+    return "मुफ़्त दाख़िला सिर्फ़ रजिस्टर्ड हाजी के लिए है। यह फ़ॉर्म कवर नंबर को हज कमेटी की सूची से नहीं जाँचता, इसलिए मुफ़्त पात्रता पक्की नहीं है। रसीद तभी दिखेगी जब सर्वर अनुरोध सेव कर दे। ईमेल या एसएमएस नहीं भेजा जाता।";
   }
 
   function volunteerMessage() {
@@ -89,12 +90,37 @@
     var train = document.querySelector('form[data-store="hc-train"]');
     if (train) {
       var tag = train.previousElementSibling;
-      if (tag && tag.classList && tag.classList.contains("tag")) {
-        tag.textContent = en()
-          ? "Not submitted — no training enrollment on the server"
-          : "जमा नहीं — सर्वर पर ट्रेनिंग एनरोलमेंट नहीं है";
-      }
-      blockForm(train, '<div class="note">' + trainingMessage() + "</div>");
+      if (tag && tag.classList && tag.classList.contains("tag")) tag.remove();
+      try { localStorage.removeItem("hc-train"); } catch (e) { /* private mode */ }
+      var list = document.getElementById("list");
+      if (list) list.textContent = "";
+      train.onsubmit = function (e) {
+        if (e && e.preventDefault) e.preventDefault();
+        var res = train.querySelector(".res");
+        if (!res) return false;
+        res.textContent = "";
+        var submit = window.__hcSubmitTrainingEnrollment;
+        if (typeof submit !== "function") {
+          res.textContent = en()
+            ? "Nothing was saved. The enrollment service is not available in this page."
+            : "कुछ सेव नहीं हुआ। इस पेज पर एनरोलमेंट सेवा उपलब्ध नहीं है।";
+          return false;
+        }
+        submit(train).then(function (out) {
+          res.textContent = "";
+          var saved = !!(out && out.ok === true && out.receiptId);
+          var box = document.createElement("div");
+          var fallback = en() ? "Nothing was saved." : "कुछ सेव नहीं हुआ।";
+          var text = out && out.message ? out.message : fallback;
+          if (!saved && /^\s*saved\b/i.test(text)) text = fallback;
+          box.className = saved ? "ok" : "note";
+          box.textContent = text;
+          res.appendChild(box);
+        }).catch(function () {
+          res.textContent = en() ? "Nothing was saved. The server did not confirm the request." : "कुछ सेव नहीं हुआ। सर्वर ने पुष्टि नहीं की।";
+        });
+        return false;
+      };
     }
     var vol = document.querySelector('form[data-store="hc-vol"]');
     if (vol) {
@@ -110,11 +136,11 @@
     if (h === "home") {
       insertNote(
         en()
-          ? 'Account registration uses the existing HajCare sign-in. <a href="/auth">Create an account or sign in</a>. Training and volunteer cards do not save a registration.'
-          : 'खाता रजिस्ट्रेशन मौजूदा HajCare साइन-इन से होता है। <a href="/auth">खाता बनाएँ या साइन इन करें</a>। ट्रेनिंग और वॉलंटियर कार्ड रजिस्ट्रेशन सेव नहीं करते।'
+          ? 'Account registration uses the existing HajCare sign-in. <a href="/auth">Create an account or sign in</a>. The 100-day form is saved only when the server returns a receipt. The cover number alone does not confirm free eligibility.'
+          : 'खाता रजिस्ट्रेशन मौजूदा HajCare साइन-इन से होता है। <a href="/auth">खाता बनाएँ या साइन इन करें</a>। 100 दिन का फ़ॉर्म तभी सेव होता है जब सर्वर रसीद दे। सिर्फ़ कवर नंबर से मुफ़्त पात्रता पक्की नहीं होती।'
       );
     } else if (h === "register") {
-      insertNote(trainingMessage());
+      insertNote(trainingStatus());
     } else if (h === "volunteer") {
       insertNote(volunteerMessage());
     } else if (h === "fees") {

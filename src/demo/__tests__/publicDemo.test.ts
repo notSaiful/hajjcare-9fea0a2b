@@ -63,10 +63,31 @@ describe("approved public demo", () => {
   });
 
   it("does not describe training or volunteer demo submits as a completed registration", () => {
-    expect(integration).toContain("Nothing was submitted");
+    expect(integration).toContain("Nothing was saved");
     expect(integration).toContain("This short form was not submitted");
     expect(integration).toContain("/auth?next=/volunteer");
     expect(integration).not.toMatch(/Registered \(demo\)|Registration saved/);
+    expect(integration).not.toMatch(/supabase/i);
+  });
+
+  it("shows only the eight training fields and keeps that form off the main Supabase project", () => {
+    const register = explore.slice(explore.indexOf("V.register="), explore.indexOf("V.fees="));
+    for (const name of ["name", "cover", "mobile", "email", "state", "madhhab", "preferred_language", "question"]) {
+      expect(register).toContain(`name="${name}"`);
+    }
+    expect(register.match(/name="/g)).toHaveLength(8);
+    expect(register).toContain("pending verification");
+    expect(register).not.toContain("maslak");
+    expect(register).not.toContain("Registered (demo)");
+    expect(read("public/explore.html")).toContain("training-enroll.js");
+    const config = read("public/training-config.js");
+    expect(config).toContain("https://pwtmrddreqmhyluqbfgi.supabase.co");
+    expect(config).not.toContain("begtqcmwruvwposocnsr");
+    expect(config).not.toContain("vvbbwlfzpfvgyweeggvw");
+    expect(config).not.toContain("sb_publishable_");
+    expect(config).not.toContain("service_role");
+    expect(read("src/integrations/supabase/client.ts")).toContain("VITE_SUPABASE_URL");
+    expect(read("src/integrations/supabase/client.ts")).not.toContain("pwtmrddreqmhyluqbfgi");
   });
 
   it("serves the demo at / and /explore and keeps the React app for other routes", () => {
@@ -121,9 +142,26 @@ describe("demo registration bridge", () => {
     form.onsubmit?.(event);
     expect(event.defaultPrevented).toBe(true);
     expect(localStorage.getItem("hc-train")).toBeNull();
-    expect(document.querySelector(".res")?.textContent).toMatch(/Nothing was submitted/);
+    expect(document.querySelector(".res")?.textContent).toMatch(/Nothing was saved/);
     expect(document.querySelector("#list")?.textContent).toBe("");
     expect(document.body.innerHTML).not.toMatch(/Registered/);
+  });
+
+  it("shows a training receipt only when the server save returns one", async () => {
+    mount("#register", `<form data-store="hc-train"><div class="res"></div></form>`);
+    (window as unknown as { __hcSubmitTrainingEnrollment?: (form: HTMLFormElement) => Promise<unknown> }).__hcSubmitTrainingEnrollment =
+      async () => ({ ok: true, message: "Saved. Receipt abc", receiptId: "abc" });
+    document.querySelector("form")?.dispatchEvent(new Event("submit", { cancelable: true }));
+    await Promise.resolve();
+    expect(document.querySelector(".res")?.textContent).toContain("Receipt abc");
+
+    document.querySelector(".res")!.textContent = "";
+    (window as unknown as { __hcSubmitTrainingEnrollment?: (form: HTMLFormElement) => Promise<unknown> }).__hcSubmitTrainingEnrollment =
+      async () => ({ ok: true, message: "Saved. Receipt abc" });
+    document.querySelector("form")?.dispatchEvent(new Event("submit", { cancelable: true }));
+    await Promise.resolve();
+    expect(document.querySelector(".res")?.textContent).toBe("Nothing was saved.");
+    expect(localStorage.getItem("hc-train")).toBeNull();
   });
 
   it("sends volunteer registration to the existing signed-in form", () => {

@@ -1,0 +1,11 @@
+-- Already applied by hand in pwtmrddreqmhyluqbfgi.
+-- Do not run this file. A second CREATE TABLE returns 42P07:
+-- relation "training_enrollments" already exists.
+--
+-- Existing table public.training_enrollments:
+-- id uuid default, name, cover_number, mobile_number,
+-- email nullable, state, madhhab nullable, preferred_language,
+-- question_or_consultation nullable, created_at default.
+-- Unique (cover_number, mobile_number).
+-- RLS on, no anon/authenticated grants, service_role select + insert only.
+-- No further tables.

@@ -1,8 +1,11 @@
 import { defineConfig, loadEnv, type Connect, type Plugin } from "vite";
 import react from "@vitejs/plugin-react-swc";
+import fs from "node:fs";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 import { supabaseHttpsOrigin } from "./src/lib/supabaseOrigin";
+import { assertTrainingProjectUrl } from "./src/training/project";
+import { trainingConfigSource } from "./src/training/publicKey";
 
 /** Match vercel.json: demo at /, /explore, /library; React app for other extension-less routes. */
 function demoRouting(): Plugin {
@@ -29,6 +32,34 @@ function demoRouting(): Plugin {
     },
     configurePreviewServer(server) {
       server.middlewares.use(rewrite);
+    },
+  };
+}
+
+/** Inject the training publishable key without using VITE_SUPABASE_URL. */
+function trainingClientConfig(mode: string): Plugin {
+  const env = loadEnv(mode, process.cwd(), "VITE_");
+  if (env.VITE_TRAINING_SUPABASE_URL?.trim()) assertTrainingProjectUrl(env.VITE_TRAINING_SUPABASE_URL);
+  const source = trainingConfigSource(env.VITE_TRAINING_SUPABASE_PUBLISHABLE_KEY);
+  const serve: Connect.NextHandleFunction = (req, res, next) => {
+    const pathOnly = (req.url || "").split("?")[0];
+    if (pathOnly !== "/training-config.js") return next();
+    res.setHeader("content-type", "application/javascript; charset=utf-8");
+    res.setHeader("cache-control", "no-store");
+    res.end(source);
+  };
+  return {
+    name: "hajcare-training-config",
+    configureServer(server) {
+      server.middlewares.use(serve);
+    },
+    configurePreviewServer(server) {
+      server.middlewares.use(serve);
+    },
+    closeBundle() {
+      const file = path.resolve(process.cwd(), "dist/training-config.js");
+      if (!fs.existsSync(path.dirname(file))) return;
+      fs.writeFileSync(file, source);
     },
   };
 }
@@ -61,7 +92,7 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
   },
-  plugins: [react(), demoRouting(), supabasePreconnect(mode), mode === "development" && componentTagger()].filter(Boolean),
+  plugins: [react(), demoRouting(), trainingClientConfig(mode), supabasePreconnect(mode), mode === "development" && componentTagger()].filter(Boolean),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
