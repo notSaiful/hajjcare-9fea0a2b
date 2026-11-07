@@ -204,7 +204,7 @@ const VolunteerPage = () => {
       const langs = [...form.languages];
       if (form.other_language.trim()) langs.push(form.other_language.trim());
 
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from("volunteers")
         .insert({
           user_id: user.id,
@@ -237,9 +237,10 @@ const VolunteerPage = () => {
       setVolunteerId(data.volunteer_id);
       setSuccess(true);
       toast({ title: "✅ Your Volunteer Registration has been submitted successfully.", description: `आपकी Volunteer ID: ${data.volunteer_id}` });
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "An unexpected error occurred. Please try again.";
       console.error("Volunteer registration error:", err);
-      toast({ title: "रजिस्ट्रेशन में त्रुटि", description: err.message || "An unexpected error occurred. Please try again.", variant: "destructive" });
+      toast({ title: "रजिस्ट्रेशन में त्रुटि", description: message, variant: "destructive" });
     } finally {
       setSubmitting(false);
     }
