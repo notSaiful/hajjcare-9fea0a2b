@@ -1,0 +1,16 @@
+/* explore.html language menu: reuses the home page i18n.js dictionary (same mechanism as app.js) */
+(()=>{const LG=[["ur", "lang=\"ur\" dir=\"rtl\"", "اردو", "Urdu"], ["hi", "lang=\"hi\"", "हिन्दी", "Hindi"], ["bn", "lang=\"bn\"", "বাংলা", "Bengali"], ["ta", "lang=\"ta\"", "தமிழ்", "Tamil"], ["te", "lang=\"te\"", "తెలుగు", "Telugu"], ["kn", "lang=\"kn\"", "ಕನ್ನಡ", "Kannada"], ["ml", "lang=\"ml\"", "മലയാളം", "Malayalam"], ["ks", "lang=\"ks\" dir=\"rtl\"", "کٲشُر", "Kashmiri"], ["gu", "lang=\"gu\"", "ગુજરાતી", "Gujarati"], ["mr", "lang=\"mr\"", "मराठी", "Marathi"], ["en", "lang=\"en\"", "English", "English"], ["as", "lang=\"as\"", "অসমীয়া", "Assamese"], ["brx", "lang=\"brx\"", "बर’", "Bodo"], ["doi", "lang=\"doi\"", "डोगरी", "Dogri"], ["kok", "lang=\"kok\"", "कोंकणी", "Konkani"], ["mai", "lang=\"mai\"", "मैथिली", "Maithili"], ["mni", "lang=\"mni\"", "ꯃꯤꯇꯩꯂꯣꯟ", "Manipuri"], ["ne", "lang=\"ne\"", "नेपाली", "Nepali"], ["or", "lang=\"or\"", "ଓଡ଼ିଆ", "Odia"], ["pa", "lang=\"pa\"", "ਪੰਜਾਬੀ", "Punjabi"], ["sa", "lang=\"sa\"", "संस्कृतम्", "Sanskrit"], ["sat", "lang=\"sat\"", "ᱥᱟᱱᱛᱟᱲᱤ", "Santali"], ["sd", "lang=\"sd\" dir=\"rtl\"", "سنڌي", "Sindhi"]];const D=window.__I18N,T=D?D.T:{},K=D?D.K:[],RTL={ur:1,ks:1,sd:1};
+const nz=x=>x.replace(/\s+/g,' ').trim();const idx=new Map();K.forEach((k,i)=>k.split('|').forEach(v=>{if(!v.startsWith('<'))idx.set(nz(v),i)}));
+const apply=l=>{const h=document.documentElement;h.dataset.ui=l;h.lang=l==='mni'?'mni-Mtei':l==='sat'?'sat-Olck':l;h.dir=RTL[l]?'rtl':'ltr';
+ if(l!=='hi'&&l!=='en'&&T[l]){const L=T[l],w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,{acceptNode:n=>{const p=n.parentElement;return(!p||p.closest('script,style,[lang=ar],.lmenu,.lsel'))?2:1}});let n;while(n=w.nextNode()){const t=nz(n.nodeValue);if(!t)continue;const i=idx.get(t);if(i!==undefined)n.nodeValue=n.nodeValue.replace(/\S[\s\S]*\S|\S/,L[i])}}
+ document.querySelectorAll('.lmenu [data-l]').forEach(x=>x.setAttribute('aria-checked',x.dataset.l===l?'true':'false'))};
+window.__exI18n=apply;
+const nl=document.getElementById('lsel'),mn=document.createElement('div');mn.className='lmenu';mn.id='lmenu';mn.setAttribute('role','menu');mn.hidden=true;
+LG.forEach(([c,a,n,s])=>{const b=document.createElement('button');b.type='button';b.setAttribute('role','menuitemradio');b.dataset.l=c;b.innerHTML='<b '+a+'></b><small></small>';b.querySelector('b').textContent=n;b.querySelector('small').textContent=s;mn.appendChild(b);
+ b.addEventListener('click',e=>{e.stopPropagation();mn.hidden=true;nl.setAttribute('aria-expanded','false');window.__exSetLang(c)})});
+document.body.appendChild(mn);
+nl.addEventListener('click',e=>{e.stopPropagation();const o=mn.hidden;mn.hidden=!o;nl.setAttribute('aria-expanded',o?'true':'false')});
+document.addEventListener('click',e=>{if(!mn.hidden&&!mn.contains(e.target)){mn.hidden=true;nl.setAttribute('aria-expanded','false')}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!mn.hidden){mn.hidden=true;nl.setAttribute('aria-expanded','false');nl.focus()}});
+addEventListener('hashchange',()=>setTimeout(()=>apply(document.documentElement.dataset.ui||'hi'),0));
+let l='hi';try{l=localStorage.getItem('hc_lang')||(localStorage.getItem('hc-ex-lang')==='en'?'en':'hi')}catch(_){}if(!T[l])l='hi';apply(l)})();

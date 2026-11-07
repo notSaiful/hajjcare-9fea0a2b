@@ -51,4 +51,6 @@
   <url><loc>https://hajjcare.in/refund-policy</loc><changefreq>monthly</changefreq><priority>0.3</priority></url>
   <url><loc>https://hajjcare.in/shipping-policy</loc><changefreq>monthly</changefreq><priority>0.3</priority></url>
   <url><loc>https://hajjcare.in/auth</loc><changefreq>monthly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://hajjcare.in/explore</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://hajjcare.in/library</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
 </urlset>

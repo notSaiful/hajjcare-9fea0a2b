@@ -1,7 +1,35 @@
-import { defineConfig } from "vite";
+import { defineConfig, type Connect, type Plugin } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
+
+/** Match vercel.json: demo at /, /explore, /library; React app for other extension-less routes. */
+function demoRouting(): Plugin {
+  const rewrite: Connect.NextHandleFunction = (req, _res, next) => {
+    const raw = req.url || "/";
+    const q = raw.indexOf("?");
+    const pathOnly = q === -1 ? raw : raw.slice(0, q);
+    const search = q === -1 ? "" : raw.slice(q);
+    let nextPath = pathOnly;
+    if (pathOnly === "/explore") nextPath = "/explore.html";
+    else if (pathOnly === "/library") nextPath = "/library.html";
+    else if (pathOnly === "/") nextPath = "/index.html";
+    else if (!pathOnly.includes(".") && !pathOnly.startsWith("/@") && !pathOnly.startsWith("/src/") && !pathOnly.startsWith("/node_modules/")) {
+      nextPath = "/app.html";
+    }
+    if (nextPath !== pathOnly) req.url = nextPath + search;
+    next();
+  };
+  return {
+    name: "hajcare-demo-routing",
+    configureServer(server) {
+      server.middlewares.use(rewrite);
+    },
+    configurePreviewServer(server) {
+      server.middlewares.use(rewrite);
+    },
+  };
+}
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -9,10 +37,17 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
   },
-  plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
+  plugins: [react(), demoRouting(), mode === "development" && componentTagger()].filter(Boolean),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+    },
+  },
+  // The public homepage is the static demo (public/index.html).
+  // The existing React app is built from app.html and served for its routes.
+  build: {
+    rollupOptions: {
+      input: path.resolve(__dirname, "app.html"),
     },
   },
 }));
