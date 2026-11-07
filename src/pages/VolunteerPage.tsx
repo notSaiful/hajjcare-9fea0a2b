@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { SEO } from "@/components/SEO";
 import { SimpleHeader } from "@/components/SimpleHeader";
-import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -271,7 +270,7 @@ const VolunteerPage = () => {
             </CardContent>
           </Card>
         </main>
-        <Footer />
+        <p className="text-center text-xs text-muted-foreground py-8">HajCare AI · info@hajjcare.in</p>
       </div>
       </>
     );
@@ -313,7 +312,7 @@ const VolunteerPage = () => {
                 </div>
 
                 <p className="text-sm text-muted-foreground">
-                  तो <span className="font-semibold text-foreground">HajjCare AI Support Volunteer Team</span> से जुड़िए।
+                  तो <span className="font-semibold text-foreground">HajCare AI Support Volunteer Team</span> से जुड़िए।
                 </p>
                 <p className="text-xs text-muted-foreground">👉 नीचे फॉर्म भरें — हमारी टीम आपसे संपर्क करेगी</p>
 
@@ -779,7 +778,7 @@ const VolunteerPage = () => {
           </DialogContent>
         </Dialog>
       </main>
-      <Footer />
+      <p className="text-center text-xs text-muted-foreground py-8">HajCare AI · info@hajjcare.in</p>
     </div>
   );
 };

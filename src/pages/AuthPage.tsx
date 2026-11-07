@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { safeNextPath } from "@/lib/safeNextPath";
 import { useAuth } from "@/hooks/useAuth";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { AmbientBackground } from "@/components/AmbientBackground";
@@ -29,7 +28,8 @@ const AuthPage = () => {
 
   useEffect(() => {
     if (!loading && isAuthenticated) {
-      navigate(safeNextPath(params.get("next")));
+      if (params.get("next") === "/volunteer") navigate("/volunteer");
+      else window.location.replace("/");
     }
   }, [isAuthenticated, loading, navigate, params]);
 
@@ -51,14 +51,6 @@ const AuthPage = () => {
       <AmbientBackground variant="warm" />
       <IslamicPattern />
       <MosqueSilhouette />
-
-      {/* Crescent accent top-right */}
-      <div className="absolute top-6 right-8 sm:top-10 sm:right-14 opacity-[0.10] pointer-events-none" aria-hidden>
-        <svg width="60" height="60" viewBox="0 0 60 60" className="text-primary" fill="currentColor">
-          <circle cx="30" cy="30" r="24" />
-          <circle cx="36" cy="28" r="20" fill="hsl(var(--background))" />
-        </svg>
-      </div>
 
       {/* Bismillah */}
       <p className="relative z-10 text-xl sm:text-2xl font-arabic text-primary/80 mb-4 animate-fade-up tracking-wide">

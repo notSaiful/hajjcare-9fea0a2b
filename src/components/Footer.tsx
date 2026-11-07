@@ -40,7 +40,7 @@ export function Footer() {
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {/* Brand */}
           <div className="sm:col-span-2 lg:col-span-1">
-            <h3 className="font-bold text-lg text-foreground mb-3">HajjCare</h3>
+            <h3 className="font-bold text-lg text-foreground mb-3">HajCare AI</h3>
             <p className="text-sm text-muted-foreground leading-relaxed mb-4">
               A digital guidance and support platform for Hajj and Umrah pilgrims.
             </p>

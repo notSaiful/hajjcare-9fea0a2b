@@ -73,9 +73,15 @@ describe("approved public demo", () => {
     expect(vercel.rewrites[0]).toEqual({ source: "/", destination: "/index.html" });
     expect(vercel.rewrites).toContainEqual({ source: "/explore", destination: "/explore.html" });
     expect(vercel.rewrites).toContainEqual({ source: "/library", destination: "/library.html" });
-    expect(vercel.rewrites.at(-1)).toEqual({ source: "/(.*)", destination: "/app.html" });
+    expect(vercel.rewrites).toContainEqual({ source: "/auth", destination: "/app.html" });
+    expect(vercel.rewrites).toContainEqual({ source: "/volunteer", destination: "/app.html" });
+    expect(vercel.rewrites.at(-1)).toEqual({ source: "/(.*)", destination: "/index.html" });
     expect(home).toContain("HajCare AI");
     expect(home).not.toContain("HajjCare");
+    expect(home).not.toContain("demo-tag");
+    expect(read("public/explore.html")).not.toContain("Demo preview");
+    expect(read("public/library.html")).not.toContain("Demo preview");
+    expect(read("public/library.html")).toContain("https://qurancomplex.gov.sa/en/kfgqpc-quran-translate/");
     expect(home).not.toContain('id="root"');
     expect(read("app.html")).toContain("/src/main.tsx");
     expect(read("app.html")).not.toContain("qovcctfoxgvowedjioil");
@@ -137,7 +143,7 @@ describe("demo registration bridge", () => {
   it("points a sample explore card at the related existing page", () => {
     mount("#money", "<h1>Money</h1>");
     const note = document.querySelector("[data-hc-live]");
-    expect(note?.innerHTML).toContain('href="/money"');
-    expect(note?.textContent).toMatch(/demo sample/i);
+    expect(note?.textContent).toMatch(/sample guidance/i);
+    expect(note?.innerHTML).not.toContain('href="/money"');
   });
 });

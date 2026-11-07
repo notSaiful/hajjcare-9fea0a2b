@@ -14,9 +14,10 @@ function demoRouting(): Plugin {
     let nextPath = pathOnly;
     if (pathOnly === "/explore") nextPath = "/explore.html";
     else if (pathOnly === "/library") nextPath = "/library.html";
-    else if (pathOnly === "/") nextPath = "/index.html";
+    else if (pathOnly === "/" || pathOnly === "/index.html") nextPath = "/index.html";
+    else if (pathOnly === "/auth" || pathOnly === "/volunteer") nextPath = "/app.html";
     else if (!pathOnly.includes(".") && !pathOnly.startsWith("/@") && !pathOnly.startsWith("/src/") && !pathOnly.startsWith("/node_modules/")) {
-      nextPath = "/app.html";
+      nextPath = "/index.html";
     }
     if (nextPath !== pathOnly) req.url = nextPath + search;
     next();

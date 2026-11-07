@@ -1,5 +1,5 @@
 /**
- * Detailed mosque silhouette with minarets, dome, arched windows, and crescent.
+ * Mosque silhouette with minarets, dome, and arched windows.
  */
 export function MosqueSilhouette() {
   return (
@@ -25,12 +25,6 @@ export function MosqueSilhouette() {
         <rect x="350" y="100" width="300" height="100" />
         {/* Main dome */}
         <ellipse cx="500" cy="100" rx="120" ry="65" />
-        {/* Crescent on dome */}
-        <g transform="translate(500, 40)">
-          <circle r="11" fill="currentColor" />
-          <circle cx="4" cy="-2" r="9" fill="hsl(var(--background))" />
-          <rect x="-2" y="-22" width="4" height="10" rx="1" />
-        </g>
 
         {/* Arched windows */}
         {[400, 450, 500, 550, 600].map((x) => (
