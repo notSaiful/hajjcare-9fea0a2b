@@ -78,6 +78,8 @@ describe("approved public demo", () => {
     expect(home).not.toContain("HajjCare");
     expect(home).not.toContain('id="root"');
     expect(read("app.html")).toContain("/src/main.tsx");
+    expect(read("app.html")).not.toContain("qovcctfoxgvowedjioil");
+    expect(read("app.html")).not.toContain("supabase.co");
   });
 });
 

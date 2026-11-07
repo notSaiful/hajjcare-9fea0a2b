@@ -1,7 +1,8 @@
-import { defineConfig, type Connect, type Plugin } from "vite";
+import { defineConfig, loadEnv, type Connect, type Plugin } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
+import { supabaseHttpsOrigin } from "./src/lib/supabaseOrigin";
 
 /** Match vercel.json: demo at /, /explore, /library; React app for other extension-less routes. */
 function demoRouting(): Plugin {
@@ -31,13 +32,35 @@ function demoRouting(): Plugin {
   };
 }
 
+/** Preconnect the React shell to the Supabase origin from VITE_SUPABASE_URL. */
+function supabasePreconnect(mode: string): Plugin {
+  return {
+    name: "hajcare-supabase-preconnect",
+    transformIndexHtml: {
+      order: "pre",
+      handler(html, ctx) {
+        if (!ctx.filename.endsWith(`${path.sep}app.html`) && !ctx.filename.endsWith("/app.html")) {
+          return html;
+        }
+        const env = loadEnv(mode, process.cwd(), "VITE_");
+        const origin = supabaseHttpsOrigin(env.VITE_SUPABASE_URL);
+        if (!origin) return html;
+        const anchor = '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />';
+        const tag = `    <link rel="preconnect" href="${origin}" crossorigin />`;
+        if (!html.includes(anchor) || html.includes(tag)) return html;
+        return html.replace(anchor, `${anchor}\n${tag}`);
+      },
+    },
+  };
+}
+
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
   },
-  plugins: [react(), demoRouting(), mode === "development" && componentTagger()].filter(Boolean),
+  plugins: [react(), demoRouting(), supabasePreconnect(mode), mode === "development" && componentTagger()].filter(Boolean),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
