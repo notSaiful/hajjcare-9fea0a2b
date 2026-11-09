@@ -1,0 +1,20 @@
+HajCare AI — Ruhani Demo — Credits
+Male Talbiya audio (assets/talbiya-v2.mp3, loudness-balanced v2, one recitation played 3 times): AI-generated speech via ElevenLabs (voice "Ahmad - Calm Saudi Narrator", model eleven_v4), generated 30 Oct 2026 on Saiful Haque's ElevenLabs account; usage governed by ElevenLabs Terms for that account. Soft ambient pad + reverb synthesised locally with ffmpeg (original, no third-party material).
+Female Talbiya audio (assets/talbiya-female.mp3, 3 recitations in one file): AI-generated speech via ElevenLabs (voice "Nora S - Saudi Natural & Calm", model eleven_v4), recited 3 times, generated 30 Oct 2026 on Saiful Haque's ElevenLabs account; same ffmpeg pad/echo treatment, loudness-matched to about -20 LUFS.
+Hindi meaning narration (assets/talbiya-hindi-meaning.mp3): AI-generated speech via ElevenLabs (voice "Ghufran - Deep Documentary Narrator", model eleven_v4), generated 30 Oct 2026 on Saiful Haque's ElevenLabs account; same ffmpeg pad/echo treatment, about -20 LUFS. Played separately, not mixed into the Arabic tracks.
+No public-domain/CC human Talbiya recording with a verifiable license was found on Wikimedia Commons or Internet Archive, so none was used.
+Fonts: Google Fonts (Amiri, Cormorant Garamond, Tiro Devanagari Hindi, Mukta) — SIL Open Font License.
+Kaaba/Makkah silhouette and geometric pattern: original inline SVG.
+Zoya avatar (assets/zoya.jpg): cropped copy of the existing HajCare AI app artwork "zoya-hajj-companion.jpeg" (from the HajCare app source, read-only copy; original untouched). Not newly generated.
+Zoya voice (assets/zoya-voice.mp3, greeting + 4 short answers in one file): AI-generated Hindi speech via ElevenLabs (voice "Sia - Friendly Customer Care Agent", model eleven_v4), generated 30 Oct 2026 on Saiful Haque's ElevenLabs account; loudness-normalised with ffmpeg.
+Zoya text/voice input runs only in the browser (keyword matching to sample questions; Web Speech API where supported). Nothing is sent to any server by this demo.
+
+Fonts for language chips: Google Noto fonts (Noto Sans Bengali/Tamil/Telugu/Kannada/Malayalam/Gujarati/Gurmukhi/Oriya/Ol Chiki/Meetei Mayek, Noto Naskh Arabic) via Google Fonts, SIL Open Font License 1.1.
+
+Background music: assets/ruhani-ambient.mp3 — AI-generated with ElevenLabs Music (eleven_music_v2_5), Oct 2026, for HajCare AI demo (v2, soaring). Wordless airy rising vocal pads / "aah" choir with ethereal reverb; no instruments, percussion or lyrics requested. Loop-crossfaded and loudness-normalised locally.
+Language chip samples: spoken by the visitor's own browser/device text-to-speech (Web Speech API); no audio files shipped.
+
+Kaaba door photo (assets/art/kaaba-door-l.webp, kaaba-door-r.webp — cropped, feathered, split):
+"Kaaba Door, Makkah (2025)" by Saudi Press Agency (SPA), via Wikimedia Commons,
+https://commons.wikimedia.org/wiki/File:Kaaba_Door,_Makkah_(2025).jpg
+License: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/). Modified; derivatives shared under the same license.

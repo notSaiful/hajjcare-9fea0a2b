@@ -25,11 +25,11 @@ export const SimpleHeader = () => {
     <header className="sticky top-0 z-50 bg-card/95 backdrop-blur-md border-b border-border/50">
       <div className="container max-w-3xl mx-auto px-4 sm:px-6 h-16 sm:h-18 flex items-center justify-between">
         {/* Logo & Title */}
-        <Link to="/" className="flex items-center gap-3 min-w-0 group">
+        <a href="/" className="flex items-center gap-3 min-w-0 group">
           <div className="relative">
             <img 
               src={logo} 
-              alt="Hajj Guide" 
+              alt="HajCare AI" 
               width={44}
               height={44}
               sizes="44px"
@@ -39,9 +39,9 @@ export const SimpleHeader = () => {
             <div className="absolute inset-0 rounded-full bg-primary/10 blur-md -z-10" />
           </div>
           <span className="text-lg sm:text-xl font-semibold text-foreground truncate tracking-tight">
-            {t("hajjGuide")}
+            HajCare AI
           </span>
-        </Link>
+        </a>
 
         <div className="flex items-center gap-1 sm:gap-2">
           {/* Sunlight Mode Toggle */}
@@ -114,32 +114,6 @@ export const SimpleHeader = () => {
                 ☀️ Sunlight Mode
               </DropdownMenuItem>
               <DropdownMenuSeparator className="my-1 sm:hidden" />
-              <DropdownMenuItem asChild className="h-12 text-sm sm:text-base rounded-lg px-3">
-                <Link to="/prepare" className="cursor-pointer">
-                  {t("preparation")}
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild className="h-12 text-sm sm:text-base rounded-lg px-3">
-                <Link to="/rules" className="cursor-pointer">
-                  {language === "ar" ? "قواعد السلوك" : language === "ur" ? "قواعد و آداب" : language === "hi" ? "नियम और आचरण" : "Rules & Conduct"}
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild className="h-12 text-sm sm:text-base rounded-lg px-3">
-                <Link to="/family" className="cursor-pointer">
-                  {t("familyGroup")}
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild className="h-12 text-sm sm:text-base rounded-lg px-3">
-                <Link to="/family-status" className="cursor-pointer">
-                  {t("familyStatus")}
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild className="h-12 text-sm sm:text-base rounded-lg px-3">
-                <Link to="/family-dashboard" className="cursor-pointer">
-                  {language === "ar" ? "لوحة حالة العائلة" : language === "ur" ? "فیملی اسٹیٹس ڈیش بورڈ" : language === "hi" ? "परिवार स्थिति डैशबोर्ड" : "Family Dashboard"}
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator className="my-1" />
               {isAuthenticated ? (
                 <>
                   <DropdownMenuItem className="h-12 text-muted-foreground text-sm rounded-lg px-3">

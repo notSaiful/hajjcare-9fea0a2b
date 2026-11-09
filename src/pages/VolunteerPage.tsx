@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { SEO } from "@/components/SEO";
 import { SimpleHeader } from "@/components/SimpleHeader";
-import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -144,6 +143,10 @@ const VolunteerPage = () => {
       toast({ title: "मोबाइल नंबर 10 अंकों का होना चाहिए", description: "Mobile number must be 10 digits", variant: "destructive" });
       return false;
     }
+    if (form.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
+      toast({ title: "ईमेल सही नहीं है", description: "Enter a valid email or leave it blank", variant: "destructive" });
+      return false;
+    }
     if (form.skills.length === 0) {
       toast({ title: "कम से कम एक स्किल चुनें", description: "Select at least one skill", variant: "destructive" });
       return false;
@@ -205,7 +208,7 @@ const VolunteerPage = () => {
       const langs = [...form.languages];
       if (form.other_language.trim()) langs.push(form.other_language.trim());
 
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from("volunteers")
         .insert({
           user_id: user.id,
@@ -230,17 +233,18 @@ const VolunteerPage = () => {
         .select("volunteer_id")
         .single();
 
-      if (error) {
+      if (error || !data?.volunteer_id || data.volunteer_id === "TEMP") {
         console.error("Insert error:", error);
-        throw new Error(error.message || "Failed to submit registration");
+        throw new Error(error?.message || "The server did not confirm the registration.");
       }
 
       setVolunteerId(data.volunteer_id);
       setSuccess(true);
       toast({ title: "✅ Your Volunteer Registration has been submitted successfully.", description: `आपकी Volunteer ID: ${data.volunteer_id}` });
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "An unexpected error occurred. Please try again.";
       console.error("Volunteer registration error:", err);
-      toast({ title: "रजिस्ट्रेशन में त्रुटि", description: err.message || "An unexpected error occurred. Please try again.", variant: "destructive" });
+      toast({ title: "रजिस्ट्रेशन में त्रुटि", description: message, variant: "destructive" });
     } finally {
       setSubmitting(false);
     }
@@ -271,7 +275,7 @@ const VolunteerPage = () => {
             </CardContent>
           </Card>
         </main>
-        <Footer />
+        <p className="text-center text-xs text-muted-foreground py-8">HajCare AI · info@hajjcare.in</p>
       </div>
       </>
     );
@@ -313,7 +317,7 @@ const VolunteerPage = () => {
                 </div>
 
                 <p className="text-sm text-muted-foreground">
-                  तो <span className="font-semibold text-foreground">HajjCare AI Support Volunteer Team</span> से जुड़िए।
+                  तो <span className="font-semibold text-foreground">HajCare AI Support Volunteer Team</span> से जुड़िए।
                 </p>
                 <p className="text-xs text-muted-foreground">👉 नीचे फॉर्म भरें — हमारी टीम आपसे संपर्क करेगी</p>
 
@@ -779,7 +783,7 @@ const VolunteerPage = () => {
           </DialogContent>
         </Dialog>
       </main>
-      <Footer />
+      <p className="text-center text-xs text-muted-foreground py-8">HajCare AI · info@hajjcare.in</p>
     </div>
   );
 };
