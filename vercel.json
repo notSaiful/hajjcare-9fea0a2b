@@ -5,6 +5,7 @@
     { "source": "/library", "destination": "/library.html" },
     { "source": "/auth", "destination": "/app.html" },
     { "source": "/volunteer", "destination": "/app.html" },
+    { "source": "/service-fee", "destination": "/app.html" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

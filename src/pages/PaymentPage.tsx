@@ -12,11 +12,16 @@ import { useAuth } from "@/hooks/useAuth";
 import { PageHeader } from "@/components/PageHeader";
 import { cn } from "@/lib/utils";
 import { InvoicePreview } from "@/components/billing/GstBreakdown";
+import { ServiceFeeReceiptCard } from "@/components/billing/ServiceFeeReceiptCard";
+import type { ServiceFeeReceipt } from "../../supabase/functions/verify-razorpay-payment/receipt";
 import { useNavigate } from "react-router-dom";
 
 declare global {
   interface Window {
-    Razorpay: any;
+    Razorpay: new (options: Record<string, unknown>) => {
+      open: () => void;
+      on: (event: string, handler: (resp: { error?: { description?: string } }) => void) => void;
+    };
   }
 }
 
@@ -54,6 +59,7 @@ export default function PaymentPage() {
   const [customAmount, setCustomAmount] = useState<string>("");
   const [isCustomMode, setIsCustomMode] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [receipt, setReceipt] = useState<ServiceFeeReceipt | null>(null);
 
   const getBaseAmount = () => {
     if (isCustomMode && customAmount && parseInt(customAmount) >= 10) {
@@ -105,11 +111,11 @@ export default function PaymentPage() {
           },
         }
       );
-      if (error) {
+      if (error || data?.success !== true) {
         console.error("Verification error:", error);
         return null;
       }
-      return data?.invoice_number || null;
+      return data;
     } catch (err) {
       console.error("Failed to verify payment:", err);
       return null;
@@ -161,8 +167,8 @@ export default function PaymentPage() {
         key: key_id,
         amount: orderAmount,
         currency: currency,
-        name: "Hajj Care",
-        description: `Service Fee ₹${baseAmount} + GST @18%`,
+        name: "HajCare",
+        description: `Voluntary service fee ₹${baseAmount} + GST @18%`,
         order_id: order_id,
         prefill: {
           email: user.email || "",
@@ -170,25 +176,27 @@ export default function PaymentPage() {
         theme: {
           color: "#16a34a",
         },
-        handler: async function (resp: any) {
+        handler: async function (resp: { razorpay_payment_id: string; razorpay_signature: string }) {
           // Server-side signature verification + invoice creation
-          const invoiceNumber = await verifyAndCreateInvoice(
+          const verified = await verifyAndCreateInvoice(
             order_id,
             resp.razorpay_payment_id,
             resp.razorpay_signature,
             "paid"
           );
 
-          if (invoiceNumber) {
+          if (verified?.receipt?.receipt_number && verified?.receipt?.payment_id) {
+            setReceipt(verified.receipt);
             toast({
-              title: "Payment Successful! 🎉",
-              description: "Invoice generated. View it in your billing history.",
+              title: "Payment verified",
+              description: `Receipt ${verified.receipt.receipt_number}`,
             });
           } else {
+            setReceipt(null);
             toast({
               title: "Verification Failed",
               description:
-                "Payment received but could not be verified. Please contact support.",
+                "No receipt was issued. A receipt appears only after the server verifies the payment.",
               variant: "destructive",
             });
           }
@@ -201,7 +209,7 @@ export default function PaymentPage() {
       };
 
       const razorpay = new window.Razorpay(options);
-      razorpay.on("payment.failed", async function (resp: any) {
+      razorpay.on("payment.failed", async function (resp: { error?: { description?: string } }) {
         await verifyAndCreateInvoice(order_id, "", "", "failed");
         toast({
           title: "Payment Failed",
@@ -211,11 +219,11 @@ export default function PaymentPage() {
       });
       razorpay.open();
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Payment error:", error);
       toast({
         title: "Error",
-        description: error.message || "Failed to initiate payment",
+        description: error instanceof Error ? error.message : "Failed to initiate payment",
         variant: "destructive",
       });
     } finally {
@@ -232,6 +240,11 @@ export default function PaymentPage() {
           icon={CreditCard}
           iconVariant="primary"
         />
+
+        <p className="text-sm text-muted-foreground">
+          This fee is voluntary and not compulsory for any Haji. A receipt is shown only after the server verifies the payment.
+        </p>
+        {receipt ? <ServiceFeeReceiptCard receipt={receipt} /> : null}
 
         {/* GSTIN Configuration Guidance */}
         {!ORG_GSTIN && (
@@ -433,7 +446,7 @@ export default function PaymentPage() {
             <div className="flex items-start gap-3 text-sm text-muted-foreground">
               <Info className="h-5 w-5 flex-shrink-0 mt-0.5 text-primary/70" />
               <div className="space-y-1">
-                <p>This is an optional service fee, not a donation. Fees are non-refundable. GST @18% is applied as per Indian law.</p>
+                <p>This fee is voluntary and not compulsory for any Haji. It is not a donation. GST @18% is applied as per Indian law.</p>
                 <p>
                   Contact:{" "}
                   <a href="mailto:info@hajjcare.in" className="text-primary underline">

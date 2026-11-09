@@ -2,23 +2,27 @@ export const TRAINING_SUPABASE_ORIGIN = "https://pwtmrddreqmhyluqbfgi.supabase.c
 const TRAINING_HOST = "pwtmrddreqmhyluqbfgi.supabase.co";
 const FORBIDDEN_HOSTS = ["begtqcmwruvwposocnsr.supabase.co", "vvbbwlfzpfvgyweeggvw.supabase.co"];
 
-export const PREFERRED_LANGUAGES = [
+export const TRAINING_LANGUAGES = [
   "ur", "hi", "bn", "ta", "te", "kn", "ml", "ks", "gu", "mr", "en",
   "as", "brx", "doi", "kok", "mai", "mni", "ne", "or", "pa", "sa", "sat", "sd",
 ] as const;
 
-export const MADHHABS = ["hanafi", "shafii", "maliki", "hanbali", "ahl_e_hadith", "other"] as const;
+/** Same embarkation cities already used for Hajj sign-up in this repo. */
+export const EMBARKATION_POINTS = [
+  "Srinagar", "Gaya", "Guwahati", "Indore", "Jaipur", "Nagpur",
+  "Delhi", "Mumbai", "Kolkata", "Bengaluru", "Hyderabad",
+  "Cochin (Kochi)", "Chennai", "Ahmedabad", "Lucknow",
+  "Kannur", "Calicut (Kozhikode)", "Vijayawada",
+] as const;
 
-/** Columns that exist on public.training_enrollments. id and created_at are database defaults. */
+/** Visible fields plus database defaults id and created_at. */
 export interface EnrollmentInsert {
-  name: string;
   cover_number: string;
-  mobile_number: string;
-  email: string | null;
+  name: string;
+  phone_number: string;
+  language: (typeof TRAINING_LANGUAGES)[number];
   state: string;
-  madhhab: (typeof MADHHABS)[number] | null;
-  preferred_language: (typeof PREFERRED_LANGUAGES)[number];
-  question_or_consultation: string | null;
+  embarkation_point: (typeof EMBARKATION_POINTS)[number];
 }
 
 export interface SavedEnrollment {
@@ -142,38 +146,24 @@ export function validateEnrollment(body: unknown): { ok: true; value: Enrollment
   if (name.length < 2 || !/\p{L}/u.test(name) || /[<>]/.test(name)) return { ok: false };
   const cover = cleanLine(row.cover_number, 32).toUpperCase().replace(/[^A-Z0-9-]/g, "");
   if (cover.length < 4 || cover.length > 32) return { ok: false };
-  let mobile = asText(row.mobile_number).replace(/\D/g, "");
-  if (mobile.length === 10) mobile = `91${mobile}`;
-  if (!/^[0-9]+$/.test(mobile) || mobile.length < 10 || mobile.length > 15) return { ok: false };
-  const emailText = asText(row.email).toLowerCase();
-  let email: string | null = null;
-  if (emailText) {
-    if (emailText.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailText) || /[<>]/.test(emailText)) return { ok: false };
-    email = emailText;
-  }
+  let phone = asText(row.phone_number).replace(/\D/g, "");
+  if (phone.length === 10) phone = `91${phone}`;
+  if (!/^[0-9]+$/.test(phone) || phone.length < 10 || phone.length > 15) return { ok: false };
   const state = cleanLine(row.state, 80);
   if (state.length < 2 || /[<>]/.test(state)) return { ok: false };
-  const madhhabRaw = asText(row.madhhab);
-  let madhhab: EnrollmentInsert["madhhab"] = null;
-  if (madhhabRaw && madhhabRaw !== "prefer_not_to_say") {
-    if (!(MADHHABS as readonly string[]).includes(madhhabRaw)) return { ok: false };
-    madhhab = madhhabRaw as EnrollmentInsert["madhhab"];
-  }
-  const language = asText(row.preferred_language);
-  if (!(PREFERRED_LANGUAGES as readonly string[]).includes(language)) return { ok: false };
-  const question = cleanBlock(row.question_or_consultation, 1000);
-  if (/[<>]/.test(question)) return { ok: false };
+  const language = asText(row.language);
+  if (!(TRAINING_LANGUAGES as readonly string[]).includes(language)) return { ok: false };
+  const embarkation = asText(row.embarkation_point);
+  if (!(EMBARKATION_POINTS as readonly string[]).includes(embarkation)) return { ok: false };
   return {
     ok: true,
     value: {
-      name,
       cover_number: cover,
-      mobile_number: mobile,
-      email,
+      name,
+      phone_number: phone,
+      language: language as EnrollmentInsert["language"],
       state,
-      madhhab,
-      preferred_language: language as EnrollmentInsert["preferred_language"],
-      question_or_consultation: question || null,
+      embarkation_point: embarkation as EnrollmentInsert["embarkation_point"],
     },
   };
 }
@@ -228,23 +218,14 @@ function asText(value: unknown): string {
 }
 
 function cleanLine(value: unknown, max: number): string {
-  return collapseSpaces(stripControls(asText(value), false)).trim().slice(0, max);
+  return collapseSpaces(stripControls(asText(value))).trim().slice(0, max);
 }
 
-function cleanBlock(value: unknown, max: number): string {
-  return stripControls(asText(value), true).replace(/[^\S\n]+/g, " ").trim().slice(0, max);
-}
-
-function stripControls(value: string, keepNewline: boolean): string {
+function stripControls(value: string): string {
   let out = "";
   for (const ch of value) {
     const code = ch.codePointAt(0) ?? 0;
-    if (code < 32 || code === 127) {
-      if (keepNewline && ch === "\n") out += "\n";
-      else out += " ";
-    } else {
-      out += ch;
-    }
+    out += code < 32 || code === 127 ? " " : ch;
   }
   return out;
 }

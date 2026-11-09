@@ -23,14 +23,12 @@ Deno.serve((req) => {
   const store: TrainingStore = {
     async insert(row: EnrollmentInsert) {
       const { data, error } = await db.from("training_enrollments").insert({
-        name: row.name,
         cover_number: row.cover_number,
-        mobile_number: row.mobile_number,
-        email: row.email,
+        name: row.name,
+        phone_number: row.phone_number,
+        language: row.language,
         state: row.state,
-        madhhab: row.madhhab,
-        preferred_language: row.preferred_language,
-        question_or_consultation: row.question_or_consultation,
+        embarkation_point: row.embarkation_point,
       }).select("id, created_at").single();
       if (error) {
         if (error.code === "23505") throw new DuplicateEnrollment();

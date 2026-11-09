@@ -34,7 +34,7 @@ function memoryStore() {
   const store: TrainingStore = {
     async insert(row) {
       inserts += 1;
-      if (rows.some((item) => item.cover_number === row.cover_number && item.mobile_number === row.mobile_number)) {
+      if (rows.some((item) => item.cover_number === row.cover_number && item.phone_number === row.phone_number)) {
         throw new DuplicateEnrollment();
       }
       rows.push(row);
@@ -64,14 +64,12 @@ function request(body: unknown, headers: Record<string, string> = {}) {
 
 function validBody(over: Record<string, unknown> = {}) {
   return {
-    name: "Amina Khan",
     cover_number: "ab-1234",
-    mobile_number: "9876543210",
-    email: "amina@example.com",
+    name: "Amina Khan",
+    phone_number: "9876543210",
+    language: "hi",
     state: "Kerala",
-    madhhab: "prefer_not_to_say",
-    preferred_language: "hi",
-    question_or_consultation: "What time is the class?",
+    embarkation_point: "Delhi",
     ...over,
   };
 }
@@ -122,26 +120,24 @@ describe("training enrollment save", () => {
     });
     expect(db.inserts).toBe(1);
     expect(db.rows[0]).toEqual({
-      name: "Amina Khan",
       cover_number: "AB-1234",
-      mobile_number: "919876543210",
-      email: "amina@example.com",
+      name: "Amina Khan",
+      phone_number: "919876543210",
+      language: "hi",
       state: "Kerala",
-      madhhab: null,
-      preferred_language: "hi",
-      question_or_consultation: "What time is the class?",
+      embarkation_point: "Delhi",
     });
     expect(fetch).not.toHaveBeenCalled();
   });
 
   it("does not return the earlier row when the same cover and mobile are sent again", async () => {
     const db = memoryStore();
-    await handleTrainingEnrollment(request(validBody({ email: "secret@example.com" })), deps(db.store));
+    await handleTrainingEnrollment(request(validBody({ name: "Secret Name" })), deps(db.store));
     const dup = await handleTrainingEnrollment(request(validBody()), deps(db.store));
     const json = await dup.json();
     expect(dup.status).toBe(409);
     expect(json).toEqual({ ok: false, error: "duplicate" });
-    expect(JSON.stringify(json)).not.toContain("secret@example.com");
+    expect(JSON.stringify(json)).not.toContain("Secret Name");
     expect(JSON.stringify(json)).not.toContain("receipt-1");
     expect(db.inserts).toBe(2);
     expect(db.rows).toHaveLength(1);
@@ -153,10 +149,10 @@ describe("training enrollment save", () => {
     expect(wrong.status).toBe(503);
     const secret = await handleTrainingEnrollment(request(validBody(), { apikey: env.serviceRoleKey }), deps(db.store));
     expect(secret.status).toBe(401);
-    const bad = await handleTrainingEnrollment(request(validBody({ preferred_language: "xx", name: "<b>" })), deps(db.store));
+    const bad = await handleTrainingEnrollment(request(validBody({ language: "xx", name: "<b>" })), deps(db.store));
     expect(bad.status).toBe(400);
     expect(db.inserts).toBe(0);
-    expect(validateEnrollment(validBody({ email: "" }))?.ok).toBe(true);
+    expect(validateEnrollment(validBody({ embarkation_point: "Paris" }))?.ok).toBe(false);
   });
 
   it("stops repeated attempts from one address before insert", async () => {
@@ -164,13 +160,13 @@ describe("training enrollment save", () => {
     const gate = createRateGate();
     for (let i = 0; i < 8; i += 1) {
       const res = await handleTrainingEnrollment(
-        request(validBody({ cover_number: `AB-100${i}`, mobile_number: `900000000${i}` })),
+        request(validBody({ cover_number: `AB-100${i}`, phone_number: `900000000${i}` })),
         { env, store: db.store, rateGate: gate },
       );
       expect(res.status).toBe(200);
     }
     const blocked = await handleTrainingEnrollment(
-      request(validBody({ cover_number: "AB-1999", mobile_number: "9000000099" })),
+      request(validBody({ cover_number: "AB-1999", phone_number: "9000000099" })),
       { env, store: db.store, rateGate: gate },
     );
     expect(blocked.status).toBe(429);
@@ -182,17 +178,19 @@ describe("training enrollment save", () => {
     const entry = read("supabase/training-project/functions/training-enroll/index.ts");
     const sql = read("supabase/training-project/migrations/20261108053000_training_enrollments.sql");
     const client = read("public/training-enroll.js");
-    for (const column of ["name", "cover_number", "mobile_number", "email", "state", "madhhab", "preferred_language", "question_or_consultation"]) {
+    for (const column of ["cover_number", "name", "phone_number", "language", "state", "embarkation_point"]) {
       expect(entry).toContain(column);
     }
-    expect(entry).not.toMatch(/idempotency_key|full_name|cover_norm|mobile_norm|state_name|eligibility_status|fee_status/);
-    expect(handler).not.toMatch(/idempotency_key|eligibility_status|TRAINING_EMAIL/);
-    expect(client).not.toMatch(/idempotency_key|eligibility_status|TRAINING_EMAIL/);
+    expect(entry).not.toMatch(/email:|madhhab|question_or_consultation|preferred_language|mobile_number/);
+    expect(handler).not.toMatch(/madhhab|question_or_consultation|TRAINING_EMAIL/);
+    expect(client).not.toMatch(/madhhab|question_or_consultation|TRAINING_EMAIL/);
     expect(client).toContain("cover_number");
-    expect(client).toContain("question_or_consultation");
-    expect(sql).toContain("Do not run this file");
+    expect(client).toContain("embarkation_point");
+    expect(client).toContain("रजिस्ट्रेशन अभी चालू नहीं है");
     expect(sql).toContain("42P07");
-    expect(sql).not.toMatch(/^create table/im);
+    expect(sql).toContain("Do not CREATE TABLE again");
+    expect(sql).toContain("grant select, insert on table public.training_enrollments to service_role");
+    expect(sql).not.toMatch(/grant .+ to anon/i);
     expect(entry).toContain('select("id, created_at")');
   });
 });
@@ -209,11 +207,12 @@ describe("training browser client", () => {
 
   function form() {
     document.body.innerHTML = `<form>
-      <input name="name" value="Amina Khan"><input name="cover" value="AB-1234">
-      <input name="mobile" value="9876543210"><input name="email" value="amina@example.com">
-      <input name="state" value="Kerala"><select name="madhhab"><option value="prefer_not_to_say" selected>Prefer not to say</option></select>
-      <select name="preferred_language"><option value="hi" selected>Hindi</option></select>
-      <textarea name="question">Hello</textarea><button type="submit">Submit</button>
+      <input name="cover_number" value="AB-1234"><input name="name" value="Amina Khan">
+      <input name="phone_number" value="9876543210">
+      <select name="language"><option value="hi" selected>Hindi</option></select>
+      <input name="state" value="Kerala">
+      <select name="embarkation_point"><option value="Delhi" selected>Delhi</option></select>
+      <button type="submit">Submit</button>
     </form>`;
     return document.querySelector("form") as HTMLFormElement;
   }
@@ -235,12 +234,15 @@ describe("training browser client", () => {
     expect(String(first[0])).toBe("https://pwtmrddreqmhyluqbfgi.supabase.co/functions/v1/training-enroll");
     const sent = JSON.parse(String((first[1] as RequestInit).body));
     expect(sent).toMatchObject({
-      name: "Amina Khan",
       cover_number: "AB-1234",
-      mobile_number: "9876543210",
-      preferred_language: "hi",
-      question_or_consultation: "Hello",
+      name: "Amina Khan",
+      phone_number: "9876543210",
+      language: "hi",
+      state: "Kerala",
+      embarkation_point: "Delhi",
     });
+    expect(sent.email).toBeUndefined();
+    expect(sent.madhhab).toBeUndefined();
     expect(sent.idempotency_key).toBeUndefined();
     expect((first[1] as RequestInit).headers).not.toHaveProperty("authorization");
 

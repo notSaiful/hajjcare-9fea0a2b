@@ -21,7 +21,7 @@
           : "Free eligibility is pending verification. The cover number was not checked against a Haj Committee list.");
     }
     var map = {
-      not_configured: hi ? "कुछ सेव नहीं हुआ। ट्रेनिंग एनरोलमेंट अभी कॉन्फ़िगर नहीं है।" : "Nothing was saved. Training enrollment is not configured on this page.",
+      not_configured: hi ? "रजिस्ट्रेशन अभी चालू नहीं है। कुछ सेव नहीं हुआ।" : "Registration is not open yet. Nothing was saved. रजिस्ट्रेशन अभी चालू नहीं है।",
       wrong_project: hi ? "कुछ सेव नहीं हुआ। यह फ़ॉर्म गलत सर्वर पर नहीं जाता।" : "Nothing was saved. This form will not use a different server.",
       validation: hi ? "कुछ सेव नहीं हुआ। फ़ॉर्म जाँचें और फिर कोशिश करें।" : "Nothing was saved. Check the form and try again.",
       duplicate: hi ? "कुछ नया सेव नहीं हुआ। इस कवर नंबर और मोबाइल का अनुरोध पहले से दर्ज है। मुफ़्त पात्रता अब भी जाँच बाकी है।" : "Nothing new was saved. A request for this cover number and mobile is already recorded. Free eligibility is still pending verification.",
@@ -51,11 +51,12 @@
     var cfg = readConfig();
     if (!cfg.ok) return { ok: false, message: say(cfg.code) };
     var name = value(form, "name").trim();
-    var cover = value(form, "cover").trim();
-    var mobile = value(form, "mobile").trim();
+    var cover = value(form, "cover_number").trim();
+    var phone = value(form, "phone_number").trim();
     var state = value(form, "state").trim();
-    var language = value(form, "preferred_language").trim();
-    if (!name || !cover || !mobile || !state || !language) {
+    var language = value(form, "language").trim();
+    var embarkation = value(form, "embarkation_point").trim();
+    if (!name || !cover || !phone || !state || !language || !embarkation) {
       return { ok: false, message: say("validation") };
     }
     var button = form.querySelector("button[type='submit'], button");
@@ -69,14 +70,12 @@
           apikey: cfg.key
         },
         body: JSON.stringify({
-          name: name,
           cover_number: cover,
-          mobile_number: mobile,
-          email: value(form, "email").trim(),
+          name: name,
+          phone_number: phone,
+          language: language,
           state: state,
-          madhhab: value(form, "madhhab").trim(),
-          preferred_language: language,
-          question_or_consultation: value(form, "question").trim()
+          embarkation_point: embarkation
         })
       });
       if (!res || res.type === "opaqueredirect" || (res.status >= 300 && res.status < 400)) {

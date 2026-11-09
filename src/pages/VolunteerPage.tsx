@@ -143,6 +143,10 @@ const VolunteerPage = () => {
       toast({ title: "मोबाइल नंबर 10 अंकों का होना चाहिए", description: "Mobile number must be 10 digits", variant: "destructive" });
       return false;
     }
+    if (form.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
+      toast({ title: "ईमेल सही नहीं है", description: "Enter a valid email or leave it blank", variant: "destructive" });
+      return false;
+    }
     if (form.skills.length === 0) {
       toast({ title: "कम से कम एक स्किल चुनें", description: "Select at least one skill", variant: "destructive" });
       return false;
@@ -229,9 +233,9 @@ const VolunteerPage = () => {
         .select("volunteer_id")
         .single();
 
-      if (error) {
+      if (error || !data?.volunteer_id || data.volunteer_id === "TEMP") {
         console.error("Insert error:", error);
-        throw new Error(error.message || "Failed to submit registration");
+        throw new Error(error?.message || "The server did not confirm the registration.");
       }
 
       setVolunteerId(data.volunteer_id);

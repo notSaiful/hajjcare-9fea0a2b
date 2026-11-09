@@ -1,10 +1,22 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { RECEIPT_GSTIN, RECEIPT_ISSUER, RECEIPT_PURPOSE, buildServiceFeeReceipt } from "./receipt.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
+
+function stripUnsafe(value: string): string {
+  let out = "";
+  for (const ch of value) {
+    const code = ch.codePointAt(0) ?? 0;
+    if (code < 32 || code === 127) continue;
+    if (ch === "<" || ch === ">" || ch === "\"" || ch === "'" || ch === "`") continue;
+    out += ch;
+  }
+  return out;
+}
 
 async function hmacSha256Hex(key: string, message: string): Promise<string> {
   const enc = new TextEncoder();
@@ -91,8 +103,7 @@ serve(async (req) => {
       const s = String(v).trim().slice(0, max);
       if (!s) return null;
       if (pattern && !pattern.test(s)) return null;
-      // strip control chars and HTML-significant characters
-      return s.replace(/[\u0000-\u001F\u007F<>"'`]/g, "");
+      return stripUnsafe(s);
     };
     const safe_service_name = safeText(service_name, 120) ?? "HajjCare App Maintenance Service Fee";
     const safe_customer_name = safeText(customer_name, 100);
@@ -163,12 +174,13 @@ serve(async (req) => {
     const invoice_number =
       invoiceNum || `HC-${Date.now().toString(36).toUpperCase()}`;
 
+    const paidAt = new Date().toISOString();
     const { error: insertError } = await adminClient
       .from("billing_invoices")
       .insert({
         user_id: user.id,
         invoice_number,
-        service_name: safe_service_name,
+        service_name: RECEIPT_PURPOSE,
         base_amount,
         gst_rate: 18.0,
         gst_amount,
@@ -178,7 +190,9 @@ serve(async (req) => {
         payment_status: verifiedStatus,
         customer_name: safe_customer_name,
         customer_email: safe_customer_email,
-        org_gstin: safe_org_gstin,
+        org_name: RECEIPT_ISSUER,
+        org_gstin: RECEIPT_GSTIN,
+        email_sent: false,
       });
 
     if (insertError) {
@@ -189,8 +203,23 @@ serve(async (req) => {
       );
     }
 
+    const receipt = verifiedStatus === "paid"
+      ? buildServiceFeeReceipt({
+          receiptNumber: invoice_number,
+          payerName: safe_customer_name || "",
+          amountInr: total_amount,
+          paidAtIso: paidAt,
+          paymentId: razorpay_payment_id,
+          emailEnv: {
+            url: Deno.env.get("RECEIPT_EMAIL_API_URL") ?? "",
+            key: Deno.env.get("RECEIPT_EMAIL_API_KEY") ?? "",
+            from: Deno.env.get("RECEIPT_EMAIL_FROM") ?? "",
+          },
+        })
+      : null;
+
     return new Response(
-      JSON.stringify({ success: true, invoice_number, status: verifiedStatus }),
+      JSON.stringify({ success: true, invoice_number, status: verifiedStatus, receipt }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (e) {

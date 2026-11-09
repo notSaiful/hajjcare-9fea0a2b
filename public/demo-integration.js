@@ -146,8 +146,8 @@
     } else if (h === "fees") {
       insertNote(
         en()
-          ? "Choosing an amount does not start a payment and does not charge you."
-          : "रक़म चुनने से पेमेंट शुरू नहीं होता और पैसे नहीं कटते।"
+          ? 'Choosing an amount does not start a payment and does not charge you. This fee is voluntary and not compulsory for any Haji. A receipt is issued only after the server verifies a payment. <a href="/service-fee">Open the service-fee page</a>.'
+          : 'रक़म चुनने से पेमेंट शुरू नहीं होता और पैसे नहीं कटते। यह शुल्क स्वैच्छिक है और किसी हाजी के लिए ज़रूरी नहीं। रसीद तभी बनेगी जब सर्वर पेमेंट की जाँच कर दे। <a href="/service-fee">सेवा शुल्क पेज खोलें</a>।'
       );
     } else if (h === "social") {
       insertNote(

@@ -70,12 +70,15 @@ describe("approved public demo", () => {
     expect(integration).not.toMatch(/supabase/i);
   });
 
-  it("shows only the eight training fields and keeps that form off the main Supabase project", () => {
+  it("shows only the six training fields and keeps that form off the main Supabase project", () => {
     const register = explore.slice(explore.indexOf("V.register="), explore.indexOf("V.fees="));
-    for (const name of ["name", "cover", "mobile", "email", "state", "madhhab", "preferred_language", "question"]) {
+    for (const name of ["cover_number", "name", "phone_number", "language", "state", "embarkation_point"]) {
       expect(register).toContain(`name="${name}"`);
     }
-    expect(register.match(/name="/g)).toHaveLength(8);
+    expect(register.match(/name="/g)).toHaveLength(6);
+    expect(register).not.toContain("email");
+    expect(register).not.toContain("madhhab");
+    expect(register).not.toContain("question");
     expect(register).toContain("pending verification");
     expect(register).not.toContain("maslak");
     expect(register).not.toContain("Registered (demo)");
@@ -96,6 +99,7 @@ describe("approved public demo", () => {
     expect(vercel.rewrites).toContainEqual({ source: "/library", destination: "/library.html" });
     expect(vercel.rewrites).toContainEqual({ source: "/auth", destination: "/app.html" });
     expect(vercel.rewrites).toContainEqual({ source: "/volunteer", destination: "/app.html" });
+    expect(vercel.rewrites).toContainEqual({ source: "/service-fee", destination: "/app.html" });
     expect(vercel.rewrites.at(-1)).toEqual({ source: "/(.*)", destination: "/index.html" });
     expect(home).toContain("HajCare AI");
     expect(home).not.toContain("HajjCare");

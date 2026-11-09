@@ -173,6 +173,7 @@ function AppContent() {
     <Routes>
       <Route path="/auth" element={<AuthPage />} />
       <Route path="/volunteer" element={<VolunteerPage />} />
+      <Route path="/service-fee" element={<PaymentPage />} />
       <Route path="*" element={<LeaveToDemo />} />
     </Routes>
   );
