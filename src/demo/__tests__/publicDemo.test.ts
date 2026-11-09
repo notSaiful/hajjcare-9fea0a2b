@@ -100,7 +100,10 @@ describe("approved public demo", () => {
     expect(vercel.rewrites).toContainEqual({ source: "/auth", destination: "/app.html" });
     expect(vercel.rewrites).toContainEqual({ source: "/volunteer", destination: "/app.html" });
     expect(vercel.rewrites).toContainEqual({ source: "/service-fee", destination: "/app.html" });
-    expect(vercel.rewrites.at(-1)).toEqual({ source: "/(.*)", destination: "/index.html" });
+    expect(vercel.rewrites.at(-1)).toEqual({ source: "/((?!videos/).*)", destination: "/index.html" });
+    expect(JSON.stringify(vercel.headers)).toContain("video/mp4");
+    expect(read("public/index.html")).toContain("/videos/day1-trailer-16x9.mp4");
+    expect(read("public/explore.js")).toContain("/videos/day1-trailer-9x16.mp4");
     expect(home).toContain("HajCare AI");
     expect(home).not.toContain("HajjCare");
     expect(home).not.toContain("demo-tag");
