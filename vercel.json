@@ -1,10 +1,43 @@
 {
   "rewrites": [
-    { "source": "/", "destination": "/index.html" },
-    { "source": "/explore", "destination": "/explore.html" },
-    { "source": "/library", "destination": "/library.html" },
-    { "source": "/auth", "destination": "/app.html" },
-    { "source": "/volunteer", "destination": "/app.html" },
-    { "source": "/(.*)", "destination": "/index.html" }
+    {
+      "source": "/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/explore",
+      "destination": "/explore.html"
+    },
+    {
+      "source": "/library",
+      "destination": "/library.html"
+    },
+    {
+      "source": "/auth",
+      "destination": "/app.html"
+    },
+    {
+      "source": "/volunteer",
+      "destination": "/app.html"
+    },
+    {
+      "source": "/((?!videos/).*)",
+      "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/videos/(.*)",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "video/mp4"
+        },
+        {
+          "key": "Accept-Ranges",
+          "value": "bytes"
+        }
+      ]
+    }
   ]
 }
