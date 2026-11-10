@@ -1,0 +1,218 @@
+{
+  "title": "HajCare Talbiyah listening experience — preview audio package",
+  "created_at": "2026-11-11 01:58:18 IST (Asia/Calcutta)",
+  "repo_source": {
+    "repository": "notSaiful/hajjcare-9fea0a2b",
+    "branch": "cursor/day1-trailer-live-581c",
+    "access": "read-only",
+    "note": "This package is preview-only. The GitHub repo, live site, main, and any deploy were not modified."
+  },
+  "text_sources": {
+    "arabic_transliteration_english": "src/pages/DuaGuidePage.tsx, Talbiyah entry (arabic, transliteration, translation.en). Used verbatim.",
+    "hindi_meaning": "public/index.html, section.talbiya p.mean. Used verbatim, including the typographic quotes on the full string.",
+    "full_arabic": "لَبَّيْكَ اللَّهُمَّ لَبَّيْكَ، لَبَّيْكَ لَا شَرِيكَ لَكَ لَبَّيْكَ، إِنَّ الْحَمْدَ وَالنِّعْمَةَ لَكَ وَالْمُلْكَ، لَا شَرِيكَ لَكَ",
+    "full_transliteration": "Labbayk Allahumma labbayk, labbayka la sharika laka labbayk, innal-hamda wan-ni'mata laka wal-mulk, la sharika lak",
+    "full_english_meaning": "Here I am, O Allah, here I am. Here I am, You have no partner, here I am. Verily all praise and blessings are Yours, and all sovereignty. You have no partner.",
+    "full_hindi_meaning": "“हाज़िर हूँ, ऐ अल्लाह, मैं हाज़िर हूँ। हाज़िर हूँ, तेरा कोई शरीक नहीं, मैं हाज़िर हूँ। बेशक सारी तारीफ़, सारी नेमतें और सारी बादशाहत तेरी ही है, तेरा कोई शरीक नहीं।”"
+  },
+  "door_open_arabic_female": {
+    "file": "talbiyah-ar-female-full.mp3",
+    "plays": "when the door opens",
+    "duration_ms": 12384,
+    "voice": "Existing site asset public/assets/talbiya-ar-female.mp3, reused as-is (not regenerated). CREDITS.txt names Nora S - Saudi Natural & Calm (ElevenLabs eleven_v4, 30 Oct 2026) for talbiya-female.mp3; this file is a separate single-recitation mono asset and its exact voice ID was not independently confirmed.",
+    "reused_from": "notSaiful/hajjcare-9fea0a2b@cursor/day1-trailer-live-581c:public/assets/talbiya-ar-female.mp3",
+    "sha256": "83b92889a313957471a33faa3b4beae770b2a899608d503c73f6ea26aef182aa",
+    "audio": {
+      "duration_sec": 12.384,
+      "duration_ms": 12384,
+      "size_bytes": 148940,
+      "bit_rate": 96214,
+      "sample_rate": 24000,
+      "channels": 1,
+      "channel_layout": "mono",
+      "codec": "mp3"
+    },
+    "verification": {
+      "elevenlabs_scribe_v2": {
+        "status": "verified",
+        "language": "ara",
+        "language_probability": 1.0,
+        "transcript": "لبيك اللهم لبيك، لبيك لا شريك لك لبيك، إن الحمد والنعمة لك والملك لا شريك لك",
+        "note": "Matches the DuaGuidePage Arabic Talbiyah wording (without Allahu Akbar). A pause of about 0.6s sits before the final لا شريك لك, which is present in the source text after a comma."
+      },
+      "faster_whisper_small": {
+        "status": "verified",
+        "transcript": "لبيك اللهم لبيك لبيك لا شريك لك لبيك إن الحمد والنعمة لك والملك لا شريك لك"
+      },
+      "qualified_listener": "not done — synthetic Arabic should be checked by a qualified listener before any public use"
+    }
+  },
+  "male_line": {
+    "file": "talbiyah-male-aye-allah-main-hazir-hoon.mp3",
+    "text_on_screen": "Aye Allah, main hazir hoon",
+    "duration_ms": 1896,
+    "voice": "Microsoft Edge TTS hi-IN-MadhurNeural (male, Hindi), rate -12%",
+    "tts_input_script": "ऐ अल्लाह, मैं हाज़िर हूँ",
+    "tts_input_note": "Same words as the on-screen romanization 'Aye Allah, main hazir hoon'. Devanagari was used as TTS input so the Hindi male voice would pronounce them correctly. Romanized Edge TTS of the same line was less reliable (Aye/Allah swallowed or Anglicized).",
+    "engine": "edge-tts 7.3.1 (ElevenLabs TTS was not used: the account had only 2 credits left after transcribing talbiya-ar-female.mp3; further Scribe calls needed 3–7 credits each).",
+    "sha256": "abd84b5aa87e907cd448628cd599c3fa8ddf95105234dbb70e62e2f1a12b7f2f",
+    "audio": {
+      "duration_sec": 1.896,
+      "duration_ms": 1896,
+      "size_bytes": 23084,
+      "bit_rate": 97400,
+      "sample_rate": 24000,
+      "channels": 1,
+      "channel_layout": "mono",
+      "codec": "mp3"
+    },
+    "verification": {
+      "faster_whisper_small": {
+        "status": "consistent",
+        "auto_transcript_urdu": "اے اللہ میں حاضر ہوں",
+        "forced_hindi_transcript": "आई आल्ला मैं हाजर हूँ"
+      },
+      "existing_talbiya-hi-male.mp3": "Does not fit this short line. It is a male reading of the full Hindi meaning (four phrases, 18288 ms), not 'Aye Allah, main hazir hoon' alone. A new clip was generated."
+    }
+  },
+  "lines": [
+    {
+      "index": 1,
+      "file": "talbiyah-ar-female-line-01.mp3",
+      "duration_ms": 2472,
+      "start_ms_in_full": 0,
+      "end_ms_in_full": 2418,
+      "arabic": "لَبَّيْكَ اللَّهُمَّ لَبَّيْكَ",
+      "transliteration": "Labbayk Allahumma labbayk",
+      "hindi_meaning": "हाज़िर हूँ, ऐ अल्लाह, मैं हाज़िर हूँ।",
+      "english_meaning": "Here I am, O Allah, here I am.",
+      "audio": {
+        "duration_sec": 2.472,
+        "duration_ms": 2472,
+        "size_bytes": 29708,
+        "bit_rate": 96142,
+        "sample_rate": 24000,
+        "channels": 1,
+        "channel_layout": "mono",
+        "codec": "mp3"
+      },
+      "sha256": "ca0bdd906ec11a50b6bbd70f5be058fa95f7bece93a22b1a74da4832f84f1f31"
+    },
+    {
+      "index": 2,
+      "file": "talbiyah-ar-female-line-02.mp3",
+      "duration_ms": 3240,
+      "start_ms_in_full": 2418,
+      "end_ms_in_full": 5588,
+      "arabic": "لَبَّيْكَ لَا شَرِيكَ لَكَ لَبَّيْكَ",
+      "transliteration": "labbayka la sharika laka labbayk",
+      "hindi_meaning": "हाज़िर हूँ, तेरा कोई शरीक नहीं, मैं हाज़िर हूँ।",
+      "english_meaning": "Here I am, You have no partner, here I am.",
+      "audio": {
+        "duration_sec": 3.24,
+        "duration_ms": 3240,
+        "size_bytes": 38924,
+        "bit_rate": 96108,
+        "sample_rate": 24000,
+        "channels": 1,
+        "channel_layout": "mono",
+        "codec": "mp3"
+      },
+      "sha256": "560697c4871f095dbdccbb5278c9b64a3276371bf0b30fddc406f5fc89b22450"
+    },
+    {
+      "index": 3,
+      "file": "talbiyah-ar-female-line-03.mp3",
+      "duration_ms": 3480,
+      "start_ms_in_full": 5588,
+      "end_ms_in_full": 9019,
+      "arabic": "إِنَّ الْحَمْدَ وَالنِّعْمَةَ لَكَ وَالْمُلْكَ",
+      "transliteration": "innal-hamda wan-ni'mata laka wal-mulk",
+      "hindi_meaning": "बेशक सारी तारीफ़, सारी नेमतें और सारी बादशाहत तेरी ही है,",
+      "english_meaning": "Verily all praise and blessings are Yours, and all sovereignty.",
+      "audio": {
+        "duration_sec": 3.48,
+        "duration_ms": 3480,
+        "size_bytes": 41804,
+        "bit_rate": 96101,
+        "sample_rate": 24000,
+        "channels": 1,
+        "channel_layout": "mono",
+        "codec": "mp3"
+      },
+      "sha256": "92a71ba41d943eb4dee9e06a0618affe26fcbcfb9a6652f26ad0218be21b97a0"
+    },
+    {
+      "index": 4,
+      "file": "talbiyah-ar-female-line-04.mp3",
+      "duration_ms": 1752,
+      "start_ms_in_full": 9019,
+      "end_ms_in_full": 10700,
+      "arabic": "لَا شَرِيكَ لَكَ",
+      "transliteration": "la sharika lak",
+      "hindi_meaning": "तेरा कोई शरीक नहीं।",
+      "english_meaning": "You have no partner.",
+      "audio": {
+        "duration_sec": 1.752,
+        "duration_ms": 1752,
+        "size_bytes": 21068,
+        "bit_rate": 96200,
+        "sample_rate": 24000,
+        "channels": 1,
+        "channel_layout": "mono",
+        "codec": "mp3"
+      },
+      "sha256": "60969519f2ba1c4f990cb43c710f55d42dd67e52bd836d4ef079a4fbebc8e1b2"
+    }
+  ],
+  "ui_after_lines": [
+    {
+      "action": "meaning",
+      "label_note": "option button in the UI after the lines"
+    },
+    {
+      "action": "repeat",
+      "label_note": "option button in the UI after the lines"
+    },
+    {
+      "action": "loop",
+      "label_note": "option button in the UI after the lines"
+    }
+  ],
+  "existing_assets_reviewed": {
+    "branch": "cursor/day1-trailer-live-581c",
+    "copied_for_analysis_to": "/workspace/talbiyah/existing/",
+    "files": {
+      "talbiya-ar-female.mp3": {
+        "duration_ms": 12384,
+        "format": "mp3 24 kHz mono 96 kbps",
+        "judgment": "Correct female Arabic full Talbiyah, single recitation, no Allahu Akbar. Reused for door-open and as the source of the per-line clips."
+      },
+      "talbiya-female-1x.mp3": {
+        "duration_ms": 18286,
+        "format": "mp3 44.1 kHz stereo 96 kbps",
+        "judgment": "Female Arabic, one recitation, but it begins with الله أكبر الله أكبر (homepage hero/section includes this; DuaGuidePage Arabic does not). Not used as the door-open full track so the audio would match the DuaGuidePage wording chosen for the manifest."
+      },
+      "talbiya-female.mp3": {
+        "duration_ms": 45349,
+        "format": "mp3 44.1 kHz stereo 96 kbps",
+        "judgment": "Female Arabic, three recitations, each starting with Allahu Akbar (CREDITS: Nora S). Not used (looped/takbir form, not a single DuaGuidePage recitation)."
+      },
+      "talbiya-v2.mp3": {
+        "duration_ms": 33332,
+        "format": "mp3 44.1 kHz stereo 96 kbps",
+        "judgment": "Male Arabic (CREDITS: Ahmad - Calm Saudi Narrator), Allahu Akbar then the Talbiyah more than once. Not used (wrong gender for the door-open female track)."
+      },
+      "talbiya-hi-male.mp3": {
+        "duration_ms": 18288,
+        "format": "mp3 24 kHz mono 96 kbps",
+        "judgment": "Male Hindi meaning of the full Talbiyah (four phrases), not the short on-screen line 'Aye Allah, main hazir hoon'. Not reused for the male line."
+      },
+      "talbiya-hindi-meaning.mp3": {
+        "duration_ms": 20663,
+        "format": "mp3 44.1 kHz stereo 96 kbps",
+        "judgment": "Existing Hindi-meaning narration (CREDITS: Ghufran; app.js already has phrase timings). Whisper small failed on this padded/reverberant track. ElevenLabs Scribe could not be run (quota). Not required for this package's male short line."
+      }
+    }
+  }
+}

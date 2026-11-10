@@ -437,23 +437,25 @@ main section.wrap{padding-top:4.5rem;padding-bottom:4.5rem}
 
 .ext i{line-height:0;color:#b8954f;margin-bottom:4px}.ext i svg{width:24px;height:24px}
 
-/* Talbiyah line reader — text only, door audio is unchanged */
-#talbiyah-lines{position:fixed;left:50%;bottom:.8rem;transform:translateX(-50%);z-index:60;width:min(40rem,calc(100% - 1.25rem));max-height:min(48vh,28rem);overflow:auto;box-sizing:border-box;text-align:center;color:#1f3b2c;background:rgba(255,250,240,.97);border:1px solid rgba(184,149,79,.75);border-radius:16px;padding:.85rem 1rem 1rem;box-shadow:0 10px 28px rgba(31,43,34,.16);font-family:Mukta,sans-serif}
-#talbiyah-lines[hidden]{display:none}
-body.entered #talbiyah-lines{position:relative;left:auto;bottom:auto;transform:none;z-index:2;width:min(40rem,calc(100% - 2rem));max-height:none;margin:5.5rem auto 0}
-#talbiyah-lines .tl-lines{list-style:none;margin:0;padding:0}
-#talbiyah-lines .tl-lines li{margin:0 0 .75rem;padding-bottom:.65rem;border-bottom:1px solid rgba(184,149,79,.35)}
-#talbiyah-lines .tl-lines li.tl-now{background:rgba(201,164,92,.16);border-radius:10px;padding:.35rem .4rem .55rem}
-#talbiyah-lines .tl-ar{margin:.15rem 0;font:400 clamp(1.25rem,3.4vw,1.7rem)/1.7 Amiri,'Noto Naskh Arabic',serif;color:#1f3b2c}
-#talbiyah-lines .tl-tr{margin:.1rem 0;font:400 .92rem/1.45 'Cormorant Garamond',Georgia,serif;color:#6b4e16}
-#talbiyah-lines .tl-hi{margin:.15rem 0;font:500 1.02rem/1.55 'Tiro Devanagari Hindi',Mukta,serif;color:#1f3b2c}
-#talbiyah-lines .tl-en{margin:.1rem 0 .2rem;font:400 .95rem/1.45 Mukta,sans-serif;color:#3d4a38}
-#talbiyah-lines .tl-count{margin:.15rem 0 .45rem;font:600 .8rem/1 Mukta,sans-serif;color:#8a6a2e;letter-spacing:.04em}
-#talbiyah-lines .tl-navs{display:flex;justify-content:center;gap:.6rem;margin-bottom:.7rem}
-#talbiyah-lines button{font:600 .9rem/1.2 Mukta,sans-serif;color:#1f3b2c;background:#fffaf0;border:1px solid #c9a45c;border-radius:999px;padding:.45rem .9rem;cursor:pointer}
-#talbiyah-lines button:disabled{opacity:.45;cursor:default}
-#talbiyah-lines button:focus-visible{outline:2px solid #1f5640;outline-offset:2px}
-#talbiyah-lines .tl-old-btn{display:inline-flex;gap:.35rem;align-items:center}
-#talbiyah-lines #tl-old{margin-top:.75rem;padding-top:.7rem;border-top:1px solid rgba(184,149,79,.45);text-align:center}
-#talbiyah-lines .tl-kept{margin:.35rem 0;font:400 1rem/1.55 'Tiro Devanagari Hindi',Mukta,serif;color:#1f3b2c}
-#talbiyah-lines .tl-kept[lang="ar"]{font:400 1.35rem/1.7 Amiri,'Noto Naskh Arabic',serif}
+/* Talbiyah listening panel. Existing section.talbiya text and #talbiya audio stay as they are. */
+#talbiyah-listen{position:fixed;left:50%;bottom:.8rem;transform:translateX(-50%);z-index:60;width:min(42rem,calc(100% - 1.25rem));max-height:min(70vh,36rem);overflow:auto;box-sizing:border-box;text-align:center;color:#1f3b2c;background:rgba(255,250,240,.97);border:1px solid rgba(184,149,79,.75);border-radius:16px;padding:.85rem 1rem 1rem;box-shadow:0 10px 28px rgba(31,43,34,.16);font-family:Mukta,sans-serif}
+#talbiyah-listen[hidden]{display:none}
+body.entered #talbiyah-listen{position:relative;left:auto;bottom:auto;transform:none;z-index:2;width:min(42rem,calc(100% - 2rem));max-height:none;margin:5.5rem auto 0}
+#talbiyah-listen .tl-lines{list-style:none;margin:0;padding:0}
+#talbiyah-listen .tl-lines li{margin:0 0 .75rem;padding-bottom:.65rem;border-bottom:1px solid rgba(184,149,79,.35)}
+#talbiyah-listen .tl-lines li.tl-now{background:rgba(201,164,92,.16);border-radius:10px;padding:.35rem .4rem .55rem}
+#talbiyah-listen .tl-ar{margin:.15rem 0;font:400 clamp(1.25rem,3.4vw,1.7rem)/1.7 Amiri,'Noto Naskh Arabic',serif;color:#1f3b2c}
+#talbiyah-listen .tl-tr{margin:.1rem 0;font:400 .92rem/1.45 'Cormorant Garamond',Georgia,serif;color:#6b4e16}
+#talbiyah-listen .tl-hi{margin:.15rem 0;font:500 1.02rem/1.55 'Tiro Devanagari Hindi',Mukta,serif;color:#1f3b2c}
+#talbiyah-listen .tl-en{margin:.1rem 0 .2rem;font:400 .95rem/1.45 Mukta,sans-serif;color:#3d4a38}
+#talbiyah-listen .tl-aye{margin:.2rem 0 .55rem;font:600 1.2rem/1.45 'Cormorant Garamond',Georgia,serif;color:#6b4e16}
+#talbiyah-listen .tl-count{margin:.15rem 0 .45rem;font:600 .8rem/1 Mukta,sans-serif;color:#8a6a2e;letter-spacing:.04em}
+#talbiyah-listen .tl-controls{display:flex;flex-wrap:wrap;justify-content:center;gap:.4rem;margin:.35rem 0}
+#talbiyah-listen button{font:600 .9rem/1.2 Mukta,sans-serif;color:#1f3b2c;background:#fffaf0;border:1px solid #c9a45c;border-radius:999px;padding:.45rem .9rem;cursor:pointer}
+#talbiyah-listen button[aria-pressed="true"]{background:#1f5640;color:#fbf3df;border-color:#1f5640}
+#talbiyah-listen button:focus-visible{outline:2px solid #1f5640;outline-offset:2px}
+#talbiyah-listen .tl-old-btn{margin-top:.35rem}
+#talbiyah-listen #tl-old{margin-top:.75rem;padding-top:.7rem;border-top:1px solid rgba(184,149,79,.45);text-align:center}
+#talbiyah-listen .tl-kept{margin:.35rem 0;font:400 1rem/1.55 'Tiro Devanagari Hindi',Mukta,serif;color:#1f3b2c}
+#talbiyah-listen .tl-kept[lang="ar"]{font:400 1.35rem/1.7 Amiri,'Noto Naskh Arabic',serif}
+@media(prefers-reduced-motion:reduce){#talbiyah-listen .tl-aye{opacity:1!important}}

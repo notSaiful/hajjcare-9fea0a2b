@@ -1,112 +1,173 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { describe, expect, it, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 
 const root = resolve(__dirname, "../../..");
 const read = (rel: string) => readFileSync(resolve(root, rel), "utf8");
 
-const AR =
-  "لَبَّيْكَ اللَّهُمَّ لَبَّيْكَ، لَبَّيْكَ لَا شَرِيكَ لَكَ لَبَّيْكَ، إِنَّ الْحَمْدَ وَالنِّعْمَةَ لَكَ وَالْمُلْكَ، لَا شَرِيكَ لَكَ";
-const TR =
-  "Labbayk Allahumma labbayk, labbayka la sharika laka labbayk, innal-hamda wan-ni'mata laka wal-mulk, la sharika lak";
-const EN =
-  "Here I am, O Allah, here I am. Here I am, You have no partner, here I am. Verily all praise and blessings are Yours, and all sovereignty. You have no partner.";
-const HI =
-  "हाज़िर हूँ, ऐ अल्लाह, मैं हाज़िर हूँ। हाज़िर हूँ, तेरा कोई शरीक नहीं, मैं हाज़िर हूँ। बेशक सारी तारीफ़, सारी नेमतें और सारी बादशाहत तेरी ही है, तेरा कोई शरीक नहीं।";
+type Line = { end_ms_in_full: number; file: string; hindi_meaning: string; english_meaning: string; arabic: string };
+type Manifest = {
+  door_open_arabic_female: { file: string };
+  male_line: { file: string; text_on_screen: string; duration_ms: number };
+  lines: Line[];
+};
 
-type Line = { ar: string; tr: string; hi: string; en: string };
+class FakeAudio {
+  src = "";
+  paused = true;
+  muted = false;
+  currentTime = 0;
+  private listeners: Record<string, Array<() => void>> = {};
+  play() {
+    this.paused = false;
+    this.muted = false;
+    return Promise.resolve();
+  }
+  pause() {
+    this.paused = true;
+  }
+  addEventListener(type: string, fn: () => void) {
+    (this.listeners[type] ||= []).push(fn);
+  }
+  removeEventListener(type: string, fn: () => void) {
+    this.listeners[type] = (this.listeners[type] || []).filter((item) => item !== fn);
+  }
+  dispatch(type: string) {
+    (this.listeners[type] || []).slice().forEach((fn) => fn());
+  }
+}
 
-describe("talbiyah line text", () => {
+const made: FakeAudio[] = [];
+
+describe("talbiyah listening", () => {
   const home = read("public/index.html");
   const guide = read("src/pages/DuaGuidePage.tsx");
   const app = read("public/app.js");
-  const script = read("public/talbiyah-lines.js");
+  const manifest = JSON.parse(read("public/assets/talbiyah/manifest.json")) as Manifest;
+  const script = read("public/talbiyah-listen.js");
 
   beforeEach(() => {
     document.body.innerHTML = "";
     document.body.className = "";
-    delete (window as unknown as { __hcTalbiyahLines?: unknown }).__hcTalbiyahLines;
+    sessionStorage.clear();
+    made.length = 0;
+    delete (window as unknown as { __hcTalbiyahReady?: boolean }).__hcTalbiyahReady;
+    window.requestAnimationFrame = (cb: FrameRequestCallback) => {
+      cb(performance.now() + 5000);
+      return 1;
+    };
+    (window as unknown as { Audio: typeof Audio }).Audio = function Audio() {
+      const audio = new FakeAudio();
+      made.push(audio);
+      return audio;
+    } as unknown as typeof Audio;
+    window.fetch = (async (url: string) => {
+      expect(String(url)).toContain("assets/talbiyah/manifest.json");
+      return { ok: true, json: async () => manifest };
+    }) as unknown as typeof fetch;
   });
 
-  it("keeps the door audio file and does not add another clip", () => {
+  async function boot() {
+    document.body.innerHTML = `<div id="intro"><div id="opener"></div></div>
+      <audio id="talbiya" data-f="assets/talbiya-female-1x.mp3?v=1"></audio>
+      <audio id="hmean"></audio><main></main>
+      <section class="talbiya"><p class="eyebrow">तलबिया</p><p class="ar">اللهُ أَكْبَرُ</p><p class="tr">अल्लाहु अकबर।</p><p class="mean">“${manifest.lines.map((l) => l.hindi_meaning).join(" ")}”</p><p class="jigar">लबों पर जिगर</p></section>`;
+    window.eval(script);
+    for (let i = 0; i < 8 && !(window as unknown as { __hcTalbiyahReady?: boolean }).__hcTalbiyahReady; i++) {
+      await Promise.resolve();
+    }
+    expect((window as unknown as { __hcTalbiyahReady?: boolean }).__hcTalbiyahReady).toBe(true);
+    return made[0];
+  }
+
+  it("leaves the existing Talbiyah text and door audio element unchanged", () => {
     expect(home).toContain('id="talbiya" data-m="assets/talbiya-v2.mp3?v=2" data-f="assets/talbiya-female-1x.mp3?v=1"');
+    expect(home).toContain('src="talbiyah-listen.js"');
+    expect(home).not.toContain("talbiyah-ar-female-full.mp3");
+    expect(guide).toContain(manifest.text_sources.full_arabic);
+    expect(home).toContain(manifest.text_sources.full_hindi_meaning);
     expect(app).toContain("let voice='f'");
     expect(app).toContain("a.src=a.dataset[voice]");
-    expect(home).toContain('src="talbiyah-lines.js"');
-    expect(script).not.toMatch(/\.mp3|new Audio|\.play\(|\.src\s*=/);
-    expect(read("public/style.css")).toContain("#talbiyah-lines");
+    expect(read("public/style.css")).toContain("#talbiyah-listen");
+    expect(script).not.toContain("talbiya-female-1x");
   });
 
-  it("splits the existing Talbiyah wording into the same four lines", () => {
-    expect(guide).toContain(AR);
-    expect(guide).toContain(TR);
-    expect(guide).toContain(EN);
-    expect(home).toContain(HI);
+  it("maps the full recording onto the manifest line times", () => {
     window.eval(script);
-    const lines = (window as unknown as { __hcTalbiyahLines: Line[] }).__hcTalbiyahLines;
-    expect(lines).toHaveLength(4);
-    expect(lines.map((line) => line.ar).join(" ")).toBe(AR);
-    expect(lines.map((line) => line.tr).join(" ")).toBe(TR);
-    expect(lines.map((line) => line.en).join(" ")).toBe(EN);
-    expect(lines.map((line) => line.hi).join(" ")).toBe(HI);
-    const clock = (window as unknown as { __hcTalbiyahLineFromClock: (d: number, c: number, s: number) => number | null })
-      .__hcTalbiyahLineFromClock;
-    expect(clock(Number.NaN, 0, 0)).toBeNull();
-    expect(clock(40, 3.8, 3.8)).toBe(0);
-    expect(clock(40, 3.8 + (40 - 3.8) * 0.26, 3.8)).toBe(1);
-    expect(clock(40, 39.9, 3.8)).toBe(3);
+    const at = (window as unknown as { __hcTalbiyahLineIndexAt?: (lines: Line[], ms: number) => number }).__hcTalbiyahLineIndexAt;
+    expect(at).toBeTypeOf("function");
+    expect(at!(manifest.lines, 0)).toBe(0);
+    expect(at!(manifest.lines, manifest.lines[0].end_ms_in_full)).toBe(1);
+    expect(at!(manifest.lines, manifest.lines[2].end_ms_in_full)).toBe(3);
+    expect(at!(manifest.lines, 99999)).toBe(3);
   });
 
-  it("shows lines when the door opens and still steps if audio fails", async () => {
-    document.body.innerHTML = `<div id="intro"><div id="opener"></div></div><audio id="talbiya"></audio><main></main>
-      <section class="talbiya"><p class="eyebrow">तलबिया</p><p class="ar">اللهُ أَكْبَرُ</p><p class="tr">अल्लाहु अकबर।</p><p class="mean">“${HI}”</p><p class="jigar">लबों पर जिगर</p><button class="hmb" type="button">▶ हिंदी मायने सुनें</button></section>`;
+  it("plays the female recitation when the door opens, then the male line, then each clip", async () => {
+    const player = await boot();
     const original = document.querySelector("section.talbiya")!.innerHTML;
-    window.eval(script);
-    expect(document.getElementById("talbiyah-lines")?.hidden).toBe(true);
-
-    document.getElementById("opener")!.classList.add("dopen");
-    await Promise.resolve();
-    const panel = document.getElementById("talbiyah-lines")!;
+    document.getElementById("opener")!.click();
+    const panel = document.getElementById("talbiyah-listen")!;
     expect(panel.hidden).toBe(false);
-    const items = [...panel.querySelectorAll("li")];
-    expect(items[0]?.hidden).toBe(false);
-    expect(items[0]?.textContent).toContain("Labbayk Allahumma labbayk,");
-    expect(items[2]?.hidden).toBe(true);
+    expect(player.src).toContain(manifest.door_open_arabic_female.file);
+    expect(player.paused).toBe(false);
 
-    const buttons = [...panel.querySelectorAll("button")];
-    expect(buttons.map((b) => b.textContent)).toEqual(
-      expect.arrayContaining([expect.stringContaining("Previous"), expect.stringContaining("Next"), expect.stringContaining("Old Talbiyah text")])
-    );
+    player.currentTime = 3;
+    player.dispatch("timeupdate");
+    const rows = [...panel.querySelectorAll("li")];
+    expect(rows[1].classList.contains("tl-now")).toBe(true);
+    expect(rows[1].querySelector(".tl-opt")?.hidden).toBe(false);
+    expect(rows[1].textContent).toContain(manifest.lines[1].hindi_meaning);
+    expect(rows[1].textContent).toContain(manifest.lines[1].english_meaning);
+    expect(rows[3].querySelector(".tl-opt")?.hidden).toBe(true);
 
-    const audio = document.getElementById("talbiya") as HTMLAudioElement;
-    Object.defineProperty(audio, "duration", { configurable: true, get: () => 40 });
-    audio.currentTime = 3.8;
-    audio.dispatchEvent(new Event("playing"));
-    audio.currentTime = 3.8 + (40 - 3.8) * 0.6;
-    audio.dispatchEvent(new Event("timeupdate"));
-    expect(items[2]?.hidden).toBe(false);
-    expect(items[3]?.hidden).toBe(true);
+    player.dispatch("ended");
+    expect(player.src).toContain(manifest.male_line.file);
+    const aye = panel.querySelector(".tl-aye") as HTMLElement;
+    expect(aye.hidden).toBe(false);
+    expect(aye.textContent).toBe(manifest.male_line.text_on_screen);
 
-    buttons.find((b) => b.textContent?.includes("Previous"))!.click();
-    expect(items[1]?.hidden).toBe(false);
-    expect(items[2]?.hidden).toBe(true);
-    audio.currentTime = 39.9;
-    audio.dispatchEvent(new Event("timeupdate"));
-    expect(items[2]?.hidden).toBe(true);
-    buttons.find((b) => b.textContent?.includes("Next"))!.click();
-    expect(items[2]?.textContent).toContain("innal-hamda wan-ni'mata laka wal-mulk,");
+    player.dispatch("ended");
+    expect(player.src).toContain(manifest.lines[0].file);
+    rows[1].querySelector("button")!.click();
+    expect(player.src).toContain(manifest.lines[1].file);
 
-    audio.dispatchEvent(new Event("error"));
-    buttons.find((b) => b.textContent?.includes("Next"))!.click();
-    expect(items[3]?.hidden).toBe(false);
-    expect(items[3]?.textContent).toContain("You have no partner.");
+    panel.querySelector<HTMLButtonElement>("[data-tl-loop]")!.click();
+    expect(panel.querySelector("[data-tl-loop]")!.getAttribute("aria-pressed")).toBe("true");
+    player.dispatch("ended");
+    expect(player.paused).toBe(true);
 
-    const old = buttons.find((b) => b.textContent?.includes("Old Talbiyah text"))!;
-    expect(old.getAttribute("aria-expanded")).toBe("false");
-    old.click();
-    expect(old.getAttribute("aria-expanded")).toBe("true");
-    expect(document.getElementById("tl-old")?.textContent).toContain(HI);
-    expect(document.getElementById("tl-old")?.textContent).not.toContain("हिंदी मायने सुनें");
+    const play = [...panel.querySelectorAll("[data-tl-play]")].find((b) => b.textContent === "Play")!;
+    play.dispatchEvent(new Event("click"));
+    expect(player.src).toContain(manifest.door_open_arabic_female.file);
+
+    panel.querySelector<HTMLButtonElement>('[aria-label="Stop Talbiyah"]')!.click();
+    const src = player.src;
+    expect(player.paused).toBe(true);
+    expect(player.muted).toBe(true);
+    player.dispatch("ended");
+    expect(player.src).toBe(src);
+
+    const oldAudio = document.getElementById("talbiya") as HTMLAudioElement;
+    let pauses = 0;
+    oldAudio.pause = () => {
+      pauses += 1;
+    };
+    player.muted = false;
+    (panel.querySelector("[data-tl-play]") as HTMLButtonElement).click();
+    oldAudio.dispatchEvent(new Event("play"));
+    expect(pauses).toBe(1);
+
+    panel.querySelector<HTMLButtonElement>('[aria-controls="tl-old"]')!.click();
+    expect(document.getElementById("tl-old")?.textContent).toContain("اللهُ أَكْبَرُ");
     expect(document.querySelector("section.talbiya")!.innerHTML).toBe(original);
+  });
+
+  it("does not autoplay again after the door has already been opened", async () => {
+    sessionStorage.setItem("hc-talbiyah-listen", "1");
+    const player = await boot();
+    document.getElementById("opener")!.click();
+    expect(document.getElementById("talbiyah-listen")?.hidden).toBe(false);
+    expect(player.src).toBe("");
+    expect(player.paused).toBe(true);
   });
 });
