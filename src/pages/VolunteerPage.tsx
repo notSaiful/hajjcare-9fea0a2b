@@ -255,7 +255,7 @@ const VolunteerPage = () => {
       <>
         <SEO title="Volunteer Registration" description="Register as a Hajj volunteer with HajCare AI — serve pilgrims with multilingual support and on-ground assistance." path="/volunteer" type="website" jsonLd={{"@context":"https://schema.org","@type":"WebPage","headline":"Volunteer Registration","description":"Register as a Hajj volunteer with HajCare AI — serve pilgrims with multilingual support and on-ground assistance.","url":"https://hajjcare.in/volunteer"}} />
         <div className="min-h-screen bg-background" dir={isRTL ? "rtl" : "ltr"}>
-        <SimpleHeader />
+        <SimpleHeader logoSrc="/assets/hajcare-ai-logo-640.png" />
         <main className="container max-w-2xl mx-auto px-4 py-8">
           <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-background">
             <CardContent className="p-8 text-center space-y-6">
@@ -284,7 +284,7 @@ const VolunteerPage = () => {
   return (
     <div className="min-h-screen bg-background" dir={isRTL ? "rtl" : "ltr"}>
       <SEO title="Volunteer Registration" description="Register as a Hajj volunteer with HajCare AI — serve pilgrims with multilingual support and on-ground assistance." path="/volunteer" type="website" />
-      <SimpleHeader />
+      <SimpleHeader logoSrc="/assets/hajcare-ai-logo-640.png" />
       <main className="container max-w-2xl mx-auto px-4 py-6 space-y-6">
 
         {/* Landing Prompt */}

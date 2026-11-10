@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import logo from "@/assets/hajcare-ai-icon.jpg";
 
-export const SimpleHeader = () => {
+export const SimpleHeader = ({ logoSrc = logo }: { logoSrc?: string }) => {
   const { t, isRTL, language, setLanguage } = useLanguage();
   const { isAuthenticated, signOut, user } = useAuth();
   const navigate = useNavigate();
@@ -28,7 +28,7 @@ export const SimpleHeader = () => {
         <a href="/" className="flex items-center gap-3 min-w-0 group">
           <div className="relative">
             <img 
-              src={logo} 
+              src={logoSrc} 
               alt="HajCare AI" 
               width={44}
               height={44}
