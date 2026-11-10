@@ -1,7 +1,21 @@
-import { MAIN_SUPABASE_ORIGIN } from "../../supabase/functions/volunteer-register/handler";
-
 const ROW_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-const VOLUNTEER_CODE = /^V-[A-Z]{3}-[A-Z]{3}-[0-9]{4}$/;
+
+/** Hajjcare-live only. This client never reads a project URL from the environment. */
+export const VOLUNTEER_SUPABASE_ORIGIN = "https://vvbbwlfzpfvgyweeggvw.supabase.co";
+export const VOLUNTEER_REGISTER_ENDPOINT = `${VOLUNTEER_SUPABASE_ORIGIN}/functions/v1/volunteer-register`;
+export const VOLUNTEER_PUBLISHABLE_KEY_ENV = "VITE_VOLUNTEER_PUBLISHABLE_KEY";
+
+function viteValue(name: string): string {
+  const env = (import.meta as unknown as { env?: Record<string, string | undefined> }).env;
+  return env?.[name]?.trim() ?? "";
+}
+
+export function volunteerClientConfig(): VolunteerClientConfig | null {
+  const publishableKey = viteValue(VOLUNTEER_PUBLISHABLE_KEY_ENV);
+  if (!publishableKey) return null;
+  if (publishableKey.startsWith("sb_secret_") || /service[-_]?role/i.test(publishableKey)) return null;
+  return { url: VOLUNTEER_SUPABASE_ORIGIN, publishableKey };
+}
 
 export interface VolunteerRegistrationInput {
   full_name: string;
@@ -29,48 +43,38 @@ export interface VolunteerRegistrationInput {
 export interface VolunteerClientConfig {
   url: string;
   publishableKey: string;
-  accessToken?: string;
 }
 
 export type VolunteerRegistrationResult =
-  | { ok: true; id: string; volunteerId: string }
+  | { ok: true; id: string; reference: string }
   | { ok: false; title: string; description: string };
 
-function viteValue(name: string): string {
-  const env = (import.meta as unknown as { env?: Record<string, string | undefined> }).env;
-  return env?.[name]?.trim() ?? "";
-}
-
-export function mainVolunteerClientConfig(accessToken = ""): VolunteerClientConfig | null {
-  const url = viteValue("VITE_SUPABASE_URL");
-  const publishableKey = viteValue("VITE_SUPABASE_PUBLISHABLE_KEY");
-  if (!url || !publishableKey) return null;
-  if (url.replace(/\/$/, "") !== MAIN_SUPABASE_ORIGIN) return null;
-  if (publishableKey.startsWith("sb_secret_") || /service[-_]?role/i.test(publishableKey)) return null;
-  return { url: MAIN_SUPABASE_ORIGIN, publishableKey, accessToken };
+/** Short reference taken from a confirmed row id. Not a separate server code. */
+export function volunteerReference(id: string): string {
+  if (!ROW_ID.test(id)) return "";
+  return `HC-${id.slice(0, 8).toUpperCase()}`;
 }
 
 export async function submitVolunteerRegistration(
   input: VolunteerRegistrationInput,
-  config = mainVolunteerClientConfig(),
+  config = volunteerClientConfig(),
   fetchImpl: typeof fetch = fetch,
 ): Promise<VolunteerRegistrationResult> {
-  if (!config) {
+  if (!config || config.url !== VOLUNTEER_SUPABASE_ORIGIN) {
     return {
       ok: false,
       title: "रजिस्ट्रेशन अभी खुला नहीं है",
       description: "Volunteer registration is not open yet.",
     };
   }
-  const token = config.accessToken?.trim() || config.publishableKey;
   let response: Response;
   try {
-    response = await fetchImpl(`${MAIN_SUPABASE_ORIGIN}/functions/v1/volunteer-register`, {
+    response = await fetchImpl(VOLUNTEER_REGISTER_ENDPOINT, {
       method: "POST",
       headers: {
         "content-type": "application/json",
         apikey: config.publishableKey,
-        authorization: `Bearer ${token}`,
+        authorization: `Bearer ${config.publishableKey}`,
       },
       body: JSON.stringify(input),
     });
@@ -81,7 +85,7 @@ export async function submitVolunteerRegistration(
       description: "The registration could not be sent. Please try again.",
     };
   }
-  let body: { ok?: unknown; id?: unknown; volunteer_id?: unknown; error?: unknown } = {};
+  let body: { ok?: unknown; id?: unknown; error?: unknown } = {};
   try {
     body = await response.json();
   } catch {
@@ -101,29 +105,17 @@ export async function submitVolunteerRegistration(
       description: "Too many attempts from this network or mobile number. Please wait and try again.",
     };
   }
-  if (response.status === 401) {
-    return {
-      ok: false,
-      title: "साइन-इन की जाँच नहीं हो सकी",
-      description: "Your sign-in could not be confirmed. Sign in again, or submit without an account.",
-    };
-  }
-  if (
-    response.ok
-    && body.ok === true
-    && typeof body.id === "string"
-    && ROW_ID.test(body.id)
-    && typeof body.volunteer_id === "string"
-    && VOLUNTEER_CODE.test(body.volunteer_id)
-  ) {
-    return { ok: true, id: body.id, volunteerId: body.volunteer_id };
-  }
-  if (response.status === 400) {
+  if (response.status === 400 || body.error === "validation") {
     return {
       ok: false,
       title: "कृपया फ़ॉर्म जाँचें",
       description: "Please check the form and try again. Nothing was saved.",
     };
+  }
+  const id = typeof body.id === "string" ? body.id : "";
+  const reference = volunteerReference(id);
+  if (response.ok && body.ok !== false && reference) {
+    return { ok: true, id, reference };
   }
   return {
     ok: false,

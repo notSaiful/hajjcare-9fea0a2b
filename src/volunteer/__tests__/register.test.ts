@@ -2,7 +2,8 @@ import { readFileSync } from "node:fs";
 import { webcrypto } from "node:crypto";
 import { resolve } from "node:path";
 import { describe, expect, it, vi } from "vitest";
-import { submitVolunteerRegistration, type VolunteerRegistrationInput } from "../register";
+import { submitVolunteerRegistration, volunteerReference, VOLUNTEER_REGISTER_ENDPOINT, type VolunteerRegistrationInput } from "../register";
+import { VOLUNTEER_SUPABASE_ORIGIN } from "../project";
 import {
   DuplicateVolunteer,
   MAIN_SUPABASE_ORIGIN,
@@ -102,13 +103,22 @@ describe("main volunteer registration", () => {
     expect(create).toContain("user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL");
     expect(create).not.toContain("user_id UUID NOT NULL");
     const page = read("src/pages/VolunteerPage.tsx");
-    expect(page).toContain("getSession()");
+    const client = read("src/volunteer/register.ts");
+    expect(page).not.toContain("getSession()");
+    expect(page).not.toContain("begtqcmwruvwposocnsr");
+    expect(page).toContain('to="/explore#register"');
+    expect(page).toContain("Register for training");
+    expect(client).toContain("VOLUNTEER_REGISTER_ENDPOINT");
+    expect(client).toContain("/functions/v1/volunteer-register");
+    expect(client).not.toContain("begtqcmwruvwposocnsr");
+    expect(client).not.toContain("volunteer_id");
+    expect(read("src/volunteer/project.ts")).toContain("VITE_VOLUNTEER_PUBLISHABLE_KEY");
     expect(page).not.toContain('.from("volunteers")');
     expect(page).not.toContain("Please log in before registering");
     expect(read("supabase/config.toml")).toContain("[functions.volunteer-register]");
     expect(read("supabase/functions/volunteer-register/index.ts")).toContain('.from("volunteers")');
-    expect(read("src/volunteer/register.ts")).not.toContain("SERVICE_ROLE");
-    expect(read("src/pages/VolunteerPage.tsx")).not.toContain("SERVICE_ROLE");
+    expect(client).not.toContain("SERVICE_ROLE");
+    expect(page).not.toContain("SERVICE_ROLE");
   });
 
   it("saves an anonymous registration and a signed-in registration with that user id", async () => {
@@ -159,19 +169,41 @@ describe("main volunteer registration", () => {
     expect(second.status).toBe(429);
   });
 
-  it("shows success only when both the row id and volunteer code come back", async () => {
+  it("saves only on hajjcare-live and shows a reference from the confirmed row id", async () => {
     const fetchImpl = vi.fn<typeof fetch>();
-    const config = { url: MAIN_SUPABASE_ORIGIN, publishableKey: "sb_publishable_main_test", accessToken: "user-token" };
-    fetchImpl.mockResolvedValueOnce(new Response(JSON.stringify({ ok: true, id: ROW_ID, volunteer_id: CODE }), { status: 200 }));
+    const config = { url: VOLUNTEER_SUPABASE_ORIGIN, publishableKey: "sb_publishable_live_test" };
+    fetchImpl.mockResolvedValueOnce(new Response(JSON.stringify({ id: ROW_ID }), { status: 200 }));
     const saved = await submitVolunteerRegistration(validBody() as VolunteerRegistrationInput, config, fetchImpl);
-    expect(saved).toEqual({ ok: true, id: ROW_ID, volunteerId: CODE });
-    const headers = new Headers((fetchImpl.mock.calls[0][1] as RequestInit).headers);
-    expect(headers.get("authorization")).toBe("Bearer user-token");
-    expect(headers.get("apikey")).toBe("sb_publishable_main_test");
+    expect(saved).toEqual({ ok: true, id: ROW_ID, reference: volunteerReference(ROW_ID) });
+    expect(volunteerReference(ROW_ID)).toBe("HC-11111111");
+    const call = fetchImpl.mock.calls[0];
+    expect(String(call[0])).toBe(VOLUNTEER_REGISTER_ENDPOINT);
+    expect(String(call[0])).not.toContain("begtqcmwruvwposocnsr");
+    const headers = new Headers(call[1]?.headers);
+    expect(headers.get("apikey")).toBe("sb_publishable_live_test");
+    expect(headers.get("authorization")).toBe("Bearer sb_publishable_live_test");
 
-    fetchImpl.mockResolvedValueOnce(new Response(JSON.stringify({ ok: true, id: ROW_ID }), { status: 200 }));
+    fetchImpl.mockResolvedValueOnce(new Response(JSON.stringify({ ok: true }), { status: 200 }));
     const missing = await submitVolunteerRegistration(validBody() as VolunteerRegistrationInput, config, fetchImpl);
     expect(missing.ok).toBe(false);
     if (missing.ok === false) expect(missing.description).toMatch(/Nothing was saved/);
+
+    fetchImpl.mockResolvedValueOnce(new Response(JSON.stringify({ error: "duplicate" }), { status: 409 }));
+    const duplicate = await submitVolunteerRegistration(validBody() as VolunteerRegistrationInput, config, fetchImpl);
+    expect(duplicate.ok).toBe(false);
+    if (duplicate.ok === false) expect(duplicate.description).toMatch(/already registered/);
+
+    fetchImpl.mockResolvedValueOnce(new Response(JSON.stringify({ error: "validation" }), { status: 400 }));
+    const invalid = await submitVolunteerRegistration(validBody() as VolunteerRegistrationInput, config, fetchImpl);
+    expect(invalid.ok).toBe(false);
+    if (invalid.ok === false) expect(invalid.description).toMatch(/Nothing was saved/);
+
+    const wrongHost = await submitVolunteerRegistration(
+      validBody() as VolunteerRegistrationInput,
+      { url: MAIN_SUPABASE_ORIGIN, publishableKey: "sb_publishable_live_test" },
+      fetchImpl,
+    );
+    expect(wrongHost.ok).toBe(false);
+    expect(fetchImpl).toHaveBeenCalledTimes(4);
   });
 });

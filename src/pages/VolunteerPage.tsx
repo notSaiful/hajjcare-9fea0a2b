@@ -13,8 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
-import { mainVolunteerClientConfig, submitVolunteerRegistration } from "@/volunteer/register";
+import { submitVolunteerRegistration, volunteerReference } from "@/volunteer/register";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Heart, Users, Shield, Clock, CheckCircle2, Loader2, HandHeart, Star, FileText, Lock, Plane, Search, X } from "lucide-react";
 import VolunteerStatusTracker from "@/components/volunteer/VolunteerStatusTracker";
@@ -218,7 +217,6 @@ const VolunteerPage = () => {
 
     setSubmitting(true);
     try {
-      const { data: sessionData } = await supabase.auth.getSession();
       const result = await submitVolunteerRegistration({
         full_name: form.full_name.trim(),
         father_name: form.father_name.trim(),
@@ -240,14 +238,19 @@ const VolunteerPage = () => {
         consent_privacy: true,
         consent_terms: true,
         company_website: companyWebsite,
-      }, mainVolunteerClientConfig(sessionData.session?.access_token ?? ""));
+      });
       if (result.ok === false) {
         toast({ title: result.title, description: result.description, variant: "destructive" });
         return;
       }
-      setVolunteerId(result.volunteerId);
+      const reference = volunteerReference(result.id);
+      if (!reference) {
+        toast({ title: "रजिस्ट्रेशन में त्रुटि", description: "The server did not confirm the registration. Nothing was saved.", variant: "destructive" });
+        return;
+      }
+      setVolunteerId(reference);
       setSuccess(true);
-      toast({ title: "✅ Your Volunteer Registration has been submitted successfully.", description: `आपकी Volunteer ID: ${result.volunteerId}` });
+      toast({ title: "Your volunteer registration has been submitted.", description: `Receipt: ${reference}` });
     } catch {
       toast({ title: "रजिस्ट्रेशन में त्रुटि", description: "An unexpected error occurred. Please try again.", variant: "destructive" });
     } finally {
@@ -270,7 +273,7 @@ const VolunteerPage = () => {
               <h2 className="text-2xl font-bold text-foreground">जज़ाकल्लाहु खैरन! 🤲</h2>
               <p className="text-muted-foreground">आपका रजिस्ट्रेशन सफलतापूर्वक हो गया है</p>
               <div className="bg-card border rounded-xl p-4 space-y-2">
-                <p className="text-sm text-muted-foreground">आपकी Volunteer ID</p>
+                <p className="text-sm text-muted-foreground">Registration reference</p>
                 <p className="text-2xl font-mono font-bold text-primary">{volunteerId}</p>
               </div>
               <div className="bg-card border rounded-xl p-4 space-y-1 text-left">

@@ -30,15 +30,20 @@ function viteValue(name: string): string {
   return env?.[name]?.trim() ?? "";
 }
 
+/** Build-time publishable key. The request URL is always the hajjcare-live origin. */
+export const VOLUNTEER_PUBLISHABLE_KEY_ENV = "VITE_VOLUNTEER_PUBLISHABLE_KEY";
+
 export function volunteerClientConfig(): { url: string; publishableKey: string } | null {
-  const url = viteValue("VITE_VOLUNTEER_SUPABASE_URL");
-  const publishableKey = viteValue("VITE_VOLUNTEER_SUPABASE_PUBLISHABLE_KEY");
-  if (!url || !publishableKey) return null;
-  try {
-    assertVolunteerProjectUrl(url);
-  } catch {
-    return null;
+  const configuredUrl = viteValue("VITE_VOLUNTEER_SUPABASE_URL");
+  if (configuredUrl) {
+    try {
+      assertVolunteerProjectUrl(configuredUrl);
+    } catch {
+      return null;
+    }
   }
+  const publishableKey = viteValue(VOLUNTEER_PUBLISHABLE_KEY_ENV);
+  if (!publishableKey) return null;
   if (publishableKey.startsWith("sb_secret_") || /service[-_]?role/i.test(publishableKey)) return null;
   return { url: VOLUNTEER_SUPABASE_ORIGIN, publishableKey };
 }

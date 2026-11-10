@@ -16,7 +16,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
-const RECEIPT = /^V-[A-Z]{3}-[A-Z]{3}-[0-9]{4}$/;
+const RECEIPT = /^(?:V-[A-Z]{3}-[A-Z]{3}-[0-9]{4}|HC-[0-9A-F]{8})$/;
 
 export const VOLUNTEER_MODULES: { title: string; titleHi: string; description: string; descriptionHi: string; icon: LucideIcon }[] = [
   {
