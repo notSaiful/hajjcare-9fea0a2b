@@ -13,6 +13,14 @@ const socialLinks = [
     color: "bg-green-500",
   },
   {
+    id: "haj-committee-whatsapp",
+    icon: MessageCircle,
+    name: { en: "HAJ COMMITTEE OF INDIA", hi: "हज कमेटी ऑफ इंडिया" },
+    description: { en: "official updates on WhatsApp", hi: "व्हाट्सऐप पर आधिकारिक अपडेट" },
+    url: "https://whatsapp.com/channel/0029Vb6fWFfGk1FxTPwpLY26",
+    color: "bg-green-500",
+  },
+  {
     id: "x",
     icon: Twitter,
     name: { en: "X (Twitter)", ar: "إكس (تويتر)", ur: "ایکس (ٹویٹر)", hi: "एक्स (ट्विटर)", ta: "எக்ஸ் (ட்விட்டர்)", te: "ఎక్స్ (ట్విట్టర్)", mr: "एक्स (ट्विटर)", bn: "এক্স (টুইটার)", or: "ଏକ୍ସ (ଟ୍ୱିଟର)", ml: "എക്സ് (ട്വിറ്റർ)", pa: "ਐਕਸ (ਟਵਿੱਟਰ)" },

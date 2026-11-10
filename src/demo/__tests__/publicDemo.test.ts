@@ -78,6 +78,16 @@ describe("approved public demo", () => {
     expect(explore).toContain("Hxn32sAZTNI");
   });
 
+  it("lists the Haj Committee of India WhatsApp channel with the social links", () => {
+    const url = "https://whatsapp.com/channel/0029Vb6fWFfGk1FxTPwpLY26";
+    expect(explore).toContain(url);
+    expect(explore).toContain("HAJ COMMITTEE OF INDIA — official updates on WhatsApp");
+    expect(explore).toContain("हज कमेटी ऑफ इंडिया — व्हाट्सऐप पर आधिकारिक अपडेट");
+    expect(explore).toContain('rel="noopener noreferrer"');
+    expect(read("src/pages/SocialsPage.tsx")).toContain(url);
+    expect(explore.match(new RegExp(url.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g"))).toHaveLength(1);
+  });
+
   it("keeps Video 1 local and leaves the other slots empty", () => {
     expect(explore).toContain("hajcare-demo-social-v1");
     expect(explore).toContain("not uploaded to HajCare servers");
