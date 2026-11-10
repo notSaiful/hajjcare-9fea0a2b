@@ -12,7 +12,8 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
-import { submitVolunteerRegistration } from "@/volunteer/register";
+import { supabase } from "@/integrations/supabase/client";
+import { mainVolunteerClientConfig, submitVolunteerRegistration } from "@/volunteer/register";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Heart, Users, Shield, Clock, CheckCircle2, Loader2, HandHeart, Star, FileText, Lock, Plane, Search, X } from "lucide-react";
 import VolunteerStatusTracker from "@/components/volunteer/VolunteerStatusTracker";
@@ -193,6 +194,7 @@ const VolunteerPage = () => {
 
     setSubmitting(true);
     try {
+      const { data: sessionData } = await supabase.auth.getSession();
       const result = await submitVolunteerRegistration({
         full_name: form.full_name.trim(),
         father_name: form.father_name.trim(),
@@ -214,14 +216,14 @@ const VolunteerPage = () => {
         consent_privacy: true,
         consent_terms: true,
         company_website: companyWebsite,
-      });
+      }, mainVolunteerClientConfig(sessionData.session?.access_token ?? ""));
       if (result.ok === false) {
         toast({ title: result.title, description: result.description, variant: "destructive" });
         return;
       }
-      setVolunteerId(result.id);
+      setVolunteerId(result.volunteerId);
       setSuccess(true);
-      toast({ title: "✅ Your Volunteer Registration has been submitted successfully.", description: `आपकी Volunteer ID: ${result.id}` });
+      toast({ title: "✅ Your Volunteer Registration has been submitted successfully.", description: `आपकी Volunteer ID: ${result.volunteerId}` });
     } catch {
       toast({ title: "रजिस्ट्रेशन में त्रुटि", description: "An unexpected error occurred. Please try again.", variant: "destructive" });
     } finally {
