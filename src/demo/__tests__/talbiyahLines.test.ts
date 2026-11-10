@@ -164,8 +164,8 @@ describe("talbiyah line text", () => {
     expect(panel.hidden).toBe(true);
   });
 
-  it("skips the door clips immediately and still shows Skip next time", async () => {
-    document.body.innerHTML = `<div id="intro"><div id="opener"></div><button id="enter" type="button">Enter</button></div><audio id="talbiya"></audio><audio id="hmean"></audio>`;
+  it("keeps Skip visible on every door visit, through both clips, and after a saved skip", async () => {
+    document.body.innerHTML = `<div id="intro"><div id="opener"></div><p class="hcap on">हाज़िर हूँ,</p><span class="hph on">हाज़िर हूँ,</span><button id="enter" type="button">Enter</button></div><audio id="talbiya"></audio><audio id="hmean"></audio>`;
     const talbiya = document.getElementById("talbiya") as HTMLAudioElement;
     const hmean = document.getElementById("hmean") as HTMLAudioElement;
     let pauses = 0;
@@ -174,26 +174,56 @@ describe("talbiyah line text", () => {
     let entered = 0;
     document.getElementById("enter")!.addEventListener("click", () => {
       entered += 1;
+      document.getElementById("intro")!.classList.add("gone");
+      document.body.classList.add("entered");
     });
     window.eval(script);
     const skip = document.getElementById("talbiyah-skip")!;
+    expect(skip.isConnected).toBe(true);
     expect(skip.hidden).toBe(false);
     expect(skip.textContent).toContain("Skip");
     expect(skip.textContent).toContain("छोड़ें");
+
     document.getElementById("opener")!.classList.add("dopen");
     await Promise.resolve();
+    expect(skip.hidden).toBe(false);
     expect(document.getElementById("talbiyah-lines")?.hidden).toBe(false);
+    talbiya.dispatchEvent(new Event("playing"));
+    expect(skip.hidden).toBe(false);
+    talbiya.dispatchEvent(new Event("ended"));
+    hmean.dispatchEvent(new Event("playing"));
+    expect(skip.isConnected).toBe(true);
+    expect(skip.hidden).toBe(false);
+
     skip.click();
     expect((window as unknown as { __talbiyaDone?: boolean }).__talbiyaDone).toBe(true);
     expect(pauses).toBeGreaterThanOrEqual(2);
     expect(document.getElementById("talbiyah-lines")?.hidden).toBe(true);
+    expect(document.querySelector(".hcap")?.textContent).toBe("");
+    expect(document.querySelector(".hcap")?.classList.contains("on")).toBe(false);
+    expect(document.querySelector(".hph")?.classList.contains("on")).toBe(false);
     expect(entered).toBe(1);
+    expect(document.body.classList.contains("entered")).toBe(true);
     expect(localStorage.getItem("hc-skip-talbiya")).toBe("1");
-    expect(document.getElementById("talbiyah-skip")).toBeNull();
+    expect(document.getElementById("talbiyah-skip")).toBe(skip);
 
-    document.body.innerHTML = `<div id="intro"><div id="opener"></div></div><audio id="talbiya"></audio><audio id="hmean"></audio>`;
+    document.body.classList.remove("entered");
+    document.getElementById("intro")!.classList.remove("gone");
+    await Promise.resolve();
+    expect(skip.hidden).toBe(false);
+
+    document.body.innerHTML = `<div id="intro"><div id="opener"></div><button id="enter" type="button">Enter</button></div><audio id="talbiya"></audio><audio id="hmean"></audio>`;
     window.eval(script);
+    const again = document.getElementById("talbiyah-skip")!;
     expect((window as unknown as { __talbiyaDone?: boolean }).__talbiyaDone).toBe(true);
-    expect(document.getElementById("talbiyah-skip")?.textContent).toContain("Skip");
+    expect(again.hidden).toBe(false);
+    expect(again.textContent).toContain("Skip");
+    document.getElementById("opener")!.classList.add("dopen");
+    await Promise.resolve();
+    document.getElementById("talbiya")!.dispatchEvent(new Event("playing"));
+    document.getElementById("talbiya")!.dispatchEvent(new Event("ended"));
+    document.getElementById("hmean")!.dispatchEvent(new Event("playing"));
+    expect(again.hidden).toBe(false);
+    expect(localStorage.getItem("hc-skip-talbiya")).toBe("1");
   });
 });

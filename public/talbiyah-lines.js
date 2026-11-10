@@ -1,6 +1,7 @@
 /* Line-by-line Talbiyah text. Does not set, swap, or play audio. */
 (function () {
   try {
+    /* A saved skip only avoids autoplay. It must not hide the Skip button. */
     if (localStorage.getItem("hc-skip-talbiya") === "1") window.__talbiyaDone = true;
   } catch (e) {}
   /* Verbatim splits of the existing wording.
@@ -268,8 +269,23 @@
       try { el.pause(); } catch (err) {}
     });
   }
-  function retireSkip() {
-    if (skipBtn.isConnected) skipBtn.remove();
+  function sectionShowing() {
+    if (document.body.classList.contains("entered")) return false;
+    if (intro && intro.classList.contains("gone")) return false;
+    return true;
+  }
+  function hideCaptions() {
+    var root = intro || document;
+    root.querySelectorAll(".hcap").forEach(function (c) {
+      c.textContent = "";
+      c.classList.remove("on");
+    });
+    root.querySelectorAll(".hph.on").forEach(function (s) { s.classList.remove("on"); });
+  }
+  function syncSkip() {
+    var show = sectionShowing();
+    skipBtn.hidden = !show;
+    if (show && !skipBtn.isConnected) document.body.appendChild(skipBtn);
   }
   skipBtn.addEventListener("click", function (e) {
     e.stopPropagation();
@@ -278,22 +294,24 @@
     stopClips();
     if (advanceBtn.isConnected) advanceBtn.remove();
     finishPanel(false);
-    retireSkip();
+    hideCaptions();
     var go = document.getElementById("enter");
     if (go) go.click();
+    syncSkip();
   });
 
   var enter = document.getElementById("enter");
   if (enter) enter.addEventListener("click", function () {
     if (advanceBtn.isConnected) advanceBtn.remove();
-    retireSkip();
+    hideCaptions();
     finishPanel(false);
+    syncSkip();
   });
 
   var watch = new MutationObserver(function () {
-    if (intro && (intro.classList.contains("gone") || document.body.classList.contains("entered"))) {
+    syncSkip();
+    if (!sectionShowing()) {
       if (advanceBtn.isConnected) advanceBtn.remove();
-      retireSkip();
       finishPanel(false);
       return;
     }
@@ -309,5 +327,6 @@
   watch.observe(document.body, { attributes: true, attributeFilter: ["class"] });
 
   reveal(0);
+  syncSkip();
   if (doorOpen()) openPanel();
 })();
