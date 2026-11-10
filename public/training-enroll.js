@@ -13,6 +13,9 @@
   var ENDPOINT = "https://uorfprlfpqdpjtrcaqrt.supabase.co/functions/v1/training-enroll";
   var SESSION_KEY = "hc-training-session";
   var REFRESH_SKEW = 60;
+  var accountProfile = null;
+  var MUBARAK_EN = "CONGRATULATIONS, YOUR REGISTRATION IS SUCCESSFULLY DONE. MAY ALLAH FORGIVE YOUR SINS AND ACCEPT YOUR HAJJ AS HAJJ-E-MABROOR.";
+  var MUBARAK_HI = "मुबारक हो! आपका रजिस्ट्रेशन कामयाबी से हो गया। अल्लाह आपके गुनाह माफ़ फ़रमाए, आपको हज पूरा करने की तौफ़ीक़ दे और आपका हज क़ुबूल करके हज्ज-ए-मबरूर बनाए। आमीन।";
 
   function en() {
     return document.documentElement.lang === "en";
@@ -36,7 +39,9 @@
       sign_in_required: hi ? "रजिस्टर करें, फिर फ़ॉर्म भरें। कुछ सेव नहीं हुआ।" : "Register to continue. Nothing was saved.",
       password_mismatch: hi ? "यह ईमेल पहले से किसी और पासवर्ड से रजिस्टर है। वही पासवर्ड लिखें जो पहले इस्तेमाल किया था। कुछ सेव नहीं हुआ।" : "This email is already registered with a different password. Use the same password you used before. Nothing was saved.",
       weak_password: hi ? "कम से कम 8 अक्षर लिखें। कुछ सेव नहीं हुआ।" : "Use at least 8 characters. Nothing was saved.",
-      bad_email: hi ? "ईमेल जाँचें और फिर कोशिश करें। कुछ सेव नहीं हुआ।" : "Check the email and try again. Nothing was saved."
+      bad_email: hi ? "ईमेल जाँचें और फिर कोशिश करें। कुछ सेव नहीं हुआ।" : "Check the email and try again. Nothing was saved.",
+      bad_name: hi ? "नाम जाँचें और फिर कोशिश करें। कुछ सेव नहीं हुआ।" : "Check the name and try again. Nothing was saved.",
+      bad_phone: hi ? "मोबाइल नंबर जाँचें और फिर कोशिश करें। कुछ सेव नहीं हुआ।" : "Check the mobile number and try again. Nothing was saved."
     };
     return map[code] || map.unavailable;
   }
@@ -94,6 +99,26 @@
     try { sessionStorage.removeItem(SESSION_KEY); } catch (e) { /* private mode */ }
   }
 
+  function mubarakText() {
+    return en() ? MUBARAK_EN : MUBARAK_HI;
+  }
+
+  function showMubarak(form, on) {
+    if (!form) return;
+    var el = form.querySelector("[data-hc-mubarak]");
+    if (!el) return;
+    el.hidden = !on;
+    el.textContent = on ? mubarakText() : "";
+  }
+
+  function prefillEnrollment(form) {
+    if (!form || !accountProfile) return;
+    var name = form.querySelector("[name=name]");
+    var phone = form.querySelector("[name=phone_number]");
+    if (name && !String(name.value || "").trim()) name.value = accountProfile.full_name;
+    if (phone && !String(phone.value || "").trim()) phone.value = accountProfile.phone;
+  }
+
   function showAuth(form, text) {
     if (!form) return;
     var el = form.querySelector("[data-hc-auth-msg]");
@@ -134,6 +159,31 @@
     if (!form) return;
     var input = form.querySelector("[data-hc-password]");
     if (input) input.value = "";
+  }
+
+  function cleanLine(raw, max) {
+    var value = String(raw || "");
+    var out = "";
+    for (var i = 0; i < value.length;) {
+      var code = value.codePointAt(i);
+      var ch = String.fromCodePoint(code);
+      out += code < 32 || code === 127 ? " " : ch;
+      i += ch.length;
+    }
+    return out.replace(/\s+/g, " ").trim().slice(0, max);
+  }
+
+  function nameOk(raw) {
+    var name = cleanLine(raw, 120);
+    if (name.length < 2 || !/\p{L}/u.test(name) || /[<>]/.test(name)) return "";
+    return name;
+  }
+
+  function phoneOk(raw) {
+    var phone = String(raw || "").replace(/\D/g, "");
+    if (phone.length === 10) phone = "91" + phone;
+    if (!/^[0-9]+$/.test(phone) || phone.length < 10 || phone.length > 15) return "";
+    return phone;
   }
 
   function emailOk(raw) {
@@ -210,23 +260,42 @@
     return { ok: false, message: message };
   }
 
-  async function register(email, password, form) {
+  function openAccount(form, fresh) {
+    prefillEnrollment(form);
+    showMubarak(form, fresh);
+    showAuth(form, "");
+    applyGate(form);
+    return { ok: true, message: fresh ? mubarakText() : "" };
+  }
+
+  async function register(details, form) {
+    details = details || {};
     var cfg = readConfig();
     if (!cfg.ok) return fail(form, cfg.code);
-    var clean = emailOk(email);
+    var fullName = nameOk(details.name);
+    if (!fullName) return fail(form, "bad_name");
+    var phone = phoneOk(details.phone);
+    if (!phone) return fail(form, "bad_phone");
+    var clean = emailOk(details.email);
     if (!clean) return fail(form, "bad_email");
-    if (String(password || "").length < 8) return fail(form, "weak_password");
+    var password = String(details.password || "");
+    if (password.length < 8) return fail(form, "weak_password");
+    accountProfile = { full_name: fullName, phone: phone };
     var buttons = form ? form.querySelectorAll("[data-hc-create]") : [];
     for (var i = 0; i < buttons.length; i++) buttons[i].disabled = true;
     var result;
     try {
-      var posted = await authPost("/auth/v1/signup", { email: clean, password: password }, cfg.key);
+      var posted = await authPost("/auth/v1/signup", {
+        email: clean,
+        password: password,
+        data: { full_name: fullName, phone: phone }
+      }, cfg.key);
       if (!posted.ok) result = { ok: false, code: "unavailable" };
-      else if (posted.status >= 200 && posted.status < 300 && sessionFrom(posted.data)) result = { ok: true };
+      else if (posted.status >= 200 && posted.status < 300 && sessionFrom(posted.data)) result = { ok: true, fresh: true };
       else if (alreadyRegistered(posted.status, posted.data)) {
         var token = await authPost("/auth/v1/token?grant_type=password", { email: clean, password: password }, cfg.key);
         if (!token.ok) result = { ok: false, code: "unavailable" };
-        else if (token.status >= 200 && token.status < 300 && sessionFrom(token.data)) result = { ok: true };
+        else if (token.status >= 200 && token.status < 300 && sessionFrom(token.data)) result = { ok: true, fresh: false };
         else if (authProblem(token.status, token.data) === "rate_limited") result = { ok: false, code: "rate_limited" };
         else result = { ok: false, code: "password_mismatch" };
       } else if (posted.status >= 200 && posted.status < 300) result = { ok: false, code: "unavailable" };
@@ -237,13 +306,10 @@
       clearPassword(form);
       for (var j = 0; j < buttons.length; j++) buttons[j].disabled = false;
     }
-    if (result.ok) {
-      showAuth(form, "");
-      applyGate(form);
-      return { ok: true, message: "" };
-    }
+    if (result && result.ok) return openAccount(form, !!result.fresh);
+    showMubarak(form, false);
     applyGate(form);
-    return fail(form, result.code || "unavailable");
+    return fail(form, (result && result.code) || "unavailable");
   }
 
   function mount(form) {
@@ -258,39 +324,57 @@
     signOutButton.type = "button";
     signOutButton.className = "btn o";
     signOutButton.setAttribute("data-hc-sign-out", "1");
-    signOutButton.textContent = hi ? "साइन आउट" : "Sign out";
+    signOutButton.textContent = hi ? "साइन आउट" : "SIGN OUT";
     signOut.appendChild(signOutButton);
     enroll.insertBefore(signOut, enroll.firstChild);
+    var banner = document.createElement("div");
+    banner.className = "ok";
+    banner.setAttribute("data-hc-mubarak", "1");
+    banner.hidden = true;
     var signin = document.createElement("div");
     signin.setAttribute("data-hc-register", "1");
     signin.innerHTML = '<p class="sub"></p><div data-hc-auth-fields>'
+      + '<label for="hc-auth-name"></label><input id="hc-auth-name" data-hc-name name="hc_auth_name" type="text" autocomplete="name" maxlength="120">'
+      + '<label for="hc-auth-phone"></label><input id="hc-auth-phone" data-hc-phone name="hc_auth_phone" type="tel" autocomplete="tel" inputmode="tel" maxlength="20">'
       + '<label for="hc-auth-email"></label><input id="hc-auth-email" data-hc-email name="hc_auth_email" type="email" autocomplete="username" inputmode="email" maxlength="200">'
       + '<label for="hc-auth-password"></label><input id="hc-auth-password" data-hc-password name="hc_auth_password" type="password" autocomplete="new-password" maxlength="200">'
       + '<div class="cta"><button type="button" class="btn" data-hc-create></button></div>'
       + '</div><div data-hc-auth-msg></div>';
     signin.querySelector(".sub").textContent = hi
       ? "100 दिन की ट्रेनिंग के लिए रजिस्टर करें"
-      : "Register to join the 100-day training";
+      : "REGISTER TO JOIN THE 100-DAY TRAINING";
     var labels = signin.querySelectorAll("label");
-    labels[0].textContent = hi ? "ईमेल" : "Email";
-    labels[1].textContent = hi ? "पासवर्ड" : "Password";
-    signin.querySelector("[data-hc-create]").textContent = hi ? "रजिस्टर करें" : "Register";
+    labels[0].textContent = hi ? "नाम" : "NAME";
+    labels[1].textContent = hi ? "मोबाइल नंबर" : "PHONE NUMBER";
+    labels[2].textContent = hi ? "ईमेल" : "EMAIL";
+    labels[3].textContent = hi ? "पासवर्ड" : "PASSWORD";
+    signin.querySelector("[data-hc-create]").textContent = hi ? "रजिस्टर करें" : "REGISTER";
     form.appendChild(enroll);
-    form.insertBefore(signin, enroll);
+    form.insertBefore(banner, enroll);
+    form.insertBefore(signin, banner);
+    function readBox() {
+      return {
+        name: signin.querySelector("[data-hc-name]").value,
+        phone: signin.querySelector("[data-hc-phone]").value,
+        email: signin.querySelector("[data-hc-email]").value,
+        password: signin.querySelector("[data-hc-password]").value
+      };
+    }
     signin.querySelector("[data-hc-create]").addEventListener("click", function () {
-      register(signin.querySelector("[data-hc-email]").value, signin.querySelector("[data-hc-password]").value, form);
+      register(readBox(), form);
     });
     signOutButton.addEventListener("click", function () {
       clearSession();
       clearPassword(form);
       showAuth(form, "");
+      showMubarak(form, false);
       applyGate(form);
     });
     form.addEventListener("submit", function (e) {
       if (signin.hidden) return;
       if (e.preventDefault) e.preventDefault();
       if (e.stopPropagation) e.stopPropagation();
-      register(signin.querySelector("[data-hc-email]").value, signin.querySelector("[data-hc-password]").value, form);
+      register(readBox(), form);
     }, true);
     applyGate(form);
   }
@@ -344,6 +428,7 @@
       if (!res || res.type === "opaqueredirect" || (res.status >= 300 && res.status < 400)) return fail(form, "unavailable");
       if (res.status === 401) {
         clearSession();
+        showMubarak(form, false);
         applyGate(form);
         return fail(form, "sign_in_required");
       }
@@ -355,6 +440,7 @@
       var code = data && data.error === "duplicate" ? "duplicate" : data && data.error === "rate_limited" ? "rate_limited" : data && data.error === "validation" ? "validation" : data && data.error === "sign_in_required" ? "sign_in_required" : "unavailable";
       if (code === "sign_in_required") {
         clearSession();
+        showMubarak(form, false);
         applyGate(form);
       }
       return fail(form, code);
@@ -369,11 +455,12 @@
   root.__hcSubmitTrainingEnrollment = submit;
   root.__hcTrainingReadConfig = readConfig;
   root.__hcMountTrainingGate = mount;
-  root.__hcTrainingRegister = function (email, password, form) { return register(email, password, form || null); };
+  root.__hcTrainingRegister = function (details, form) { return register(details || {}, form || null); };
   root.__hcTrainingSignOut = function (form) {
     clearSession();
     clearPassword(form);
     showAuth(form, "");
+    showMubarak(form, false);
     applyGate(form);
   };
 })(window);
