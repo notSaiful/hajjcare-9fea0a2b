@@ -61,7 +61,7 @@ function applyText(l){if(l!=='hi')document.querySelectorAll('.zmsg').forEach(e=>
  const w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let n;
  while(n=w.nextNode()){
   const parent=n.parentElement;
-  if(!parent||parent.closest('script,style,[lang=ar],.ar,.arb,.htb,.lc b,.lmenu,.lsel,.hcl,.hc-review-panel,.hc-fixed-meaning,.hc-draft-note,.hc-explore-meaning,.imean,.mean,.zc,.zm,.zmsg,[data-hc-protect],p.imean,p.mean'))continue;
+  if(!parent||parent.closest('script,style,[lang=ar],.ar,.arb,.htb,.lc b,.lmenu,.lsel,.hcl,.hc-review-panel,.hc-fixed-meaning,.hc-draft-note,.hc-explore-meaning,.imean,.mean,.zc,.zm,.zmsg,[data-hc-protect],.otap,p.imean,p.mean'))continue;
   if(!ROOT.has(n))ROOT.set(n,n.nodeValue);
   let original=ROOT.get(n);if(!accepted(trim(original))){const canonical=trim(original),i=alias.get(canonical),source=i===undefined?English.get(canonical):D.T.hi[i];if(source&&source!==canonical)ROOT.set(n,source)}
   const raw=ROOT.get(n),key=trim(raw);if(!key)continue;
@@ -72,6 +72,7 @@ function applyText(l){if(l!=='hi')document.querySelectorAll('.zmsg').forEach(e=>
   if(out!==undefined)n.nodeValue=key===raw?out:raw.replace(key,out);
  }
  document.querySelectorAll('[placeholder],[aria-label],[title]').forEach(el=>{
+  if(el.id==='opener'||el.closest('.otap'))return;
   for(const a of ['placeholder','aria-label','title']){
    if(!el.hasAttribute(a))continue;
    const saved=ATTR.get(el)||{};if(saved[a]===undefined)saved[a]=el.getAttribute(a);{const k=trim(saved[a]);if(!accepted(k)){const i=alias.get(k),source=i===undefined?English.get(k):D.T.hi[i];if(source&&source!==k)saved[a]=source}}ATTR.set(el,saved);

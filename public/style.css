@@ -272,7 +272,12 @@ nav .nl+.vtoggle{margin-left:0}
 @keyframes otp{0%,100%{opacity:.55}50%{opacity:1}}
 #intro.opened #opener .door{transform:scale(7)}#intro.opened #opener .oname{transform:none;opacity:0}
 #opener .flash{position:absolute;inset:0;background:#fffaea;opacity:0;transition:opacity 1s .3s;z-index:4;pointer-events:none}#intro.opened #opener .flash{opacity:1}
-@media(prefers-reduced-motion:reduce){#opener .cl,#opener .stars,#opener .st,#opener .water,#opener .otap{animation:none!important}#opener .lv.l{transform:rotateY(-108deg)}#opener .lv.r{transform:rotateY(108deg)}#opener .lv,#opener .rays,#opener .pour,#opener .oname,#opener .door{transition:none!important}#opener .seam{opacity:0}#opener .rays,#opener .oname{opacity:1}}
+#opener .otap{display:flex;flex-direction:column;align-items:center;gap:.2rem;pointer-events:none}
+#opener .ofing{position:absolute;left:50%;top:34%;z-index:6;width:34px;height:50px;margin-left:-17px;color:#fff3d6;pointer-events:none;filter:drop-shadow(0 2px 3px rgba(40,20,0,.55));animation:ofing 1.5s ease-in-out infinite}
+#opener .ofing svg{display:block;width:100%;height:100%}
+#opener .otxt{color:#fff3d6;letter-spacing:.03em;text-shadow:0 1px 3px rgba(40,20,0,.85)}
+@keyframes ofing{0%,100%{transform:translateY(0)}45%{transform:translateY(9px)}60%{transform:translateY(3px)}}
+@media(prefers-reduced-motion:reduce){#opener .cl,#opener .stars,#opener .st,#opener .water,#opener .otap,#opener .ofing{animation:none!important}#opener .lv.l{transform:rotateY(-108deg)}#opener .lv.r{transform:rotateY(108deg)}#opener .lv,#opener .rays,#opener .pour,#opener .oname,#opener .door{transition:none!important}#opener .seam{opacity:0}#opener .rays,#opener .oname{opacity:1}}
 /* music toggle */
 #mtg{position:fixed;right:14px;bottom:14px;z-index:90;width:38px;height:38px;border-radius:50%;border:1px solid #c9a45c;background:rgba(20,30,55,.75);color:#f3d79a;font-size:16px;cursor:pointer;box-shadow:0 0 10px rgba(201,164,92,.35);display:grid;place-items:center}
 #mtg.off{opacity:.55;text-decoration:line-through}

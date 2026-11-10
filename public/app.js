@@ -69,7 +69,7 @@ const chime=()=>{const x=AC();if(!x)return;try{const t=x.currentTime+.03,out=x.c
 let dOpen=false;const tap=op.querySelector('.otap');
 const openDoor=()=>{if(dOpen)return;dOpen=true;window.__bgmStart&&window.__bgmStart();chime();op.classList.add('dopen');
  try{a.muted=false;const pr=a.play();a.pause();pr&&pr.catch(()=>{})}catch(_){}
- setTimeout(()=>{tap.textContent='छूकर शुरू करें';if(first){first=false;try{a.currentTime=OFF[voice]||0}catch(_){}}on()},4600)};
+ setTimeout(()=>{const tx=tap&&tap.querySelector('.otxt');if(tx)tx.textContent='touch करें';else if(tap)tap.textContent='touch करें';op.setAttribute('aria-label','touch करें');if(first){first=false;try{a.currentTime=OFF[voice]||0}catch(_){}}on()},4600)};
 window.__openDoor=openDoor;
 const act=()=>dOpen?go():openDoor();
 op.addEventListener('click',act);op.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();act()}});
@@ -119,12 +119,12 @@ window.__langSay=(l,c)=>{stopOthers();if(ss)ss.cancel();cap(S[l]||'',l,c);const 
 ;(()=>{const D=window.__I18N;if(!D)return;const K=D.K,T=D.T,RTL={ur:1,ks:1,sd:1};
 const nz=x=>x.replace(/\s+/g,' ').trim();const strip=x=>x.replace(/^[“"]+|[”"]+$/g,'');
 const idx=new Map();K.forEach((k,i)=>k.split('|').forEach(v=>{if(!v.startsWith('<'))idx.set(nz(v),i)}));
-const X={'छूकर शुरू करें':7,'🔊 आवाज़ के लिए छुएँ':5};
+const X={'🔊 आवाज़ के लिए छुएँ':5};
 Object.entries(X).forEach(([k,i])=>idx.set(k,i));const nodes=[],els=[],attrs=[];
-const scan=()=>{const w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,{acceptNode:n=>{const p=n.parentElement;if(!p||p.closest('script,style,[lang=ar],.lc b,.lmenu,.htb,#shint')||!n.nodeValue.trim())return 2;return 1}});let n;
+const scan=()=>{const w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,{acceptNode:n=>{const p=n.parentElement;if(!p||p.closest('script,style,[lang=ar],.lc b,.lmenu,.htb,#shint,.otap')||!n.nodeValue.trim())return 2;return 1}});let n;
  while(n=w.nextNode()){if(n.__o!==undefined)continue;const raw=n.nodeValue,t=nz(raw),core=strip(t);const i=idx.get(core);if(i!==undefined){n.__o=raw;n.__k=i;n.__q=t!==core?[t.slice(0,t.indexOf(core)),t.slice(t.indexOf(core)+core.length)]:['',''];nodes.push(n)}}
  [[/^यह सैर नहीं,/,'@H2'],[/^ताकि आप सिर्फ़ इबादत/,'@H3']].forEach(([re,_],j)=>document.querySelectorAll('h2,h3').forEach(e=>{if(!e.__o&&re.test(e.textContent.trim())){e.__o=e.innerHTML;e.__k=j?16:10;els.push(e)}}));
- document.querySelectorAll('[placeholder],[aria-label],[title]').forEach(e=>['placeholder','aria-label','title'].forEach(a=>{const v=e.getAttribute(a);if(v&&!e['__a'+a]){const i=idx.get(nz(v));if(i!==undefined){e['__a'+a]=v;attrs.push([e,a,i])}}}))};
+ document.querySelectorAll('[placeholder],[aria-label],[title]').forEach(e=>{if(e.id==='opener'||e.closest('.otap'))return;['placeholder','aria-label','title'].forEach(a=>{const v=e.getAttribute(a);if(v&&!e['__a'+a]){const i=idx.get(nz(v));if(i!==undefined){e['__a'+a]=v;attrs.push([e,a,i])}}})})};
 let cur='hi';
 const apply=l=>{if(!T[l])l='hi';cur=l;scan();const L=T[l];
  els.forEach(e=>{e.innerHTML=l==='hi'?e.__o:L[e.__k]});
