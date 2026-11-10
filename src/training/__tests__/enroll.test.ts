@@ -300,8 +300,7 @@ describe("training browser client", () => {
   function client() {
     return window as unknown as {
       __hcSubmitTrainingEnrollment: (form: HTMLFormElement) => Promise<{ ok: boolean; message: string; receiptId?: string }>;
-      __hcTrainingSignIn: (email: string, password: string, form?: HTMLFormElement) => Promise<{ ok: boolean; message: string }>;
-      __hcTrainingSignUp: (email: string, password: string, form?: HTMLFormElement) => Promise<{ ok: boolean; message: string }>;
+      __hcTrainingRegister: (email: string, password: string, form?: HTMLFormElement) => Promise<{ ok: boolean; message: string }>;
       __hcMountTrainingGate: (form: HTMLFormElement) => void;
     };
   }
@@ -314,25 +313,28 @@ describe("training browser client", () => {
     }), { status: 200 });
   }
 
-  it("keeps the enrollment form closed until sign-in and never calls a forbidden host", async () => {
+  it("keeps the enrollment form closed until registration and never calls a forbidden host", async () => {
     pageConfig();
     const api = client();
     const node = form();
     api.__hcMountTrainingGate(node);
     const cover = node.querySelector("[name=cover_number]") as HTMLInputElement;
-    expect(node.querySelector("[data-hc-signin]")?.hasAttribute("hidden")).toBe(false);
+    expect(node.querySelector("[data-hc-sign-in]")).toBeNull();
+    expect(node.querySelectorAll("[data-hc-create]")).toHaveLength(1);
+    expect(node.querySelector("[data-hc-register]")?.hasAttribute("hidden")).toBe(false);
     expect(node.querySelector("[data-hc-enroll]")?.hasAttribute("hidden")).toBe(true);
     expect(cover.disabled).toBe(true);
-    expect(node.textContent).toContain("Sign in");
-    expect(node.textContent).toContain("Create account");
+    expect(node.textContent).toContain("Register to join the 100-day training");
+    expect(node.textContent).toContain("Register");
+    expect(node.textContent).not.toMatch(/Sign in|Create account/);
     const blocked = await api.__hcSubmitTrainingEnrollment(node);
     expect(blocked.ok).toBe(false);
-    expect(blocked.message).toMatch(/Sign in to register/);
+    expect(blocked.message).toMatch(/Register to continue/);
     expect(fetch).not.toHaveBeenCalled();
 
     for (const host of FORBIDDEN_TRAINING_HOSTS) {
       pageConfig(`https://${host}`);
-      const signed = await api.__hcTrainingSignIn("a@example.com", "password12", node);
+      const signed = await api.__hcTrainingRegister("a@example.com", "password12", node);
       expect(signed.ok).toBe(false);
       expect(signed.message).toMatch(/Nothing was saved/);
       const submitted = await api.__hcSubmitTrainingEnrollment(node);
@@ -342,54 +344,72 @@ describe("training browser client", () => {
     expect(node.innerHTML).not.toContain("password12");
   });
 
-  it("signs in and signs up only on the Sazo host", async () => {
+  it("registers only on the Sazo host and reuses the same password when the email exists", async () => {
     pageConfig();
     const api = client();
-    const signed = await api.__hcTrainingSignIn("a@example.com", "short");
-    expect(signed.ok).toBe(false);
-    expect(signed.message).toMatch(/at least 8 characters/i);
+    const short = await api.__hcTrainingRegister("a@example.com", "short");
+    expect(short.ok).toBe(false);
+    expect(short.message).toMatch(/at least 8 characters/i);
     expect(fetch).not.toHaveBeenCalled();
 
     pageConfig(TRAINING_SUPABASE_ORIGIN, "");
-    const closed = await api.__hcTrainingSignIn("a@example.com", "password12");
+    const closed = await api.__hcTrainingRegister("a@example.com", "password12");
     expect(closed.message).toMatch(/not open/i);
     expect(fetch).not.toHaveBeenCalled();
 
     pageConfig();
     vi.mocked(fetch).mockResolvedValueOnce(sessionResponse());
-    const ok = await api.__hcTrainingSignIn("a@example.com", "password12");
+    const ok = await api.__hcTrainingRegister("a@example.com", "password12");
     expect(ok.ok).toBe(true);
-    const signInCall = vi.mocked(fetch).mock.calls[0];
-    expect(String(signInCall[0])).toBe(`${TRAINING_SUPABASE_ORIGIN}/auth/v1/token?grant_type=password`);
-    expect(JSON.parse(String((signInCall[1] as RequestInit).body))).toEqual({ email: "a@example.com", password: "password12" });
-    expect(((signInCall[1] as RequestInit).headers as Record<string, string>).apikey).toBe("sb_publishable_test_only");
+    const signUpCall = vi.mocked(fetch).mock.calls[0];
+    expect(String(signUpCall[0])).toBe(`${TRAINING_SUPABASE_ORIGIN}/auth/v1/signup`);
+    expect(JSON.parse(String((signUpCall[1] as RequestInit).body))).toEqual({ email: "a@example.com", password: "password12" });
+    expect(((signUpCall[1] as RequestInit).headers as Record<string, string>).apikey).toBe("sb_publishable_test_only");
     expect(sessionStorage.getItem("hc-training-session")).toContain("access-1");
     expect(localStorage.getItem("hc-training-session")).toBeNull();
 
-    vi.mocked(fetch).mockResolvedValueOnce(new Response(JSON.stringify({ id: USER_ID, confirmation_sent_at: "2026-11-11T00:00:00Z" }), { status: 200 }));
-    const created = await api.__hcTrainingSignUp("b@example.com", "password12");
-    expect(created.ok).toBe(false);
-    expect(created.message).toMatch(/confirmation email/i);
-    expect(created.message).not.toMatch(/confirmation_sent_at|invalid_credentials/i);
-    const signUpCall = vi.mocked(fetch).mock.calls[1];
-    expect(String(signUpCall[0])).toBe(`${TRAINING_SUPABASE_ORIGIN}/auth/v1/signup`);
+    vi.mocked(fetch)
+      .mockResolvedValueOnce(new Response(JSON.stringify({ error_code: "user_already_exists", msg: "User already registered" }), { status: 422 }))
+      .mockResolvedValueOnce(sessionResponse("access-same", "refresh-same"));
+    const again = await api.__hcTrainingRegister("a@example.com", "password12");
+    expect(again.ok).toBe(true);
+    const retry = vi.mocked(fetch).mock.calls.at(-1);
+    expect(String(retry?.[0])).toBe(`${TRAINING_SUPABASE_ORIGIN}/auth/v1/token?grant_type=password`);
+    expect(JSON.parse(String((retry?.[1] as RequestInit).body))).toEqual({ email: "a@example.com", password: "password12" });
 
-    vi.mocked(fetch).mockResolvedValueOnce(new Response(JSON.stringify({ error_code: "invalid_credentials", msg: "Invalid login credentials" }), { status: 400 }));
-    const wrong = await api.__hcTrainingSignIn("a@example.com", "password12");
-    expect(wrong.ok).toBe(false);
-    expect(wrong.message).toMatch(/Wrong email or password/);
-    expect(wrong.message).not.toContain("Invalid login credentials");
+    vi.mocked(fetch)
+      .mockResolvedValueOnce(new Response(JSON.stringify({ error_code: "email_exists", msg: "User already registered" }), { status: 422 }))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ error_code: "invalid_credentials", msg: "Invalid login credentials" }), { status: 400 }));
+    const mismatch = await api.__hcTrainingRegister("b@example.com", "password12");
+    expect(mismatch.ok).toBe(false);
+    expect(mismatch.message).toMatch(/already registered with a different password/);
+    expect(mismatch.message).toMatch(/Nothing was saved/);
+    expect(mismatch.message).not.toMatch(/Wrong email or password|Invalid login credentials|Sign in/);
 
-    vi.mocked(fetch).mockResolvedValueOnce(new Response(JSON.stringify({ error_code: "email_not_confirmed", msg: "Email not confirmed" }), { status: 400 }));
-    const unconfirmed = await api.__hcTrainingSignIn("a@example.com", "password12");
-    expect(unconfirmed.message).toMatch(/Confirm your email, then sign in/);
+    vi.mocked(fetch).mockResolvedValueOnce(new Response(JSON.stringify({ error_code: "unexpected_failure", msg: "Something broke" }), { status: 400 }));
+    const generic = await api.__hcTrainingRegister("c@example.com", "password12");
+    expect(generic.message).toMatch(/did not confirm the request/);
+    expect(generic.message).not.toMatch(/Wrong email or password|Something broke/);
 
-    vi.mocked(fetch).mockResolvedValueOnce(new Response(JSON.stringify({ error_code: "over_request_rate_limit" }), { status: 429 }));
-    const limited = await api.__hcTrainingSignIn("a@example.com", "password12");
+    vi.mocked(fetch).mockResolvedValueOnce(new Response(JSON.stringify({ error_code: "weak_password", msg: "Password should be at least 8 characters" }), { status: 422 }));
+    const weak = await api.__hcTrainingRegister("d@example.com", "password12");
+    expect(weak.message).toMatch(/at least 8 characters/i);
+
+    vi.mocked(fetch).mockResolvedValueOnce(new Response(JSON.stringify({ error_code: "email_address_invalid", msg: "Unable to validate email address" }), { status: 400 }));
+    const invalidEmail = await api.__hcTrainingRegister("e@example.com", "password12");
+    expect(invalidEmail.message).toMatch(/Check the email/);
+
+    vi.mocked(fetch).mockResolvedValueOnce(new Response(JSON.stringify({ error_code: "signup_disabled", msg: "Signups not allowed for this instance" }), { status: 400 }));
+    const disabled = await api.__hcTrainingRegister("f@example.com", "password12");
+    expect(disabled.message).toMatch(/did not confirm the request/);
+    expect(disabled.message).not.toMatch(/Signups not allowed|Wrong email or password/);
+
+    vi.mocked(fetch).mockResolvedValueOnce(new Response(JSON.stringify({ error_code: "over_email_send_rate_limit", msg: "email rate limit exceeded" }), { status: 429 }));
+    const limited = await api.__hcTrainingRegister("g@example.com", "password12");
     expect(limited.message).toMatch(/Too many attempts/);
 
     vi.mocked(fetch).mockRejectedValueOnce(new Error("network down"));
-    const offline = await api.__hcTrainingSignIn("a@example.com", "password12");
+    const offline = await api.__hcTrainingRegister("h@example.com", "password12");
     expect(offline.message).toMatch(/did not confirm the request/);
     expect(offline.message).not.toContain("network down");
   });
@@ -400,11 +420,11 @@ describe("training browser client", () => {
     const node = form();
     api.__hcMountTrainingGate(node);
     const unsigned = await api.__hcSubmitTrainingEnrollment(node);
-    expect(unsigned.message).toMatch(/Sign in to register/);
+    expect(unsigned.message).toMatch(/Register to continue/);
     expect(fetch).not.toHaveBeenCalled();
 
     vi.mocked(fetch).mockResolvedValueOnce(sessionResponse());
-    await api.__hcTrainingSignIn("a@example.com", "password12", node);
+    await api.__hcTrainingRegister("a@example.com", "password12", node);
     expect(node.querySelector("[data-hc-enroll]")?.hasAttribute("hidden")).toBe(false);
     expect((node.querySelector("[name=cover_number]") as HTMLInputElement).disabled).toBe(false);
     expect(node.innerHTML).not.toContain("password12");
@@ -432,13 +452,14 @@ describe("training browser client", () => {
     vi.mocked(fetch).mockResolvedValueOnce(new Response(JSON.stringify({ ok: false, error: "sign_in_required" }), { status: 401 }));
     const rejected = await api.__hcSubmitTrainingEnrollment(node);
     expect(rejected.ok).toBe(false);
-    expect(rejected.message).toMatch(/Sign in to register/);
+    expect(rejected.message).toMatch(/Register to continue/);
     expect(sessionStorage.getItem("hc-training-session")).toBeNull();
-    expect(node.querySelector("[data-hc-signin]")?.hasAttribute("hidden")).toBe(false);
+    expect(node.querySelector("[data-hc-sign-in]")).toBeNull();
+    expect(node.querySelector("[data-hc-register]")?.hasAttribute("hidden")).toBe(false);
     expect(node.querySelector("[data-hc-enroll]")?.hasAttribute("hidden")).toBe(true);
 
     vi.mocked(fetch).mockResolvedValueOnce(sessionResponse("access-2", "refresh-2", 30));
-    await api.__hcTrainingSignIn("a@example.com", "password12", node);
+    await api.__hcTrainingRegister("a@example.com", "password12", node);
     vi.mocked(fetch)
       .mockResolvedValueOnce(sessionResponse("access-3", "refresh-3", 3600))
       .mockResolvedValueOnce(new Response(JSON.stringify({

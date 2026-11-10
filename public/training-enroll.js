@@ -33,10 +33,8 @@
       duplicate: hi ? "कुछ नया सेव नहीं हुआ। इस कवर नंबर और मोबाइल का अनुरोध पहले से दर्ज है। मुफ़्त पात्रता अब भी जाँच बाकी है।" : "Nothing new was saved. A request for this cover number and mobile is already recorded. Free eligibility is still pending verification.",
       rate_limited: hi ? "कुछ सेव नहीं हुआ। कोशिशें ज़्यादा हो गईं। कुछ देर बाद फिर कोशिश करें।" : "Nothing was saved. Too many attempts. Wait and try again.",
       unavailable: hi ? "कुछ सेव नहीं हुआ। सर्वर ने पुष्टि नहीं की।" : "Nothing was saved. The server did not confirm the request.",
-      sign_in_required: hi ? "रजिस्टर करने के लिए साइन इन करें। कुछ सेव नहीं हुआ।" : "Sign in to register. Nothing was saved.",
-      bad_credentials: hi ? "ईमेल या पासवर्ड गलत है। कुछ सेव नहीं हुआ।" : "Wrong email or password. Nothing was saved.",
-      confirm_email: hi ? "ईमेल की पुष्टि करें, फिर साइन इन करें। कुछ सेव नहीं हुआ।" : "Confirm your email, then sign in. Nothing was saved.",
-      confirm_sent: hi ? "पुष्टि का ईमेल भेज दिया गया है। पुष्टि करें, फिर साइन इन करें। कुछ सेव नहीं हुआ।" : "We sent a confirmation email. Confirm it, then sign in. Nothing was saved.",
+      sign_in_required: hi ? "रजिस्टर करें, फिर फ़ॉर्म भरें। कुछ सेव नहीं हुआ।" : "Register to continue. Nothing was saved.",
+      password_mismatch: hi ? "यह ईमेल पहले से किसी और पासवर्ड से रजिस्टर है। वही पासवर्ड लिखें जो पहले इस्तेमाल किया था। कुछ सेव नहीं हुआ।" : "This email is already registered with a different password. Use the same password you used before. Nothing was saved.",
       weak_password: hi ? "कम से कम 8 अक्षर लिखें। कुछ सेव नहीं हुआ।" : "Use at least 8 characters. Nothing was saved.",
       bad_email: hi ? "ईमेल जाँचें और फिर कोशिश करें। कुछ सेव नहीं हुआ।" : "Check the email and try again. Nothing was saved."
     };
@@ -112,7 +110,7 @@
 
   function applyGate(form) {
     if (!form) return;
-    var signin = form.querySelector("[data-hc-signin]");
+    var signin = form.querySelector("[data-hc-register]");
     var enroll = form.querySelector("[data-hc-enroll]");
     var fields = form.querySelector("[data-hc-auth-fields]");
     if (!signin || !enroll) return;
@@ -145,14 +143,27 @@
     return email;
   }
 
-  function authProblem(status, data) {
-    var code = String(data && (data.error_code || data.error) || "").toLowerCase();
+  function authFields(data) {
+    var code = String(data && (data.error_code || data.error || data.code) || "").toLowerCase();
     var msg = String(data && (data.msg || data.error_description || data.message) || "").toLowerCase();
-    var blob = code + " " + msg;
-    if (status === 429 || blob.indexOf("rate") !== -1) return "rate_limited";
-    if (blob.indexOf("not_confirmed") !== -1 || blob.indexOf("not confirmed") !== -1) return "confirm_email";
-    if (blob.indexOf("weak_password") !== -1 || blob.indexOf("weak password") !== -1) return "weak_password";
-    if (status === 400 || status === 401 || status === 422 || blob.indexOf("invalid") !== -1 || blob.indexOf("credential") !== -1) return "bad_credentials";
+    return { code: code, msg: msg, blob: code + " " + msg };
+  }
+
+  function alreadyRegistered(status, data) {
+    var fields = authFields(data);
+    if (fields.code === "user_already_exists" || fields.code === "email_exists") return true;
+    if (fields.blob.indexOf("user_already_exists") !== -1 || fields.blob.indexOf("email_exists") !== -1) return true;
+    if (fields.msg.indexOf("already registered") !== -1 || fields.msg.indexOf("already been registered") !== -1) return true;
+    return status === 422 && fields.blob.indexOf("exist") !== -1;
+  }
+
+  function authProblem(status, data) {
+    var fields = authFields(data);
+    if (status === 429 || fields.code === "over_email_send_rate_limit" || fields.code === "over_request_rate_limit" || fields.blob.indexOf("rate_limit") !== -1 || fields.blob.indexOf("rate limit") !== -1) return "rate_limited";
+    if (fields.code === "weak_password" || fields.blob.indexOf("weak_password") !== -1 || fields.blob.indexOf("weak password") !== -1) return "weak_password";
+    if (fields.code === "email_address_invalid" || fields.blob.indexOf("invalid email") !== -1 || fields.blob.indexOf("unable to validate email") !== -1 || fields.blob.indexOf("email_address_invalid") !== -1) return "bad_email";
+    if (fields.code === "signup_disabled" || fields.blob.indexOf("signup_disabled") !== -1 || fields.blob.indexOf("signups not allowed") !== -1) return "unavailable";
+    if (alreadyRegistered(status, data)) return "password_mismatch";
     return "unavailable";
   }
 
@@ -199,22 +210,26 @@
     return { ok: false, message: message };
   }
 
-  async function runAuth(mode, email, password, form) {
+  async function register(email, password, form) {
     var cfg = readConfig();
     if (!cfg.ok) return fail(form, cfg.code);
     var clean = emailOk(email);
     if (!clean) return fail(form, "bad_email");
     if (String(password || "").length < 8) return fail(form, "weak_password");
-    var buttons = form ? form.querySelectorAll("[data-hc-sign-in], [data-hc-create]") : [];
+    var buttons = form ? form.querySelectorAll("[data-hc-create]") : [];
     for (var i = 0; i < buttons.length; i++) buttons[i].disabled = true;
     var result;
     try {
-      var posted = mode === "up"
-        ? await authPost("/auth/v1/signup", { email: clean, password: password }, cfg.key)
-        : await authPost("/auth/v1/token?grant_type=password", { email: clean, password: password }, cfg.key);
+      var posted = await authPost("/auth/v1/signup", { email: clean, password: password }, cfg.key);
       if (!posted.ok) result = { ok: false, code: "unavailable" };
       else if (posted.status >= 200 && posted.status < 300 && sessionFrom(posted.data)) result = { ok: true };
-      else if (posted.status >= 200 && posted.status < 300) result = { ok: false, code: "confirm_sent" };
+      else if (alreadyRegistered(posted.status, posted.data)) {
+        var token = await authPost("/auth/v1/token?grant_type=password", { email: clean, password: password }, cfg.key);
+        if (!token.ok) result = { ok: false, code: "unavailable" };
+        else if (token.status >= 200 && token.status < 300 && sessionFrom(token.data)) result = { ok: true };
+        else if (authProblem(token.status, token.data) === "rate_limited") result = { ok: false, code: "rate_limited" };
+        else result = { ok: false, code: "password_mismatch" };
+      } else if (posted.status >= 200 && posted.status < 300) result = { ok: false, code: "unavailable" };
       else result = { ok: false, code: authProblem(posted.status, posted.data) };
     } catch (e) {
       result = { ok: false, code: "unavailable" };
@@ -232,7 +247,7 @@
   }
 
   function mount(form) {
-    if (!form || form.querySelector("[data-hc-signin]")) return;
+    if (!form || form.querySelector("[data-hc-register]")) return;
     var hi = !en();
     var enroll = document.createElement("div");
     enroll.setAttribute("data-hc-enroll", "1");
@@ -247,29 +262,23 @@
     signOut.appendChild(signOutButton);
     enroll.insertBefore(signOut, enroll.firstChild);
     var signin = document.createElement("div");
-    signin.setAttribute("data-hc-signin", "1");
+    signin.setAttribute("data-hc-register", "1");
     signin.innerHTML = '<p class="sub"></p><div data-hc-auth-fields>'
       + '<label for="hc-auth-email"></label><input id="hc-auth-email" data-hc-email name="hc_auth_email" type="email" autocomplete="username" inputmode="email" maxlength="200">'
-      + '<label for="hc-auth-password"></label><input id="hc-auth-password" data-hc-password name="hc_auth_password" type="password" autocomplete="current-password" maxlength="200">'
-      + '<div class="cta"><button type="button" class="btn" data-hc-sign-in></button><button type="button" class="btn o" data-hc-create></button></div>'
+      + '<label for="hc-auth-password"></label><input id="hc-auth-password" data-hc-password name="hc_auth_password" type="password" autocomplete="new-password" maxlength="200">'
+      + '<div class="cta"><button type="button" class="btn" data-hc-create></button></div>'
       + '</div><div data-hc-auth-msg></div>';
     signin.querySelector(".sub").textContent = hi
-      ? "100 दिन की ट्रेनिंग के लिए ईमेल और पासवर्ड से साइन इन करें।"
-      : "Sign in with email and password to register for 100-day training.";
+      ? "100 दिन की ट्रेनिंग के लिए रजिस्टर करें"
+      : "Register to join the 100-day training";
     var labels = signin.querySelectorAll("label");
     labels[0].textContent = hi ? "ईमेल" : "Email";
     labels[1].textContent = hi ? "पासवर्ड" : "Password";
-    signin.querySelector("[data-hc-sign-in]").textContent = hi ? "साइन इन" : "Sign in";
-    signin.querySelector("[data-hc-create]").textContent = hi ? "खाता बनाएँ" : "Create account";
+    signin.querySelector("[data-hc-create]").textContent = hi ? "रजिस्टर करें" : "Register";
     form.appendChild(enroll);
     form.insertBefore(signin, enroll);
-    signin.querySelector("[data-hc-sign-in]").addEventListener("click", function () {
-      runAuth("in", signin.querySelector("[data-hc-email]").value, signin.querySelector("[data-hc-password]").value, form);
-    });
     signin.querySelector("[data-hc-create]").addEventListener("click", function () {
-      var password = signin.querySelector("[data-hc-password]");
-      password.setAttribute("autocomplete", "new-password");
-      runAuth("up", signin.querySelector("[data-hc-email]").value, password.value, form);
+      register(signin.querySelector("[data-hc-email]").value, signin.querySelector("[data-hc-password]").value, form);
     });
     signOutButton.addEventListener("click", function () {
       clearSession();
@@ -281,7 +290,7 @@
       if (signin.hidden) return;
       if (e.preventDefault) e.preventDefault();
       if (e.stopPropagation) e.stopPropagation();
-      runAuth("in", signin.querySelector("[data-hc-email]").value, signin.querySelector("[data-hc-password]").value, form);
+      register(signin.querySelector("[data-hc-email]").value, signin.querySelector("[data-hc-password]").value, form);
     }, true);
     applyGate(form);
   }
@@ -360,8 +369,7 @@
   root.__hcSubmitTrainingEnrollment = submit;
   root.__hcTrainingReadConfig = readConfig;
   root.__hcMountTrainingGate = mount;
-  root.__hcTrainingSignIn = function (email, password, form) { return runAuth("in", email, password, form || null); };
-  root.__hcTrainingSignUp = function (email, password, form) { return runAuth("up", email, password, form || null); };
+  root.__hcTrainingRegister = function (email, password, form) { return register(email, password, form || null); };
   root.__hcTrainingSignOut = function (form) {
     clearSession();
     clearPassword(form);

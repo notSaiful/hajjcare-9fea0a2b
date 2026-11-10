@@ -200,7 +200,7 @@ describe("demo registration bridge", () => {
     expect(localStorage.getItem("hc-vol")).toBeNull();
   });
 
-  it("hides the training fields until the training sign-in panel is used", () => {
+  it("hides the training fields until the registration box is used", () => {
     window.eval(read("public/training-enroll.js"));
     (window as unknown as { __HC_TRAINING_CONFIG?: { url: string; publishableKey: string } }).__HC_TRAINING_CONFIG = {
       url: "https://uorfprlfpqdpjtrcaqrt.supabase.co",
@@ -210,13 +210,14 @@ describe("demo registration bridge", () => {
       "#register",
       `<form data-store="hc-train"><input name="cover_number" value="AB-1234"><div class="res"></div><button type="submit">Submit</button></form>`
     );
-    const signin = document.querySelector("[data-hc-signin]");
-    const enroll = document.querySelector("[data-hc-enroll]");
-    expect(signin?.hasAttribute("hidden")).toBe(false);
-    expect(enroll?.hasAttribute("hidden")).toBe(true);
+    expect(document.querySelector("[data-hc-sign-in]")).toBeNull();
+    expect(document.querySelectorAll("[data-hc-create]")).toHaveLength(1);
+    expect(document.querySelector("[data-hc-register]")?.hasAttribute("hidden")).toBe(false);
+    expect(document.querySelector("[data-hc-enroll]")?.hasAttribute("hidden")).toBe(true);
     expect((document.querySelector("[name=cover_number]") as HTMLInputElement).disabled).toBe(true);
-    expect(document.body.textContent).toContain("Sign in");
-    expect(document.body.textContent).toContain("Create account");
+    expect(document.body.textContent).toContain("Register to join the 100-day training");
+    expect(document.body.textContent).toContain("Register");
+    expect(document.body.textContent).not.toMatch(/Sign in|Create account/);
     expect(document.body.textContent).toContain("Sign out");
     expect(read("public/demo-integration.js")).toContain("__hcMountTrainingGate");
     expect(read("public/demo-integration.js")).not.toMatch(/supabase/i);
