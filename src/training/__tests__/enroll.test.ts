@@ -6,6 +6,7 @@ import { assertTrainingProjectUrl, FORBIDDEN_TRAINING_HOSTS, TRAINING_SUPABASE_O
 import { trainingConfigSource, trainingPublishableKey } from "../publicKey";
 import {
   DuplicateEnrollment,
+  TRAINING_SUPABASE_ORIGIN as HANDLER_TRAINING_ORIGIN,
   createRateGate,
   handleTrainingEnrollment,
   trainingUrlAllowed,
@@ -81,10 +82,15 @@ function deps(store: TrainingStore, next: Partial<TrainingEnv> = {}) {
 describe("training project boundary", () => {
   it("accepts only the typed training project", () => {
     expect(assertTrainingProjectUrl(TRAINING_SUPABASE_ORIGIN)).toBe(TRAINING_SUPABASE_ORIGIN);
+    expect(HANDLER_TRAINING_ORIGIN).toBe(TRAINING_SUPABASE_ORIGIN);
     expect(trainingUrlAllowed(TRAINING_SUPABASE_ORIGIN)).toBe(true);
+    const browser = read("public/training-enroll.js");
+    expect(browser).toContain(`${TRAINING_SUPABASE_ORIGIN}/functions/v1/training-enroll`);
+    expect(browser).toContain(`var ALLOWED = "${new URL(TRAINING_SUPABASE_ORIGIN).host}";`);
     for (const host of FORBIDDEN_TRAINING_HOSTS) {
       expect(() => assertTrainingProjectUrl(`https://${host}`)).toThrow(/training project/);
       expect(trainingUrlAllowed(`https://${host}`)).toBe(false);
+      expect(browser).toContain(`"${host}": 1`);
     }
   });
 
@@ -97,6 +103,7 @@ describe("training project boundary", () => {
     const source = trainingConfigSource("");
     expect(source).toContain(TRAINING_SUPABASE_ORIGIN);
     expect(source).not.toContain("begtqcmwruvwposocnsr");
+    expect(source).not.toContain("pwtmrddreqmhyluqbfgi");
     expect(source).not.toContain("vvbbwlfzpfvgyweeggvw");
   });
 });
@@ -217,21 +224,24 @@ describe("training browser client", () => {
     return document.querySelector("form") as HTMLFormElement;
   }
 
-  it("does not call the voice project or claim a save without a receipt", async () => {
+  it("does not call a forbidden project or claim a save without a receipt", async () => {
     const submit = (window as unknown as { __hcSubmitTrainingEnrollment: (form: HTMLFormElement) => Promise<{ ok: boolean; message: string }> }).__hcSubmitTrainingEnrollment;
-    window.__HC_TRAINING_CONFIG = { url: "https://vvbbwlfzpfvgyweeggvw.supabase.co", publishableKey: "sb_publishable_test_only" };
-    const blocked = await submit(form());
-    expect(blocked.ok).toBe(false);
-    expect(blocked.message).toMatch(/Nothing was saved/);
+    const page = window as unknown as { __HC_TRAINING_CONFIG?: { url: string; publishableKey: string } };
+    for (const host of FORBIDDEN_TRAINING_HOSTS) {
+      page.__HC_TRAINING_CONFIG = { url: `https://${host}`, publishableKey: "sb_publishable_test_only" };
+      const blocked = await submit(form());
+      expect(blocked.ok).toBe(false);
+      expect(blocked.message).toMatch(/Nothing was saved/);
+    }
     expect(fetch).not.toHaveBeenCalled();
 
-    window.__HC_TRAINING_CONFIG = { url: TRAINING_SUPABASE_ORIGIN, publishableKey: "sb_publishable_test_only" };
+    page.__HC_TRAINING_CONFIG = { url: TRAINING_SUPABASE_ORIGIN, publishableKey: "sb_publishable_test_only" };
     vi.mocked(fetch).mockResolvedValue(new Response(JSON.stringify({ ok: true }), { status: 200 }));
     const missing = await submit(form());
     expect(missing.ok).toBe(false);
     expect(missing.message).toMatch(/Nothing was saved/);
     const first = vi.mocked(fetch).mock.calls[0];
-    expect(String(first[0])).toBe("https://pwtmrddreqmhyluqbfgi.supabase.co/functions/v1/training-enroll");
+    expect(String(first[0])).toBe(`${TRAINING_SUPABASE_ORIGIN}/functions/v1/training-enroll`);
     const sent = JSON.parse(String((first[1] as RequestInit).body));
     expect(sent).toMatchObject({
       cover_number: "AB-1234",

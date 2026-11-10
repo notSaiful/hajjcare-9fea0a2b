@@ -1,5 +1,5 @@
-# Isolated from supabase/config.toml. Link and deploy this folder only to pwtmrddreqmhyluqbfgi.
-project_id = "pwtmrddreqmhyluqbfgi"
+# Isolated from supabase/config.toml. Link and deploy this folder only to uorfprlfpqdpjtrcaqrt.
+project_id = "uorfprlfpqdpjtrcaqrt"
 
 [functions.training-enroll]
 # Current docs: the gateway verify_jwt check only accepts legacy JWT keys.

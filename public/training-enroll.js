@@ -1,12 +1,13 @@
-/* Saves 100-day training only to https://pwtmrddreqmhyluqbfgi.supabase.co.
-   Refuses the live auth project and the voice/test project. */
+/* Saves 100-day training only to https://uorfprlfpqdpjtrcaqrt.supabase.co.
+   Refuses the live auth project, the old training project, and the voice/test project. */
 (function (root) {
-  var ALLOWED = "pwtmrddreqmhyluqbfgi.supabase.co";
+  var ALLOWED = "uorfprlfpqdpjtrcaqrt.supabase.co";
   var FORBIDDEN = {
     "begtqcmwruvwposocnsr.supabase.co": 1,
+    "pwtmrddreqmhyluqbfgi.supabase.co": 1,
     "vvbbwlfzpfvgyweeggvw.supabase.co": 1
   };
-  var ENDPOINT = "https://pwtmrddreqmhyluqbfgi.supabase.co/functions/v1/training-enroll";
+  var ENDPOINT = "https://uorfprlfpqdpjtrcaqrt.supabase.co/functions/v1/training-enroll";
 
   function en() {
     return document.documentElement.lang === "en";

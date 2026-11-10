@@ -1,4 +1,4 @@
-// Deploy only to Supabase project pwtmrddreqmhyluqbfgi.
+// Deploy only to Supabase project uorfprlfpqdpjtrcaqrt.
 // Writes public.training_enrollments with the service role from the function environment.
 // Does not send email or SMS. Does not read enrollment rows back except id and created_at.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";

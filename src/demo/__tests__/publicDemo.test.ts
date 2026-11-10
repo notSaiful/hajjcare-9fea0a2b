@@ -84,13 +84,15 @@ describe("approved public demo", () => {
     expect(register).not.toContain("Registered (demo)");
     expect(read("public/explore.html")).toContain("training-enroll.js");
     const config = read("public/training-config.js");
-    expect(config).toContain("https://pwtmrddreqmhyluqbfgi.supabase.co");
+    expect(config).toContain("https://uorfprlfpqdpjtrcaqrt.supabase.co");
     expect(config).not.toContain("begtqcmwruvwposocnsr");
+    expect(config).not.toContain("pwtmrddreqmhyluqbfgi");
     expect(config).not.toContain("vvbbwlfzpfvgyweeggvw");
     expect(config).not.toContain("sb_publishable_");
     expect(config).not.toContain("service_role");
     expect(read("src/integrations/supabase/client.ts")).toContain("VITE_SUPABASE_URL");
     expect(read("src/integrations/supabase/client.ts")).not.toContain("pwtmrddreqmhyluqbfgi");
+    expect(read("src/integrations/supabase/client.ts")).not.toContain("uorfprlfpqdpjtrcaqrt");
   });
 
   it("serves the demo at / and /explore and keeps the React app for other routes", () => {

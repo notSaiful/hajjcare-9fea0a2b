@@ -1,3 +1,5 @@
+import { TRAINING_SUPABASE_ORIGIN } from "./project";
+
 /** Accept only a browser publishable/anon key. Never a service role key. */
 export function trainingPublishableKey(raw: string | undefined): string {
   const key = (raw ?? "").trim();
@@ -35,7 +37,7 @@ function jwtRole(token: string): string | null {
 export function trainingConfigSource(publishableKey: string): string {
   const key = trainingPublishableKey(publishableKey);
   return `window.__HC_TRAINING_CONFIG=${JSON.stringify({
-    url: "https://pwtmrddreqmhyluqbfgi.supabase.co",
+    url: TRAINING_SUPABASE_ORIGIN,
     publishableKey: key,
   })};\n`;
 }

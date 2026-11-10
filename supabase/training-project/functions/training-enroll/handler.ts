@@ -1,6 +1,6 @@
-export const TRAINING_SUPABASE_ORIGIN = "https://pwtmrddreqmhyluqbfgi.supabase.co";
-const TRAINING_HOST = "pwtmrddreqmhyluqbfgi.supabase.co";
-const FORBIDDEN_HOSTS = ["begtqcmwruvwposocnsr.supabase.co", "vvbbwlfzpfvgyweeggvw.supabase.co"];
+export const TRAINING_SUPABASE_ORIGIN = "https://uorfprlfpqdpjtrcaqrt.supabase.co";
+const TRAINING_HOST = "uorfprlfpqdpjtrcaqrt.supabase.co";
+const FORBIDDEN_HOSTS = ["begtqcmwruvwposocnsr.supabase.co", "pwtmrddreqmhyluqbfgi.supabase.co", "vvbbwlfzpfvgyweeggvw.supabase.co"];
 
 export const TRAINING_LANGUAGES = [
   "ur", "hi", "bn", "ta", "te", "kn", "ml", "ks", "gu", "mr", "en",

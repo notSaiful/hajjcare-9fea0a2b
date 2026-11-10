@@ -1,5 +1,6 @@
 -- Follow-up only. Do not run this during development.
--- public.training_enrollments already exists on pwtmrddreqmhyluqbfgi.
+-- public.training_enrollments already exists on uorfprlfpqdpjtrcaqrt.
+-- Do not run this alter against other projects (begtqcmwruvwposocnsr, pwtmrddreqmhyluqbfgi, vvbbwlfzpfvgyweeggvw).
 -- Do not CREATE TABLE again: that returns 42P07.
 -- This alters the existing table to the six visible fields
 -- (cover number, name, phone, language, state, embarkation point)
