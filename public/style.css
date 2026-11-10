@@ -402,8 +402,8 @@ html[data-ui="ur"] body{line-height:1.9}
 #opener .oname{background:linear-gradient(110deg,#8a5a10,#b07a1c 50%,#6e4708)!important;-webkit-background-clip:text!important;background-clip:text!important;color:transparent!important;-webkit-text-fill-color:transparent!important;text-shadow:none!important;filter:drop-shadow(0 1px 1px rgba(40,22,0,.55)) drop-shadow(0 0 10px rgba(255,236,190,.55))!important}
 #opener .otap{color:#fff3d6!important;text-shadow:0 1px 3px rgba(40,20,0,.85),0 0 10px rgba(40,20,0,.5)!important;font-weight:500}
 /* v19: synced Hindi meaning captions */
-.hph{transition:color .25s,background .25s;border-radius:4px;padding:0 .1em}.hph.done{color:inherit;opacity:.75}.hph.on{background:rgba(201,164,92,.35);color:#3d2a06;opacity:1;box-shadow:0 0 0 2px rgba(201,164,92,.35)}
-.hcap{min-height:1.6em;margin:.55rem auto 0;max-width:34rem;text-align:center;font:600 1.15rem/1.5 'Tiro Devanagari Hindi',Mukta,serif;color:#5a3d08;opacity:0;transition:opacity .25s}.hcap.on{opacity:1}
+.hph{transition:color .25s,background .25s;border-radius:4px;padding:0 .05em;pointer-events:none}.hph.done{color:inherit;opacity:.75}.hph.on{background:rgba(201,164,92,.35);color:#3d2a06;opacity:1}
+.hcap{min-height:0;margin:.15rem auto 0;max-width:28rem;max-height:2.4em;overflow:hidden;text-align:center;font:600 .76rem/1.25 'Tiro Devanagari Hindi',Mukta,serif;color:#5a3d08;opacity:0;transition:opacity .25s;pointer-events:none}.hcap.on{opacity:1}
 #talbiya-sec .hcap,.dark .hcap{color:#ffe7a6}
 /* v20: Talbiya-alone flow — nothing else until Enter */
 body:not(.entered) main,body:not(.entered) footer,body:not(.entered) nav,body:not(.entered) #mtg{visibility:hidden!important}
@@ -461,7 +461,14 @@ main section.wrap{padding-top:4.5rem;padding-bottom:4.5rem}
 #talbiyah-lines #tl-old{pointer-events:auto;margin-top:.25rem;padding-top:.25rem;border-top:1px solid rgba(184,149,79,.45);text-align:center}
 #talbiyah-lines .tl-kept{margin:.1rem 0;font:400 .75rem/1.3 'Tiro Devanagari Hindi',Mukta,serif;color:#1f3b2c}
 #talbiyah-lines .tl-kept[lang="ar"]{font:400 .9rem/1.3 Amiri,'Noto Naskh Arabic',serif}
-#talbiyah-next{position:fixed;left:50%;bottom:1rem;transform:translateX(-50%);z-index:70;min-height:44px;padding:.7rem 1.15rem;font:600 1rem/1.2 Mukta,sans-serif;color:#fffaf0;background:#1f5640;border:1px solid #c9a45c;border-radius:999px;cursor:pointer;pointer-events:auto}
+#talbiyah-next{position:fixed;left:50%;bottom:calc(22vh + .55rem);transform:translateX(-50%);z-index:85;min-height:44px;padding:.7rem 1.15rem;font:600 1rem/1.2 Mukta,sans-serif;color:#fffaf0;background:#1f5640;border:1px solid #c9a45c;border-radius:999px;cursor:pointer;pointer-events:auto}
 #talbiyah-next[hidden]{display:none}
 #talbiyah-skip{position:fixed;top:.65rem;right:.65rem;z-index:80;min-height:40px;padding:.4rem .8rem;font:600 .8rem/1.2 Mukta,sans-serif;color:#1f3b2c;background:rgba(255,250,240,.96);border:1px solid #c9a45c;border-radius:999px;cursor:pointer;pointer-events:auto;box-shadow:0 4px 12px rgba(31,43,34,.16)}
 #talbiyah-skip:focus-visible{outline:2px solid #1f5640;outline-offset:2px}
+/* Door Talbiyah copy stays a compact strip and never catches taps. */
+#intro .intro-inner{padding-bottom:calc(22vh + 4.2rem);box-sizing:border-box}
+#intro h1.ar.big{font-size:1rem;line-height:1.3;margin:.1rem 0;pointer-events:none}
+#intro .itb{pointer-events:none;max-height:16vh;overflow:auto;margin:.2rem auto;padding:.25rem .5rem}
+#intro .itb .ifull{font-size:1rem;line-height:1.35;margin:0 0 .2rem}
+#intro .itb .imean{font-size:.76rem;line-height:1.3;margin:0;pointer-events:none}
+#intro .hcap{position:relative;z-index:1}

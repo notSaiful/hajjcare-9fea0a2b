@@ -44,7 +44,15 @@ describe("talbiyah line text", () => {
     expect(read("public/style.css")).toContain("#opener .ofing{animation:none!important}");
     expect(home).toContain('src="talbiyah-lines.js"');
     expect(script).not.toMatch(/\.mp3|new Audio|\.play\(|\.src\s*=/);
-    expect(read("public/style.css")).toContain("#talbiyah-lines");
+    const css = read("public/style.css");
+    expect(css).toContain("#talbiyah-lines");
+    expect(css).toContain("#intro .itb .imean{font-size:.76rem");
+    expect(css).toContain("#intro h1.ar.big{font-size:1rem");
+    expect(css).toContain(".hcap{");
+    expect(css).toContain("font:600 .76rem/1.25");
+    expect(css).toContain("#intro .itb{pointer-events:none");
+    expect(css).toContain("#talbiyah-next{");
+    expect(css).toContain("z-index:85");
   });
 
   it("splits the existing Talbiyah wording into the same four lines", () => {
