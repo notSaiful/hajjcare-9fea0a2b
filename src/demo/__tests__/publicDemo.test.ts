@@ -61,6 +61,23 @@ describe("approved public demo", () => {
     expect(read("public/explore.html")).toContain("demo-integration.js");
   });
 
+  it("keeps Hunafa and Umrah videos and drops the removed Hajj video set", () => {
+    const removed = ["D_c1sVk-Tq4", "fwK4pwOzrRg", "qD5yWN3W3_8", "ZO6DouzTxUI", "MHDIRJGR77k", "jd9AVwtyp4Y"];
+    for (const id of removed) expect(explore).not.toContain(id);
+    expect(explore).not.toContain("Physical Preparation for Hajj");
+    expect(explore).not.toContain("Mental Preparation For HAJJ");
+    expect(explore).not.toContain("Rafiq ul harmain");
+    expect(explore).not.toContain("['hajj','Hajj','हज']");
+    expect(explore).toContain("['all','All','सब']");
+    expect(explore).toContain("['umrah','Umrah','उमराह']");
+    expect(explore).toContain("['quran','Quran','क़ुरआन']");
+    expect(explore).toContain("['hadith','Hadith','हदीस']");
+    expect(explore).toContain("7OwCzdes9gY");
+    expect(explore).toContain("Hunafaa");
+    expect(explore).toContain("JimvQuzod6I");
+    expect(explore).toContain("Hxn32sAZTNI");
+  });
+
   it("keeps Video 1 local and leaves the other slots empty", () => {
     expect(explore).toContain("hajcare-demo-social-v1");
     expect(explore).toContain("not uploaded to HajCare servers");
