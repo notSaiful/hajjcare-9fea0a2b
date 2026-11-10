@@ -11,8 +11,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { submitVolunteerRegistration } from "@/volunteer/register";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Heart, Users, Shield, Clock, CheckCircle2, Loader2, HandHeart, Star, FileText, Lock, Plane, Search, X } from "lucide-react";
 import VolunteerStatusTracker from "@/components/volunteer/VolunteerStatusTracker";
@@ -80,6 +80,7 @@ const VolunteerPage = () => {
   const [showConsentModal, setShowConsentModal] = useState(false);
   const [consentPrivacy, setConsentPrivacy] = useState(false);
   const [consentTerms, setConsentTerms] = useState(false);
+  const [companyWebsite, setCompanyWebsite] = useState("");
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [filterEP, setFilterEP] = useState<string | null>(null);
   const [showFilterDock, setShowFilterDock] = useState(false);
@@ -185,66 +186,44 @@ const VolunteerPage = () => {
 
   const handleSubmit = async () => {
     setShowReviewModal(false);
+    if (!consentPrivacy || !consentTerms) {
+      toast({ title: "कृपया सहमति दें", description: "Please accept the consent and terms.", variant: "destructive" });
+      return;
+    }
 
     setSubmitting(true);
     try {
-      // Ensure user is authenticated (required by RLS)
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        toast({ title: "कृपया पहले लॉगिन करें", description: "Please log in before registering as a volunteer.", variant: "destructive" });
-        setSubmitting(false);
+      const result = await submitVolunteerRegistration({
+        full_name: form.full_name.trim(),
+        father_name: form.father_name.trim(),
+        age: parseInt(form.age, 10),
+        mobile: form.mobile.trim(),
+        whatsapp: form.whatsapp.trim(),
+        email: form.email.trim(),
+        full_address: form.full_address.trim(),
+        city: form.city.trim(),
+        district: form.district.trim(),
+        state: form.state,
+        embarkation_point: form.embarkation_point,
+        skills: form.skills,
+        availability_days: form.availability_days,
+        duty_location: form.duty_location,
+        languages: form.languages,
+        other_language: form.other_language.trim(),
+        declaration_agreed: true,
+        consent_privacy: true,
+        consent_terms: true,
+        company_website: companyWebsite,
+      });
+      if (result.ok === false) {
+        toast({ title: result.title, description: result.description, variant: "destructive" });
         return;
       }
-
-      // Check duplicate mobile via secure RPC
-      const { data: mobileExists } = await supabase.rpc("check_volunteer_mobile_exists", { p_mobile: form.mobile.trim() });
-
-      if (mobileExists) {
-        toast({ title: "इस मोबाइल नंबर से पहले ही रजिस्ट्रेशन हो चुका है", variant: "destructive" });
-        setSubmitting(false);
-        return;
-      }
-
-      const langs = [...form.languages];
-      if (form.other_language.trim()) langs.push(form.other_language.trim());
-
-      const { data, error } = await supabase
-        .from("volunteers")
-        .insert({
-          user_id: user.id,
-          full_name: form.full_name.trim(),
-          father_name: form.father_name.trim(),
-          age: parseInt(form.age),
-          mobile: form.mobile.trim(),
-          whatsapp: form.whatsapp.trim(),
-          email: form.email.trim() || null,
-          full_address: form.full_address.trim(),
-          city: form.city.trim(),
-          district: form.district.trim(),
-          state: form.state,
-          skills: form.skills,
-          availability_days: form.availability_days,
-          duty_location: form.duty_location,
-          embarkation_point: form.embarkation_point,
-          languages: langs,
-          declaration_agreed: true,
-          volunteer_id: "TEMP", // Will be overwritten by trigger
-        })
-        .select("volunteer_id")
-        .single();
-
-      if (error || !data?.volunteer_id || data.volunteer_id === "TEMP") {
-        console.error("Insert error:", error);
-        throw new Error(error?.message || "The server did not confirm the registration.");
-      }
-
-      setVolunteerId(data.volunteer_id);
+      setVolunteerId(result.id);
       setSuccess(true);
-      toast({ title: "✅ Your Volunteer Registration has been submitted successfully.", description: `आपकी Volunteer ID: ${data.volunteer_id}` });
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "An unexpected error occurred. Please try again.";
-      console.error("Volunteer registration error:", err);
-      toast({ title: "रजिस्ट्रेशन में त्रुटि", description: message, variant: "destructive" });
+      toast({ title: "✅ Your Volunteer Registration has been submitted successfully.", description: `आपकी Volunteer ID: ${result.id}` });
+    } catch {
+      toast({ title: "रजिस्ट्रेशन में त्रुटि", description: "An unexpected error occurred. Please try again.", variant: "destructive" });
     } finally {
       setSubmitting(false);
     }
@@ -437,6 +416,17 @@ const VolunteerPage = () => {
         {showForm && (
           <div className="space-y-5 animate-fade-up">
             <h2 className="text-lg font-bold text-foreground">📝 Volunteer Registration Form</h2>
+            <div aria-hidden="true" className="absolute -left-[9999px] h-px w-px overflow-hidden">
+              <label>
+                Company website
+                <input
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={companyWebsite}
+                  onChange={(e) => setCompanyWebsite(e.target.value)}
+                />
+              </label>
+            </div>
 
             {/* A. Basic Identity */}
             <Card>

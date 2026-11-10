@@ -1,0 +1,9 @@
+# Isolated from supabase/config.toml. Link and deploy this folder only to vvbbwlfzpfvgyweeggvw.
+# Do not deploy it to begtqcmwruvwposocnsr. It does not read or write public.volunteers.
+project_id = "vvbbwlfzpfvgyweeggvw"
+
+[functions.volunteer-register]
+# The gateway verify_jwt check only accepts legacy JWT keys.
+# A publishable key is not a JWT. This function checks the apikey itself
+# and refuses the service role key. Registration does not require a user login.
+verify_jwt = false

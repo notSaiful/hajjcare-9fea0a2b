@@ -5,6 +5,7 @@ import path from "path";
 import { componentTagger } from "lovable-tagger";
 import { supabaseHttpsOrigin } from "./src/lib/supabaseOrigin";
 import { assertTrainingProjectUrl } from "./src/training/project";
+import { assertVolunteerProjectUrl } from "./src/volunteer/project";
 import { trainingConfigSource } from "./src/training/publicKey";
 
 /** Match vercel.json: demo at /, /explore, /library; React app for other extension-less routes. */
@@ -88,7 +89,12 @@ function supabasePreconnect(mode: string): Plugin {
 }
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => ({
+export default defineConfig(({ mode }) => {
+  const volunteerEnv = loadEnv(mode, process.cwd(), "VITE_");
+  if (volunteerEnv.VITE_VOLUNTEER_SUPABASE_URL?.trim()) {
+    assertVolunteerProjectUrl(volunteerEnv.VITE_VOLUNTEER_SUPABASE_URL);
+  }
+  return {
   server: {
     host: "::",
     port: 8080,
@@ -106,4 +112,5 @@ export default defineConfig(({ mode }) => ({
       input: path.resolve(__dirname, "app.html"),
     },
   },
-}));
+  };
+});
