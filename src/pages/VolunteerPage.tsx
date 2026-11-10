@@ -89,6 +89,28 @@ const VolunteerPage = () => {
   const [showFilterDock, setShowFilterDock] = useState(false);
   const [filterSearch, setFilterSearch] = useState("");
 
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem("hc-reg-carry");
+      if (!raw) return;
+      const data = JSON.parse(raw) as { name?: unknown; phone?: unknown; email?: unknown };
+      const name = typeof data.name === "string" ? data.name.trim() : "";
+      let phone = typeof data.phone === "string" ? data.phone.replace(/\D/g, "") : "";
+      if (phone.length === 12 && phone.startsWith("91")) phone = phone.slice(2);
+      if (phone.length !== 10) phone = "";
+      const email = typeof data.email === "string" ? data.email.trim() : "";
+      setForm((prev) => ({
+        ...prev,
+        full_name: prev.full_name || name,
+        mobile: prev.mobile || phone,
+        whatsapp: prev.whatsapp || phone,
+        email: prev.email || email,
+      }));
+    } catch {
+      /* private mode or a bad stored value */
+    }
+  }, []);
+
   // Keyboard shortcut: Ctrl+K to toggle filter dock
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -266,6 +288,24 @@ const VolunteerPage = () => {
                 </ul>
               </div>
               <Button asChild className="w-full">
+                <Link
+                  to="/explore#register"
+                  onClick={() => {
+                    try {
+                      sessionStorage.setItem("hc-reg-carry", JSON.stringify({
+                        name: form.full_name.trim(),
+                        phone: form.mobile.trim(),
+                        email: form.email.trim(),
+                      }));
+                    } catch {
+                      /* private mode */
+                    }
+                  }}
+                >
+                  Register for training · ट्रेनिंग रजिस्टर करें
+                </Link>
+              </Button>
+              <Button asChild variant="outline" className="w-full">
                 <Link to={`/volunteer/training?receipt=${encodeURIComponent(volunteerId)}`}>Volunteer training · वॉलंटियर ट्रेनिंग</Link>
               </Button>
             </CardContent>

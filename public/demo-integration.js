@@ -73,7 +73,7 @@
 
   function trainingStatus() {
     if (en()) {
-      return "Free enrollment is only for a registered haji. This form does not check your cover number against a Haj Committee list, so free eligibility is not confirmed. A receipt appears only after the server saves the request. No email or SMS is sent.";
+      return "Training registration does not need a sign-in. This form does not check your cover number against a Haj Committee list, so free eligibility is not confirmed. A receipt appears only after the server saves the request. No email or SMS is sent.";
     }
     return "मुफ़्त दाख़िला सिर्फ़ रजिस्टर्ड हाजी के लिए है। यह फ़ॉर्म कवर नंबर को हज कमेटी की सूची से नहीं जाँचता, इसलिए मुफ़्त पात्रता पक्की नहीं है। रसीद तभी दिखेगी जब सर्वर अनुरोध सेव कर दे। ईमेल या एसएमएस नहीं भेजा जाता।";
   }
@@ -94,13 +94,15 @@
       try { localStorage.removeItem("hc-train"); } catch (e) { /* private mode */ }
       var list = document.getElementById("list");
       if (list) list.textContent = "";
-      if (typeof root.__hcMountTrainingGate === "function") root.__hcMountTrainingGate(train);
+      var loginFree = typeof root.__hcSubmitTrainingRegistration === "function";
+      if (loginFree && typeof root.__hcPrepareTrainingRegistration === "function") root.__hcPrepareTrainingRegistration(train);
+      else if (typeof root.__hcMountTrainingGate === "function") root.__hcMountTrainingGate(train);
       train.onsubmit = function (e) {
         if (e && e.preventDefault) e.preventDefault();
         var res = train.querySelector(".res");
         if (!res) return false;
         res.textContent = "";
-        var submit = window.__hcSubmitTrainingEnrollment;
+        var submit = loginFree ? root.__hcSubmitTrainingRegistration : window.__hcSubmitTrainingEnrollment;
         if (typeof submit !== "function") {
           res.textContent = en()
             ? "Nothing was saved. The enrollment service is not available in this page."
@@ -117,6 +119,15 @@
           box.className = saved ? "ok" : "note";
           box.textContent = text;
           res.appendChild(box);
+          if (saved) {
+            var next = document.createElement("p");
+            var link = document.createElement("a");
+            link.className = "btn";
+            link.href = "/volunteer";
+            link.textContent = en() ? "Continue to volunteer registration" : "वॉलंटियर रजिस्ट्रेशन जारी रखें";
+            next.appendChild(link);
+            res.appendChild(next);
+          }
         }).catch(function () {
           res.textContent = en() ? "Nothing was saved. The server did not confirm the request." : "कुछ सेव नहीं हुआ। सर्वर ने पुष्टि नहीं की।";
         });

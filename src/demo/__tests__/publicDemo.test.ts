@@ -121,9 +121,11 @@ describe("approved public demo", () => {
     expect(integration).toContain("login-free");
     expect(integration).toContain("Open the HajCare volunteer form");
     expect(integration).not.toContain("/auth?next=/volunteer");
-    expect(read("public/index.html")).toContain('id="volunteer-training"');
-    expect(read("public/explore.js")).toContain('id="volunteer-training"');
-    expect(read("src/pages/VolunteerPage.tsx")).toContain("/volunteer/training?receipt=");
+    expect(read("public/index.html")).toContain('id="training-registration"');
+    expect(read("public/index.html")).toContain('href="/explore#register"');
+    expect(read("public/explore.html")).toContain("training-register.js");
+    expect(read("src/pages/VolunteerPage.tsx")).toContain('to="/explore#register"');
+    expect(read("src/pages/VolunteerPage.tsx")).toContain("Register for training");
     expect(integration).not.toMatch(/Registered \(demo\)|Registration saved/);
     expect(integration).not.toMatch(/supabase/i);
   });
