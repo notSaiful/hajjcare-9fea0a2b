@@ -18,6 +18,7 @@ import { mainVolunteerClientConfig, submitVolunteerRegistration } from "@/volunt
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Heart, Users, Shield, Clock, CheckCircle2, Loader2, HandHeart, Star, FileText, Lock, Plane, Search, X } from "lucide-react";
 import VolunteerStatusTracker from "@/components/volunteer/VolunteerStatusTracker";
+import { VOLUNTEER_MODULES } from "@/pages/VolunteerTrainingPage";
 
 const SKILLS = [
   { value: "ground_volunteer", label: "ग्राउंड वॉलंटियर (Embarkation duty)", labelEn: "Ground Volunteer" },
@@ -250,13 +251,22 @@ const VolunteerPage = () => {
                 <p className="text-sm text-muted-foreground">आपकी Volunteer ID</p>
                 <p className="text-2xl font-mono font-bold text-primary">{volunteerId}</p>
               </div>
-              <div className="bg-muted/50 rounded-xl p-4 text-sm text-muted-foreground space-y-1">
+              <div className="bg-card border rounded-xl p-4 space-y-1 text-left">
+                <p className="text-sm text-muted-foreground">Receipt · रसीद</p>
+                <p className="font-mono text-sm text-foreground break-all">{volunteerId}</p>
+              </div>
+              <div className="bg-muted/50 rounded-xl p-4 text-sm text-muted-foreground space-y-2 text-left">
                 <p>📋 अगला कदम: Screening → Training → Deployment</p>
                 <p>📞 हमारी टीम जल्द ही आपसे संपर्क करेगी</p>
-                <p>Training access follows registration. The lessons are not open yet.</p>
+                <p>Hajj and Umrah volunteer lessons open after this registration. They are not published yet.</p>
+                <ul className="space-y-1">
+                  {VOLUNTEER_MODULES.map((module, index) => (
+                    <li key={module.title}>{index + 1}. {module.titleHi}</li>
+                  ))}
+                </ul>
               </div>
               <Button asChild className="w-full">
-                <Link to="/volunteer/training">Volunteer training · वॉलंटियर ट्रेनिंग</Link>
+                <Link to={`/volunteer/training?receipt=${encodeURIComponent(volunteerId)}`}>Volunteer training · वॉलंटियर ट्रेनिंग</Link>
               </Button>
             </CardContent>
           </Card>

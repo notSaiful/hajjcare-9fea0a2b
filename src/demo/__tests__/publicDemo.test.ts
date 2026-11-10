@@ -118,7 +118,12 @@ describe("approved public demo", () => {
   it("does not describe training or volunteer demo submits as a completed registration", () => {
     expect(integration).toContain("Nothing was saved");
     expect(integration).toContain("This short form was not submitted");
-    expect(integration).toContain("/auth?next=/volunteer");
+    expect(integration).toContain("login-free");
+    expect(integration).toContain("Open the HajCare volunteer form");
+    expect(integration).not.toContain("/auth?next=/volunteer");
+    expect(read("public/index.html")).toContain('id="volunteer-training"');
+    expect(read("public/explore.js")).toContain('id="volunteer-training"');
+    expect(read("src/pages/VolunteerPage.tsx")).toContain("/volunteer/training?receipt=");
     expect(integration).not.toMatch(/Registered \(demo\)|Registration saved/);
     expect(integration).not.toMatch(/supabase/i);
   });
@@ -234,7 +239,7 @@ describe("demo registration bridge", () => {
     expect(localStorage.getItem("hc-train")).toBeNull();
   });
 
-  it("sends volunteer registration to the existing signed-in form", () => {
+  it("sends the demo volunteer form to the login-free registration", () => {
     mount(
       "#volunteer",
       `<h1>Volunteer</h1><span class="tag s">Demo</span><form data-store="hc-vol"><div class="res"></div></form>`
@@ -242,7 +247,8 @@ describe("demo registration bridge", () => {
     const form = document.querySelector("form") as HTMLFormElement;
     form.onsubmit?.(new Event("submit", { cancelable: true }));
     const text = document.querySelector(".res")?.innerHTML || "";
-    expect(text).toContain("/auth?next=/volunteer");
+    expect(text).toContain('href="/volunteer"');
+    expect(text).not.toContain("/auth?next=/volunteer");
     expect(text).toContain("/volunteer");
     expect(text).toMatch(/not submitted/i);
     expect(localStorage.getItem("hc-vol")).toBeNull();

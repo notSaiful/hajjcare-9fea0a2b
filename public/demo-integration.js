@@ -1,6 +1,6 @@
 /* Honest bridge from the approved demo screens to existing HajCare pages.
    100-day training saves only after the training server returns a receipt.
-   Volunteer registration keeps the existing signed-in form.
+   Volunteer registration is the login-free HajCare form. This demo form is not submitted.
    Video 1 stays in the demo's browser storage. */
 (function (root) {
   var LIVE = {
@@ -80,9 +80,9 @@
 
   function volunteerMessage() {
     if (en()) {
-      return "<b>This short form was not submitted.</b> Volunteer registration uses the existing signed-in HajCare form (identity, skills, availability, and declaration). <a href=\"/auth?next=/volunteer\">Sign in to continue</a> or <a href=\"/volunteer\">open the volunteer form</a>.";
+      return "<b>This short form was not submitted.</b> Volunteer registration is login-free. <a href=\"/volunteer\">Open the HajCare volunteer form</a>. Hajj and Umrah volunteer lessons show after that registration is confirmed.";
     }
-    return "<b>यह छोटा फ़ॉर्म जमा नहीं हुआ।</b> वॉलंटियर रजिस्ट्रेशन मौजूदा साइन-इन HajCare फ़ॉर्म पर होता है (पहचान, स्किल, उपलब्धता और घोषणा)। <a href=\"/auth?next=/volunteer\">जारी रखने के लिए साइन इन करें</a> या <a href=\"/volunteer\">वॉलंटियर फ़ॉर्म खोलें</a>।";
+    return "<b>यह छोटा फ़ॉर्म जमा नहीं हुआ।</b> वॉलंटियर रजिस्ट्रेशन बिना साइन-इन है। <a href=\"/volunteer\">HajCare वॉलंटियर फ़ॉर्म खोलें</a>। हज और उमरा के पाठ रजिस्ट्रेशन की पुष्टि के बाद दिखते हैं।";
   }
 
   function wire() {
@@ -128,8 +128,8 @@
       var vtag = vol.previousElementSibling;
       if (vtag && vtag.classList && vtag.classList.contains("tag")) {
         vtag.textContent = en()
-          ? "Not submitted here — use the signed-in volunteer form"
-          : "यहाँ जमा नहीं — साइन-इन वाला वॉलंटियर फ़ॉर्म इस्तेमाल करें";
+          ? "Not submitted here — register without signing in"
+          : "यहाँ जमा नहीं — बिना साइन-इन रजिस्टर करें";
       }
       blockForm(vol, '<div class="note">' + volunteerMessage() + "</div>");
     }

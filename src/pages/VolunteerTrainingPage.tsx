@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { SEO } from "@/components/SEO";
 import { SimpleHeader } from "@/components/SimpleHeader";
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,9 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
-const MODULES: { title: string; titleHi: string; description: string; descriptionHi: string; icon: LucideIcon }[] = [
+const RECEIPT = /^V-[A-Z]{3}-[A-Z]{3}-[0-9]{4}$/;
+
+export const VOLUNTEER_MODULES: { title: string; titleHi: string; description: string; descriptionHi: string; icon: LucideIcon }[] = [
   {
     title: "HajCare AI orientation and Hajj-Umrah-only scope",
     titleHi: "HajCare AI की जानकारी और सिर्फ़ हज-उमरा दायरा",
@@ -70,6 +72,9 @@ const MODULES: { title: string; titleHi: string; description: string; descriptio
 
 const VolunteerTrainingPage = () => {
   const { isRTL } = useLanguage();
+  const [params] = useSearchParams();
+  const receipt = params.get("receipt") ?? "";
+  const receiptOk = RECEIPT.test(receipt);
 
   return (
     <div className="min-h-screen bg-background" dir={isRTL ? "rtl" : "ltr"}>
@@ -94,8 +99,20 @@ const VolunteerTrainingPage = () => {
           </p>
         </div>
 
+        {receiptOk ? (
+          <Card className="border-primary/20">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base">Receipt · रसीद</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="font-mono text-sm break-all">{receipt}</p>
+              <p className="text-sm text-muted-foreground mt-2">This receipt is the volunteer id returned after login-free registration. The lessons below are not open yet.</p>
+            </CardContent>
+          </Card>
+        ) : null}
+
         <div className="space-y-3">
-          {MODULES.map((module, index) => {
+          {VOLUNTEER_MODULES.map((module, index) => {
             const Icon = module.icon;
             return (
               <Card key={module.title} className="border-primary/20">
