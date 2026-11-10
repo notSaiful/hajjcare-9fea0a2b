@@ -115,6 +115,7 @@
   nav.className = "tl-navs";
   nav.append(prev, next);
   panel.append(list, live, nav, oldBtn, oldBox);
+  document.body.appendChild(panel);
 
   var shown = 0;
   var follow = true;
@@ -132,7 +133,7 @@
     if (index > LINES.length - 1) index = LINES.length - 1;
     shown = index;
     list.querySelectorAll("li").forEach(function (item, i) {
-      item.hidden = i > index;
+      item.hidden = i < index - 1 || i > index;
       item.classList.toggle("tl-now", i === index);
     });
     live.textContent = index + 1 + " / " + LINES.length;
@@ -140,23 +141,42 @@
     next.disabled = index === LINES.length - 1;
   }
 
+  var closed = false;
+  var advanceBtn = document.createElement("button");
+  advanceBtn.type = "button";
+  advanceBtn.id = "talbiyah-next";
+  advanceBtn.hidden = true;
+  advanceBtn.append(label("en", "Next"), document.createTextNode(" / "), label("hi", "आगे बढ़ें"));
+  document.body.appendChild(advanceBtn);
+  advanceBtn.addEventListener("click", function (e) {
+    e.stopPropagation();
+    advanceBtn.remove();
+    var enter = document.getElementById("enter");
+    if (enter) enter.click();
+  });
+
+  function movedOn() {
+    return document.body.classList.contains("entered") || (intro && intro.classList.contains("gone"));
+  }
+
+  function finishPanel(offerNext) {
+    if (closed) return;
+    closed = true;
+    panel.hidden = true;
+    if (offerNext && !movedOn()) {
+      advanceBtn.hidden = false;
+      if (!advanceBtn.isConnected) document.body.appendChild(advanceBtn);
+    }
+  }
+
   function openPanel() {
-    if (!doorOpen()) return;
+    if (closed || !doorOpen()) return;
     panel.hidden = false;
-    dock();
+    if (panel.parentElement !== document.body) document.body.appendChild(panel);
   }
 
   function doorOpen() {
     return (opener && opener.classList.contains("dopen")) || (intro && intro.classList.contains("opened"));
-  }
-
-  function dock() {
-    if (document.body.classList.contains("entered")) {
-      var main = document.querySelector("main");
-      if (main && panel.parentElement !== main) main.insertBefore(panel, main.firstChild);
-      return;
-    }
-    if (panel.parentElement !== document.body) document.body.appendChild(panel);
   }
 
   function clockLine() {
@@ -207,26 +227,50 @@
     oldBtn.setAttribute("aria-expanded", open ? "true" : "false");
   });
 
+  var hmean = document.getElementById("hmean");
   if (audio) {
     audio.addEventListener("playing", function () {
+      if (closed) return;
       noteStart();
       openPanel();
       clockLine();
     });
-    audio.addEventListener("timeupdate", clockLine);
+    audio.addEventListener("timeupdate", function () {
+      if (closed) return;
+      clockLine();
+    });
     audio.addEventListener("loadedmetadata", noteStart);
     audio.addEventListener("ended", function () {
       if (follow) reveal(LINES.length - 1);
+      if (!hmean) finishPanel(true);
     });
     audio.addEventListener("error", function () {
       follow = false;
-      openPanel();
+      finishPanel(true);
     });
   }
+  if (hmean) {
+    hmean.addEventListener("ended", function () { finishPanel(true); });
+    hmean.addEventListener("error", function () { finishPanel(true); });
+  }
+  var enter = document.getElementById("enter");
+  if (enter) enter.addEventListener("click", function () {
+    if (advanceBtn.isConnected) advanceBtn.remove();
+    finishPanel(false);
+  });
 
   var watch = new MutationObserver(function () {
+    if (intro && (intro.classList.contains("gone") || document.body.classList.contains("entered"))) {
+      if (advanceBtn.isConnected) advanceBtn.remove();
+      finishPanel(false);
+      return;
+    }
+    if (intro && intro.classList.contains("tdone")) {
+      finishPanel(true);
+      return;
+    }
+    if (closed) return;
     if (doorOpen()) openPanel();
-    if (!panel.hidden) dock();
   });
   if (opener) watch.observe(opener, { attributes: true, attributeFilter: ["class"] });
   if (intro) watch.observe(intro, { attributes: true, attributeFilter: ["class"] });
@@ -234,5 +278,4 @@
 
   reveal(0);
   if (doorOpen()) openPanel();
-  else dock();
 })();

@@ -84,6 +84,8 @@ describe("talbiyah line text", () => {
     audio.dispatchEvent(new Event("playing"));
     audio.currentTime = 3.8 + (40 - 3.8) * 0.6;
     audio.dispatchEvent(new Event("timeupdate"));
+    expect(items[0]?.hidden).toBe(true);
+    expect(items[1]?.hidden).toBe(false);
     expect(items[2]?.hidden).toBe(false);
     expect(items[3]?.hidden).toBe(true);
 
@@ -108,5 +110,39 @@ describe("talbiyah line text", () => {
     expect(document.getElementById("tl-old")?.textContent).toContain(HI);
     expect(document.getElementById("tl-old")?.textContent).not.toContain("हिंदी मायने सुनें");
     expect(document.querySelector("section.talbiya")!.innerHTML).toBe(original);
+  });
+
+  it("hides only after the Hindi meaning ends, then offers the existing Enter step", async () => {
+    document.body.innerHTML = `<div id="intro"><div id="opener"></div><button id="enter" type="button">Enter</button></div><audio id="talbiya"></audio><audio id="hmean"></audio>`;
+    let entered = 0;
+    document.getElementById("enter")!.addEventListener("click", () => {
+      entered += 1;
+      document.getElementById("intro")!.classList.add("gone");
+      document.body.classList.add("entered");
+    });
+    window.eval(script);
+    document.getElementById("opener")!.classList.add("dopen");
+    await Promise.resolve();
+    const panel = document.getElementById("talbiyah-lines")!;
+    const talbiya = document.getElementById("talbiya")!;
+    talbiya.dispatchEvent(new Event("ended"));
+    expect(panel.hidden).toBe(false);
+    expect(document.getElementById("talbiyah-next")?.hidden).not.toBe(false);
+
+    document.getElementById("hmean")!.dispatchEvent(new Event("ended"));
+    expect(panel.hidden).toBe(true);
+    const forward = document.getElementById("talbiyah-next")!;
+    expect(forward.hidden).toBe(false);
+    expect(forward.textContent).toContain("Next");
+    expect(forward.textContent).toContain("आगे बढ़ें");
+    forward.click();
+    expect(entered).toBe(1);
+    expect(document.getElementById("talbiyah-next")).toBeNull();
+    expect(document.body.classList.contains("entered")).toBe(true);
+
+    document.getElementById("opener")!.classList.remove("dopen");
+    document.getElementById("opener")!.classList.add("dopen");
+    await Promise.resolve();
+    expect(panel.hidden).toBe(true);
   });
 });
