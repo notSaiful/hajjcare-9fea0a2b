@@ -78,14 +78,32 @@ describe("approved public demo", () => {
     expect(explore).toContain("Hxn32sAZTNI");
   });
 
-  it("lists the Haj Committee of India WhatsApp channel with the social links", () => {
-    const url = "https://whatsapp.com/channel/0029Vb6fWFfGk1FxTPwpLY26";
-    expect(explore).toContain(url);
-    expect(explore).toContain("HAJ COMMITTEE OF INDIA — official updates on WhatsApp");
-    expect(explore).toContain("हज कमेटी ऑफ इंडिया — व्हाट्सऐप पर आधिकारिक अपडेट");
-    expect(explore).toContain('rel="noopener noreferrer"');
-    expect(read("src/pages/SocialsPage.tsx")).toContain(url);
-    expect(explore.match(new RegExp(url.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g"))).toHaveLength(1);
+  it("lists the four official Haj committee WhatsApp channels", () => {
+    const channels = [
+      ["Haj Committee of India", "Central", "https://whatsapp.com/channel/0029Vb6fWFfGk1FxTPwpLY26"],
+      ["Gujarat State Haj Committee", "Gujarat", "https://whatsapp.com/channel/0029VaA1rkXFHWq8ARVKv82d"],
+      ["Uttar Pradesh State Haj Committee", "Uttar Pradesh", "https://whatsapp.com/channel/0029Vb8jyFGLI8YOt4iu7N2Z"],
+      ["J&K Haj Committee", "Jammu & Kashmir", "https://whatsapp.com/channel/0029VaFysS6GZNCyooJkJa3E"],
+    ];
+    const socials = read("src/pages/SocialsPage.tsx");
+    expect(explore).toContain("const OFFICIAL_WA=");
+    expect(explore).toContain("Official WhatsApp channels");
+    expect(socials).toContain("const officialWhatsAppChannels = [");
+    expect(socials).toContain("Official WhatsApp channels");
+    expect(socials).toContain('target="_blank"');
+    expect(socials).toContain('rel="noopener noreferrer"');
+    for (const [name, state, url] of channels) {
+      expect(explore).toContain(name);
+      expect(explore).toContain(state);
+      expect(explore).toContain(url);
+      expect(explore).toContain('rel="noopener noreferrer"');
+      expect(explore.match(new RegExp(url.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g"))).toHaveLength(1);
+      expect(socials).toContain(name);
+      expect(socials).toContain(state);
+      expect(socials).toContain(url);
+      expect(socials.match(new RegExp(url.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g"))).toHaveLength(1);
+    }
+    expect(explore).not.toContain("HAJ COMMITTEE OF INDIA — official updates on WhatsApp");
   });
 
   it("keeps Video 1 local and leaves the other slots empty", () => {

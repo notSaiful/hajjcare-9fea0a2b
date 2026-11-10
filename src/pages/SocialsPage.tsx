@@ -13,14 +13,6 @@ const socialLinks = [
     color: "bg-green-500",
   },
   {
-    id: "haj-committee-whatsapp",
-    icon: MessageCircle,
-    name: { en: "HAJ COMMITTEE OF INDIA", hi: "हज कमेटी ऑफ इंडिया" },
-    description: { en: "official updates on WhatsApp", hi: "व्हाट्सऐप पर आधिकारिक अपडेट" },
-    url: "https://whatsapp.com/channel/0029Vb6fWFfGk1FxTPwpLY26",
-    color: "bg-green-500",
-  },
-  {
     id: "x",
     icon: Twitter,
     name: { en: "X (Twitter)", ar: "إكس (تويتر)", ur: "ایکس (ٹویٹر)", hi: "एक्स (ट्विटर)", ta: "எக்ஸ் (ட்விட்டர்)", te: "ఎక్స్ (ట్విట్టర్)", mr: "एक्स (ट्विटर)", bn: "এক্স (টুইটার)", or: "ଏକ୍ସ (ଟ୍ୱିଟର)", ml: "എക്സ് (ട്വിറ്റർ)", pa: "ਐਕਸ (ਟਵਿੱਟਰ)" },
@@ -43,6 +35,33 @@ const socialLinks = [
     description: { en: "HajjCare Updates & Photos", ar: "تحديثات وصور HajjCare", ur: "HajjCare اپڈیٹس اور تصاویر", hi: "HajjCare अपडेट और फोटो", ta: "HajjCare புதுப்பிப்புகள் & புகைப்படங்கள்", te: "HajjCare అప్‌డేట్లు & ఫోటోలు", mr: "HajjCare अद्यतने आणि फोटो", bn: "HajjCare আপডেট ও ছবি", or: "HajjCare ଅପଡେଟ ଓ ଫଟୋ", ml: "HajjCare അപ്ഡേറ്റുകളും ഫോട്ടോകളും", pa: "HajjCare ਅੱਪਡੇਟ ਅਤੇ ਫੋਟੋ" },
     url: "https://www.instagram.com/rafiqulharmain?igsh=cDd5NnoxbnVwYWN2",
     color: "bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400",
+  },
+];
+
+const officialWhatsAppChannels = [
+  {
+    id: "haj-committee-india",
+    name: { en: "Haj Committee of India", hi: "हज कमेटी ऑफ इंडिया" },
+    state: { en: "Central", hi: "केंद्रीय" },
+    url: "https://whatsapp.com/channel/0029Vb6fWFfGk1FxTPwpLY26",
+  },
+  {
+    id: "gujarat-haj-committee",
+    name: { en: "Gujarat State Haj Committee", hi: "गुजरात राज्य हज कमेटी" },
+    state: { en: "Gujarat", hi: "गुजरात" },
+    url: "https://whatsapp.com/channel/0029VaA1rkXFHWq8ARVKv82d",
+  },
+  {
+    id: "uttar-pradesh-haj-committee",
+    name: { en: "Uttar Pradesh State Haj Committee", hi: "उत्तर प्रदेश राज्य हज कमेटी" },
+    state: { en: "Uttar Pradesh", hi: "उत्तर प्रदेश" },
+    url: "https://whatsapp.com/channel/0029Vb8jyFGLI8YOt4iu7N2Z",
+  },
+  {
+    id: "jk-haj-committee",
+    name: { en: "J&K Haj Committee", hi: "जम्मू और कश्मीर हज कमेटी" },
+    state: { en: "Jammu & Kashmir", hi: "जम्मू और कश्मीर" },
+    url: "https://whatsapp.com/channel/0029VaFysS6GZNCyooJkJa3E",
   },
 ];
 
@@ -84,6 +103,31 @@ export default function SocialsPage() {
               {pageContent.subtitle[language] || pageContent.subtitle.en}
             </p>
           </div>
+
+          <section className="space-y-4" aria-label="Official WhatsApp channels">
+            <h2 className="text-lg font-semibold text-foreground">
+              {language === "hi" ? "आधिकारिक व्हाट्सऐप चैनल" : "Official WhatsApp channels"}
+            </h2>
+            {officialWhatsAppChannels.map((channel) => (
+              <a key={channel.id} href={channel.url} target="_blank" rel="noopener noreferrer" className="block">
+                <Card className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-border/50">
+                  <CardContent className="p-4 flex items-center gap-4">
+                    <div className="w-14 h-14 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 shadow-lg">
+                      <MessageCircle className="w-7 h-7 text-white" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-foreground text-lg">
+                        {language === "hi" ? channel.name.hi : channel.name.en}
+                      </h3>
+                      <p className="text-sm text-muted-foreground line-clamp-1">
+                        {language === "hi" ? channel.state.hi : channel.state.en}
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </a>
+            ))}
+          </section>
 
           {/* Social Links */}
           <div className="space-y-4">
