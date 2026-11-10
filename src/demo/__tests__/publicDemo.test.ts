@@ -37,10 +37,18 @@ describe("approved public demo", () => {
   const integration = read("public/demo-integration.js");
   const vercel = JSON.parse(read("vercel.json"));
 
-  it("keeps the Quran Complex translation link unchanged", () => {
-    expect(library).toContain("https://qurancomplex.gov.sa/en/kfgqpc-quran-translate/");
-    expect(library.match(/qurancomplex\.gov\.sa[^"']*/g)).toEqual([
-      "qurancomplex.gov.sa/en/kfgqpc-quran-translate/",
+  it("points the Quran card at QuranEnc and keeps the Complex credit and Tanzil link", () => {
+    expect(library).toContain('href="https://quranenc.com/en/home"');
+    expect(library).toContain(">Official translations ↗</a>");
+    expect(library).toContain('href="https://quranenc.com/hi/home"');
+    expect(library).toContain(">Hindi translations ↗</a>");
+    expect(library).toContain("King Fahd Glorious Quran Printing Complex, Madinah (official translations)");
+    expect(library).toContain('href="https://tanzil.net/"');
+    expect(library).toContain(">Arabic text at Tanzil ↗</a>");
+    expect(library).not.toContain("qurancomplex.gov.sa");
+    expect(library.match(/quranenc\.com\/(?:en|hi)\/home/g)).toEqual([
+      "quranenc.com/en/home",
+      "quranenc.com/hi/home",
     ]);
   });
 
@@ -111,7 +119,8 @@ describe("approved public demo", () => {
     expect(home).not.toContain("demo-tag");
     expect(read("public/explore.html")).not.toContain("Demo preview");
     expect(read("public/library.html")).not.toContain("Demo preview");
-    expect(read("public/library.html")).toContain("https://qurancomplex.gov.sa/en/kfgqpc-quran-translate/");
+    expect(read("public/library.html")).toContain("https://quranenc.com/en/home");
+    expect(read("public/library.html")).toContain("https://quranenc.com/hi/home");
     expect(home).not.toContain('id="root"');
     expect(read("app.html")).toContain("/src/main.tsx");
     expect(read("app.html")).not.toContain("qovcctfoxgvowedjioil");
