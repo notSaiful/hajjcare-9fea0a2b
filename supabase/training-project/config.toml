@@ -7,3 +7,8 @@ project_id = "uorfprlfpqdpjtrcaqrt"
 # This function checks the apikey header itself, refuses the service role key,
 # and verifies the signed-in user's Bearer token.
 verify_jwt = false
+
+[functions.site-visit]
+# Same gateway limit as training-enroll: publishable keys are not JWTs.
+# The handler checks the apikey itself and refuses the service role key.
+verify_jwt = false

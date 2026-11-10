@@ -124,6 +124,7 @@ describe("approved public demo", () => {
     expect(vercel.rewrites[0]).toEqual({ source: "/", destination: "/index.html" });
     expect(vercel.rewrites).toContainEqual({ source: "/explore", destination: "/explore.html" });
     expect(vercel.rewrites).toContainEqual({ source: "/library", destination: "/library.html" });
+    expect(vercel.rewrites).toContainEqual({ source: "/visitors", destination: "/visitors.html" });
     expect(vercel.rewrites).toContainEqual({ source: "/auth", destination: "/app.html" });
     expect(vercel.rewrites).toContainEqual({ source: "/volunteer", destination: "/app.html" });
     expect(vercel.rewrites).toContainEqual({ source: "/service-fee", destination: "/app.html" });

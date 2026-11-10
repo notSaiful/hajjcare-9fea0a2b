@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>VISITOR COUNTS</title>
+  <link rel="stylesheet" href="explore.css?v=29">
+  <style>
+    body { margin: 0; background: #f6f0e4; color: #2b2a24; font: 16px/1.5 Mukta, system-ui, sans-serif; }
+    main { max-width: 720px; margin: 0 auto; padding: 24px 16px 48px; }
+    h1, label, button, th, .msg { text-transform: uppercase; }
+    h1 { font-family: "Cormorant Garamond", serif; color: #1f4d3a; font-size: 32px; margin: 0 0 8px; }
+    label { display: block; margin: 16px 0 6px; color: #5f6b4e; }
+    input { width: 100%; box-sizing: border-box; font: inherit; text-transform: none; padding: 10px; border: 1px solid #c9a45c88; border-radius: 10px; background: #fff; }
+    button { margin-top: 12px; background: linear-gradient(180deg, #d7b56a, #b8954f); color: #0f2a20; border: 0; border-radius: 12px; padding: 11px 16px; font: inherit; font-weight: 600; cursor: pointer; }
+    .nums { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 18px 0; }
+    .nums div { background: #fffaf0; border: 1px solid #c9a45c66; border-radius: 14px; padding: 14px; }
+    .nums b { display: block; font-size: 28px; color: #1f4d3a; text-transform: none; }
+    table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+    th, td { text-align: left; padding: 8px 4px; border-bottom: 1px solid #c9a45c44; }
+    td { text-transform: none; }
+    .msg { margin-top: 12px; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>VISITOR COUNTS</h1>
+    <p>OWNER VIEW. NOT LISTED IN THE SITE MENU.</p>
+    <label for="pass">OWNER PASSPHRASE</label>
+    <input id="pass" type="password" autocomplete="off" maxlength="200">
+    <button id="show" type="button">SHOW COUNTS</button>
+    <p id="msg" class="msg" role="status"></p>
+    <section id="out" hidden>
+      <div class="nums">
+        <div>TOTAL VISITS<b id="total">0</b></div>
+        <div>UNIQUE VISITORS<b id="unique">0</b></div>
+        <div>TODAY<b id="today">0</b></div>
+        <div>TODAY UNIQUE<b id="today-unique">0</b></div>
+      </div>
+      <h2>TOP PAGES</h2>
+      <table>
+        <thead><tr><th>PAGE</th><th>VISITS</th></tr></thead>
+        <tbody id="paths"></tbody>
+      </table>
+      <h2>LAST 7 DAYS</h2>
+      <table>
+        <thead><tr><th>DATE</th><th>VISITS</th></tr></thead>
+        <tbody id="days"></tbody>
+      </table>
+    </section>
+  </main>
+  <script src="training-config.js"></script>
+  <script>
+    (function () {
+      var KEY = "hc_owner_pass";
+      var pass = document.getElementById("pass");
+      var msg = document.getElementById("msg");
+      try { pass.value = sessionStorage.getItem(KEY) || ""; } catch (e) { /* private mode */ }
+      function say(text) { msg.textContent = text; }
+      function row(cells) {
+        var tr = document.createElement("tr");
+        cells.forEach(function (value) {
+          var td = document.createElement("td");
+          td.textContent = String(value);
+          tr.appendChild(td);
+        });
+        return tr;
+      }
+      document.getElementById("show").onclick = async function () {
+        var secret = pass.value.trim();
+        say("");
+        document.getElementById("out").hidden = true;
+        try { if (secret) sessionStorage.setItem(KEY, secret); else sessionStorage.removeItem(KEY); } catch (e) { /* private mode */ }
+        var cfg = window.__HC_TRAINING_CONFIG || {};
+        var key = String(cfg.publishableKey || "").trim();
+        var host = "";
+        try { host = new URL(String(cfg.url || "")).host; } catch (e) { host = ""; }
+        if (host !== "uorfprlfpqdpjtrcaqrt.supabase.co" || !key) {
+          say("COUNTS ARE NOT OPEN.");
+          return;
+        }
+        try {
+          var res = await fetch("https://uorfprlfpqdpjtrcaqrt.supabase.co/functions/v1/site-visit", {
+            method: "GET",
+            cache: "no-store",
+            headers: { apikey: key, "x-owner-secret": secret }
+          });
+          if (res.status === 401) { say("CHECK THE PASSPHRASE."); return; }
+          if (res.status === 503) { say("COUNTS ARE NOT READY."); return; }
+          if (!res.ok) { say("COULD NOT LOAD COUNTS."); return; }
+          var data = await res.json();
+          document.getElementById("total").textContent = String(data.total_visits ?? 0);
+          document.getElementById("unique").textContent = String(data.unique_visitors ?? 0);
+          document.getElementById("today").textContent = String(data.today_visits ?? 0);
+          document.getElementById("today-unique").textContent = String(data.today_unique ?? 0);
+          var paths = document.getElementById("paths");
+          var days = document.getElementById("days");
+          paths.textContent = "";
+          days.textContent = "";
+          (data.by_path || []).forEach(function (item) { paths.appendChild(row([item.path, item.visits])); });
+          (data.last_7_days || []).forEach(function (item) { days.appendChild(row([item.date, item.visits])); });
+          document.getElementById("out").hidden = false;
+        } catch (e) {
+          say("COULD NOT LOAD COUNTS.");
+        }
+      };
+    })();
+  </script>
+</body>
+</html>

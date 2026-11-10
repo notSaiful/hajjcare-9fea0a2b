@@ -3,6 +3,7 @@
     { "source": "/", "destination": "/index.html" },
     { "source": "/explore", "destination": "/explore.html" },
     { "source": "/library", "destination": "/library.html" },
+    { "source": "/visitors", "destination": "/visitors.html" },
     { "source": "/auth", "destination": "/app.html" },
     { "source": "/volunteer", "destination": "/app.html" },
     { "source": "/service-fee", "destination": "/app.html" },
