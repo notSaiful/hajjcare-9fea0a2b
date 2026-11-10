@@ -1,5 +1,8 @@
 /* Line-by-line Talbiyah text. Does not set, swap, or play audio. */
 (function () {
+  try {
+    if (localStorage.getItem("hc-skip-talbiya") === "1") window.__talbiyaDone = true;
+  } catch (e) {}
   /* Verbatim splits of the existing wording.
      Arabic, transliteration, and English: DuaGuidePage Talbiyah, broken on ، / , / .
      Hindi: homepage section.talbiya p.mean, broken on । and then the comma before the last clause. */
@@ -253,15 +256,44 @@
     hmean.addEventListener("ended", function () { finishPanel(true); });
     hmean.addEventListener("error", function () { finishPanel(true); });
   }
+  var skipBtn = document.createElement("button");
+  skipBtn.type = "button";
+  skipBtn.id = "talbiyah-skip";
+  skipBtn.append(label("en", "Skip"), document.createTextNode(" / "), label("hi", "छोड़ें"));
+  document.body.appendChild(skipBtn);
+  function stopClips() {
+    window.__talbiyaDone = true;
+    [audio, hmean].forEach(function (el) {
+      if (!el) return;
+      try { el.pause(); } catch (err) {}
+    });
+  }
+  function retireSkip() {
+    if (skipBtn.isConnected) skipBtn.remove();
+  }
+  skipBtn.addEventListener("click", function (e) {
+    e.stopPropagation();
+    e.preventDefault();
+    try { localStorage.setItem("hc-skip-talbiya", "1"); } catch (err) {}
+    stopClips();
+    if (advanceBtn.isConnected) advanceBtn.remove();
+    finishPanel(false);
+    retireSkip();
+    var go = document.getElementById("enter");
+    if (go) go.click();
+  });
+
   var enter = document.getElementById("enter");
   if (enter) enter.addEventListener("click", function () {
     if (advanceBtn.isConnected) advanceBtn.remove();
+    retireSkip();
     finishPanel(false);
   });
 
   var watch = new MutationObserver(function () {
     if (intro && (intro.classList.contains("gone") || document.body.classList.contains("entered"))) {
       if (advanceBtn.isConnected) advanceBtn.remove();
+      retireSkip();
       finishPanel(false);
       return;
     }

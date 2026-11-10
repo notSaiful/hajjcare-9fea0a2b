@@ -25,7 +25,9 @@ describe("talbiyah line text", () => {
   beforeEach(() => {
     document.body.innerHTML = "";
     document.body.className = "";
+    localStorage.removeItem("hc-skip-talbiya");
     delete (window as unknown as { __hcTalbiyahLines?: unknown }).__hcTalbiyahLines;
+    delete (window as unknown as { __talbiyaDone?: boolean }).__talbiyaDone;
   });
 
   it("keeps the door audio file and does not add another clip", () => {
@@ -144,5 +146,38 @@ describe("talbiyah line text", () => {
     document.getElementById("opener")!.classList.add("dopen");
     await Promise.resolve();
     expect(panel.hidden).toBe(true);
+  });
+
+  it("skips the door clips immediately and still shows Skip next time", async () => {
+    document.body.innerHTML = `<div id="intro"><div id="opener"></div><button id="enter" type="button">Enter</button></div><audio id="talbiya"></audio><audio id="hmean"></audio>`;
+    const talbiya = document.getElementById("talbiya") as HTMLAudioElement;
+    const hmean = document.getElementById("hmean") as HTMLAudioElement;
+    let pauses = 0;
+    talbiya.pause = () => { pauses += 1; };
+    hmean.pause = () => { pauses += 1; };
+    let entered = 0;
+    document.getElementById("enter")!.addEventListener("click", () => {
+      entered += 1;
+    });
+    window.eval(script);
+    const skip = document.getElementById("talbiyah-skip")!;
+    expect(skip.hidden).toBe(false);
+    expect(skip.textContent).toContain("Skip");
+    expect(skip.textContent).toContain("छोड़ें");
+    document.getElementById("opener")!.classList.add("dopen");
+    await Promise.resolve();
+    expect(document.getElementById("talbiyah-lines")?.hidden).toBe(false);
+    skip.click();
+    expect((window as unknown as { __talbiyaDone?: boolean }).__talbiyaDone).toBe(true);
+    expect(pauses).toBeGreaterThanOrEqual(2);
+    expect(document.getElementById("talbiyah-lines")?.hidden).toBe(true);
+    expect(entered).toBe(1);
+    expect(localStorage.getItem("hc-skip-talbiya")).toBe("1");
+    expect(document.getElementById("talbiyah-skip")).toBeNull();
+
+    document.body.innerHTML = `<div id="intro"><div id="opener"></div></div><audio id="talbiya"></audio><audio id="hmean"></audio>`;
+    window.eval(script);
+    expect((window as unknown as { __talbiyaDone?: boolean }).__talbiyaDone).toBe(true);
+    expect(document.getElementById("talbiyah-skip")?.textContent).toContain("Skip");
   });
 });
