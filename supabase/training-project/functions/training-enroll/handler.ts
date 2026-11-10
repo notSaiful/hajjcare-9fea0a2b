@@ -15,7 +15,7 @@ export const EMBARKATION_POINTS = [
   "Kannur", "Calicut (Kozhikode)", "Vijayawada",
 ] as const;
 
-/** Visible fields plus database defaults id and created_at. */
+/** Visible fields plus the signed-in user and database defaults id and created_at. */
 export interface EnrollmentInsert {
   cover_number: string;
   name: string;
@@ -23,6 +23,7 @@ export interface EnrollmentInsert {
   language: (typeof TRAINING_LANGUAGES)[number];
   state: string;
   embarkation_point: (typeof EMBARKATION_POINTS)[number];
+  user_id: string;
 }
 
 export interface SavedEnrollment {
@@ -57,6 +58,8 @@ export interface HandlerDeps {
   env: TrainingEnv;
   store: TrainingStore;
   rateGate: RateGate;
+  /** Returns the auth user id, null when the token is rejected, or throws when Auth cannot be reached. */
+  verifyUser: (accessToken: string) => Promise<string | null>;
   now?: () => Date;
 }
 
@@ -78,6 +81,38 @@ export function createRateGate(limit = 8, windowMs = 60 * 60 * 1000): RateGate {
       return false;
     },
   };
+}
+
+const USER_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+export function trainingAuthApiKey(anonKey: string, publishableKey: string): string {
+  const anon = anonKey.trim();
+  if (anon && !isPrivilegedKey(anon)) return anon;
+  const publishable = publishableKey.trim();
+  if (!publishable || isPrivilegedKey(publishable)) return "";
+  return publishable;
+}
+
+/** Confirms a training sign-in. Uses the anon or publishable key, never the service role. */
+export async function verifyTrainingUser(supabaseUrl: string, apiKey: string, accessToken: string): Promise<string | null> {
+  if (!trainingUrlAllowed(supabaseUrl)) return null;
+  const key = apiKey.trim();
+  if (!key || isPrivilegedKey(key)) return null;
+  const token = accessToken.trim();
+  if (!token || token.length > 4096 || /\s/.test(token)) return null;
+  const res = await fetch(`${TRAINING_SUPABASE_ORIGIN}/auth/v1/user`, {
+    method: "GET",
+    redirect: "manual",
+    headers: {
+      authorization: `Bearer ${token}`,
+      apikey: key,
+    },
+  });
+  if (res.type === "opaqueredirect" || (res.status >= 300 && res.status < 400)) return null;
+  if (res.status === 401 || res.status === 403) return null;
+  if (!res.ok) throw new Error("auth unavailable");
+  const data = await res.json() as { id?: unknown };
+  return typeof data.id === "string" && USER_ID.test(data.id) ? data.id : null;
 }
 
 export function trainingUrlAllowed(raw: string): boolean {
@@ -112,6 +147,15 @@ export async function handleTrainingEnrollment(req: Request, deps: HandlerDeps):
   if (!clientKeyAllowed(req.headers.get("apikey") ?? "", deps.env)) {
     return json(401, { ok: false, error: "unavailable" }, origin, extra);
   }
+  const accessToken = bearerToken(req.headers.get("authorization") ?? "");
+  if (!accessToken) return json(401, { ok: false, error: "sign_in_required" }, origin, extra);
+  let userId: string | null;
+  try {
+    userId = await deps.verifyUser(accessToken);
+  } catch {
+    return json(503, { ok: false, error: "unavailable" }, origin, extra);
+  }
+  if (!userId || !USER_ID.test(userId)) return json(401, { ok: false, error: "sign_in_required" }, origin, extra);
 
   const raw = await req.text();
   if (raw.length > 8000) return json(400, { ok: false, error: "validation" }, origin, extra);
@@ -131,7 +175,7 @@ export async function handleTrainingEnrollment(req: Request, deps: HandlerDeps):
   }
 
   try {
-    const saved = await deps.store.insert(parsed.value);
+    const saved = await deps.store.insert({ ...parsed.value, user_id: userId });
     return json(200, receiptBody(saved), origin, extra);
   } catch (err) {
     if (err instanceof DuplicateEnrollment) return json(409, { ok: false, error: "duplicate" }, origin, extra);
@@ -139,7 +183,7 @@ export async function handleTrainingEnrollment(req: Request, deps: HandlerDeps):
   }
 }
 
-export function validateEnrollment(body: unknown): { ok: true; value: EnrollmentInsert } | { ok: false } {
+export function validateEnrollment(body: unknown): { ok: true; value: Omit<EnrollmentInsert, "user_id"> } | { ok: false } {
   if (!body || typeof body !== "object") return { ok: false };
   const row = body as Record<string, unknown>;
   const name = cleanLine(row.name, 120);
@@ -166,6 +210,16 @@ export function validateEnrollment(body: unknown): { ok: true; value: Enrollment
       embarkation_point: embarkation as EnrollmentInsert["embarkation_point"],
     },
   };
+}
+
+function isPrivilegedKey(key: string): boolean {
+  return key.startsWith("sb_secret_") || /service[-_]?role/i.test(key);
+}
+
+function bearerToken(header: string): string {
+  const match = /^Bearer\s+(\S+)$/i.exec(header.trim());
+  if (!match) return "";
+  return match[1].length > 4096 ? "" : match[1];
 }
 
 function clientKeyAllowed(headerKey: string, env: TrainingEnv): boolean {

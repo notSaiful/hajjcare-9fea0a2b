@@ -94,6 +94,7 @@
       try { localStorage.removeItem("hc-train"); } catch (e) { /* private mode */ }
       var list = document.getElementById("list");
       if (list) list.textContent = "";
+      if (typeof root.__hcMountTrainingGate === "function") root.__hcMountTrainingGate(train);
       train.onsubmit = function (e) {
         if (e && e.preventDefault) e.preventDefault();
         var res = train.querySelector(".res");

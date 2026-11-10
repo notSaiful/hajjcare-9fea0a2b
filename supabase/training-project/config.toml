@@ -3,6 +3,7 @@ project_id = "uorfprlfpqdpjtrcaqrt"
 
 [functions.training-enroll]
 # Current docs: the gateway verify_jwt check only accepts legacy JWT keys.
-# A publishable key in Authorization is rejected as Invalid JWT.
-# This function checks the apikey header itself and refuses the service role key.
+# A publishable key (sb_publishable_*) is not a JWT and is rejected as Invalid JWT.
+# This function checks the apikey header itself, refuses the service role key,
+# and verifies the signed-in user's Bearer token.
 verify_jwt = false

@@ -124,9 +124,13 @@ describe("demo registration bridge", () => {
     document.body.innerHTML = "";
     document.documentElement.lang = "en";
     localStorage.clear();
+    sessionStorage.clear();
     window.location.hash = "";
     delete (window as unknown as { __hcDemo?: unknown }).__hcDemo;
     delete (window as unknown as { __hcAfterRender?: unknown }).__hcAfterRender;
+    delete (window as unknown as { __HC_TRAINING_CONFIG?: unknown }).__HC_TRAINING_CONFIG;
+    delete (window as unknown as { __hcMountTrainingGate?: unknown }).__hcMountTrainingGate;
+    delete (window as unknown as { __hcSubmitTrainingEnrollment?: unknown }).__hcSubmitTrainingEnrollment;
   });
 
   function loadBridge() {
@@ -185,6 +189,29 @@ describe("demo registration bridge", () => {
     expect(text).toContain("/volunteer");
     expect(text).toMatch(/not submitted/i);
     expect(localStorage.getItem("hc-vol")).toBeNull();
+  });
+
+  it("hides the training fields until the training sign-in panel is used", () => {
+    window.eval(read("public/training-enroll.js"));
+    (window as unknown as { __HC_TRAINING_CONFIG?: { url: string; publishableKey: string } }).__HC_TRAINING_CONFIG = {
+      url: "https://uorfprlfpqdpjtrcaqrt.supabase.co",
+      publishableKey: "sb_publishable_test_only",
+    };
+    mount(
+      "#register",
+      `<form data-store="hc-train"><input name="cover_number" value="AB-1234"><div class="res"></div><button type="submit">Submit</button></form>`
+    );
+    const signin = document.querySelector("[data-hc-signin]");
+    const enroll = document.querySelector("[data-hc-enroll]");
+    expect(signin?.hasAttribute("hidden")).toBe(false);
+    expect(enroll?.hasAttribute("hidden")).toBe(true);
+    expect((document.querySelector("[name=cover_number]") as HTMLInputElement).disabled).toBe(true);
+    expect(document.body.textContent).toContain("Sign in");
+    expect(document.body.textContent).toContain("Create account");
+    expect(document.body.textContent).toContain("Sign out");
+    expect(read("public/demo-integration.js")).toContain("__hcMountTrainingGate");
+    expect(read("public/demo-integration.js")).not.toMatch(/supabase/i);
+    expect(read("src/integrations/supabase/client.ts")).not.toContain("auth/v1/token");
   });
 
   it("points a sample explore card at the related existing page", () => {

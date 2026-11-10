@@ -1,11 +1,14 @@
 // Deploy only to Supabase project uorfprlfpqdpjtrcaqrt.
 // Writes public.training_enrollments with the service role from the function environment.
+// Training Auth accounts are separate from the main site Supabase project.
 // Does not send email or SMS. Does not read enrollment rows back except id and created_at.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import {
   DuplicateEnrollment,
   createRateGate,
   handleTrainingEnrollment,
+  trainingAuthApiKey,
+  verifyTrainingUser,
   type EnrollmentInsert,
   type SavedEnrollment,
   type TrainingStore,
@@ -29,6 +32,7 @@ Deno.serve((req) => {
         language: row.language,
         state: row.state,
         embarkation_point: row.embarkation_point,
+        user_id: row.user_id,
       }).select("id, created_at").single();
       if (error) {
         if (error.code === "23505") throw new DuplicateEnrollment();
@@ -37,17 +41,20 @@ Deno.serve((req) => {
       return toSaved(data as Row);
     },
   };
+  const anonKey = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
+  const publishableKey = Deno.env.get("TRAINING_PUBLISHABLE_KEY") ?? "";
   return handleTrainingEnrollment(req, {
     env: {
       supabaseUrl,
       serviceRoleKey,
-      anonKey: Deno.env.get("SUPABASE_ANON_KEY") ?? "",
-      publishableKey: Deno.env.get("TRAINING_PUBLISHABLE_KEY") ?? "",
+      anonKey,
+      publishableKey,
       ipHashSalt: Deno.env.get("TRAINING_IP_HASH_SALT") ?? "",
       allowedOrigins: Deno.env.get("TRAINING_ALLOWED_ORIGINS") ?? "",
     },
     store,
     rateGate,
+    verifyUser: (accessToken) => verifyTrainingUser(supabaseUrl, trainingAuthApiKey(anonKey, publishableKey), accessToken),
   });
 });
 
