@@ -154,7 +154,9 @@ describe("approved public demo", () => {
     expect(vercel.rewrites).toContainEqual({ source: "/library", destination: "/library.html" });
     expect(vercel.rewrites).toContainEqual({ source: "/visitors", destination: "/visitors.html" });
     expect(vercel.rewrites).toContainEqual({ source: "/auth", destination: "/app.html" });
+    expect(vercel.rewrites).toContainEqual({ source: "/volunteer/training", destination: "/app.html" });
     expect(vercel.rewrites).toContainEqual({ source: "/volunteer", destination: "/app.html" });
+    expect(vercel.rewrites.findIndex((rule) => rule.source === "/volunteer/training")).toBeLessThan(vercel.rewrites.length - 1);
     expect(vercel.rewrites).toContainEqual({ source: "/service-fee", destination: "/app.html" });
     expect(vercel.rewrites.at(-1)).toEqual({ source: "/((?!videos/).*)", destination: "/index.html" });
     expect(JSON.stringify(vercel.headers)).toContain("video/mp4");

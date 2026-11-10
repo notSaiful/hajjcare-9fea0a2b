@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { Link } from "react-router-dom";
 import { SEO } from "@/components/SEO";
 import { SimpleHeader } from "@/components/SimpleHeader";
 import { Button } from "@/components/ui/button";
@@ -252,7 +253,11 @@ const VolunteerPage = () => {
               <div className="bg-muted/50 rounded-xl p-4 text-sm text-muted-foreground space-y-1">
                 <p>📋 अगला कदम: Screening → Training → Deployment</p>
                 <p>📞 हमारी टीम जल्द ही आपसे संपर्क करेगी</p>
+                <p>Training access follows registration. The lessons are not open yet.</p>
               </div>
+              <Button asChild className="w-full">
+                <Link to="/volunteer/training">Volunteer training · वॉलंटियर ट्रेनिंग</Link>
+              </Button>
             </CardContent>
           </Card>
         </main>

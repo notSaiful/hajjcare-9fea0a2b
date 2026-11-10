@@ -110,6 +110,7 @@ const AdminAnalyticsPage = lazy(() => import("./pages/AdminAnalyticsPage"));
 const HajjFaqChatPage = lazy(() => import("./pages/HajjFaqChatPage"));
 const HajjQueryWizardPage = lazy(() => import("./pages/HajjQueryWizardPage"));
 const VolunteerPage = lazy(() => import("./pages/VolunteerPage"));
+const VolunteerTrainingPage = lazy(() => import("./pages/VolunteerTrainingPage"));
 const VolunteerDashboardPage = lazy(() => import("./pages/VolunteerDashboardPage"));
 const ResponderCommandPage = lazy(() => import("./pages/ResponderCommandPage"));
 const NationalCommandPage = lazy(() => import("./pages/NationalCommandPage"));
@@ -172,6 +173,7 @@ function AppContent() {
   return (
     <Routes>
       <Route path="/auth" element={<AuthPage />} />
+      <Route path="/volunteer/training" element={<VolunteerTrainingPage />} />
       <Route path="/volunteer" element={<VolunteerPage />} />
       <Route path="/service-fee" element={<PaymentPage />} />
       <Route path="*" element={<LeaveToDemo />} />
