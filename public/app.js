@@ -68,8 +68,9 @@ const chime=()=>{const x=AC();if(!x)return;try{const t=x.currentTime+.03,out=x.c
 
 let dOpen=false;const tap=op.querySelector('.otap');
 const openDoor=()=>{if(dOpen)return;dOpen=true;window.__bgmStart&&window.__bgmStart();chime();op.classList.add('dopen');
- try{a.muted=false;const pr=a.play();a.pause();pr&&pr.catch(()=>{})}catch(_){}
- setTimeout(()=>{const tx=tap&&tap.querySelector('.otxt');if(tx)tx.textContent='touch करें';else if(tap)tap.textContent='touch करें';op.setAttribute('aria-label','touch करें');if(first){first=false;try{a.currentTime=OFF[voice]||0}catch(_){}}on()},4600)};
+ const begin=()=>{if(first){first=false;try{a.currentTime=OFF[voice]||0}catch(_){}}on()};
+ if(a.readyState>0)begin();else{a.addEventListener('loadedmetadata',begin,{once:true});try{a.load()}catch(_){}}
+ setTimeout(()=>{const tx=tap&&tap.querySelector('.otxt');if(tx)tx.textContent='touch करें';else if(tap)tap.textContent='touch करें';op.setAttribute('aria-label','touch करें')},4600)};
 window.__openDoor=openDoor;
 const act=()=>dOpen?go():openDoor();
 op.addEventListener('click',act);op.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();act()}});

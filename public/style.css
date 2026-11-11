@@ -448,6 +448,7 @@ main section.wrap{padding-top:4.5rem;padding-bottom:4.5rem}
 #talbiyah-lines .tl-lines{list-style:none;margin:0;padding:0}
 #talbiyah-lines .tl-lines li{margin:0;padding:0}
 #talbiyah-lines .tl-lines li.tl-now{background:rgba(201,164,92,.16);border-radius:8px}
+#talbiyah-lines .tl-short{margin:0;font:500 .7rem/1.2 'Tiro Devanagari Hindi',Mukta,serif;color:#1f3b2c;pointer-events:none}
 #talbiyah-lines .tl-ar{margin:0;font:400 1rem/1.25 Amiri,'Noto Naskh Arabic',serif;color:#1f3b2c}
 #talbiyah-lines .tl-tr,#talbiyah-lines .tl-hi,#talbiyah-lines .tl-en{margin:0;font:400 .76rem/1.25 Mukta,sans-serif;color:#3d4a38}
 #talbiyah-lines .tl-tr{font-family:'Cormorant Garamond',Georgia,serif;color:#6b4e16}
@@ -473,14 +474,15 @@ main section.wrap{padding-top:4.5rem;padding-bottom:4.5rem}
 #intro .itb .imean{font-size:.76rem;line-height:1.3;margin:0;pointer-events:none}
 #intro .hcap{position:relative;z-index:1}
 @media(max-width:430px){
-#talbiyah-lines{bottom:.3rem;width:calc(100% - 1.5rem);max-height:11vh;padding:.1rem .3rem .15rem;border-radius:8px}
+#talbiyah-lines{bottom:.3rem;width:auto;max-width:calc(100% - 1.5rem);max-height:2.2rem;padding:.15rem .45rem;border-radius:8px}
+#talbiyah-lines .tl-short{font-size:.62rem;line-height:1.15}
 #talbiyah-lines .tl-ar{font-size:.62rem;line-height:1.15}
 #talbiyah-lines .tl-tr,#talbiyah-lines .tl-hi,#talbiyah-lines .tl-en{font-size:.52rem;line-height:1.15}
 #talbiyah-lines .tl-count{margin:0;font-size:.5rem}
 #talbiyah-lines button{font-size:.58rem;padding:.08rem .35rem}
 #talbiyah-lines .tl-kept{font-size:.52rem}
 #talbiyah-lines .tl-kept[lang="ar"]{font-size:.62rem}
-#talbiyah-next{bottom:calc(11vh + .35rem);min-height:40px;padding:.4rem .75rem;font-size:.8rem}
+#talbiyah-next{bottom:calc(2.2rem + .45rem);min-height:40px;padding:.4rem .75rem;font-size:.8rem}
 #intro h1.ar.big{font-size:.72rem}
 #intro .itb{max-height:10vh;padding:.15rem .3rem}
 #intro .itb .ifull{font-size:.72rem;line-height:1.2}

@@ -118,7 +118,11 @@
   var nav = document.createElement("div");
   nav.className = "tl-navs";
   nav.append(prev, next);
-  panel.append(list, live, nav, oldBtn, oldBox);
+  var shortLine = document.createElement("p");
+  shortLine.className = "tl-short";
+  shortLine.lang = "hi";
+  shortLine.textContent = "मैं हाज़िर हूँ";
+  panel.append(shortLine);
   document.body.appendChild(panel);
 
   var shown = 0;
@@ -150,7 +154,7 @@
   advanceBtn.type = "button";
   advanceBtn.id = "talbiyah-next";
   advanceBtn.hidden = true;
-  advanceBtn.append(label("en", "Next"), document.createTextNode(" / "), label("hi", "आगे बढ़ें"));
+  advanceBtn.append(label("en", "Next"), document.createTextNode(" / "), label("hi", "अगला"));
   document.body.appendChild(advanceBtn);
   advanceBtn.addEventListener("click", function (e) {
     e.stopPropagation();

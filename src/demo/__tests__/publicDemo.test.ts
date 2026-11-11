@@ -259,6 +259,8 @@ describe("demo registration bridge", () => {
     expect(text.indexOf(phrase)).toBeGreaterThanOrEqual(0);
     expect(text.indexOf(phrase)).toBeLessThan(text.indexOf("TR-AB23CD45"));
     expect(document.querySelector(".hc-save-receipt")?.textContent).toBe("TR-AB23CD45");
+    expect(document.querySelector(".res")?.textContent).not.toContain("Continue to volunteer registration");
+    expect(document.querySelector(".res")?.textContent).not.toContain("वॉलंटियर रजिस्ट्रेशन जारी रखें");
     expect(document.querySelector("[data-hc-live]")?.textContent || "").not.toMatch(/Haj Committee|मुफ़्त दाख़िला|free eligibility/);
 
     (window as unknown as { __hcSubmitTrainingRegistration?: (form: HTMLFormElement) => Promise<unknown> }).__hcSubmitTrainingRegistration =

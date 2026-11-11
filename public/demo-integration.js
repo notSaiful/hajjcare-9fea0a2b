@@ -131,15 +131,6 @@
           detail.textContent = text;
           box.appendChild(detail);
           res.appendChild(box);
-          if (saved) {
-            var next = document.createElement("p");
-            var link = document.createElement("a");
-            link.className = "btn";
-            link.href = "/volunteer";
-            link.textContent = en() ? "Continue to volunteer registration" : "वॉलंटियर रजिस्ट्रेशन जारी रखें";
-            next.appendChild(link);
-            res.appendChild(next);
-          }
         }).catch(function () {
           res.textContent = en() ? "Nothing was saved. The server did not confirm the request." : "कुछ सेव नहीं हुआ। सर्वर ने पुष्टि नहीं की।";
         });
