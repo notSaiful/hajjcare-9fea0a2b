@@ -367,13 +367,13 @@ const VolunteerPage = () => {
               </div>
             </Card>
 
-            {/* Embarkation Quick Filter Dock */}
+            {/* Volunteer registration point quick filter */}
             <Card className="border-primary/10">
               <CardContent className="p-3 space-y-2">
                 <div className="flex items-center justify-between">
                   <p className="text-xs font-semibold text-foreground flex items-center gap-1.5">
                     <Plane className="w-3.5 h-3.5 text-primary" />
-                    Filter by Embarkation Point
+                    Filter by Volunteer Registration Point / वॉलंटियर रजिस्ट्रेशन पॉइंट
                   </p>
                   <button
                     onClick={() => setShowFilterDock(prev => !prev)}
@@ -388,7 +388,7 @@ const VolunteerPage = () => {
                     <div className="relative">
                       <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
                       <Input
-                        placeholder="Search embarkation point..."
+                        placeholder="Search volunteer registration point..."
                         className="pl-8 h-8 text-xs"
                         value={filterSearch}
                         onChange={e => setFilterSearch(e.target.value)}
@@ -545,9 +545,9 @@ const VolunteerPage = () => {
                   </div>
                 </div>
                 <div>
-                  <Label className="text-xs">Embarkation Point *</Label>
+                  <Label className="text-xs">Volunteer Registration Point / वॉलंटियर रजिस्ट्रेशन पॉइंट *</Label>
                   <select className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" value={form.embarkation_point} onChange={e => setForm(p => ({ ...p, embarkation_point: e.target.value }))}>
-                    <option value="">Select Embarkation Point</option>
+                    <option value="">Select Volunteer Registration Point</option>
                     {EMBARKATION_POINTS.map(ep => <option key={ep} value={ep}>{ep}</option>)}
                   </select>
                 </div>
@@ -791,7 +791,7 @@ const VolunteerPage = () => {
                   {form.email && <p><span className="text-muted-foreground">Email:</span> {form.email}</p>}
                   <p><span className="text-muted-foreground">पता:</span> {form.full_address}</p>
                   <p><span className="text-muted-foreground">शहर:</span> {form.city}, {form.district}, {form.state}</p>
-                  <p><span className="text-muted-foreground">Embarkation:</span> {form.embarkation_point}</p>
+                  <p><span className="text-muted-foreground">Volunteer Registration Point / वॉलंटियर रजिस्ट्रेशन पॉइंट:</span> {form.embarkation_point}</p>
                 </div>
 
                 <div className="bg-muted/50 rounded-lg p-3 space-y-1.5">
