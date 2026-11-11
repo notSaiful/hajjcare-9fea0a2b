@@ -49,12 +49,12 @@ describe("talbiyah line text", () => {
     expect(css).toContain("#intro .itb .imean{font-size:.76rem");
     expect(css).toContain("#intro h1.ar.big{font-size:1rem");
     expect(css).toContain("@media(max-width:430px)");
-    expect(css).toContain("#talbiyah-lines .tl-ar{font-size:30px!important");
+    expect(css).toContain("#talbiyah-lines .tl-ar{font-size:24px!important");
     expect(css).toContain("transition:opacity .7s ease");
     expect(css).not.toContain("#talbiyah-lines,#talbiyah-lines .tl-short{font-size:12px!important");
     expect(read("public/app.js")).toContain("a.addEventListener('loadedmetadata',seek,{once:true})");
     expect(read("public/app.js")).toContain("const pr=a.play()");
-    expect(css).toContain("font-size:30px!important");
+    expect(css).toContain("font-size:28px!important");
     expect(script).not.toContain("Old Talbiyah text");
     expect(script).not.toContain("पुराना तलबिया पाठ");
     expect(script).not.toContain("tl-old");
