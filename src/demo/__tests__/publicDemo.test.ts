@@ -106,6 +106,28 @@ describe("approved public demo", () => {
     expect(explore).not.toContain("HAJ COMMITTEE OF INDIA — official updates on WhatsApp");
   });
 
+  it("opens Haj, Umrah, Quran and Hadith on the first tap", () => {
+    expect(explore).toContain("V.hajj=");
+    expect(explore).toContain("V.umrah=");
+    expect(explore).toContain("V.hadith=");
+    expect(explore).toContain("V.guides=");
+    expect(explore).toContain("V.videos=");
+    expect(explore).toContain("if(h==='quran'){location.replace('library.html#quran');return}");
+    expect(explore).toContain("['hajj','📖','Hajj','हज']");
+    expect(explore).toContain("['umrah','📖','Umrah','उमरा']");
+    expect(explore).toContain("['quran','📖','Quran','क़ुरआन']");
+    expect(explore).toContain("['hadith','📜','Hadith','हदीस']");
+    expect(explore).toContain("i[0]==='quran'?'library.html#quran'");
+    expect(home).toContain('href="explore.html#hajj"');
+    expect(home).toContain('href="explore.html#umrah"');
+    expect(home).toContain('href="library.html#quran"');
+    expect(home).toContain('href="explore.html#hadith"');
+    expect(home).toContain('href="explore.html#guides"');
+    expect(home).toContain('href="explore.html#videos"');
+    expect(library).toContain('id="quran"');
+    expect(explore).toContain('href="${c[0]===\'quran\'?\'library.html#quran\':\'#\'+c[0]}"');
+  });
+
   it("embeds the Makkah YouTube live on the Hajj and Umrah guides", () => {
     expect(explore).toContain("https://www.youtube-nocookie.com/embed/gaPehpPcU7Q");
     expect(explore).toContain('title="Makkah Live"');
