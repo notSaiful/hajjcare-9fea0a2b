@@ -71,12 +71,12 @@
     };
   }
 
-  function trainingStatus() {
-    if (en()) {
-      return "Training registration does not need a sign-in. This form does not check your cover number against a Haj Committee list, so free eligibility is not confirmed. A receipt appears only after the server saves the request. No email or SMS is sent.";
-    }
-    return "मुफ़्त दाख़िला सिर्फ़ रजिस्टर्ड हाजी के लिए है। यह फ़ॉर्म कवर नंबर को हज कमेटी की सूची से नहीं जाँचता, इसलिए मुफ़्त पात्रता पक्की नहीं है। रसीद तभी दिखेगी जब सर्वर अनुरोध सेव कर दे। ईमेल या एसएमएस नहीं भेजा जाता।";
-  }
+  /* Internal only, not shown to a Hajji:
+     Free enrolment is only for a registered haji. The cover number is not checked
+     against a Haj Committee list, so free eligibility is not confirmed. A receipt
+     appears only after the server saves the request. No email or SMS is sent.
+     मुफ़्त दाख़िला सिर्फ़ रजिस्टर्ड हाजी के लिए है। यह फ़ॉर्म कवर नंबर को हज कमेटी की
+     सूची से नहीं जाँचता। रसीद तभी दिखेगी जब सर्वर अनुरोध सेव कर दे। ईमेल या एसएमएस नहीं भेजा जाता। */
 
   function volunteerMessage() {
     if (en()) {
@@ -160,11 +160,9 @@
     if (h === "home") {
       insertNote(
         en()
-          ? 'Account registration uses the existing HajCare sign-in. <a href="/auth">Create an account or sign in</a>. The 100-day form is saved only when the server returns a receipt. The cover number alone does not confirm free eligibility.'
-          : 'खाता रजिस्ट्रेशन मौजूदा HajCare साइन-इन से होता है। <a href="/auth">खाता बनाएँ या साइन इन करें</a>। 100 दिन का फ़ॉर्म तभी सेव होता है जब सर्वर रसीद दे। सिर्फ़ कवर नंबर से मुफ़्त पात्रता पक्की नहीं होती।'
+          ? 'Account registration uses the existing HajCare sign-in. <a href="/auth">Create an account or sign in</a>.'
+          : 'खाता रजिस्ट्रेशन मौजूदा HajCare साइन-इन से होता है। <a href="/auth">खाता बनाएँ या साइन इन करें</a>।'
       );
-    } else if (h === "register") {
-      insertNote(trainingStatus());
     } else if (h === "volunteer") {
       insertNote(volunteerMessage());
     } else if (h === "fees") {

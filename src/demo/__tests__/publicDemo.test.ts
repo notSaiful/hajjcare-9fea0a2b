@@ -139,7 +139,9 @@ describe("approved public demo", () => {
     expect(register).not.toContain("email");
     expect(register).not.toContain("madhhab");
     expect(register).not.toContain("question");
+    expect(register).toContain("<!-- Internal only");
     expect(register).toContain("pending verification");
+    expect(register).not.toContain('class="sub"');
     expect(register).not.toContain("maslak");
     expect(register).not.toContain("Registered (demo)");
     expect(read("public/explore.html")).toContain("training-enroll.js");
@@ -257,6 +259,7 @@ describe("demo registration bridge", () => {
     expect(text.indexOf(phrase)).toBeGreaterThanOrEqual(0);
     expect(text.indexOf(phrase)).toBeLessThan(text.indexOf("TR-AB23CD45"));
     expect(document.querySelector(".hc-save-receipt")?.textContent).toBe("TR-AB23CD45");
+    expect(document.querySelector("[data-hc-live]")?.textContent || "").not.toMatch(/Haj Committee|मुफ़्त दाख़िला|free eligibility/);
 
     (window as unknown as { __hcSubmitTrainingRegistration?: (form: HTMLFormElement) => Promise<unknown> }).__hcSubmitTrainingRegistration =
       async () => ({ ok: false, message: "Nothing new was saved." });

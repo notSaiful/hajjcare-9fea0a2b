@@ -24,16 +24,14 @@
   function say(code, receipt) {
     var hi = !en();
     if (code === "saved") {
-      return (hi ? "सेव हो गया। रसीद " : "Saved. Receipt ") + receipt.receipt_id + ". " +
-        (hi
-          ? "मुफ़्त पात्रता जाँच बाकी है। कवर नंबर हज कमेटी की सूची से नहीं जाँचा गया।"
-          : "Free eligibility is pending verification. The cover number was not checked against a Haj Committee list.");
+      /* Internal only: free eligibility stays pending because the cover number is not checked against a Haj Committee list. */
+      return (hi ? "सेव हो गया। रसीद " : "Saved. Receipt ") + receipt.receipt_id + ".";
     }
     var map = {
       not_configured: hi ? "रजिस्ट्रेशन अभी चालू नहीं है। कुछ सेव नहीं हुआ।" : "Registration is not open yet. Nothing was saved. रजिस्ट्रेशन अभी चालू नहीं है।",
       wrong_project: hi ? "कुछ सेव नहीं हुआ। यह फ़ॉर्म गलत सर्वर पर नहीं जाता।" : "Nothing was saved. This form will not use a different server.",
       validation: hi ? "कुछ सेव नहीं हुआ। फ़ॉर्म जाँचें और फिर कोशिश करें।" : "Nothing was saved. Check the form and try again.",
-      duplicate: hi ? "कुछ नया सेव नहीं हुआ। इस कवर नंबर और मोबाइल का अनुरोध पहले से दर्ज है। मुफ़्त पात्रता अब भी जाँच बाकी है।" : "Nothing new was saved. A request for this cover number and mobile is already recorded. Free eligibility is still pending verification.",
+      duplicate: hi ? "कुछ नया सेव नहीं हुआ। इस कवर नंबर और मोबाइल का अनुरोध पहले से दर्ज है।" : "Nothing new was saved. A request for this cover number and mobile is already recorded.",
       rate_limited: hi ? "कुछ सेव नहीं हुआ। कोशिशें ज़्यादा हो गईं। कुछ देर बाद फिर कोशिश करें।" : "Nothing was saved. Too many attempts. Wait and try again.",
       unavailable: hi ? "कुछ सेव नहीं हुआ। सर्वर ने पुष्टि नहीं की।" : "Nothing was saved. The server did not confirm the request.",
       sign_in_required: hi ? "रजिस्टर करें, फिर फ़ॉर्म भरें। कुछ सेव नहीं हुआ।" : "Register to continue. Nothing was saved.",

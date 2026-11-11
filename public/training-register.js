@@ -19,11 +19,9 @@
 
   function say(code, receipt) {
     var hi = !en();
+    /* Internal only: free eligibility stays pending because the cover number is not checked against a Haj Committee list. */
     if (code === "saved") {
-      return (hi ? "सेव हो गया। रसीद " : "Saved. Receipt ") + receipt + ". " +
-        (hi
-          ? "मुफ़्त पात्रता जाँच बाकी है। कवर नंबर हज कमेटी की सूची से नहीं जाँचा गया।"
-          : "Free eligibility is pending verification. The cover number was not checked against a Haj Committee list.");
+      return (hi ? "सेव हो गया। रसीद " : "Saved. Receipt ") + receipt + ".";
     }
     var map = {
       not_configured: hi ? "रजिस्ट्रेशन अभी चालू नहीं है। कुछ सेव नहीं हुआ।" : "Registration is not open yet. Nothing was saved.",

@@ -529,7 +529,7 @@ describe("training browser client", () => {
     expect(saved.message).not.toContain("CONGRATULATIONS");
     expect((node.querySelector("[name=name]") as HTMLInputElement).value).toBe("Amina Khan");
     expect((node.querySelector("[name=phone_number]") as HTMLInputElement).value).toBe("9876543210");
-    expect(saved.message).toMatch(/not checked against a Haj Committee list/i);
+    expect(saved.message).not.toMatch(/Haj Committee list|free eligibility/i);
     expect(saved.message).not.toMatch(/email was sent|sms was sent/i);
     const refreshCall = vi.mocked(fetch).mock.calls.at(-2);
     expect(String(refreshCall?.[0])).toBe(`${TRAINING_SUPABASE_ORIGIN}/auth/v1/token?grant_type=refresh_token`);
