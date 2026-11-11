@@ -106,6 +106,22 @@ describe("approved public demo", () => {
     expect(explore).not.toContain("HAJ COMMITTEE OF INDIA — official updates on WhatsApp");
   });
 
+  it("embeds the Makkah YouTube live on the Hajj and Umrah guides", () => {
+    expect(explore).toContain("https://www.youtube-nocookie.com/embed/gaPehpPcU7Q");
+    expect(explore).toContain('title="Makkah Live"');
+    expect(explore).toContain('loading="lazy"');
+    expect(explore).toContain("allowfullscreen");
+    expect(explore).toContain("मक्का लाइव");
+    expect(explore).toContain("Makkah Live (YouTube)");
+    expect(explore).toContain('href="https://www.youtube.com/live/gaPehpPcU7Q"');
+    expect(explore).toContain("YouTube पर खोलें");
+    expect(explore).not.toContain("autoplay=1");
+    expect(explore).toContain("MAKKAH_LIVE()+GUIDE_NOTE()");
+    expect(read("public/explore.css")).toContain("aspect-ratio:16/9");
+    expect(read("public/sw.js")).not.toContain("caches.");
+    expect(read("vercel.json")).not.toContain("Content-Security-Policy");
+  });
+
   it("keeps Video 1 local and leaves the other slots empty", () => {
     expect(explore).toContain("hajcare-demo-social-v1");
     expect(explore).toContain("not uploaded to HajCare servers");

@@ -1,4 +1,5 @@
-// Service Worker for Push Notifications
+// Service Worker for push notifications only.
+// No fetch handler: pages and the Makkah Live iframe are not cached or rewritten here.
 self.addEventListener("push", (event) => {
   if (!event.data) return;
 
