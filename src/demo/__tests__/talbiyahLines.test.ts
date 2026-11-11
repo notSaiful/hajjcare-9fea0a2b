@@ -48,6 +48,10 @@ describe("talbiyah line text", () => {
     expect(css).toContain("#talbiyah-lines");
     expect(css).toContain("#intro .itb .imean{font-size:.76rem");
     expect(css).toContain("#intro h1.ar.big{font-size:1rem");
+    expect(css).toContain("@media(max-width:430px)");
+    expect(css).toContain("#talbiyah-lines .tl-ar{font-size:.62rem");
+    expect(css).toContain("#talbiyah-lines .tl-hi,#talbiyah-lines .tl-en{font-size:.52rem");
+    expect(css).toContain("#talbiyah-lines{bottom:.3rem;width:calc(100% - 1.5rem);max-height:11vh");
     expect(css).toContain(".hcap{");
     expect(css).toContain("font:600 .76rem/1.25");
     expect(css).toContain("#intro .itb{pointer-events:none");
