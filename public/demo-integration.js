@@ -120,7 +120,7 @@
           if (saved && loginFree) {
             var thanks = document.createElement("p");
             thanks.className = "hc-save-thanks";
-            thanks.textContent = "धन्यवाद, शुक्रिया, मुबारकबाद आपका";
+            thanks.textContent = "आपका रजिस्ट्रेशन मुकम्मल हुआ। अल्लाह आपका हज मबरूर और कबूल करे।";
             var receipt = document.createElement("p");
             receipt.className = "hc-save-receipt";
             receipt.textContent = String(out.receiptId || "");

@@ -250,7 +250,7 @@ const VolunteerPage = () => {
       }
       setVolunteerId(reference);
       setSuccess(true);
-      toast({ title: "धन्यवाद, शुक्रिया, मुबारकबाद आपका", description: reference });
+      toast({ title: "आपका रजिस्ट्रेशन मुकम्मल हुआ। अल्लाह आपका हज मबरूर और कबूल करे।", description: reference });
     } catch {
       toast({ title: "रजिस्ट्रेशन में त्रुटि", description: "An unexpected error occurred. Please try again.", variant: "destructive" });
     } finally {
@@ -270,7 +270,7 @@ const VolunteerPage = () => {
               <div className="w-20 h-20 mx-auto rounded-full bg-primary/10 flex items-center justify-center">
                 <CheckCircle2 className="w-10 h-10 text-primary" />
               </div>
-              <h2 className="text-2xl font-bold text-foreground">धन्यवाद, शुक्रिया, मुबारकबाद आपका</h2>
+              <h2 className="text-2xl font-bold text-foreground">आपका रजिस्ट्रेशन मुकम्मल हुआ। अल्लाह आपका हज मबरूर और कबूल करे।</h2>
               <p className="text-muted-foreground">आपका रजिस्ट्रेशन सफलतापूर्वक हो गया है</p>
               <div className="bg-card border rounded-xl p-4 space-y-2">
                 <p className="text-sm text-muted-foreground">Registration reference</p>

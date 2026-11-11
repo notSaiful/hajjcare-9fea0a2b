@@ -246,7 +246,7 @@ describe("demo registration bridge", () => {
   });
 
   it("shows the Hindi thanks only after a login-free training save, with the receipt under it", async () => {
-    const phrase = "धन्यवाद, शुक्रिया, मुबारकबाद आपका";
+    const phrase = "आपका रजिस्ट्रेशन मुकम्मल हुआ। अल्लाह आपका हज मबरूर और कबूल करे।";
     (window as unknown as { __hcSubmitTrainingRegistration?: (form: HTMLFormElement) => Promise<unknown> }).__hcSubmitTrainingRegistration =
       async () => ({ ok: true, message: "Saved. Receipt TR-AB23CD45", receiptId: "TR-AB23CD45" });
     (window as unknown as { __hcPrepareTrainingRegistration?: () => void }).__hcPrepareTrainingRegistration = () => {};
