@@ -195,6 +195,8 @@ describe("demo registration bridge", () => {
     delete (window as unknown as { __HC_TRAINING_CONFIG?: unknown }).__HC_TRAINING_CONFIG;
     delete (window as unknown as { __hcMountTrainingGate?: unknown }).__hcMountTrainingGate;
     delete (window as unknown as { __hcSubmitTrainingEnrollment?: unknown }).__hcSubmitTrainingEnrollment;
+    delete (window as unknown as { __hcSubmitTrainingRegistration?: unknown }).__hcSubmitTrainingRegistration;
+    delete (window as unknown as { __hcPrepareTrainingRegistration?: unknown }).__hcPrepareTrainingRegistration;
   });
 
   function loadBridge() {
@@ -231,6 +233,7 @@ describe("demo registration bridge", () => {
     document.querySelector("form")?.dispatchEvent(new Event("submit", { cancelable: true }));
     await Promise.resolve();
     expect(document.querySelector(".res")?.textContent).toContain("Receipt abc");
+    expect(document.querySelector(".hc-save-thanks")).toBeNull();
 
     document.querySelector(".res")!.textContent = "";
     (window as unknown as { __hcSubmitTrainingEnrollment?: (form: HTMLFormElement) => Promise<unknown> }).__hcSubmitTrainingEnrollment =
@@ -238,7 +241,29 @@ describe("demo registration bridge", () => {
     document.querySelector("form")?.dispatchEvent(new Event("submit", { cancelable: true }));
     await Promise.resolve();
     expect(document.querySelector(".res")?.textContent).toBe("Nothing was saved.");
+    expect(document.querySelector(".hc-save-thanks")).toBeNull();
     expect(localStorage.getItem("hc-train")).toBeNull();
+  });
+
+  it("shows the Hindi thanks only after a login-free training save, with the receipt under it", async () => {
+    const phrase = "धन्यवाद, शुक्रिया, मुबारकबाद आपका";
+    (window as unknown as { __hcSubmitTrainingRegistration?: (form: HTMLFormElement) => Promise<unknown> }).__hcSubmitTrainingRegistration =
+      async () => ({ ok: true, message: "Saved. Receipt TR-AB23CD45", receiptId: "TR-AB23CD45" });
+    (window as unknown as { __hcPrepareTrainingRegistration?: () => void }).__hcPrepareTrainingRegistration = () => {};
+    mount("#register", `<form data-store="hc-train"><div class="res"></div></form>`);
+    document.querySelector("form")?.dispatchEvent(new Event("submit", { cancelable: true }));
+    await Promise.resolve();
+    const text = document.querySelector(".res")?.textContent || "";
+    expect(text.indexOf(phrase)).toBeGreaterThanOrEqual(0);
+    expect(text.indexOf(phrase)).toBeLessThan(text.indexOf("TR-AB23CD45"));
+    expect(document.querySelector(".hc-save-receipt")?.textContent).toBe("TR-AB23CD45");
+
+    (window as unknown as { __hcSubmitTrainingRegistration?: (form: HTMLFormElement) => Promise<unknown> }).__hcSubmitTrainingRegistration =
+      async () => ({ ok: false, message: "Nothing new was saved." });
+    document.querySelector("form")?.dispatchEvent(new Event("submit", { cancelable: true }));
+    await Promise.resolve();
+    expect(document.querySelector(".res")?.textContent).toBe("Nothing new was saved.");
+    expect(document.querySelector(".hc-save-thanks")).toBeNull();
   });
 
   it("sends the demo volunteer form to the login-free registration", () => {

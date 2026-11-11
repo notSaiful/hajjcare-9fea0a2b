@@ -117,7 +117,19 @@
           var text = out && out.message ? out.message : fallback;
           if (!saved && /^\s*saved\b/i.test(text)) text = fallback;
           box.className = saved ? "ok" : "note";
-          box.textContent = text;
+          if (saved && loginFree) {
+            var thanks = document.createElement("p");
+            thanks.className = "hc-save-thanks";
+            thanks.textContent = "धन्यवाद, शुक्रिया, मुबारकबाद आपका";
+            var receipt = document.createElement("p");
+            receipt.className = "hc-save-receipt";
+            receipt.textContent = String(out.receiptId || "");
+            box.appendChild(thanks);
+            box.appendChild(receipt);
+          }
+          var detail = document.createElement("p");
+          detail.textContent = text;
+          box.appendChild(detail);
           res.appendChild(box);
           if (saved) {
             var next = document.createElement("p");
