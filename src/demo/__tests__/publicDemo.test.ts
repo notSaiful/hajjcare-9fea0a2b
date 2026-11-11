@@ -129,13 +129,20 @@ describe("approved public demo", () => {
   });
 
   it("embeds the Makkah YouTube live on the Hajj and Umrah guides", () => {
-    expect(explore).toContain("https://www.youtube-nocookie.com/embed/gaPehpPcU7Q");
-    expect(explore).toContain('title="Makkah Live"');
+    expect(explore).toContain("https://www.youtube-nocookie.com/embed/${id}");
+    expect(explore).toContain("gaPehpPcU7Q");
+    expect(explore).toContain("BtMUUgApnPs");
+    expect(explore).toContain("मदीना लाइव");
+    expect(explore).toContain("Madinah Live (YouTube)");
+    expect(explore).toContain("V.hajj=()=>`<h1>${t(GTOP[0][0],GTOP[0][1])}</h1>`+MAKKAH_LIVE()");
+    expect(explore).toContain("V.umrah=()=>`<h1>${t(GTOP[1][0],GTOP[1][1])}</h1>`+MAKKAH_LIVE()");
+    expect(explore).toContain("title=\"${en.replace(' (YouTube)','')}\"");
     expect(explore).toContain('loading="lazy"');
     expect(explore).toContain("allowfullscreen");
     expect(explore).toContain("मक्का लाइव");
     expect(explore).toContain("Makkah Live (YouTube)");
-    expect(explore).toContain('href="https://www.youtube.com/live/gaPehpPcU7Q"');
+    expect(explore).toContain("https://www.youtube.com/live/gaPehpPcU7Q");
+    expect(explore).toContain("https://www.youtube.com/live/BtMUUgApnPs");
     expect(explore).toContain("YouTube पर खोलें");
     expect(explore).not.toContain("autoplay=1");
     expect(explore).toContain("MAKKAH_LIVE()+GUIDE_NOTE()");
