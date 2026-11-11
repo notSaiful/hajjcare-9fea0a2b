@@ -1,6 +1,6 @@
 /* Honest bridge from the approved demo screens to existing HajCare pages.
    100-day training saves only after the training server returns a receipt.
-   Volunteer registration is the login-free HajCare form. This demo form is not submitted.
+   Volunteer registration is the form at /volunteer?form=1. Explore does not keep a second form.
    Video 1 stays in the demo's browser storage. */
 (function (root) {
   var LIVE = {
@@ -78,13 +78,6 @@
      मुफ़्त दाख़िला सिर्फ़ रजिस्टर्ड हाजी के लिए है। यह फ़ॉर्म कवर नंबर को हज कमेटी की
      सूची से नहीं जाँचता। रसीद तभी दिखेगी जब सर्वर अनुरोध सेव कर दे। ईमेल या एसएमएस नहीं भेजा जाता। */
 
-  function volunteerMessage() {
-    if (en()) {
-      return "<b>This short form was not submitted.</b> Volunteer registration is login-free. <a href=\"/volunteer\">Open the HajCare volunteer form</a>. Hajj and Umrah volunteer lessons show after that registration is confirmed.";
-    }
-    return "<b>यह छोटा फ़ॉर्म जमा नहीं हुआ।</b> वॉलंटियर रजिस्ट्रेशन बिना साइन-इन है। <a href=\"/volunteer\">HajCare वॉलंटियर फ़ॉर्म खोलें</a>। हज और उमरा के पाठ रजिस्ट्रेशन की पुष्टि के बाद दिखते हैं।";
-  }
-
   function wire() {
     var h = currentHash();
     var train = document.querySelector('form[data-store="hc-train"]');
@@ -137,16 +130,6 @@
         return false;
       };
     }
-    var vol = document.querySelector('form[data-store="hc-vol"]');
-    if (vol) {
-      var vtag = vol.previousElementSibling;
-      if (vtag && vtag.classList && vtag.classList.contains("tag")) {
-        vtag.textContent = en()
-          ? "Not submitted here — register without signing in"
-          : "यहाँ जमा नहीं — बिना साइन-इन रजिस्टर करें";
-      }
-      blockForm(vol, '<div class="note">' + volunteerMessage() + "</div>");
-    }
 
     if (h === "home") {
       insertNote(
@@ -154,8 +137,6 @@
           ? 'Account registration uses the existing HajCare sign-in. <a href="/auth">Create an account or sign in</a>.'
           : 'खाता रजिस्ट्रेशन मौजूदा HajCare साइन-इन से होता है। <a href="/auth">खाता बनाएँ या साइन इन करें</a>।'
       );
-    } else if (h === "volunteer") {
-      insertNote(volunteerMessage());
     } else if (h === "fees") {
       insertNote(
         en()

@@ -117,6 +117,8 @@ describe("main volunteer registration", () => {
     expect(page).not.toContain("Filter by Embarkation Point");
     expect(page).not.toContain(">Embarkation:<");
     expect(page).toContain("embarkation_point:");
+    expect(page).toContain("volunteerFormRequested");
+    expect(page).toContain('form === "1"');
     expect(read("public/explore.js")).toContain('t("Embarkation point","एम्बार्केशन पॉइंट")');
     expect(page).not.toMatch(/toast\(\{ title: "आपका रजिस्ट्रेशन मुकम्मल हुआ[\s\S]*duplicate/);
     expect(client).toContain("VOLUNTEER_REGISTER_ENDPOINT");

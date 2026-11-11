@@ -117,9 +117,13 @@ describe("approved public demo", () => {
 
   it("does not describe training or volunteer demo submits as a completed registration", () => {
     expect(integration).toContain("Nothing was saved");
-    expect(integration).toContain("This short form was not submitted");
-    expect(integration).toContain("login-free");
-    expect(integration).toContain("Open the HajCare volunteer form");
+    expect(integration).not.toContain("This short form was not submitted");
+    expect(integration).not.toContain("login-free");
+    expect(integration).not.toContain("Open the HajCare volunteer form");
+    expect(integration).not.toContain("बिना साइन-इन");
+    expect(explore).toContain("/volunteer?form=1");
+    expect(explore).not.toContain('data-store="hc-vol"');
+    expect(explore).not.toContain("This short form is not submitted");
     expect(integration).not.toContain("/auth?next=/volunteer");
     expect(read("public/index.html")).toContain('id="training-registration"');
     expect(read("public/index.html")).toContain('href="/explore#register"');
@@ -271,19 +275,21 @@ describe("demo registration bridge", () => {
     expect(document.querySelector(".hc-save-thanks")).toBeNull();
   });
 
-  it("sends the demo volunteer form to the login-free registration", () => {
-    mount(
-      "#volunteer",
-      `<h1>Volunteer</h1><span class="tag s">Demo</span><form data-store="hc-vol"><div class="res"></div></form>`
-    );
-    const form = document.querySelector("form") as HTMLFormElement;
-    form.onsubmit?.(new Event("submit", { cancelable: true }));
-    const text = document.querySelector(".res")?.innerHTML || "";
-    expect(text).toContain('href="/volunteer"');
-    expect(text).not.toContain("/auth?next=/volunteer");
-    expect(text).toContain("/volunteer");
-    expect(text).toMatch(/not submitted/i);
-    expect(localStorage.getItem("hc-vol")).toBeNull();
+  it("sends Explore volunteer straight to the open registration form", () => {
+    const explore = read("public/explore.js");
+    const home = read("public/index.html");
+    expect(explore).toContain("location.replace('/volunteer?form=1')");
+    expect(explore).toContain("i[0]==='volunteer'?'/volunteer?form=1'");
+    expect(home).toContain('href="/volunteer?form=1"');
+    expect(home).not.toContain("explore.html#volunteer");
+    expect(read("src/pages/VolunteerPage.tsx")).toContain('form === "1"');
+    expect(read("src/pages/VolunteerPage.tsx")).toContain('hash === "#form"');
+    const volunteer = explore.slice(explore.indexOf("V.volunteer="), explore.indexOf("V.register="));
+    expect(volunteer).toContain('href="/volunteer?form=1"');
+    expect(volunteer).not.toContain("hc-vol");
+    expect(volunteer).not.toContain("बिना साइन-इन");
+    mount("#register", `<form data-store="hc-train"><div class="res"></div></form>`);
+    expect(document.querySelector('form[data-store="hc-train"]')).not.toBeNull();
   });
 
   it("hides the training fields until the registration box is used", () => {

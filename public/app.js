@@ -67,9 +67,10 @@ const chime=()=>{const x=AC();if(!x)return;try{const t=x.currentTime+.03,out=x.c
  for(let k=0;k<8;k++){const d=t+.5+k*.2,o=x.createOscillator(),v=x.createGain();o.frequency.value=2093*(1+((k*7)%5)*.25);v.gain.setValueAtTime(0,d);v.gain.linearRampToValueAtTime(.07,d+.01);v.gain.exponentialRampToValueAtTime(.0001,d+1.2);o.connect(v);v.connect(out);v.connect(dl);o.start(d);o.stop(d+1.3)}}catch(_){}};
 
 let dOpen=false;const tap=op.querySelector('.otap');
+const showTap=()=>{if(document.getElementById('talbiya-tap')||window.__talbiyaDone)return;const b=document.createElement('button');b.type='button';b.id='talbiya-tap';b.textContent='आवाज़ सुनें';b.addEventListener('click',e=>{e.stopPropagation();const pr=a.play();pr&&pr.then(()=>{on_=true;b.remove()}).catch(()=>{})});document.body.appendChild(b)};
 const openDoor=()=>{if(dOpen)return;dOpen=true;window.__bgmStart&&window.__bgmStart();chime();op.classList.add('dopen');
- const begin=()=>{if(first){first=false;try{a.currentTime=OFF[voice]||0}catch(_){}}on()};
- if(a.readyState>0)begin();else{a.addEventListener('loadedmetadata',begin,{once:true});try{a.load()}catch(_){}}
+ const begin=()=>{if(window.__talbiyaDone)return;try{a.muted=false;a.volume=V}catch(_){}if(first){first=false;const seek=()=>{try{a.currentTime=OFF[voice]||0}catch(_){}};if(a.readyState>0)seek();else a.addEventListener('loadedmetadata',seek,{once:true})}const pr=a.play();if(pr&&pr.then)pr.then(()=>{on_=true;m&&m.classList.add('playing');const lb=m&&m.querySelector('b');if(lb)lb.textContent='आवाज़'}).catch(showTap);else on_=true};
+ begin();
  setTimeout(()=>{const tx=tap&&tap.querySelector('.otxt');if(tx)tx.textContent='touch करें';else if(tap)tap.textContent='touch करें';op.setAttribute('aria-label','touch करें')},4600)};
 window.__openDoor=openDoor;
 const act=()=>dOpen?go():openDoor();

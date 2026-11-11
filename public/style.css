@@ -508,3 +508,16 @@ main section.wrap{padding-top:4.5rem;padding-bottom:4.5rem}
 }
 @media(min-width:900px){#opener .door.kd{width:min(28vw,320px)!important}}
 @media(prefers-reduced-motion:reduce){#opener::before{opacity:.04}#opener .oname{transition:none}}
+/* v37: door caption is a 12px line. Fixed px, so vw/clamp/rem rules cannot enlarge it. */
+#intro:not(.opened) h1.ar.big,
+#intro:not(.opened) .itb,
+#intro:not(.opened) .imean,
+#intro:not(.opened) .ifull,
+#intro:not(.opened) .hcap,
+#intro:not(.opened) .hph{display:none!important}
+#talbiyah-lines,#talbiyah-lines .tl-short{font-size:12px!important;font-weight:400!important;font-style:normal!important;line-height:16px!important;letter-spacing:0!important;text-transform:none!important}
+#talbiyah-lines{position:fixed!important;left:50%!important;right:auto!important;bottom:max(8px,env(safe-area-inset-bottom,0px))!important;transform:translateX(-50%)!important;z-index:40!important;width:max-content!important;max-width:calc(100vw - 32px)!important;height:18px!important;max-height:18px!important;padding:0 8px!important;margin:0!important;overflow:hidden!important;white-space:nowrap!important;background:transparent!important;border:0!important;box-shadow:none!important;color:rgba(255,244,220,.9)!important;pointer-events:none!important}
+#talbiyah-lines .tl-short{margin:0!important;padding:0!important;white-space:nowrap!important;color:rgba(255,244,220,.9)!important;font-family:Mukta,"Tiro Devanagari Hindi",sans-serif!important}
+#talbiya-tap{position:fixed;left:50%;bottom:calc(max(8px,env(safe-area-inset-bottom,0px)) + 28px);transform:translateX(-50%);z-index:86;font:400 12px/16px Mukta,sans-serif;padding:4px 10px;border-radius:999px;border:1px solid #c9a45c;background:#fffaf0;color:#1f3b2c}
+@media(max-width:430px){#talbiyah-lines,#talbiyah-lines .tl-short{font-size:12px!important}}
+@media(min-width:900px){#talbiyah-lines,#talbiyah-lines .tl-short{font-size:13px!important}}

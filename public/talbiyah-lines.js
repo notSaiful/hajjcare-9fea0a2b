@@ -62,65 +62,12 @@
   var panel = document.createElement("section");
   panel.id = "talbiyah-lines";
   panel.hidden = true;
-  panel.setAttribute("aria-label", "Talbiyah, line by line");
+  panel.setAttribute("aria-label", "मैं हाज़िर हूँ");
 
-  var list = document.createElement("ol");
-  list.className = "tl-lines";
-  LINES.forEach(function (line, i) {
-    var item = document.createElement("li");
-    item.hidden = true;
-    item.dataset.tl = String(i);
-    var ar = document.createElement("p");
-    ar.className = "tl-ar";
-    ar.lang = "ar";
-    ar.dir = "rtl";
-    ar.textContent = line.ar;
-    var tr = document.createElement("p");
-    tr.className = "tl-tr";
-    tr.lang = "en";
-    tr.textContent = line.tr;
-    var hi = document.createElement("p");
-    hi.className = "tl-hi";
-    hi.lang = "hi";
-    hi.textContent = line.hi;
-    var en = document.createElement("p");
-    en.className = "tl-en";
-    en.lang = "en";
-    en.textContent = line.en;
-    item.append(ar, tr, hi, en);
-    list.appendChild(item);
-  });
-
-  var live = document.createElement("p");
-  live.className = "tl-count";
-  live.setAttribute("aria-live", "polite");
-
-  var prev = document.createElement("button");
-  prev.type = "button";
-  prev.className = "tl-nav";
-  prev.append(label("hi", "पिछली"), document.createTextNode(" "), label("en", "Previous"));
-  var next = document.createElement("button");
-  next.type = "button";
-  next.className = "tl-nav";
-  next.append(label("hi", "अगली"), document.createTextNode(" "), label("en", "Next"));
-
-  var oldBtn = document.createElement("button");
-  oldBtn.type = "button";
-  oldBtn.className = "tl-old-btn";
-  oldBtn.setAttribute("aria-expanded", "false");
-  oldBtn.setAttribute("aria-controls", "tl-old");
-  oldBtn.append(label("en", "Old Talbiyah text"), document.createTextNode(" "), label("hi", "पुराना तलबिया पाठ"));
-
-  var oldBox = document.createElement("div");
-  oldBox.id = "tl-old";
-  oldBox.hidden = true;
-
-  var nav = document.createElement("div");
-  nav.className = "tl-navs";
-  nav.append(prev, next);
   var shortLine = document.createElement("p");
   shortLine.className = "tl-short";
   shortLine.lang = "hi";
+  shortLine.setAttribute("data-hc-protect", "1");
   shortLine.textContent = "मैं हाज़िर हूँ";
   panel.append(shortLine);
   document.body.appendChild(panel);
@@ -136,18 +83,7 @@
     return s;
   }
 
-  function reveal(index) {
-    if (index < 0) index = 0;
-    if (index > LINES.length - 1) index = LINES.length - 1;
-    shown = index;
-    list.querySelectorAll("li").forEach(function (item, i) {
-      item.hidden = i < index - 1 || i > index;
-      item.classList.toggle("tl-now", i === index);
-    });
-    live.textContent = index + 1 + " / " + LINES.length;
-    prev.disabled = index === 0;
-    next.disabled = index === LINES.length - 1;
-  }
+  function reveal() {}
 
   var closed = false;
   var advanceBtn = document.createElement("button");
@@ -198,42 +134,6 @@
     if (!audio || !isFinite(audio.duration) || !(audio.duration > 0)) return;
     if (playStart == null) playStart = audio.currentTime;
   }
-
-  function fillOld() {
-    oldBox.replaceChildren();
-    var sec = document.querySelector("section.talbiya");
-    if (!sec) return;
-    [".eyebrow", ".ar", ".tr", ".mean", ".jigar"].forEach(function (sel) {
-      var src = sec.querySelector(sel);
-      if (!src) return;
-      var p = document.createElement("p");
-      p.className = "tl-kept";
-      if (src.classList.contains("ar")) {
-        p.lang = "ar";
-        p.dir = "rtl";
-      }
-      p.textContent = src.textContent;
-      oldBox.appendChild(p);
-    });
-  }
-
-  prev.addEventListener("click", function (e) {
-    e.stopPropagation();
-    follow = false;
-    reveal(shown - 1);
-  });
-  next.addEventListener("click", function (e) {
-    e.stopPropagation();
-    follow = false;
-    reveal(shown + 1);
-  });
-  oldBtn.addEventListener("click", function (e) {
-    e.stopPropagation();
-    var open = oldBox.hidden;
-    if (open) fillOld();
-    oldBox.hidden = !open;
-    oldBtn.setAttribute("aria-expanded", open ? "true" : "false");
-  });
 
   var hmean = document.getElementById("hmean");
   if (audio) {

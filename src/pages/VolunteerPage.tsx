@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { SEO } from "@/components/SEO";
 import { SimpleHeader } from "@/components/SimpleHeader";
 import { Button } from "@/components/ui/button";
@@ -72,10 +72,16 @@ const DECLARATIONS = [
   "संगठन के नियमों का पालन करूँगा/करूँगी",
 ];
 
+export function volunteerFormRequested(search: string, hash: string): boolean {
+  const form = new URLSearchParams(search.startsWith("?") ? search.slice(1) : search).get("form");
+  return form === "1" || hash === "#form";
+}
+
 const VolunteerPage = () => {
   const { toast } = useToast();
   const { isRTL } = useLanguage();
-  const [showForm, setShowForm] = useState(false);
+  const location = useLocation();
+  const [showForm, setShowForm] = useState(() => volunteerFormRequested(location.search, location.hash));
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [volunteerId, setVolunteerId] = useState("");
@@ -87,6 +93,10 @@ const VolunteerPage = () => {
   const [filterEP, setFilterEP] = useState<string | null>(null);
   const [showFilterDock, setShowFilterDock] = useState(false);
   const [filterSearch, setFilterSearch] = useState("");
+
+  useEffect(() => {
+    if (volunteerFormRequested(location.search, location.hash)) setShowForm(true);
+  }, [location.search, location.hash]);
 
   useEffect(() => {
     try {
