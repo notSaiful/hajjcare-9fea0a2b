@@ -488,3 +488,23 @@ main section.wrap{padding-top:4.5rem;padding-bottom:4.5rem}
 #intro .itb .ifull{font-size:.72rem;line-height:1.2}
 #intro .itb .imean,#intro .hcap{font-size:.58rem;line-height:1.2}
 }
+/* v36: dignified welcome. Madinah green, no moon or crescent, no new images. */
+#opener .glow{background:radial-gradient(ellipse 62% 24% at 50% 96%,rgba(31,86,64,.5),transparent 72%),radial-gradient(ellipse 34% 24% at 50% 38%,rgba(255,232,180,.28),transparent 70%)!important}
+#opener::before{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;opacity:.055;background-image:linear-gradient(45deg,rgba(255,236,190,.95) 1px,transparent 1px),linear-gradient(-45deg,rgba(255,236,190,.95) 1px,transparent 1px);background-size:26px 26px;-webkit-mask-image:radial-gradient(ellipse at 50% 40%,transparent 34%,#000 82%);mask-image:radial-gradient(ellipse at 50% 40%,transparent 34%,#000 82%)}
+#opener .door.kd{width:min(52vw,300px)!important;margin-top:0!important;filter:drop-shadow(0 16px 26px rgba(10,24,18,.32))}
+#opener .kd .halo{opacity:.5;animation-duration:9s}
+#opener .oname{max-height:0;margin-top:0!important;overflow:hidden;opacity:0;font-family:"Cormorant Garamond",Georgia,serif!important;font-weight:500!important;letter-spacing:.16em!important;font-size:clamp(1.65rem,5vw,2.7rem)!important;line-height:1.15;transition:opacity 1.1s ease,max-height .8s ease,margin-top .8s ease}
+#opener.dopen .oname{max-height:3.4rem;margin-top:.55rem!important;opacity:1}
+#opener .door{order:1}#opener .otap{order:2;margin-top:.15rem!important;gap:.15rem}#opener .oname{order:3}
+#opener .ofing{top:auto;bottom:calc(100% - 6px);width:26px;height:38px;margin-left:-13px;color:#fff8e8;filter:drop-shadow(0 2px 2px rgba(20,12,0,.45))}
+#opener .otxt{font-family:Mukta,"Tiro Devanagari Hindi",sans-serif;font-size:.74rem;font-weight:500;letter-spacing:.04em;color:#fff8e8;background:rgba(18,40,32,.38);border:1px solid rgba(255,232,190,.42);border-radius:999px;padding:.16rem .72rem}
+#talbiyah-lines{width:max-content;max-width:calc(100% - 2rem);border-color:rgba(184,149,79,.55);box-shadow:0 6px 16px rgba(16,28,22,.14)}
+@media(max-width:430px){
+#opener .door.kd{width:min(58vw,214px)!important}
+#opener .oname{letter-spacing:.12em!important;font-size:1.45rem!important}
+#opener.dopen .oname{max-height:2.2rem;margin-top:.35rem!important}
+#opener .ofing{width:22px;height:32px;margin-left:-11px}
+#opener .otxt{font-size:.68rem;padding:.12rem .58rem}
+}
+@media(min-width:900px){#opener .door.kd{width:min(28vw,320px)!important}}
+@media(prefers-reduced-motion:reduce){#opener::before{opacity:.04}#opener .oname{transition:none}}
