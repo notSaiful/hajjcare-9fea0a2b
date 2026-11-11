@@ -159,8 +159,8 @@ window.__hmPhrases=P})();
 let t0=0,iv;const done=()=>{if(intro.classList.contains('tdone'))return;intro.classList.add('tdone');clearInterval(iv)};
 const watch=()=>{if(t0)return;t0=Date.now();iv=setInterval(()=>{const el=(Date.now()-t0)/1000;const hm2=document.getElementById('hmean');if(el>20&&a.paused&&(!hm2||hm2.paused))done();if(el>240)done()},1000)};
 new MutationObserver(()=>{if(intro.classList.contains('opened'))watch()}).observe(intro,{attributes:true,attributeFilter:['class']});if(intro.classList.contains('opened'))watch();
-/* v21: fixed opener sequence: female Arabic Talbiya -> male Hindi meaning -> language screen; plays once */
-const hmx=document.getElementById('hmean');let seq=false;a.addEventListener('ended',()=>{if(seq||window.__talbiyaDone)return;seq=true;window.__talbiyaDone=true;if(hmx){hmx.currentTime=0;hmx.volume=1;hmx.play().catch(done);hmx.addEventListener('ended',()=>setTimeout(done,150),{once:true})}else done()});hmx&&hmx.addEventListener('error',()=>{if(seq)done()});a.addEventListener('error',done);
+/* Door sequence plays the girl Arabic file only. The Hindi meaning file is a different narrator, so it is not started here. */
+let seq=false;a.addEventListener('ended',()=>{if(seq||window.__talbiyaDone)return;seq=true;window.__talbiyaDone=true;done()});a.addEventListener('error',done);
 const clean=()=>{document.querySelectorAll('details[open]').forEach(d=>d.open=false);const ov=document.getElementById('demo');if(ov&&!ov.hidden&&ov.classList.contains('on')){const x=ov.querySelector('.dx');x&&x.click()}};
 en.addEventListener('click',()=>{window.__talbiyaDone=true;try{a.pause();const h=document.getElementById('hmean');h&&h.pause()}catch(_){}done();clean();document.body.classList.add('entered');if('scrollRestoration'in history)history.scrollRestoration='manual';scrollTo(0,0);requestAnimationFrame(()=>scrollTo(0,0))},true);
 })();

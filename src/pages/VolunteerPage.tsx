@@ -82,6 +82,7 @@ const VolunteerPage = () => {
   const { isRTL } = useLanguage();
   const location = useLocation();
   const [showForm, setShowForm] = useState(() => volunteerFormRequested(location.search, location.hash));
+  const [formStep, setFormStep] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [volunteerId, setVolunteerId] = useState("");
@@ -169,41 +170,56 @@ const VolunteerPage = () => {
     }));
   };
 
+  const stepError = (step: number): { title: string; description: string } | null => {
+    if (step === 0) {
+      if (!form.full_name || !form.father_name || !form.age || !form.mobile || !form.whatsapp || !form.full_address || !form.city || !form.district || !form.state || !form.embarkation_point) {
+        return { title: "कृपया सभी अनिवार्य फ़ील्ड भरें", description: "Please fill all required fields" };
+      }
+      if (form.mobile.length !== 10 || !/^\d{10}$/.test(form.mobile)) {
+        return { title: "मोबाइल नंबर 10 अंकों का होना चाहिए", description: "Mobile number must be 10 digits" };
+      }
+      if (form.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
+        return { title: "ईमेल सही नहीं है", description: "Enter a valid email or leave it blank" };
+      }
+      const age = parseInt(form.age, 10);
+      if (isNaN(age) || age < 18 || age > 65) {
+        return { title: "उम्र 18-65 के बीच होनी चाहिए", description: "Age must be between 18-65" };
+      }
+    }
+    if (step === 1 && form.skills.length === 0) {
+      return { title: "कम से कम एक स्किल चुनें", description: "Select at least one skill" };
+    }
+    if (step === 2 && (!form.availability_days || !form.duty_location)) {
+      return { title: "Availability और Duty Location चुनें", description: "Select availability and duty location" };
+    }
+    if (step === 3 && form.languages.length === 0) {
+      return { title: "कम से कम एक भाषा चुनें", description: "Select at least one language" };
+    }
+    if (step === 4 && !form.declaration_agreed) {
+      return { title: "कृपया Declaration को स्वीकार करें", description: "Please accept the declaration" };
+    }
+    return null;
+  };
+
   const validateForm = () => {
-    if (!form.full_name || !form.father_name || !form.age || !form.mobile || !form.whatsapp || !form.full_address || !form.city || !form.district || !form.state || !form.embarkation_point) {
-      toast({ title: "कृपया सभी अनिवार्य फ़ील्ड भरें", description: "Please fill all required fields", variant: "destructive" });
-      return false;
-    }
-    if (form.mobile.length !== 10 || !/^\d{10}$/.test(form.mobile)) {
-      toast({ title: "मोबाइल नंबर 10 अंकों का होना चाहिए", description: "Mobile number must be 10 digits", variant: "destructive" });
-      return false;
-    }
-    if (form.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
-      toast({ title: "ईमेल सही नहीं है", description: "Enter a valid email or leave it blank", variant: "destructive" });
-      return false;
-    }
-    if (form.skills.length === 0) {
-      toast({ title: "कम से कम एक स्किल चुनें", description: "Select at least one skill", variant: "destructive" });
-      return false;
-    }
-    if (!form.availability_days || !form.duty_location) {
-      toast({ title: "Availability और Duty Location चुनें", description: "Select availability and duty location", variant: "destructive" });
-      return false;
-    }
-    if (form.languages.length === 0) {
-      toast({ title: "कम से कम एक भाषा चुनें", description: "Select at least one language", variant: "destructive" });
-      return false;
-    }
-    if (!form.declaration_agreed) {
-      toast({ title: "कृपया Declaration को स्वीकार करें", description: "Please accept the declaration", variant: "destructive" });
-      return false;
-    }
-    const age = parseInt(form.age);
-    if (isNaN(age) || age < 18 || age > 65) {
-      toast({ title: "उम्र 18-65 के बीच होनी चाहिए", description: "Age must be between 18-65", variant: "destructive" });
-      return false;
+    for (let step = 0; step < 5; step++) {
+      const err = stepError(step);
+      if (err) {
+        setFormStep(step);
+        toast({ title: err.title, description: err.description, variant: "destructive" });
+        return false;
+      }
     }
     return true;
+  };
+
+  const goNextStep = () => {
+    const err = stepError(formStep);
+    if (err) {
+      toast({ title: err.title, description: err.description, variant: "destructive" });
+      return;
+    }
+    setFormStep((step) => Math.min(4, step + 1));
   };
 
   const openConsentModal = () => {
@@ -485,7 +501,17 @@ const VolunteerPage = () => {
         {/* Registration Form */}
         {showForm && (
           <div className="space-y-5 animate-fade-up">
-            <h2 className="text-lg font-bold text-foreground">📝 Volunteer Registration Form</h2>
+            <h1 className="text-xl sm:text-2xl font-bold text-foreground leading-snug">
+              क्या आप हज पर जाने वाले हाजियों की खिदमत करना चाहते हैं?
+            </h1>
+            <div className="space-y-2" aria-live="polite">
+              <p className="text-sm font-semibold text-primary">कदम {["A", "B", "C", "D", "E"][formStep]} · {formStep + 1} / 5</p>
+              <div className="flex gap-1.5" aria-hidden="true">
+                {["A", "B", "C", "D", "E"].map((step, index) => (
+                  <span key={step} className={`h-1.5 flex-1 rounded-full ${index <= formStep ? "bg-primary" : "bg-muted"}`} />
+                ))}
+              </div>
+            </div>
             <div aria-hidden="true" className="absolute -left-[9999px] h-px w-px overflow-hidden">
               <label>
                 Company website
@@ -499,7 +525,7 @@ const VolunteerPage = () => {
             </div>
 
             {/* A. Basic Identity */}
-            <Card>
+            {formStep === 0 && <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm flex items-center gap-2">
                   <span className="bg-primary text-primary-foreground w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold">A</span>
@@ -562,10 +588,10 @@ const VolunteerPage = () => {
                   </select>
                 </div>
               </CardContent>
-            </Card>
+            </Card>}
 
             {/* B. Skills */}
-            <Card>
+            {formStep === 1 && <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm flex items-center gap-2">
                   <span className="bg-primary text-primary-foreground w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold">B</span>
@@ -583,10 +609,10 @@ const VolunteerPage = () => {
                   ))}
                 </div>
               </CardContent>
-            </Card>
+            </Card>}
 
             {/* C. Availability */}
-            <Card>
+            {formStep === 2 && <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm flex items-center gap-2">
                   <span className="bg-primary text-primary-foreground w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold">C</span>
@@ -617,10 +643,10 @@ const VolunteerPage = () => {
                   </RadioGroup>
                 </div>
               </CardContent>
-            </Card>
+            </Card>}
 
             {/* D. Languages */}
-            <Card>
+            {formStep === 3 && <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm flex items-center gap-2">
                   <span className="bg-primary text-primary-foreground w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold">D</span>
@@ -642,10 +668,10 @@ const VolunteerPage = () => {
                   <Input placeholder="Other language" value={form.other_language} onChange={e => setForm(p => ({ ...p, other_language: e.target.value }))} />
                 </div>
               </CardContent>
-            </Card>
+            </Card>}
 
             {/* E. Declaration */}
-            <Card className="border-primary/20">
+            {formStep === 4 && <Card className="border-primary/20">
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm flex items-center gap-2">
                   <span className="bg-primary text-primary-foreground w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold">E</span>
@@ -667,22 +693,38 @@ const VolunteerPage = () => {
                   <span className="text-sm font-medium text-foreground">मैं सहमत हूँ / I Agree</span>
                 </label>
               </CardContent>
-            </Card>
+            </Card>}
 
-            {/* Submit */}
-            <Button
-              size="lg"
-              className="w-full text-base"
-              disabled={submitting || !form.declaration_agreed}
-              onClick={openConsentModal}
-            >
-              {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Heart className="w-5 h-5" />}
-              {submitting ? "Submitting..." : "REGISTER AS VOLUNTEER"}
-            </Button>
+            <div className="flex gap-2">
+              {formStep > 0 && (
+                <Button type="button" variant="outline" className="flex-1" onClick={() => setFormStep((step) => Math.max(0, step - 1))}>
+                  पीछे / Back
+                </Button>
+              )}
+              {formStep < 4 && (
+                <Button type="button" className="flex-1" onClick={goNextStep}>
+                  आगे / Next
+                </Button>
+              )}
+            </div>
 
-            <Button variant="ghost" className="w-full" onClick={() => setShowForm(false)}>
-              ← वापस जाएं
-            </Button>
+            {formStep === 4 && (
+              <Button
+                size="lg"
+                className="w-full text-base"
+                disabled={submitting || !form.declaration_agreed}
+                onClick={openConsentModal}
+              >
+                {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Heart className="w-5 h-5" />}
+                {submitting ? "Submitting..." : "REGISTER AS VOLUNTEER"}
+              </Button>
+            )}
+
+            {formStep === 0 && (
+              <Button variant="ghost" className="w-full" onClick={() => setShowForm(false)}>
+                ← वापस जाएं
+              </Button>
+            )}
           </div>
         )}
 

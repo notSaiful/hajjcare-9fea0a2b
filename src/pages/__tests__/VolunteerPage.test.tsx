@@ -16,5 +16,12 @@ describe("volunteer form arrival", () => {
     expect(page).toContain("आपका रजिस्ट्रेशन मुकम्मल हुआ। अल्लाह आपका हज मबरूर और कबूल करे।");
     expect(page).toContain("Volunteer Registration Point / वॉलंटियर रजिस्ट्रेशन पॉइंट");
     expect(page).not.toContain("Select Embarkation Point");
+    expect(page).toContain("const [formStep, setFormStep] = useState(0)");
+    expect(page).toContain("formStep === 0");
+    expect(page).toContain("formStep === 4");
+    expect(page).toContain("आगे / Next");
+    expect(page).toContain("पीछे / Back");
+    expect(page).toContain("कदम {[\"A\", \"B\", \"C\", \"D\", \"E\"][formStep]}");
+    expect(page).toContain("submitVolunteerRegistration");
   });
 });

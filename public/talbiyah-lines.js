@@ -62,14 +62,23 @@
   var panel = document.createElement("section");
   panel.id = "talbiyah-lines";
   panel.hidden = true;
-  panel.setAttribute("aria-label", "मैं हाज़िर हूँ");
+  panel.lang = "ar";
+  panel.dir = "rtl";
+  panel.setAttribute("aria-label", "तलबिया");
 
-  var shortLine = document.createElement("p");
-  shortLine.className = "tl-short";
-  shortLine.lang = "hi";
-  shortLine.setAttribute("data-hc-protect", "1");
-  shortLine.textContent = "मैं हाज़िर हूँ";
-  panel.append(shortLine);
+  var list = document.createElement("ol");
+  list.className = "tl-lines";
+  list.lang = "ar";
+  list.dir = "rtl";
+  LINES.forEach(function (line) {
+    var li = document.createElement("li");
+    li.className = "tl-ar";
+    li.lang = "ar";
+    li.dir = "rtl";
+    li.textContent = line.ar;
+    list.appendChild(li);
+  });
+  panel.appendChild(list);
   document.body.appendChild(panel);
 
   var shown = 0;
@@ -83,7 +92,13 @@
     return s;
   }
 
-  function reveal() {}
+  function reveal(index) {
+    if (typeof index !== "number" || index < 0) index = 0;
+    if (index > LINES.length - 1) index = LINES.length - 1;
+    shown = index;
+    var items = list.children;
+    for (var n = 0; n < items.length; n++) items[n].classList.toggle("tl-now", n === index);
+  }
 
   var closed = false;
   var advanceBtn = document.createElement("button");
@@ -123,8 +138,20 @@
     return (opener && opener.classList.contains("dopen")) || (intro && intro.classList.contains("opened"));
   }
 
+  /* Speech in the girl clip runs about 3.97s–14.70s with no gaps between lines, so the four lines share that window. */
+  var AR_CUES = [3.97, 6.65, 9.33, 12.01];
+  function lineFromTime(t) {
+    var i = 0;
+    for (var n = 0; n < AR_CUES.length; n++) if (t >= AR_CUES[n] - 0.05) i = n;
+    return i;
+  }
+
   function clockLine() {
     if (!audio || !follow) return;
+    if (isFinite(audio.currentTime)) {
+      reveal(lineFromTime(audio.currentTime));
+      return;
+    }
     var line = lineFromClock(audio.duration, audio.currentTime, playStart == null ? 0 : playStart);
     if (line == null) return;
     reveal(line);
@@ -150,7 +177,7 @@
     audio.addEventListener("loadedmetadata", noteStart);
     audio.addEventListener("ended", function () {
       if (follow) reveal(LINES.length - 1);
-      if (!hmean) finishPanel(true);
+      finishPanel(true);
     });
     audio.addEventListener("error", function () {
       follow = false;
