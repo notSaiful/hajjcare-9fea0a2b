@@ -27,6 +27,9 @@ export interface ClassroomClass {
   /** Existing site file. Used when youtube_id is empty. */
   local_video_16x9?: string;
   local_video_9x16?: string;
+  /** Short label shown on the player, such as the 1-minute class. */
+  label_hi?: string;
+  label_en?: string;
   /** Null means no teacher is assigned. The page shows the HajCare AI team. */
   teacher: ClassroomTeacher | null;
   materials: ClassroomMaterial[];
@@ -44,12 +47,14 @@ export const CLASSROOM_CLASSES: ClassroomClass[] = [
     title_hi: "नीयत: हज इबादत है, सैर नहीं",
     title_en: "Niyyah: Hajj is worship, not a trip",
     youtube_id: null,
-    local_video_16x9: "/videos/day1-trailer-16x9.mp4",
-    local_video_9x16: "/videos/day1-trailer-9x16.mp4",
+    local_video_16x9: "/videos/day1-1min-16x9.mp4",
+    local_video_9x16: "/videos/day1-1min-9x16.mp4",
+    label_hi: "दिन 1 — 1 मिनट क्लास",
+    label_en: "Day 1 — 1 minute class",
     teacher: null,
     published: true,
-    note_hi: "30 सेकंड ट्रेलर। नमूना — आलिम और डॉक्टर की समीक्षा बाक़ी।",
-    note_en: "30-second trailer. Sample — scholar and doctor review is still pending.",
+    note_hi: "1 मिनट की कक्षा। आख़िर में नात का कार्ड: हाजियो तुम हरम जा रहे हो — नात की रिकॉर्डिंग जल्द।",
+    note_en: "1-minute class. It ends on a silent naat card: the recording is coming soon.",
     materials: [
       {
         label_hi: "दिन 1 अध्ययन पत्र",

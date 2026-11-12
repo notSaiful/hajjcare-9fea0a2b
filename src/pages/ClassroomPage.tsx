@@ -131,8 +131,10 @@ export default function ClassroomPage() {
           {selected ? (
             <section className="overflow-hidden rounded-3xl border border-[#e4dcc8] bg-white" aria-label={selected.title_en}>
               <div className="bg-[#1f4d3a] px-3 py-2 text-[#f6f3ec] sm:px-5 sm:py-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#e4cb87]">
-                  {hindiFirst(language) ? `दिन ${selected.day} · रिकॉर्डेड` : `Day ${selected.day} · Recorded`}
+                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#e4cb87]">
+                  {hindiFirst(language)
+                    ? (selected.label_hi ?? `दिन ${selected.day} · रिकॉर्डेड`)
+                    : (selected.label_en ?? `Day ${selected.day} · Recorded`)}
                 </p>
                 <h2 className="mt-1 text-xl font-semibold sm:text-2xl">
                   <Pair
@@ -148,6 +150,21 @@ export default function ClassroomPage() {
                   </p>
                 ) : null}
               </div>
+
+              {studySheet ? (
+                <a
+                  className="mx-3 mt-3 flex items-center justify-center gap-2 rounded-full bg-[#1f4d3a] px-4 py-3 text-center text-sm font-semibold text-[#f6f3ec] sm:mx-5"
+                  href={studySheet.url}
+                >
+                  <BookOpen className="h-4 w-4 shrink-0" aria-hidden />
+                  <span>
+                    {hindiFirst(language) ? studySheet.label_hi : studySheet.label_en}
+                    <span className="mt-0.5 block text-xs font-medium opacity-80">
+                      {hindiFirst(language) ? studySheet.label_en : studySheet.label_hi}
+                    </span>
+                  </span>
+                </a>
+              ) : null}
 
               {selected.youtube_id ? (
                 <div className="aspect-video bg-black">
@@ -165,30 +182,25 @@ export default function ClassroomPage() {
                   {selected.local_video_16x9 ? (
                     <video
                       key={`wide-${selected.day}`}
-                      className="mx-auto block max-h-[42vh] w-full bg-black object-contain sm:max-h-[70vh]"
+                      className="mx-auto hidden max-h-[70vh] w-full bg-black md:block"
                       controls
                       playsInline
                       preload="metadata"
                       src={selected.local_video_16x9}
                     />
                   ) : null}
+                  {(selected.local_video_9x16 || selected.local_video_16x9) ? (
+                    <video
+                      key={`tall-${selected.day}`}
+                      className="mx-auto block aspect-[9/16] w-full max-w-sm bg-black md:hidden"
+                      controls
+                      playsInline
+                      preload="metadata"
+                      src={selected.local_video_9x16 || selected.local_video_16x9}
+                    />
+                  ) : null}
                 </div>
               )}
-
-              {studySheet ? (
-                <a
-                  className="mx-3 mt-3 flex items-center justify-center gap-2 rounded-full bg-[#1f4d3a] px-4 py-3 text-center text-sm font-semibold text-[#f6f3ec] sm:mx-5"
-                  href={studySheet.url}
-                >
-                  <BookOpen className="h-4 w-4 shrink-0" aria-hidden />
-                  <span>
-                    {hindiFirst(language) ? studySheet.label_hi : studySheet.label_en}
-                    <span className="mt-0.5 block text-xs font-medium opacity-80">
-                      {hindiFirst(language) ? studySheet.label_en : studySheet.label_hi}
-                    </span>
-                  </span>
-                </a>
-              ) : null}
 
               <div className="flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
                 <p className="text-sm text-[#5f6b4e]">

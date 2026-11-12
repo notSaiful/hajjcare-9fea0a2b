@@ -16,8 +16,9 @@ describe("classroom catalogue", () => {
     expect(publishedClasses().map((item) => item.day)).toEqual([1]);
     expect(day1.youtube_id).toBeNull();
     expect(day1.teacher).toBeNull();
-    expect(day1.local_video_16x9).toBe("/videos/day1-trailer-16x9.mp4");
-    expect(day1.local_video_9x16).toBe("/videos/day1-trailer-9x16.mp4");
+    expect(day1.local_video_16x9).toBe("/videos/day1-1min-16x9.mp4");
+    expect(day1.local_video_9x16).toBe("/videos/day1-1min-9x16.mp4");
+    expect(day1.label_hi).toBe("दिन 1 — 1 मिनट क्लास");
     expect(day1.materials.map((item) => item.url)).toEqual([
       "/explore#day-1",
       "/videos/day1-trailer-16x9.mp4",
