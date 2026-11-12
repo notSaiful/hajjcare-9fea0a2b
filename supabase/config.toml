@@ -33,22 +33,22 @@ double_confirm_changes = true
 enable_confirmations = false
 
 [functions.hajj-chat]
-verify_jwt = false
+verify_jwt = true
 
 [functions.get-mapbox-token]
-verify_jwt = false
+verify_jwt = true
 
 [functions.elevenlabs-agent-token]
-verify_jwt = false
+verify_jwt = true
 
 [functions.stream-video-token]
-verify_jwt = false
+verify_jwt = true
 
 [functions.create-razorpay-order]
-verify_jwt = false
+verify_jwt = true
 
 [functions.free-umrah-notify]
-verify_jwt = false
+verify_jwt = true
 
 [functions.check-rate-limit]
 verify_jwt = false
@@ -57,7 +57,7 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.fraud-alert-notify]
-verify_jwt = false
+verify_jwt = true
 
 [functions.get-vapid-key]
 verify_jwt = false
@@ -66,36 +66,36 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.fraud-intelligence]
-verify_jwt = false
+verify_jwt = true
 
 [functions.tracking-intelligence]
-verify_jwt = false
+verify_jwt = true
 
 [functions.emotional-support]
-verify_jwt = false
+verify_jwt = true
 
 [functions.admin-ai-dashboard]
-verify_jwt = false
+verify_jwt = true
 
 [functions.central-ai-brain]
-verify_jwt = false
+verify_jwt = true
 
 [functions.notification-cascade]
-verify_jwt = false
+verify_jwt = true
 
 [functions.geofence-monitor]
-verify_jwt = false
+verify_jwt = true
 
 [functions.link-request-notify]
-verify_jwt = false
+verify_jwt = true
 
 [functions.hajj-faq-chat]
-verify_jwt = false
+verify_jwt = true
 
 [functions.inspector-register]
 verify_jwt = false
 [functions.inspector-ocr]
-verify_jwt = false
+verify_jwt = true
 
 [functions.volunteer-register]
 # Anonymous registration cannot send a user JWT. The function checks the
