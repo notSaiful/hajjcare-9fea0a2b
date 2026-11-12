@@ -35,6 +35,10 @@ footer{text-align:center;padding:22px 10px 30px;color:var(--olive);font-size:13p
 .cta{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
 @media print{header.top,footer,.noprint{display:none}body{background:#fff}}
 
+.pdfg{display:flex;flex-direction:column;gap:8px}
+.pdfg a{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:44px;padding:10px 12px;border:1px solid #c9a45c55;border-radius:12px;background:#fff;text-decoration:none;color:var(--green);font-weight:600}
+.pdfg a small{font-weight:500;color:#7a5c22;white-space:nowrap}
+.pdfg a .lg{font-style:normal;margin-left:6px;background:#e8d3d0;color:#7a2e22;border-radius:99px;padding:1px 7px;font-size:11px;letter-spacing:.04em;text-transform:uppercase}
 .tile.li{border-color:#0A66C2;color:#0A66C2}.tile.li b{color:#0A66C2}
 
 .tile.brand i{font-style:normal;line-height:0}.tile.brand .bl{width:44px;height:44px}
