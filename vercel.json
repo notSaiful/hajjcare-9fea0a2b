@@ -1,4 +1,9 @@
 {
+  "redirects": [
+    { "source": "/training", "destination": "/classroom", "permanent": false },
+    { "source": "/100-days", "destination": "/classroom", "permanent": false },
+    { "source": "/100-day", "destination": "/classroom", "permanent": false }
+  ],
   "rewrites": [
     { "source": "/", "destination": "/index.html" },
     { "source": "/explore", "destination": "/explore.html" },

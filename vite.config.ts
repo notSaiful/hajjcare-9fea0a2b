@@ -11,12 +11,18 @@ import { trainingRegisterConfigSource } from "./src/training/registerKey";
 
 /** Match vercel.json: demo at /, /explore, /library; React app for other extension-less routes. */
 function demoRouting(): Plugin {
-  const rewrite: Connect.NextHandleFunction = (req, _res, next) => {
+  const rewrite: Connect.NextHandleFunction = (req, res, next) => {
     const raw = req.url || "/";
     const q = raw.indexOf("?");
     const pathOnly = q === -1 ? raw : raw.slice(0, q);
     const search = q === -1 ? "" : raw.slice(q);
     let nextPath = pathOnly;
+    if (pathOnly === "/training" || pathOnly === "/100-days" || pathOnly === "/100-day") {
+      res.statusCode = 302;
+      res.setHeader("Location", "/classroom");
+      res.end();
+      return;
+    }
     if (pathOnly === "/explore") nextPath = "/explore.html";
     else if (pathOnly === "/library") nextPath = "/library.html";
     else if (pathOnly === "/visitors") nextPath = "/visitors.html";

@@ -14,7 +14,7 @@ import { BookOpen, Download, GraduationCap, MessageCircle } from "lucide-react";
 const MENU = [
   { href: "/", hi: "डैशबोर्ड", en: "Dashboard" },
   { href: "/classroom", hi: "क्लासरूम", en: "Classroom" },
-  { href: "/explore#preparation", hi: "100 दिन ट्रेनिंग", en: "100 Days Training" },
+  { href: "/classroom", hi: "100 दिन ट्रेनिंग", en: "100 Days Training" },
   { href: "/library#quran", hi: "क़ुरआन लाइब्रेरी", en: "Quran Library" },
   { href: "/explore#hadith", hi: "हदीस लाइब्रेरी", en: "Hadith Library" },
   { href: "/#duas", hi: "दुआ संग्रह", en: "Dua Collection" },
@@ -79,7 +79,7 @@ export default function ClassroomPage() {
   return (
     <div className="min-h-screen bg-[#f6f3ec] text-[#1f4d3a]" dir={isRTL ? "rtl" : "ltr"}>
       <SEO
-        title="Healthcare AI Classroom"
+        title="HajCare AI Classroom"
         description="HajCare AI Classroom: recorded Hajj classes, study materials, and WhatsApp support. hajjcare.in"
         path="/classroom"
       />
@@ -90,10 +90,10 @@ export default function ClassroomPage() {
           className="order-1 flex gap-2 overflow-x-auto pb-1 lg:sticky lg:top-20 lg:col-start-1 lg:row-span-2 lg:flex-col lg:overflow-visible lg:pb-0"
         >
           {MENU.map((item) => {
-            const current = item.href === "/classroom";
+            const current = item.en === "Classroom";
             return (
               <a
-                key={item.href}
+                key={item.en}
                 href={item.href}
                 aria-current={current ? "page" : undefined}
                 className={`min-w-[9.5rem] shrink-0 rounded-2xl border px-3 py-2.5 lg:min-w-0 ${
@@ -113,8 +113,8 @@ export default function ClassroomPage() {
             <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#8a6a2e]">HajCare AI</p>
             <h1 className="mt-1 text-2xl font-semibold sm:text-3xl">
               <Pair
-                hi="हेल्थकेयर AI क्लासरूम"
-                en="Healthcare AI Classroom"
+                hi="HajCare AI क्लासरूम"
+                en="HajCare AI Classroom"
                 language={language}
                 primaryClass="leading-tight"
                 secondaryClass="mt-1 text-sm font-medium text-[#5f6b4e]"

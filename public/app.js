@@ -26,7 +26,9 @@ a.addEventListener('ended',()=>{a.currentTime=0;on_=false;m.classList.remove('pl
 
 /* demos */
 (()=>{const ov=document.getElementById('demo');let open=false;
-const show=k=>{if(k==='training'){const i=document.getElementById('intro');if(i&&!i.classList.contains('gone'))document.getElementById('enter').click();setTimeout(()=>{const t=document.getElementById('training');scrollTo({top:t.getBoundingClientRect().top+scrollY-70,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});const w=t.querySelector('.wk');if(w)w.open=true},i&&!i.classList.contains('gone')?300:0);return}
+if(location.hash==="#training")location.replace("/classroom");
+addEventListener("hashchange",()=>{if(location.hash==="#training")location.replace("/classroom")});
+const show=k=>{if(k==='training'){location.assign("/classroom");return}
 ov.querySelectorAll('.dp').forEach(p=>p.hidden=p.dataset.p!==k);ov.hidden=false;requestAnimationFrame(()=>ov.classList.add('on'));if(!open){history.pushState({demo:1},'');open=true}ov.querySelector('.dx').focus();if(k==='zoya')window.__zoyaOpen()};
 const hide=(fromPop)=>{if(!open)return;open=false;ov.classList.remove('on');setTimeout(()=>ov.hidden=true,400);speechSynthesis&&speechSynthesis.cancel();window.__zoyaStop&&window.__zoyaStop();if(!fromPop)history.back()};
 document.querySelectorAll('[data-demo]').forEach(e=>{const go=ev=>{ev.stopPropagation();show(e.dataset.demo)};e.addEventListener('click',go);e.addEventListener('keydown',ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();go(ev)}})});
