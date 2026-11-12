@@ -98,6 +98,19 @@ const AuthPage = () => {
         <span className="text-primary/30">✦</span>
         <span>🇮🇳 Made for India</span>
       </div>
+
+      {/* Play policy: privacy policy + account deletion reachable from inside the app */}
+      <nav
+        aria-label="Privacy and account"
+        className="relative z-10 mt-4 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-muted-foreground"
+      >
+        <a href="/privacy-policy" className="underline underline-offset-2 hover:text-primary">
+          Privacy Policy / गोपनीयता नीति
+        </a>
+        <a href="/account-deletion" className="underline underline-offset-2 hover:text-primary">
+          Delete account / खाता हटाएँ
+        </a>
+      </nav>
     </div>
   );
 };

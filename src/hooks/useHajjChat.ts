@@ -1,3 +1,4 @@
+import { supabase } from "@/integrations/supabase/client";
 import { useState, useCallback } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -36,11 +37,23 @@ export const useHajjChat = () => {
     };
 
     try {
+      // hajj-chat requires a signed-in user (verify_jwt + getUser in the function),
+      // so send the user's session token, not the publishable key.
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        toast({
+          title: "Sign in required",
+          description: "Please sign in to use the Hajj assistant.",
+          variant: "destructive",
+        });
+        throw new Error("Not signed in");
+      }
       const response = await fetch(CHAT_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+          Authorization: `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({ messages: [...messages, userMsg], language }),
       });
