@@ -36,25 +36,29 @@ describe("talbiyah line text", () => {
     expect(app).toContain("a.src=a.dataset[voice]");
     expect(home).toContain('aria-label="touch करें"');
     expect(home).toContain('class="otxt">touch करें</span>');
-    expect(home).toContain('class="ofing"');
+    expect(home).not.toContain("ofing");
+    expect(home).not.toContain('viewBox="0 0 32 48"');
     expect(home).not.toContain("छूकर दरवाज़ा खोलें");
     expect(app).toContain("tx.textContent='touch करें'");
     expect(app).not.toContain("tap.textContent='छूकर शुरू करें'");
-    expect(read("public/style.css")).toContain("@keyframes ofing");
-    expect(read("public/style.css")).toContain("#opener .ofing{animation:none!important}");
-    expect(home).toContain('src="talbiyah-lines.js?v=38"');
+    expect(read("public/style.css")).not.toContain("ofing");
+    expect(home).toContain('src="talbiyah-lines.js?v=39"');
+    expect(home).toContain('src="app.js?v=39"');
     expect(script).not.toMatch(/\.mp3|new Audio|\.play\(|\.src\s*=/);
     const css = read("public/style.css");
     expect(css).toContain("#talbiyah-lines");
     expect(css).toContain("#intro .itb .imean{font-size:.76rem");
     expect(css).toContain("#intro h1.ar.big{font-size:1rem");
     expect(css).toContain("@media(max-width:430px)");
-    expect(css).toContain("#talbiyah-lines .tl-ar{font-size:24px!important");
+    expect(css).toContain("#talbiyah-lines .tl-ar{font-size:.8rem!important");
+    expect(css).toContain("#talbiyah-lines .tl-hi{font-size:.7rem!important");
     expect(css).toContain("transition:opacity .7s ease");
     expect(css).not.toContain("#talbiyah-lines,#talbiyah-lines .tl-short{font-size:12px!important");
+    expect(css).not.toContain("#talbiyah-lines .tl-ar{font-size:24px!important");
+    expect(css).not.toContain("#talbiyah-lines .tl-ar{font-size:28px!important");
     expect(read("public/app.js")).toContain("a.addEventListener('loadedmetadata',seek,{once:true})");
     expect(read("public/app.js")).toContain("const pr=a.play()");
-    expect(css).toContain("font-size:28px!important");
+    expect(css).toContain("#talbiyah-lines .tl-ar{font-size:.9rem!important");
     expect(script).not.toContain("Old Talbiyah text");
     expect(script).not.toContain("पुराना तलबिया पाठ");
     expect(script).not.toContain("tl-old");
@@ -86,27 +90,81 @@ describe("talbiyah line text", () => {
     expect(clock(40, 39.9, 3.8)).toBe(3);
   });
 
-  it("shows lines when the door opens and still steps if audio fails", async () => {
-    document.body.innerHTML = `<div id="intro"><div id="opener"></div></div><audio id="talbiya"></audio><main></main>
+  it("locks girl-first, then small Arabic plus Hindi with the old male voice", async () => {
+    expect(home).toContain('data-f="assets/talbiya-female-1x.mp3?v=1"');
+    expect(home).toContain('id="hmean" src="assets/talbiya-hindi-meaning.mp3?v=1"');
+    expect(app).toContain("let voice='f'");
+    expect(app).not.toContain("The Hindi meaning file is a different narrator");
+    const orderAt = app.indexOf("OPENING_ORDER: female-talbiya then hindi-caption-with-old-male");
+    expect(orderAt).toBeGreaterThan(-1);
+    const order = app.slice(orderAt, orderAt + 1600);
+    expect(order).toContain("window.__talbiyaDone");
+    expect(order).toContain("window.__userMuted");
+    const ended = order.slice(order.indexOf("a.addEventListener('ended'"));
+    expect(ended.indexOf("__hcShowTalbiyahMeaning")).toBeGreaterThan(-1);
+    expect(ended.indexOf("__hcShowTalbiyahMeaning")).toBeLessThan(ended.indexOf("hmx.play()"));
+    expect(order).toContain(".catch(meaningHear)");
+    expect(order).toContain("आवाज़ सुनें");
+    const door = app.slice(app.indexOf("const openDoor"), app.indexOf("window.__openDoor"));
+    expect(door).toContain("a.play()");
+    expect(door).not.toContain("hmx");
+    expect(door).not.toContain("hmean");
+    expect(app).toContain("if(window.__hcMeaningOn)");
+    expect(app).toContain("['हाज़िर हूँ,',1.0]");
+    expect(app).toContain("['हाज़िर हूँ,',5.5]");
+    expect(app).toContain("['बेशक सारी तारीफ़,',10.3]");
+    expect(app).toContain("['तेरा कोई शरीक नहीं।',16.8]");
+    expect(script).toContain("var HI_CUES = [1.0, 5.5, 10.3, 16.8]");
+
+    document.body.innerHTML = `<div id="intro"><div id="opener"></div></div><audio id="talbiya"></audio><audio id="hmean"></audio><main></main>
       <section class="talbiya"><p class="eyebrow">तलबिया</p><p class="ar">اللهُ أَكْبَرُ</p><p class="tr">अल्लाहु अकबर।</p><p class="mean">“${HI}”</p><p class="jigar">लबों पर जिगर</p><button class="hmb" type="button">▶ हिंदी मायने सुनें</button></section>`;
     const original = document.querySelector("section.talbiya")!.innerHTML;
     window.eval(script);
-    expect(document.getElementById("talbiyah-lines")?.hidden).toBe(true);
+    const panel = document.getElementById("talbiyah-lines")!;
+    const talbiya = document.getElementById("talbiya")!;
+    const hmean = document.getElementById("hmean") as HTMLAudioElement;
+    expect(panel.hidden).toBe(true);
 
     document.getElementById("opener")!.classList.add("dopen");
     await Promise.resolve();
-    const panel = document.getElementById("talbiyah-lines")!;
+    talbiya.dispatchEvent(new Event("playing"));
+    talbiya.dispatchEvent(new Event("timeupdate"));
+    expect(panel.hidden).toBe(true);
+
+    (window as unknown as { __hcShowTalbiyahMeaning: () => void }).__hcShowTalbiyahMeaning();
     expect(panel.hidden).toBe(false);
-    expect(panel.querySelector(".tl-now")?.textContent).toBe("لَبَّيْكَ اللَّهُمَّ لَبَّيْكَ،");
-    expect(panel.querySelectorAll(".tl-ar")).toHaveLength(4);
+    const arabic = panel.querySelector(".tl-ar")!;
+    const hindi = panel.querySelector(".tl-hi")!;
+    expect(arabic.compareDocumentPosition(hindi) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(arabic.textContent).toBe(AR);
+    expect(hindi.textContent).toBe(HI);
+    expect(panel.querySelectorAll(".tl-ar .tl-bit")).toHaveLength(4);
+    expect(panel.querySelectorAll(".tl-hi .tl-bit")).toHaveLength(4);
     expect(panel.dir).toBe("rtl");
+    expect(hindi.getAttribute("dir")).toBe("ltr");
     expect(panel.textContent).not.toContain("Labbayk Allahumma labbayk");
-    expect(panel.textContent).not.toContain("तेरा कोई शरीक नहीं");
     expect(document.getElementById("tl-old")).toBeNull();
     expect(document.body.textContent).not.toContain("Old Talbiyah text");
     expect(document.body.textContent).not.toContain("पुराना तलबिया पाठ");
     expect(document.body.textContent).not.toContain("Previous");
     expect(document.querySelector("section.talbiya")!.innerHTML).toBe(original);
+
+    const lineAt = (window as unknown as { __hcTalbiyahMeaningLine: (t: number) => number }).__hcTalbiyahMeaningLine;
+    expect(lineAt(0)).toBe(0);
+    expect(lineAt(0.9)).toBe(0);
+    expect(lineAt(5.45)).toBe(1);
+    expect(lineAt(10.25)).toBe(2);
+    expect(lineAt(16.75)).toBe(3);
+
+    let mediaTime = 6.8;
+    Object.defineProperty(hmean, "currentTime", { configurable: true, get: () => mediaTime });
+    Object.defineProperty(hmean, "paused", { configurable: true, get: () => false });
+    Object.defineProperty(hmean, "ended", { configurable: true, get: () => false });
+    hmean.dispatchEvent(new Event("timeupdate"));
+    expect(panel.querySelector('.tl-ar .tl-bit[data-i="1"]')?.classList.contains("tl-now")).toBe(true);
+    expect(panel.querySelector('.tl-hi .tl-bit[data-i="1"]')?.classList.contains("tl-now")).toBe(true);
+    expect(panel.querySelector('.tl-bit[data-i="0"]')?.classList.contains("tl-now")).toBe(false);
+    expect(panel.querySelector('.tl-now')?.textContent).toContain("لَا شَرِيكَ لَكَ لَبَّيْكَ");
   });
 
   it("hides only after the Hindi meaning ends, then offers the existing Enter step", async () => {
@@ -122,7 +180,13 @@ describe("talbiyah line text", () => {
     await Promise.resolve();
     const panel = document.getElementById("talbiyah-lines")!;
     const talbiya = document.getElementById("talbiya")!;
+    const hmean = document.getElementById("hmean")!;
     talbiya.dispatchEvent(new Event("ended"));
+    expect(panel.hidden).toBe(true);
+    expect(document.getElementById("talbiyah-next")?.hidden).not.toBe(false);
+    (window as unknown as { __hcShowTalbiyahMeaning: () => void }).__hcShowTalbiyahMeaning();
+    expect(panel.hidden).toBe(false);
+    hmean.dispatchEvent(new Event("ended"));
     expect(panel.hidden).toBe(true);
     const forward = document.getElementById("talbiyah-next")!;
     expect(forward.hidden).toBe(false);
@@ -162,11 +226,14 @@ describe("talbiyah line text", () => {
     document.getElementById("opener")!.classList.add("dopen");
     await Promise.resolve();
     expect(skip.hidden).toBe(false);
-    expect(document.getElementById("talbiyah-lines")?.hidden).toBe(false);
+    expect(document.getElementById("talbiyah-lines")?.hidden).toBe(true);
     talbiya.dispatchEvent(new Event("playing"));
     expect(skip.hidden).toBe(false);
+    expect(document.getElementById("talbiyah-lines")?.hidden).toBe(true);
     talbiya.dispatchEvent(new Event("ended"));
     hmean.dispatchEvent(new Event("playing"));
+    expect(document.getElementById("talbiyah-lines")?.hidden).toBe(false);
+    expect(document.getElementById("talbiyah-lines")?.querySelector(".tl-hi")?.textContent).toContain("हाज़िर हूँ, ऐ अल्लाह");
     expect(skip.isConnected).toBe(true);
     expect(skip.hidden).toBe(false);
 
@@ -198,6 +265,7 @@ describe("talbiyah line text", () => {
     document.getElementById("talbiya")!.dispatchEvent(new Event("playing"));
     document.getElementById("talbiya")!.dispatchEvent(new Event("ended"));
     document.getElementById("hmean")!.dispatchEvent(new Event("playing"));
+    expect(document.getElementById("talbiyah-lines")?.hidden).toBe(true);
     expect(again.hidden).toBe(false);
     expect(localStorage.getItem("hc-skip-talbiya")).toBe("1");
   });
