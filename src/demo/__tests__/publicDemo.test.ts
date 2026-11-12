@@ -363,13 +363,16 @@ describe("demo registration bridge", () => {
     (window as unknown as { __hcSubmitTrainingRegistration?: (form: HTMLFormElement) => Promise<unknown> }).__hcSubmitTrainingRegistration =
       async () => ({ ok: true, message: "Saved. Receipt TR-AB23CD45", receiptId: "TR-AB23CD45" });
     (window as unknown as { __hcPrepareTrainingRegistration?: () => void }).__hcPrepareTrainingRegistration = () => {};
-    mount("#register", `<form data-store="hc-train"><div class="res"></div></form>`);
+    mount("#register", `<form data-store="hc-train"><label>Name</label><input name="name" value="Amina"><div class="cta"><button type="submit">Submit</button></div><div class="res"></div></form>`);
     document.querySelector("form")?.dispatchEvent(new Event("submit", { cancelable: true }));
     await Promise.resolve();
     const text = document.querySelector(".res")?.textContent || "";
     expect(text.indexOf(phrase)).toBeGreaterThanOrEqual(0);
     expect(text.indexOf(phrase)).toBeLessThan(text.indexOf("TR-AB23CD45"));
     expect(document.querySelector(".hc-save-receipt")?.textContent).toBe("TR-AB23CD45");
+    expect((document.querySelector("input") as HTMLInputElement).hidden).toBe(true);
+    expect((document.querySelector("button") as HTMLButtonElement).hidden).toBe(true);
+    expect((document.querySelector("button") as HTMLButtonElement).disabled).toBe(true);
     expect(document.querySelector(".res")?.textContent).not.toContain("Continue to volunteer registration");
     expect(document.querySelector(".res")?.textContent).not.toContain("वॉलंटियर रजिस्ट्रेशन जारी रखें");
     expect(document.querySelector("[data-hc-live]")?.textContent || "").not.toMatch(/Haj Committee|मुफ़्त दाख़िला|free eligibility/);
@@ -380,6 +383,34 @@ describe("demo registration bridge", () => {
     await Promise.resolve();
     expect(document.querySelector(".res")?.textContent).toBe("Nothing new was saved.");
     expect(document.querySelector(".hc-save-thanks")).toBeNull();
+    expect((document.querySelector("input") as HTMLInputElement).hidden).toBe(false);
+    expect((document.querySelector("button") as HTMLButtonElement).disabled).toBe(false);
+  });
+
+  it("shows a pending state and keeps submit disabled until the server answers", async () => {
+    let release: (value: { ok: boolean; message: string; receiptId: string }) => void = () => {};
+    const pending = new Promise<{ ok: boolean; message: string; receiptId: string }>((resolve) => {
+      release = resolve;
+    });
+    (window as unknown as { __hcSubmitTrainingRegistration?: () => Promise<unknown> }).__hcSubmitTrainingRegistration =
+      () => pending;
+    (window as unknown as { __hcPrepareTrainingRegistration?: () => void }).__hcPrepareTrainingRegistration = () => {};
+    mount("#register", `<form data-store="hc-train"><input name="name" value="Amina"><div class="res"></div><button type="submit">जमा करें</button></form>`);
+    const form = document.querySelector("form") as HTMLFormElement;
+    form.dispatchEvent(new Event("submit", { cancelable: true }));
+    const button = form.querySelector("button") as HTMLButtonElement;
+    expect(button.disabled).toBe(true);
+    expect(button.textContent).toBe("Submitting…");
+    expect(form.querySelector(".res")?.textContent).toBe("Submitting…");
+    form.dispatchEvent(new Event("submit", { cancelable: true }));
+    expect(form.querySelectorAll(".hc-train-pending")).toHaveLength(1);
+    release({ ok: false, message: "Nothing was saved. Check the form and try again.", receiptId: "" });
+    await pending;
+    await Promise.resolve();
+    expect(form.querySelector(".res")?.textContent).toBe("Nothing was saved. Check the form and try again.");
+    expect(button.disabled).toBe(false);
+    expect(button.textContent).toBe("जमा करें");
+    expect(form.querySelector(".hc-save-thanks")).toBeNull();
   });
 
   it("sends Explore volunteer straight to the open registration form", () => {

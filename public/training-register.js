@@ -69,8 +69,17 @@
     } catch (e) { /* private mode */ }
   }
 
+  var RECEIPT_RE = /^(?:TR|HC)-[A-Z0-9]{8}$/;
+
   function prepare(form) {
     if (!form) return;
+    /* Block the browser's own submit. A native POST reloads /explore and wipes the receipt while the row is already saved. */
+    if (!form.dataset.hcNavLock) {
+      form.dataset.hcNavLock = "1";
+      form.addEventListener("submit", function (e) {
+        if (e.preventDefault) e.preventDefault();
+      }, true);
+    }
     if (!form.querySelector("[name=company_website]")) {
       var trap = document.createElement("input");
       trap.type = "text";
@@ -108,6 +117,7 @@
     var email = readCarry().email.trim();
     var button = form.querySelector("button[type='submit']");
     if (button) button.disabled = true;
+    var savedOk = false;
     try {
       var res = await fetch(ENDPOINT, {
         method: "POST",
@@ -132,7 +142,8 @@
       if (!res || res.type === "opaqueredirect" || (res.status >= 300 && res.status < 400)) return fail("unavailable");
       var data = null;
       try { data = await res.json(); } catch (e) { data = null; }
-      if (res.ok && data && data.ok === true && typeof data.receipt_id === "string" && /^TR-[A-Z0-9]{8}$/.test(data.receipt_id)) {
+      if (res.ok && data && data.ok === true && typeof data.receipt_id === "string" && RECEIPT_RE.test(data.receipt_id)) {
+        savedOk = true;
         writeCarry(name, phone, email);
         return { ok: true, receiptId: data.receipt_id, message: say("saved", data.receipt_id) };
       }
@@ -141,7 +152,7 @@
     } catch (e) {
       return fail("unavailable");
     } finally {
-      if (button) button.disabled = false;
+      if (button && !savedOk) button.disabled = false;
     }
   }
 

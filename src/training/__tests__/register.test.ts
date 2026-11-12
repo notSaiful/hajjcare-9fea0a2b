@@ -194,7 +194,15 @@ describe("login-free training registration", () => {
       expect(out.ok).toBe(true);
       expect(out.receiptId).toBe(RECEIPT);
       expect(out.message).toContain(RECEIPT);
+      expect((form.querySelector("button") as HTMLButtonElement).disabled).toBe(true);
       expect(sessionStorage.getItem("hc-reg-carry")).toContain("amina@example.com");
+      globalThis.fetch = (async () => new Response(JSON.stringify({ ok: true, id: ROW_ID, receipt_id: "HC-34FF7296" }), { status: 200 })) as typeof fetch;
+      const hc = await submit(form);
+      expect(hc.ok).toBe(true);
+      expect(hc.receiptId).toBe("HC-34FF7296");
+      globalThis.fetch = (async () => new Response(JSON.stringify({ ok: true, receipt_id: "nope" }), { status: 200 })) as typeof fetch;
+      const bad = await submit(form);
+      expect(bad.ok).toBe(false);
     } finally {
       globalThis.fetch = fetchImpl;
     }
