@@ -1,4 +1,9 @@
 {
+  "redirects": [
+    { "source": "/training", "destination": "/classroom", "permanent": false },
+    { "source": "/100-days", "destination": "/classroom", "permanent": false },
+    { "source": "/100-day", "destination": "/classroom", "permanent": false }
+  ],
   "rewrites": [
     { "source": "/", "destination": "/index.html" },
     { "source": "/explore", "destination": "/explore.html" },
@@ -8,10 +13,12 @@
     { "source": "/volunteer/training", "destination": "/app.html" },
     { "source": "/volunteer", "destination": "/app.html" },
     { "source": "/service-fee", "destination": "/app.html" },
+    { "source": "/classroom", "destination": "/app.html" },
     { "source": "/reset-password", "destination": "/app.html" },
     { "source": "/privacy-policy", "destination": "/privacy-policy.html" },
     { "source": "/privacy", "destination": "/privacy-policy.html" },
     { "source": "/account-deletion", "destination": "/privacy-policy.html" },
+    { "source": "/sukoon", "destination": "/sukoon.html" },
     { "source": "/((?!videos/).*)", "destination": "/index.html" }
   ],
   "headers": [
