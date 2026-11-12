@@ -8,6 +8,7 @@
     { "source": "/volunteer/training", "destination": "/app.html" },
     { "source": "/volunteer", "destination": "/app.html" },
     { "source": "/service-fee", "destination": "/app.html" },
+    { "source": "/classroom", "destination": "/app.html" },
     { "source": "/((?!videos/).*)", "destination": "/index.html" }
   ],
   "headers": [
