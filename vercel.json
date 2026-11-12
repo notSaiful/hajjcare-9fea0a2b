@@ -12,6 +12,7 @@
     { "source": "/privacy-policy", "destination": "/privacy-policy.html" },
     { "source": "/privacy", "destination": "/privacy-policy.html" },
     { "source": "/account-deletion", "destination": "/privacy-policy.html" },
+    { "source": "/sukoon", "destination": "/sukoon.html" },
     { "source": "/((?!videos/).*)", "destination": "/index.html" }
   ],
   "headers": [

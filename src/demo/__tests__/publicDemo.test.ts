@@ -220,9 +220,10 @@ describe("approved public demo", () => {
     expect(vercel.rewrites).toContainEqual({ source: "/privacy-policy", destination: "/privacy-policy.html" });
     expect(vercel.rewrites).toContainEqual({ source: "/privacy", destination: "/privacy-policy.html" });
     expect(vercel.rewrites).toContainEqual({ source: "/account-deletion", destination: "/privacy-policy.html" });
-    for (const source of ["/privacy-policy", "/privacy", "/account-deletion", "/reset-password", "/auth", "/explore", "/library", "/volunteer"]) {
+    for (const source of ["/privacy-policy", "/privacy", "/account-deletion", "/reset-password", "/auth", "/explore", "/library", "/volunteer", "/sukoon"]) {
       expect(vercel.rewrites.findIndex((rule) => rule.source === source)).toBeLessThan(vercel.rewrites.length - 1);
     }
+    expect(vercel.rewrites).toContainEqual({ source: "/sukoon", destination: "/sukoon.html" });
     expect(vercel.rewrites.at(-1)).toEqual({ source: "/((?!videos/).*)", destination: "/index.html" });
     const policy = read("public/privacy-policy.html");
     expect(policy).toContain("Last updated: 12 Nov 2026");
@@ -237,6 +238,29 @@ describe("approved public demo", () => {
     expect(policy).toContain("Vercel");
     expect(policy).not.toMatch(/crescent|moon/i);
     expect(read("vite.config.ts")).toContain('nextPath = "/privacy-policy.html"');
+    expect(read("vite.config.ts")).toContain('nextPath = "/sukoon.html"');
+    const sukoon = read("public/sukoon.html");
+    expect(sukoon).toContain("HajCare AI");
+    expect(sukoon).not.toContain("HajjCare");
+    expect(sukoon).not.toContain("Healthcare");
+    expect(sukoon).not.toMatch(/crescent|moon/i);
+    expect(sukoon).toContain("जल्द आ रहा है · Coming soon");
+    expect(sukoon).toContain("डेमो — कोई असली अलर्ट नहीं भेजा गया");
+    expect(sukoon).toContain("मिना टेंट एरिया");
+    expect(sukoon).toContain("हरम गेट नंबर 79");
+    expect(sukoon).toContain("जमरात, पहली मंज़िल");
+    expect(sukoon).toContain("आख़िरी अपडेट: 1 मिनट पहले");
+    expect(sukoon).toContain("अम्मी अरफ़ात पहुँच गईं 🤲");
+    expect(sukoon).toContain("अब्बू ठीक हैं ✅");
+    expect(sukoon).toContain("सुकून — क्योंकि दुआ के साथ तसल्ली भी ज़रूरी है।");
+    expect(sukoon).toContain("911");
+    expect(sukoon).toContain("997");
+    expect(sukoon).toContain("Nusuk");
+    expect(sukoon).not.toContain("fetch(");
+    expect(sukoon).not.toContain("wa.me");
+    expect(sukoon).not.toContain("supabase");
+    expect(home).not.toContain("sukoon.html");
+    expect(home).not.toContain('href="/sukoon"');
     expect(JSON.stringify(vercel.headers)).toContain("video/mp4");
     expect(read("public/index.html")).toContain("/videos/day1-trailer-16x9.mp4");
     expect(read("public/explore.js")).toContain("/videos/day1-trailer-9x16.mp4");
