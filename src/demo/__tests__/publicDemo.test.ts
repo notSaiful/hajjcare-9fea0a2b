@@ -220,14 +220,10 @@ describe("approved public demo", () => {
     expect(JSON.stringify(vercel.headers)).toContain("video/mp4");
     expect(read("public/index.html")).toContain("/videos/day1-trailer-16x9.mp4");
     expect(read("public/explore.js")).toContain("/videos/day1-trailer-9x16.mp4");
-    expect(read("public/index.html")).toContain('src="/videos/day1-1min-16x9.mp4?v=naat"');
-    expect(read("public/index.html")).toContain('src="/videos/day1-1min-9x16.mp4?v=naat"');
-    expect(read("public/explore.js")).toContain('src="/videos/day1-1min-16x9.mp4?v=naat"');
-    expect(read("public/explore.js")).toContain('src="/videos/day1-1min-9x16.mp4?v=naat"');
-    expect(read("public/index.html")).toContain("दिन 1 — 1 मिनट का सार (ड्राफ़्ट)");
-    expect(read("public/explore.js")).toContain("दिन 1 — 1 मिनट का सार (ड्राफ़्ट)");
-    expect(read("public/index.html")).not.toContain("day1-1min-16x9.mp4\" autoplay");
-    expect(read("public/explore.js")).not.toContain("day1-1min-9x16.mp4\" autoplay");
+    expect(read("public/index.html")).not.toContain("day1-1min");
+    expect(read("public/explore.js")).not.toContain("day1-1min");
+    expect(read("public/index.html")).not.toContain("1 मिनट का सार");
+    expect(read("public/explore.js")).not.toContain("1 मिनट का सार");
     expect(home).toContain("HajCare AI");
     expect(home).not.toContain("HajjCare");
     expect(home).not.toContain("demo-tag");
