@@ -403,6 +403,12 @@ html[data-ui="ur"] body{line-height:1.9}
 .hph{transition:color .25s,background .25s;border-radius:4px;padding:0 .05em;pointer-events:none}.hph.done{color:inherit;opacity:.75}.hph.on{background:rgba(201,164,92,.35);color:#3d2a06;opacity:1}
 .hcap{min-height:0;margin:.15rem auto 0;max-width:28rem;max-height:2.4em;overflow:hidden;text-align:center;font:600 .76rem/1.25 'Tiro Devanagari Hindi',Mukta,serif;color:#5a3d08;opacity:0;transition:opacity .25s;pointer-events:none}.hcap.on{opacity:1}
 #talbiya-sec .hcap,.dark .hcap{color:#ffe7a6}
+.train-bar{position:sticky;top:4.5rem;z-index:38;display:flex;align-items:center;justify-content:center;width:min(28rem,calc(100% - 1.5rem));min-height:3.4rem;margin:.85rem auto 0;padding:.7rem 1.2rem;background:#1f4d3a;color:#fffaf0;text-decoration:none;font:600 1.15rem/1.2 Mukta,sans-serif;border:1px solid #c9a45c;border-radius:999px;box-shadow:0 10px 28px -18px #1f4d3a}
+.hero-cta{display:flex;flex-wrap:wrap;justify-content:center;gap:.65rem}
+.train-open{display:inline-flex;align-items:center;justify-content:center;background:#1f4d3a;color:#fffaf0;border-color:#1f4d3a;min-height:3.1rem;padding:.95rem 1.35rem;font-weight:600}
+.train-open:hover{background:#163828;color:#fff}
+.train-cta{text-align:center;margin:0 0 1.25rem}
+@media(max-width:640px){.train-bar{top:5rem;width:calc(100% - 1.2rem);min-height:3.6rem;font-size:1.2rem}.hero-cta{flex-direction:column;align-items:stretch}.hero-cta .train-open{width:100%}}
 /* v20: Talbiya-alone flow — nothing else until Enter */
 body:not(.entered) main,body:not(.entered) footer,body:not(.entered) nav,body:not(.entered) #mtg{visibility:hidden!important}
 body:not(.entered){overflow:hidden}

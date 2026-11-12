@@ -42,6 +42,7 @@ describe("talbiyah line text", () => {
     expect(app).toContain("tx.textContent='touch करें'");
     expect(app).not.toContain("tap.textContent='छूकर शुरू करें'");
     expect(read("public/style.css")).not.toContain("ofing");
+    expect(read("public/style.css")).not.toContain("@keyframes ofing");
     expect(home).toContain('src="talbiyah-lines.js?v=39"');
     expect(home).toContain('src="app.js?v=39"');
     expect(script).not.toMatch(/\.mp3|new Audio|\.play\(|\.src\s*=/);

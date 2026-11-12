@@ -11,17 +11,24 @@ import { trainingRegisterConfigSource } from "./src/training/registerKey";
 
 /** Match vercel.json: demo at /, /explore, /library; React app for other extension-less routes. */
 function demoRouting(): Plugin {
-  const rewrite: Connect.NextHandleFunction = (req, _res, next) => {
+  const rewrite: Connect.NextHandleFunction = (req, res, next) => {
     const raw = req.url || "/";
     const q = raw.indexOf("?");
     const pathOnly = q === -1 ? raw : raw.slice(0, q);
     const search = q === -1 ? "" : raw.slice(q);
     let nextPath = pathOnly;
+    if (pathOnly === "/training" || pathOnly === "/100-days" || pathOnly === "/100-day") {
+      res.statusCode = 302;
+      res.setHeader("Location", "/classroom");
+      res.end();
+      return;
+    }
     if (pathOnly === "/explore") nextPath = "/explore.html";
     else if (pathOnly === "/library") nextPath = "/library.html";
     else if (pathOnly === "/visitors") nextPath = "/visitors.html";
     else if (pathOnly === "/" || pathOnly === "/index.html") nextPath = "/index.html";
-    else if (pathOnly === "/auth" || pathOnly === "/volunteer" || pathOnly === "/volunteer/training" || pathOnly === "/service-fee") nextPath = "/app.html";
+    else if (pathOnly === "/auth" || pathOnly === "/reset-password" || pathOnly === "/volunteer" || pathOnly === "/volunteer/training" || pathOnly === "/service-fee" || pathOnly === "/classroom") nextPath = "/app.html";
+    else if (pathOnly === "/privacy" || pathOnly === "/privacy-policy" || pathOnly === "/account-deletion") nextPath = "/privacy-policy.html";
     else if (!pathOnly.includes(".") && !pathOnly.startsWith("/@") && !pathOnly.startsWith("/src/") && !pathOnly.startsWith("/node_modules/")) {
       nextPath = "/index.html";
     }
