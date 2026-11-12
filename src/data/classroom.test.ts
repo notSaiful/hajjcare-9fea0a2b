@@ -19,7 +19,7 @@ describe("classroom catalogue", () => {
     expect(day1.local_video_16x9).toBe("/videos/day1-trailer-16x9.mp4");
     expect(day1.local_video_9x16).toBe("/videos/day1-trailer-9x16.mp4");
     expect(day1.materials.map((item) => item.url)).toEqual([
-      "/#day1-trailer",
+      "/explore#day-1",
       "/videos/day1-trailer-16x9.mp4",
       "/videos/day1-trailer-9x16.mp4",
     ]);

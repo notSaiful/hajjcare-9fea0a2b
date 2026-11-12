@@ -54,7 +54,7 @@ export const CLASSROOM_CLASSES: ClassroomClass[] = [
       {
         label_hi: "दिन 1 अध्ययन पत्र",
         label_en: "Day 1 study sheet",
-        url: "/#day1-trailer",
+        url: "/explore#day-1",
       },
       {
         label_hi: "ट्रेलर वीडियो (चौड़ा)",
