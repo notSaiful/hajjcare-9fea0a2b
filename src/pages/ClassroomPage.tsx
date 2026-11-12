@@ -14,7 +14,6 @@ import { BookOpen, Download, GraduationCap, MessageCircle } from "lucide-react";
 const MENU = [
   { href: "/", hi: "डैशबोर्ड", en: "Dashboard" },
   { href: "/classroom", hi: "क्लासरूम", en: "Classroom" },
-  { href: "/classroom", hi: "100 दिन ट्रेनिंग", en: "100 Days Training" },
   { href: "/library#quran", hi: "क़ुरआन लाइब्रेरी", en: "Quran Library" },
   { href: "/explore#hadith", hi: "हदीस लाइब्रेरी", en: "Hadith Library" },
   { href: "/#duas", hi: "दुआ संग्रह", en: "Dua Collection" },

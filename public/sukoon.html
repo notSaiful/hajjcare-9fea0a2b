@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#1f4d3a">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="HajCare AI सुकून — परिवार के लिए लोकेशन ट्रैकिंग का डिज़ाइन प्रिव्यू। सैंपल डेटा, लाइव ट्रैकिंग नहीं।">
+<title>सुकून · Coming soon — HajCare AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Mukta:wght@400;500;600&family=Tiro+Devanagari+Hindi&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+<style>
+  body.sk-page{background:var(--cream);color:var(--ink);min-height:100vh;overflow:auto!important}
+  body.sk-page main,body.sk-page footer{visibility:visible!important;animation:none!important}
+  body.sk-page h1{font-family:"Tiro Devanagari Hindi","Cormorant Garamond",serif;font-weight:400;color:var(--green);line-height:1.25;font-size:clamp(1.7rem,6vw,2.5rem);margin:0}
+  body.sk-page h2,body.sk-page h3{margin:0}
+  .sk-top{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:.75rem;padding:.7rem 1rem;background:#f6f0e4f2;border-bottom:1px solid #b8954f33;backdrop-filter:blur(10px)}
+  .sk-logo{display:flex;align-items:center;gap:.55rem;font-family:"Cormorant Garamond",serif;font-weight:600;letter-spacing:.16em;font-size:1.05rem;color:var(--ink)}
+  .sk-logo svg{flex:none}
+  .sk-word{font-family:"Tiro Devanagari Hindi",serif;letter-spacing:0;color:var(--green);font-size:1.15rem}
+  .sk-main{max-width:1080px;margin:0 auto;padding:1rem 1rem 2.5rem;display:flex;flex-direction:column;gap:1rem}
+  .sk-eye{font-family:Mukta,sans-serif;letter-spacing:.16em;font-size:.72rem;color:var(--gold);text-transform:uppercase;margin:0 0 .35rem}
+  .sk-lead{margin:.55rem 0 0;color:var(--olive);font-size:1.02rem;max-width:38rem}
+  .sk-soon{display:inline-block;margin:.85rem 0 .45rem;padding:.55rem 1rem;border-radius:999px;background:var(--green);color:#f6e7c4;border:2px solid var(--gold);font-family:Mukta,sans-serif;font-weight:600;font-size:clamp(1.15rem,4.4vw,1.55rem);line-height:1.3;letter-spacing:.01em;box-shadow:0 10px 28px -16px #1f4d3a}
+  .sk-note{margin:0;padding:.65rem .8rem;border:1px dashed #b8954f;border-radius:12px;background:#fffaf2cc;color:#5c513f;font-size:.92rem;max-width:40rem}
+  .sk-note b{font-weight:600;color:var(--green)}
+  .sk-mapcard{position:relative;background:#fffaf2;border:1px solid #c9a45c73;border-radius:22px;box-shadow:0 18px 44px -28px #5f6b4eaa;overflow:hidden}
+  .sk-maphead{display:flex;justify-content:space-between;gap:.6rem;align-items:baseline;padding:.7rem .9rem .55rem}
+  .sk-maphead h2{font-size:1.2rem}
+  .sk-maphead p{margin:0;color:var(--olive);font-size:.82rem}
+  .sk-mapwrap{position:relative;aspect-ratio:640/480;background:#f4e7cc}
+  .sk-mapwrap svg{display:block;width:100%;height:100%}
+  .sk-mapwrap.is-sat{background:#241c16}
+  .land{fill:#f6ead0}
+  .hill{fill:#e7d7b0}
+  .hill.g{fill:#d5e3c8}
+  .contour{fill:none;stroke:#c9a45c;stroke-width:1.2;opacity:.45}
+  .road{fill:none;stroke:#e7d3a4;stroke-width:18;stroke-linecap:round}
+  .road.core{stroke:#fffaf3;stroke-width:10}
+  .district{fill:#fbf6ea;stroke:#e3d0a4;stroke-width:1.4}
+  .tent{fill:#fffaf2;stroke:#b8954f;stroke-width:1.15;stroke-linejoin:round}
+  .wall{fill:#f7f1e3;stroke:#b8954f;stroke-width:3}
+  .court{fill:#f3e6c4}
+  .cube{fill:#2b2a24}
+  .band{fill:#c9a45c}
+  .gate{fill:#1f4d3a}
+  .gateno,.floorno{font-family:Mukta,sans-serif;font-size:13px;font-weight:600;fill:#f6e7c4}
+  .floorno{fill:#1f4d3a;font-size:12px}
+  .platform{fill:#efe4c8;stroke:#b8954f;stroke-width:1.4}
+  .pillar{fill:#8d8474;stroke:#5c564c;stroke-width:.6}
+  .plain{fill:#d7e4cb}
+  .mound{fill:#c9b48a;stroke:#8a7344;stroke-width:1}
+  .only-sat{visibility:hidden}
+  .trek{fill:none;stroke:#1a73e8;stroke-width:3;stroke-dasharray:8 7;stroke-linecap:round;opacity:.8}
+  .sk-mapwrap.is-sat .land{fill:#2a231c}
+  .sk-mapwrap.is-sat .hill{fill:#3d3428}
+  .sk-mapwrap.is-sat .hill.g{fill:#3a4634}
+  .sk-mapwrap.is-sat .contour{stroke:#8d7350;opacity:.35}
+  .sk-mapwrap.is-sat .road{stroke:#5c4e3c}
+  .sk-mapwrap.is-sat .road.core{stroke:#a89070}
+  .sk-mapwrap.is-sat .district{fill:#3a3128;stroke:#6d5c44}
+  .sk-mapwrap.is-sat .tent{fill:#6e5d48;stroke:#2a231c}
+  .sk-mapwrap.is-sat .wall{fill:#4a4034;stroke:#c9a45c}
+  .sk-mapwrap.is-sat .court{fill:#3a3328}
+  .sk-mapwrap.is-sat .platform{fill:#4a4034;stroke:#c9a45c}
+  .sk-mapwrap.is-sat .pillar{fill:#c4b49a;stroke:#2a231c}
+  .sk-mapwrap.is-sat .plain{fill:#3e4a36}
+  .sk-mapwrap.is-sat .mound{fill:#6b5840;stroke:#d7c4a2}
+  .sk-mapwrap.is-sat .floorno{fill:#f6e7c4}
+  .sk-mapwrap.is-sat .only-sat{visibility:visible}
+  .pin{position:absolute;z-index:2;max-width:46%;padding:.28rem .5rem;border-radius:10px;background:#fffaf2f2;border:1px solid #c9a45c;color:#1f4d3a;font-family:Mukta,sans-serif;font-weight:600;font-size:.78rem;line-height:1.25;box-shadow:0 6px 16px -10px #1f4d3a}
+  .sk-mapwrap.is-sat .pin{background:#1a1612ee;color:#f6f0e4;border-color:#a4844a}
+  .p-haram{left:3%;top:4%}
+  .p-mina{left:3%;top:54%}
+  .p-jam{right:3%;top:34%;left:auto;text-align:right}
+  .sk-fresh{position:absolute;z-index:2;left:50%;bottom:10px;transform:translateX(-50%);margin:0;max-width:calc(100% - 20px);text-align:center;padding:.32rem .7rem;border-radius:999px;background:#1f4d3a;color:#f6e7c4;font-family:Mukta,sans-serif;font-size:.78rem;font-weight:600;line-height:1.3;box-shadow:0 8px 18px -12px #000}
+  .sk-mapwrap.is-sat .sk-fresh{background:#f6e7c4;color:#1f4d3a}
+  .sk-toggle{position:absolute;z-index:3;top:10px;right:10px;display:inline-flex;padding:.2rem;border-radius:999px;border:1px solid #b8954f88;background:#fffaf2f5;box-shadow:0 8px 18px -12px #1f4d3a}
+  .sk-toggle button{appearance:none;border:0;background:transparent;color:var(--olive);font:600 .82rem Mukta,sans-serif;padding:.42rem .72rem;border-radius:999px;cursor:pointer;min-height:40px}
+  .sk-toggle button[aria-pressed="true"]{background:var(--green);color:#f6e7c4}
+  .sk-toggle button:focus-visible,.sk-status:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+  .walker{position:absolute;z-index:2;left:54.7%;top:72.5%;width:0;height:0;animation:trek 18s linear infinite alternate}
+  .walker .blob{position:absolute;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;background:#1a73e8;border:3px solid #fff;box-shadow:0 0 0 0 rgba(26,115,232,.55);animation:halo 1.8s ease-out infinite}
+  .walker .tag{position:absolute;left:0;top:-28px;transform:translateX(-50%);background:#1a73e8;color:#fff;font:600 .72rem Mukta,sans-serif;padding:.05rem .45rem;border-radius:999px;white-space:nowrap}
+  @keyframes trek{
+    0%{left:18.4%;top:72.5%}
+    12.5%{left:27.5%;top:70.4%}
+    25%{left:36.1%;top:72.8%}
+    37.5%{left:44.9%;top:75.1%}
+    50%{left:54.7%;top:72.5%}
+    62.5%{left:63.5%;top:67.7%}
+    75%{left:69.8%;top:66.5%}
+    87.5%{left:75.4%;top:68.6%}
+    100%{left:81.9%;top:74.2%}
+  }
+  @keyframes halo{70%{box-shadow:0 0 0 14px rgba(26,115,232,0)}100%{box-shadow:0 0 0 0 rgba(26,115,232,0)}}
+  .sk-card{background:#fffaf2;border:1px solid #c9a45c66;border-radius:18px;padding:1rem 1rem .95rem;box-shadow:0 12px 32px -24px #5f6b4e}
+  .sk-card h2{font-size:1.35rem}
+  .sk-sub{margin:.25rem 0 .7rem;color:var(--olive);font-size:.92rem}
+  .sk-steps{list-style:none;display:flex;flex-wrap:wrap;align-items:center;gap:.35rem .15rem;margin:0;padding:0}
+  .sk-steps li{display:inline-flex;align-items:center;gap:.3rem}
+  .sk-steps li span{display:inline-flex;align-items:center;gap:.35rem;padding:.32rem .62rem;border-radius:999px;border:1px solid #c9a45c88;background:#fff;color:#3a3427;font-size:.86rem;line-height:1.2}
+  .sk-steps li span i{width:.5rem;height:.5rem;border-radius:50%;background:#c9a45c;display:inline-block;font-style:normal}
+  .sk-steps li.done span{background:#f3ead4;border-color:#1f4d3a55}
+  .sk-steps li.done span i{background:#1f4d3a}
+  .sk-steps li.now span{background:#1f4d3a;color:#f6e7c4;border-color:#1f4d3a;box-shadow:0 0 0 3px #c9a45c66;font-weight:600}
+  .sk-steps li.now span i{background:#f6e7c4;box-shadow:0 0 0 2px #c9a45c}
+  .sk-steps li:not(:last-child)::after{content:"→";color:#b8954f;font-size:.95rem}
+  .sk-fam{margin:.85rem 0 0;padding:.75rem .85rem;border-radius:14px;background:#fff;border:1px solid #c9a45c55;font-family:"Tiro Devanagari Hindi",serif;font-size:1.28rem;color:var(--green);line-height:1.45}
+  .sk-actions h2{font-size:1.28rem;margin-bottom:.25rem}
+  .sk-btns{display:grid;grid-template-columns:1fr;gap:.5rem;margin-top:.7rem}
+  .sk-status{appearance:none;width:100%;text-align:left;font:600 1rem/1.3 Mukta,sans-serif;padding:.75rem .85rem;border-radius:14px;cursor:pointer;min-height:52px;background:#fff;border:1.5px solid #c9a45c}
+  .sk-status.ok{background:#eef8f2;border-color:#1f7a4d;color:#145c38}
+  .sk-status.help{background:#fff8e8;border-color:#c4922a;color:#7a5410}
+  .sk-status.sos{background:#fdeeee;border-color:#b4332a;color:#8e221c}
+  .sk-status[aria-pressed="true"]{box-shadow:0 0 0 3px #1f4d3a33}
+  .sk-status.help[aria-pressed="true"]{box-shadow:0 0 0 3px #c4922a55}
+  .sk-status.sos[aria-pressed="true"]{box-shadow:0 0 0 3px #b4332a55}
+  .sk-hint{margin:.7rem 0 0;color:var(--olive);font-size:.9rem}
+  .sk-panel{margin-top:.75rem;padding:.85rem;border-radius:16px;border:1.5px solid #c9a45c}
+  .sk-panel[hidden]{display:none}
+  .sk-flag{margin:0 0 .65rem;padding:.45rem .65rem;border:1.5px dashed #8a6a2e;border-radius:10px;background:#fffaf2;color:#6b5428;font-weight:700;font-size:.92rem;text-align:center}
+  .sk-panel.is-ok{background:#e7f6ee;border-color:#1f7a4d}
+  .sk-panel.is-help{background:#fff6dc;border-color:#c4922a}
+  .sk-panel.is-sos{background:#fdecea;border-color:#b4332a}
+  .sk-panel p{margin:.35rem 0}
+  .sk-result{font-family:"Tiro Devanagari Hindi",serif;font-size:clamp(1.35rem,4vw,1.7rem);line-height:1.35;margin:.15rem 0 .35rem}
+  .sk-panel.is-ok .sk-result{color:#145c38}
+  .sk-panel.is-help .sk-result{color:#7a5410}
+  .sk-panel.is-sos .sk-result{color:#8e221c}
+  body.sk-page .sk-panel.is-sos h3{color:#8e221c}
+  body.sk-page .sk-panel.is-help h3{color:#7a5410}
+  .sk-ph{font-family:Mukta,sans-serif;letter-spacing:.04em;font-weight:700}
+  .sk-mini{font-size:.82rem;color:#6b5428}
+  .sk-never{margin-top:.55rem;font-weight:600;color:#8e221c}
+  .sk-split{display:grid;gap:1rem}
+  .sk-list{list-style:none;margin:.4rem 0 0;padding:0}
+  .sk-list li{position:relative;padding:.42rem 0 .42rem 1.15rem;border-bottom:1px solid #b8954f26;font-size:.98rem}
+  .sk-list li:last-child{border-bottom:0}
+  .sk-list li::before{content:"";position:absolute;left:0;top:.78rem;width:.45rem;height:.45rem;border-radius:2px;background:var(--gold)}
+  .sk-ex{margin:.7rem 0 0;padding:.6rem .7rem;border-radius:12px;background:#fff;border:1px solid #c9a45c44;font-size:.9rem;color:#3a3427}
+  .sk-trust .sk-em{margin-top:.7rem;padding:.7rem .75rem;border-radius:12px;background:#1f4d3a;color:#f6e7c4;font-size:.95rem}
+  .sk-trust .sk-em b{color:#f3dc9a;font-size:1.05rem}
+  body.sk-page > footer{margin-top:1.4rem;padding:1.5rem 1rem 1.8rem}
+  body.sk-page > footer .sk-brand{font-family:"Cormorant Garamond",serif;letter-spacing:.18em;font-size:1rem;color:#f3dc9a}
+  body.sk-page > footer .sk-line{font-family:"Tiro Devanagari Hindi",serif;font-size:clamp(1rem,3vw,1.25rem);color:#f6e7c4;margin-top:.35rem}
+  @media(min-width:560px){
+    .sk-btns{grid-template-columns:repeat(3,1fr)}
+    .sk-status{text-align:center;min-height:64px}
+  }
+  @media(min-width:800px){
+    .sk-intro{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(16rem,.8fr);grid-template-areas:"eye badge" "title badge" "lead badge";column-gap:1.4rem;align-items:center}
+    .sk-eye{grid-area:eye}
+    .sk-intro h1{grid-area:title}
+    .sk-lead{grid-area:lead;margin-top:.4rem}
+    .sk-badge-wrap{grid-area:badge;text-align:right}
+    .sk-soon{margin-top:0}
+    .sk-note{margin-left:auto}
+    .sk-split{grid-template-columns:1fr 1fr}
+  }
+  @media(min-width:980px){
+    .sk-main{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(300px,.78fr);gap:1rem 1.15rem;align-items:start}
+    .sk-intro,.sk-split{grid-column:1 / -1}
+    .sk-mapcard{grid-column:1;grid-row:2 / span 2}
+    .sk-stage{grid-column:2;grid-row:2}
+    .sk-actions{grid-column:2;grid-row:3}
+  }
+  @media(max-width:420px){
+    .sk-logo{letter-spacing:.08em;font-size:.95rem}
+    .pin{font-size:.72rem;max-width:50%}
+    .sk-fresh{font-size:.72rem}
+    .sk-toggle button{padding:.4rem .55rem;font-size:.76rem}
+  }
+</style>
+</head>
+<body class="sk-page">
+<header class="sk-top">
+  <div class="sk-logo">
+    <svg viewBox="0 0 40 40" width="28" height="28" aria-hidden="true">
+      <defs>
+        <pattern id="logo-geo" width="80" height="80" patternUnits="userSpaceOnUse">
+          <g fill="none" stroke="#b8954f" stroke-width="1.6">
+            <path d="M40 4 51 29 76 40 51 51 40 76 29 51 4 40 29 29Z"/>
+            <rect x="18" y="18" width="44" height="44" transform="rotate(45 40 40)"/>
+            <rect x="18" y="18" width="44" height="44"/>
+            <circle cx="40" cy="40" r="9"/>
+          </g>
+        </pattern>
+      </defs>
+      <rect width="40" height="40" fill="url(#logo-geo)"/>
+      <rect x="11" y="13" width="18" height="16" fill="#2b2a24"/>
+      <rect x="11" y="17" width="18" height="2.5" fill="#c9a45c"/>
+    </svg>
+    HajCare AI
+  </div>
+  <p class="sk-word">सुकून</p>
+</header>
+
+<main class="sk-main">
+  <header class="sk-intro">
+    <p class="sk-eye">HajCare AI · सुकून</p>
+    <h1>आपके हाजी, आपकी नज़र में</h1>
+    <div class="sk-badge-wrap">
+      <p class="sk-soon">जल्द आ रहा है · Coming soon</p>
+      <p class="sk-note"><b>डिज़ाइन प्रिव्यू।</b> नक्शे और अलर्ट पर सैंपल डेटा है। यह लाइव ट्रैकिंग नहीं है। Design preview with sample data, not live tracking.</p>
+    </div>
+    <p class="sk-lead">Ola या Uber में जैसे गाड़ी दिखती है, वैसे घर बैठे देखिए कि आपके हाजी कहाँ हैं। परिवार का छोटा ग्रुप — ज़्यादा से ज़्यादा 5 लोग — और “लोकेशन शेयर करें” हाँ।</p>
+  </header>
+
+  <section class="sk-mapcard" aria-labelledby="map-heading">
+    <div class="sk-maphead">
+      <h2 id="map-heading">सैंपल नक्शा</h2>
+      <p>नीला डॉट · हाजी</p>
+    </div>
+    <div class="sk-mapwrap" id="mapwrap">
+      <div class="sk-toggle" role="group" aria-label="नक्शा या सैटेलाइट">
+        <button type="button" id="view-map" aria-pressed="true">नक्शा</button>
+        <button type="button" id="view-sat" aria-pressed="false">सैटेलाइट</button>
+      </div>
+      <svg viewBox="0 0 640 480" role="img" aria-labelledby="mapTitle mapDesc" xmlns="http://www.w3.org/2000/svg">
+        <title id="mapTitle">सुकून का सैंपल नक्शा</title>
+        <desc id="mapDesc">प्रतीकात्मक नक्शा। नीला डॉट एक छोटे रास्ते पर धीरे चलता है। असली लोकेशन नहीं।</desc>
+        <defs>
+          <filter id="sat-grain" x="0" y="0" width="100%" height="100%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="4" seed="7" result="n"/>
+            <feColorMatrix in="n" type="matrix" values="0.5 0 0 0 0.16  0.38 0 0 0 0.12  0.18 0 0 0 0.07  0 0 0 0.55 0"/>
+          </filter>
+          <linearGradient id="landg" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#f8efd8"/>
+            <stop offset="1" stop-color="#ead7ae"/>
+          </linearGradient>
+        </defs>
+        <rect class="land" width="640" height="480" fill="url(#landg)"/>
+        <g class="only-sat">
+          <ellipse cx="180" cy="340" rx="240" ry="110" fill="#4a3b2c" opacity=".55"/>
+          <ellipse cx="500" cy="160" rx="220" ry="120" fill="#3c4a34" opacity=".5"/>
+          <ellipse cx="420" cy="400" rx="200" ry="70" fill="#5a4634" opacity=".4"/>
+          <rect width="640" height="480" filter="url(#sat-grain)"/>
+        </g>
+        <ellipse class="hill" cx="120" cy="390" rx="170" ry="70"/>
+        <ellipse class="hill g" cx="520" cy="120" rx="200" ry="80"/>
+        <ellipse class="hill" cx="360" cy="430" rx="220" ry="50"/>
+        <path class="contour" d="M20 150 C 140 120, 220 180, 320 140 S 500 100, 630 150"/>
+        <path class="contour" d="M10 210 C 160 180, 260 240, 400 200 S 560 190, 640 230"/>
+        <path class="road" d="M0 300 C 120 270, 220 330, 340 300 S 520 260, 640 310"/>
+        <path class="road core" d="M0 300 C 120 270, 220 330, 340 300 S 520 260, 640 310"/>
+        <path class="road" d="M150 0 C 170 90, 120 160, 160 240 S 150 360, 170 480"/>
+        <path class="road core" d="M150 0 C 170 90, 120 160, 160 240 S 150 360, 170 480"/>
+        <g>
+          <rect class="wall" x="22" y="28" width="184" height="140" rx="4"/>
+          <rect class="court" x="34" y="40" width="160" height="116"/>
+          <rect class="cube" x="96" y="70" width="38" height="44"/>
+          <rect class="band" x="96" y="84" width="38" height="6"/>
+          <rect class="gate" x="82" y="140" width="32" height="28" rx="2"/>
+          <text class="gateno" x="98" y="159" text-anchor="middle">79</text>
+        </g>
+        <g transform="translate(248,168)">
+          <rect class="platform" x="0" y="42" width="118" height="34" rx="6"/>
+          <rect class="pillar" x="16" y="8" width="16" height="46" rx="2"/>
+          <rect class="pillar" x="50" y="2" width="16" height="52" rx="2"/>
+          <rect class="pillar" x="84" y="10" width="16" height="44" rx="2"/>
+          <text class="floorno" x="59" y="64" text-anchor="middle">1</text>
+        </g>
+        <rect class="district" x="26" y="248" width="176" height="150" rx="10"/>
+        <g>
+          <path class="tent" d="M40 294 L52 270 L64 294 Z"/>
+          <path class="tent" d="M68 294 L80 270 L92 294 Z"/>
+          <path class="tent" d="M96 294 L108 270 L120 294 Z"/>
+          <path class="tent" d="M124 294 L136 270 L148 294 Z"/>
+          <path class="tent" d="M152 294 L164 270 L176 294 Z"/>
+          <path class="tent" d="M40 326 L52 302 L64 326 Z"/>
+          <path class="tent" d="M68 326 L80 302 L92 326 Z"/>
+          <path class="tent" d="M96 326 L108 302 L120 326 Z"/>
+          <path class="tent" d="M124 326 L136 302 L148 326 Z"/>
+          <path class="tent" d="M152 326 L164 302 L176 326 Z"/>
+          <path class="tent" d="M40 358 L52 334 L64 358 Z"/>
+          <path class="tent" d="M68 358 L80 334 L92 358 Z"/>
+          <path class="tent" d="M96 358 L108 334 L120 358 Z"/>
+          <path class="tent" d="M124 358 L136 334 L148 358 Z"/>
+          <path class="tent" d="M152 358 L164 334 L176 358 Z"/>
+          <path class="tent" d="M40 390 L52 366 L64 390 Z"/>
+          <path class="tent" d="M68 390 L80 366 L92 390 Z"/>
+          <path class="tent" d="M96 390 L108 366 L120 390 Z"/>
+          <path class="tent" d="M124 390 L136 366 L148 390 Z"/>
+          <path class="tent" d="M152 390 L164 366 L176 390 Z"/>
+        </g>
+        <ellipse class="plain" cx="530" cy="360" rx="96" ry="46"/>
+        <path class="mound" d="M508 352 L532 304 L556 352 Z"/>
+        <path id="trek" class="trek" d="M118 348 C 200 310, 260 390, 350 348 S 460 310, 524 356"/>
+      </svg>
+      <div class="walker" aria-hidden="true"><span class="blob"></span><span class="tag">हाजी</span></div>
+      <p class="pin p-haram">हरम गेट नंबर 79</p>
+      <p class="pin p-mina">मिना टेंट एरिया</p>
+      <p class="pin p-jam">जमरात, पहली मंज़िल</p>
+      <p class="sk-fresh">आख़िरी अपडेट: 1 मिनट पहले</p>
+    </div>
+  </section>
+
+  <section class="sk-card sk-stage" aria-labelledby="stage-heading">
+    <h2 id="stage-heading">हज का पड़ाव</h2>
+    <p class="sk-sub">अभी का पड़ाव हाइलाइट है। सैंपल सफ़र।</p>
+    <ol class="sk-steps">
+      <li class="done"><span><i></i>मक्का</span></li>
+      <li class="done"><span><i></i>मिना</span></li>
+      <li class="now" aria-current="step"><span><i></i>अरफ़ात</span></li>
+      <li><span><i></i>मुज़दलिफ़ा</span></li>
+      <li><span><i></i>जमरात</span></li>
+      <li><span><i></i>तवाफ़</span></li>
+    </ol>
+    <p class="sk-fam">अम्मी अरफ़ात पहुँच गईं 🤲</p>
+  </section>
+
+  <section class="sk-card sk-actions" aria-labelledby="btn-heading">
+    <h2 id="btn-heading">हाजी के तीन बटन</h2>
+    <p class="sk-sub">टैप करके देखें परिवार को क्या दिखेगा। यह सिर्फ़ डेमो है।</p>
+    <div class="sk-btns" role="group" aria-label="स्टेटस बटन">
+      <button type="button" class="sk-status ok" data-kind="ok" aria-pressed="false">🟢 मैं ठीक हूँ</button>
+      <button type="button" class="sk-status help" data-kind="help" aria-pressed="false">🟡 मदद चाहिए</button>
+      <button type="button" class="sk-status sos" data-kind="sos" aria-pressed="false">🔴 SOS</button>
+    </div>
+    <p class="sk-hint" id="tap-hint">किसी बटन पर टैप करें। कोई संदेश, WhatsApp या SMS नहीं जाएगा।</p>
+    <div id="demo-out" aria-live="polite">
+      <article class="sk-panel is-ok" id="panel-ok" hidden>
+        <p class="sk-flag">डेमो — कोई असली अलर्ट नहीं भेजा गया</p>
+        <h3 class="sk-result">अब्बू ठीक हैं ✅</h3>
+        <p>हरा संदेश परिवार को। जगह वही है: अरफ़ात (सैंपल)।</p>
+        <p class="sk-mini">आख़िरी अपडेट: 1 मिनट पहले</p>
+      </article>
+      <article class="sk-panel is-help" id="panel-help" hidden>
+        <p class="sk-flag">डेमो — कोई असली अलर्ट नहीं भेजा गया</p>
+        <h3 class="sk-result">🟡 पीला अलर्ट</h3>
+        <p><b>लोकेशन:</b> मिना टेंट एरिया के पास (सैंपल)</p>
+        <p><b>रास्ता:</b> हरम गेट नंबर 79 की तरफ़, पैदल रास्ता (सैंपल)</p>
+        <p class="sk-mini">परिवार को पीली चेतावनी और जगह दिखेगी। कुछ भेजा नहीं गया।</p>
+      </article>
+      <article class="sk-panel is-sos" id="panel-sos" hidden>
+        <p class="sk-flag">डेमो — कोई असली अलर्ट नहीं भेजा गया</p>
+        <h3 class="sk-result">🔴 इमरजेंसी अलर्ट</h3>
+        <p>लाल अलर्ट। परिवार को सही लोकेशन दिखेगी। इस प्रिव्यू में कोई WhatsApp या SMS नहीं गया।</p>
+        <p><b>लोकेशन:</b> अरफ़ात, मैदान के पूर्वी किनारे (सैंपल)</p>
+        <p><b>गाइड का नंबर:</b> <span class="sk-ph">+966 5XX XXX XXXX</span> <span class="sk-mini">प्लेसहोल्डर</span></p>
+        <p class="sk-never">SOS के दौरान “सब ठीक” नहीं दिखेगा।</p>
+      </article>
+    </div>
+  </section>
+
+  <div class="sk-split">
+    <section class="sk-card" aria-labelledby="auto-heading">
+      <h2 id="auto-heading">अगर हाजी बात न कर पाएँ</h2>
+      <p class="sk-sub">ये अलर्ट अपने आप आते हैं। नीचे का उदाहरण सैंपल है।</p>
+      <ul class="sk-list">
+        <li>देर तक एक अनजान जगह पर रुके हों</li>
+        <li>बैटरी ख़त्म होने वाली हो</li>
+        <li>अपडेट बंद हो जाएँ</li>
+      </ul>
+      <p class="sk-ex">आख़िरी पता लोकेशन और समय के साथ दिखता है। उदाहरण: अरफ़ात के मैदान के पास · 1 मिनट पहले।</p>
+    </section>
+    <section class="sk-card sk-trust" aria-labelledby="trust-heading">
+      <h2 id="trust-heading">भरोसे की बातें</h2>
+      <ul class="sk-list">
+        <li>लोकेशन सिर्फ़ चुने हुए परिवार को जाती है।</li>
+        <li>हाजी कभी भी शेयर बंद कर सकते हैं।</li>
+        <li>फ़ोन चालू और चार्ज रहना चाहिए।</li>
+      </ul>
+      <p class="sk-em">यह सऊदी सरकार और Nusuk की आधिकारिक इमरजेंसी सेवा की जगह नहीं लेता। इमरजेंसी में <b>911 / 997</b> पर भी कॉल करें।</p>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <p class="sk-brand">HajCare AI</p>
+  <p class="sk-line">सुकून — क्योंकि दुआ के साथ तसल्ली भी ज़रूरी है।</p>
+</footer>
+<script>
+(function () {
+  var wrap = document.getElementById("mapwrap");
+  var mapBtn = document.getElementById("view-map");
+  var satBtn = document.getElementById("view-sat");
+  function setSat(on) {
+    wrap.classList.toggle("is-sat", on);
+    mapBtn.setAttribute("aria-pressed", on ? "false" : "true");
+    satBtn.setAttribute("aria-pressed", on ? "true" : "false");
+  }
+  mapBtn.addEventListener("click", function () { setSat(false); });
+  satBtn.addEventListener("click", function () { setSat(true); });
+
+  var buttons = document.querySelectorAll(".sk-status");
+  var panels = {
+    ok: document.getElementById("panel-ok"),
+    help: document.getElementById("panel-help"),
+    sos: document.getElementById("panel-sos")
+  };
+  var hint = document.getElementById("tap-hint");
+  buttons.forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var key = btn.getAttribute("data-kind");
+      buttons.forEach(function (b) {
+        b.setAttribute("aria-pressed", b === btn ? "true" : "false");
+      });
+      Object.keys(panels).forEach(function (name) {
+        panels[name].hidden = name !== key;
+      });
+      hint.hidden = true;
+    });
+  });
+})();
+</script>
+</body>
+</html>

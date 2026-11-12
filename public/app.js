@@ -28,7 +28,7 @@ a.addEventListener('ended',()=>{a.currentTime=0;on_=false;m.classList.remove('pl
 (()=>{const ov=document.getElementById('demo');let open=false;
 if(location.hash==="#training")location.replace("/classroom");
 addEventListener("hashchange",()=>{if(location.hash==="#training")location.replace("/classroom")});
-const show=k=>{if(k==='training'){location.assign("/classroom");return}
+const show=k=>{if(k==='training'){location.assign("/classroom");return}if(k==='sukoon'){location.assign("/sukoon");return}
 ov.querySelectorAll('.dp').forEach(p=>p.hidden=p.dataset.p!==k);ov.hidden=false;requestAnimationFrame(()=>ov.classList.add('on'));if(!open){history.pushState({demo:1},'');open=true}ov.querySelector('.dx').focus();if(k==='zoya')window.__zoyaOpen()};
 const hide=(fromPop)=>{if(!open)return;open=false;ov.classList.remove('on');setTimeout(()=>ov.hidden=true,400);speechSynthesis&&speechSynthesis.cancel();window.__zoyaStop&&window.__zoyaStop();if(!fromPop)history.back()};
 document.querySelectorAll('[data-demo]').forEach(e=>{const go=ev=>{ev.stopPropagation();show(e.dataset.demo)};e.addEventListener('click',go);e.addEventListener('keydown',ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();go(ev)}})});
