@@ -264,7 +264,14 @@ describe("approved public demo", () => {
     expect(JSON.stringify(vercel.headers)).toContain("video/mp4");
     expect(read("public/index.html")).toContain("/videos/day1-trailer-16x9.mp4");
     expect(read("public/explore.js")).toContain("/videos/day1-trailer-9x16.mp4");
+    expect(read("public/index.html")).not.toContain("day1-1min");
+    expect(read("public/explore.js")).not.toContain("day1-1min");
+    expect(read("public/index.html")).not.toContain("1 मिनट का सार");
+    expect(read("public/explore.js")).not.toContain("1 मिनट का सार");
     expect(home).toContain("HajCare AI");
+    expect(home).toContain('class="train-bar" href="/classroom"');
+    expect(home).toContain("HajCare AI Classroom खोलें");
+    expect(home).not.toContain("Healthcare AI Classroom");
     expect(home).not.toContain("HajjCare");
     expect(home).not.toContain("demo-tag");
     expect(read("public/explore.html")).not.toContain("Demo preview");

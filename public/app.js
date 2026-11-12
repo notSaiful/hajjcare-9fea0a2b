@@ -2,8 +2,8 @@ const a=document.getElementById('talbiya'),m=document.getElementById('mute'),int
 let voice='f',on_=false;a.src=a.dataset[voice];a.volume=0;
 function ramp(el,to,ms,done){const s=el.volume,t0=performance.now();(function f(t){const p=Math.min((t-t0)/ms,1);el.volume=Math.min(1,Math.max(0,s+(to-s)*p));if(p<1)requestAnimationFrame(f);else done&&done()})(t0)}
 function mark(){document.querySelectorAll('.vtoggle button').forEach(b=>{b.classList.toggle('on',b.dataset.v===voice);b.setAttribute('aria-pressed',b.dataset.v===voice)});const sp=document.getElementById('spk');if(sp)sp.className='spk '+voice+(sp.classList.contains('talk')?' talk':'')}
-function on(){if(window.__talbiyaDone)return;window.__userMuted=false;a.play().then(()=>{on_=true;ramp(a,V,2500);m.classList.add('playing');m.querySelector('b').textContent='आवाज़'}).catch(()=>{})}
-function off(){window.__userMuted=true;on_=false;window.__zoyaStop&&window.__zoyaStop();ramp(a,0,1500,()=>a.pause());m.classList.remove('playing');m.querySelector('b').textContent='ख़ामोश'}
+function on(){if(window.__talbiyaDone)return;window.__userMuted=false;if(window.__hcMeaningOn){const h=document.getElementById('hmean');if(h){h.play().then(()=>{on_=true;m.classList.add('playing');m.querySelector('b').textContent='आवाज़'}).catch(()=>{});return}}a.play().then(()=>{on_=true;ramp(a,V,2500);m.classList.add('playing');m.querySelector('b').textContent='आवाज़'}).catch(()=>{})}
+function off(){window.__userMuted=true;on_=false;window.__zoyaStop&&window.__zoyaStop();ramp(a,0,1500,()=>a.pause());const h=document.getElementById('hmean');if(h&&!h.paused){try{h.pause()}catch(_){}}m.classList.remove('playing');m.querySelector('b').textContent='ख़ामोश'}
 function setVoice(v){if(v===voice)return;voice=v;localStorage.setItem('hc-voice',v);mark();
  if(!on_){a.src=a.dataset[v];return}
  const b=new Audio(a.dataset[v]);b.volume=0;b.play().then(()=>{ramp(b,V,1800);ramp(a,0,1800,()=>{a.pause();a.src=b.src;a.currentTime=b.currentTime;a.volume=V;a.play().then(()=>{b.pause()}).catch(()=>{})})}).catch(()=>{a.src=a.dataset[v];a.play()})}
@@ -26,7 +26,9 @@ a.addEventListener('ended',()=>{a.currentTime=0;on_=false;m.classList.remove('pl
 
 /* demos */
 (()=>{const ov=document.getElementById('demo');let open=false;
-const show=k=>{if(k==='training'){const i=document.getElementById('intro');if(i&&!i.classList.contains('gone'))document.getElementById('enter').click();setTimeout(()=>{const t=document.getElementById('training');scrollTo({top:t.getBoundingClientRect().top+scrollY-70,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});const w=t.querySelector('.wk');if(w)w.open=true},i&&!i.classList.contains('gone')?300:0);return}
+if(location.hash==="#training")location.replace("/classroom");
+addEventListener("hashchange",()=>{if(location.hash==="#training")location.replace("/classroom")});
+const show=k=>{if(k==='training'){location.assign("/classroom");return}
 ov.querySelectorAll('.dp').forEach(p=>p.hidden=p.dataset.p!==k);ov.hidden=false;requestAnimationFrame(()=>ov.classList.add('on'));if(!open){history.pushState({demo:1},'');open=true}ov.querySelector('.dx').focus();if(k==='zoya')window.__zoyaOpen()};
 const hide=(fromPop)=>{if(!open)return;open=false;ov.classList.remove('on');setTimeout(()=>ov.hidden=true,400);speechSynthesis&&speechSynthesis.cancel();window.__zoyaStop&&window.__zoyaStop();if(!fromPop)history.back()};
 document.querySelectorAll('[data-demo]').forEach(e=>{const go=ev=>{ev.stopPropagation();show(e.dataset.demo)};e.addEventListener('click',go);e.addEventListener('keydown',ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();go(ev)}})});
@@ -159,8 +161,11 @@ window.__hmPhrases=P})();
 let t0=0,iv;const done=()=>{if(intro.classList.contains('tdone'))return;intro.classList.add('tdone');clearInterval(iv)};
 const watch=()=>{if(t0)return;t0=Date.now();iv=setInterval(()=>{const el=(Date.now()-t0)/1000;const hm2=document.getElementById('hmean');if(el>20&&a.paused&&(!hm2||hm2.paused))done();if(el>240)done()},1000)};
 new MutationObserver(()=>{if(intro.classList.contains('opened'))watch()}).observe(intro,{attributes:true,attributeFilter:['class']});if(intro.classList.contains('opened'))watch();
-/* Door sequence plays the girl Arabic file only. The Hindi meaning file is a different narrator, so it is not started here. */
-let seq=false;a.addEventListener('ended',()=>{if(seq||window.__talbiyaDone)return;seq=true;window.__talbiyaDone=true;done()});a.addEventListener('error',done);
+/* OPENING_ORDER: female-talbiya then hindi-caption-with-old-male.
+   The girl file is #talbiya (voice f, talbiya-female-1x.mp3). After it ends, the caption and the old male Hindi meaning (#hmean, talbiya-hindi-meaning.mp3 from 2104614) start together. Mute, Skip, and a blocked play() leave this step unstarted or paused. */
+const hmx=document.getElementById('hmean');let seq=false;
+function meaningHear(){if(document.getElementById('talbiya-tap')||window.__talbiyaDone||window.__userMuted||!hmx)return;const b=document.createElement('button');b.type='button';b.id='talbiya-tap';b.textContent='आवाज़ सुनें';b.addEventListener('click',e=>{e.stopPropagation();if(window.__talbiyaDone||window.__userMuted)return;const pr=hmx.play();pr&&pr.then(()=>b.remove()).catch(()=>{})});document.body.appendChild(b)}
+a.addEventListener('ended',()=>{if(seq||window.__talbiyaDone||window.__userMuted)return;seq=true;if(!hmx){done();return}window.__hcMeaningOn=true;window.__hcShowTalbiyahMeaning&&window.__hcShowTalbiyahMeaning();try{hmx.currentTime=0;hmx.volume=1}catch(_){}const pr=hmx.play();const started=()=>{on_=true;m&&m.classList.add('playing');const lb=m&&m.querySelector('b');if(lb)lb.textContent='आवाज़'};if(pr&&pr.then)pr.then(started).catch(meaningHear);else started();hmx.addEventListener('ended',()=>{window.__hcMeaningOn=false;if(window.__talbiyaDone)return;window.__talbiyaDone=true;setTimeout(done,150)},{once:true});hmx.addEventListener('error',()=>{if(seq&&!window.__talbiyaDone){window.__hcMeaningOn=false;done()}})});a.addEventListener('error',done);
 const clean=()=>{document.querySelectorAll('details[open]').forEach(d=>d.open=false);const ov=document.getElementById('demo');if(ov&&!ov.hidden&&ov.classList.contains('on')){const x=ov.querySelector('.dx');x&&x.click()}};
 en.addEventListener('click',()=>{window.__talbiyaDone=true;try{a.pause();const h=document.getElementById('hmean');h&&h.pause()}catch(_){}done();clean();document.body.classList.add('entered');if('scrollRestoration'in history)history.scrollRestoration='manual';scrollTo(0,0);requestAnimationFrame(()=>scrollTo(0,0))},true);
 })();
