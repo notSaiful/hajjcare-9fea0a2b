@@ -73,6 +73,7 @@ export default function ClassroomPage() {
   const classes = useMemo(() => publishedClasses(), []);
   const [day, setDay] = useState(classes[0]?.day ?? 0);
   const selected = classes.find((item) => item.day === day) ?? classes[0];
+  const studySheet = selected?.materials.find((item) => !fileDownload(item.url));
   const digits = resolveWhatsAppDigits(import.meta.env.VITE_HAJCARE_WHATSAPP_NUMBER);
   const displayNumber = formatWhatsAppDisplay(digits);
 
@@ -87,7 +88,7 @@ export default function ClassroomPage() {
       <div className="mx-auto grid max-w-7xl gap-4 px-3 py-4 sm:px-5 lg:grid-cols-[13.5rem_minmax(0,1fr)_18.5rem] lg:items-start">
         <nav
           aria-label={hindiFirst(language) ? "क्लासरूम मेनू" : "Classroom menu"}
-          className="order-1 flex gap-2 overflow-x-auto pb-1 lg:sticky lg:top-20 lg:col-start-1 lg:row-span-2 lg:flex-col lg:overflow-visible lg:pb-0"
+          className="order-5 flex gap-2 overflow-x-auto pb-1 lg:sticky lg:top-20 lg:order-none lg:col-start-1 lg:row-span-2 lg:flex-col lg:overflow-visible lg:pb-0"
         >
           {MENU.map((item) => {
             const current = item.en === "Classroom";
@@ -108,10 +109,10 @@ export default function ClassroomPage() {
           })}
         </nav>
 
-        <div className="order-2 min-w-0 space-y-4 lg:col-start-2 lg:row-start-1">
-          <header className="rounded-3xl border border-[#e4dcc8] bg-white px-4 py-4 sm:px-5">
+        <div className="order-1 min-w-0 space-y-3 lg:order-none lg:col-start-2 lg:row-start-1 lg:space-y-4">
+          <header className="rounded-3xl border border-[#e4dcc8] bg-white px-3 py-2 sm:px-5 sm:py-4">
             <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#8a6a2e]">HajCare AI</p>
-            <h1 className="mt-1 text-2xl font-semibold sm:text-3xl">
+            <h1 className="mt-1 text-xl font-semibold sm:text-3xl">
               <Pair
                 hi="HajCare AI क्लासरूम"
                 en="HajCare AI Classroom"
@@ -120,7 +121,7 @@ export default function ClassroomPage() {
                 secondaryClass="mt-1 text-sm font-medium text-[#5f6b4e]"
               />
             </h1>
-            <p className="mt-2 text-sm text-[#5f6b4e]">
+            <p className="mt-2 hidden text-sm text-[#5f6b4e] sm:block">
               {hindiFirst(language)
                 ? "रिकॉर्डेड कक्षा, अध्ययन सामग्री, और WhatsApp पर सवाल। लाइव कक्षा नहीं।"
                 : "Recorded classes, study materials, and questions on WhatsApp. No live class."}
@@ -129,7 +130,7 @@ export default function ClassroomPage() {
 
           {selected ? (
             <section className="overflow-hidden rounded-3xl border border-[#e4dcc8] bg-white" aria-label={selected.title_en}>
-              <div className="bg-[#1f4d3a] px-4 py-4 text-[#f6f3ec] sm:px-5">
+              <div className="bg-[#1f4d3a] px-3 py-2 text-[#f6f3ec] sm:px-5 sm:py-4">
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#e4cb87]">
                   {hindiFirst(language) ? `दिन ${selected.day} · रिकॉर्डेड` : `Day ${selected.day} · Recorded`}
                 </p>
@@ -142,7 +143,7 @@ export default function ClassroomPage() {
                   />
                 </h2>
                 {selected.note_hi && selected.note_en ? (
-                  <p className="mt-2 text-sm text-[#f6f3ec]/80">
+                  <p className="mt-2 hidden text-sm text-[#f6f3ec]/80 sm:block">
                     {hindiFirst(language) ? selected.note_hi : selected.note_en}
                   </p>
                 ) : null}
@@ -164,25 +165,30 @@ export default function ClassroomPage() {
                   {selected.local_video_16x9 ? (
                     <video
                       key={`wide-${selected.day}`}
-                      className="mx-auto hidden max-h-[70vh] w-full md:block"
+                      className="mx-auto block max-h-[42vh] w-full bg-black object-contain sm:max-h-[70vh]"
                       controls
                       playsInline
                       preload="metadata"
                       src={selected.local_video_16x9}
                     />
                   ) : null}
-                  {(selected.local_video_9x16 || selected.local_video_16x9) ? (
-                    <video
-                      key={`tall-${selected.day}`}
-                      className="mx-auto aspect-[9/16] w-full max-w-sm md:hidden"
-                      controls
-                      playsInline
-                      preload="metadata"
-                      src={selected.local_video_9x16 || selected.local_video_16x9}
-                    />
-                  ) : null}
                 </div>
               )}
+
+              {studySheet ? (
+                <a
+                  className="mx-3 mt-3 flex items-center justify-center gap-2 rounded-full bg-[#1f4d3a] px-4 py-3 text-center text-sm font-semibold text-[#f6f3ec] sm:mx-5"
+                  href={studySheet.url}
+                >
+                  <BookOpen className="h-4 w-4 shrink-0" aria-hidden />
+                  <span>
+                    {hindiFirst(language) ? studySheet.label_hi : studySheet.label_en}
+                    <span className="mt-0.5 block text-xs font-medium opacity-80">
+                      {hindiFirst(language) ? studySheet.label_en : studySheet.label_hi}
+                    </span>
+                  </span>
+                </a>
+              ) : null}
 
               <div className="flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
                 <p className="text-sm text-[#5f6b4e]">
