@@ -27,7 +27,8 @@ function demoRouting(): Plugin {
     else if (pathOnly === "/library") nextPath = "/library.html";
     else if (pathOnly === "/visitors") nextPath = "/visitors.html";
     else if (pathOnly === "/" || pathOnly === "/index.html") nextPath = "/index.html";
-    else if (pathOnly === "/auth" || pathOnly === "/volunteer" || pathOnly === "/volunteer/training" || pathOnly === "/service-fee" || pathOnly === "/classroom") nextPath = "/app.html";
+    else if (pathOnly === "/auth" || pathOnly === "/reset-password" || pathOnly === "/volunteer" || pathOnly === "/volunteer/training" || pathOnly === "/service-fee" || pathOnly === "/classroom") nextPath = "/app.html";
+    else if (pathOnly === "/privacy" || pathOnly === "/privacy-policy" || pathOnly === "/account-deletion") nextPath = "/privacy-policy.html";
     else if (!pathOnly.includes(".") && !pathOnly.startsWith("/@") && !pathOnly.startsWith("/src/") && !pathOnly.startsWith("/node_modules/")) {
       nextPath = "/index.html";
     }
