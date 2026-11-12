@@ -260,7 +260,12 @@ describe("approved public demo", () => {
     expect(sukoon).not.toContain("wa.me");
     expect(sukoon).not.toContain("supabase");
     expect(home).not.toContain("sukoon.html");
-    expect(home).not.toContain('href="/sukoon"');
+    expect(read("public/app.js")).toContain("k==='sukoon'");
+    expect(read("public/app.js")).toContain('location.assign("/sukoon")');
+    expect(home).toContain('data-demo="sukoon"');
+    expect(home).toContain("डेमो · घरवालों को इत्मीनान, हाजी की हिफ़ाज़त।");
+    expect(home).toContain("Sukoon Tracking System<small>सुकून ट्रैकिंग</small>");
+    expect(home).toContain("डेमो देखें →");
     expect(JSON.stringify(vercel.headers)).toContain("video/mp4");
     expect(read("public/index.html")).toContain("/videos/day1-trailer-16x9.mp4");
     expect(read("public/explore.js")).toContain("/videos/day1-trailer-9x16.mp4");
@@ -269,7 +274,13 @@ describe("approved public demo", () => {
     expect(read("public/index.html")).not.toContain("1 मिनट का सार");
     expect(read("public/explore.js")).not.toContain("1 मिनट का सार");
     expect(home).toContain("HajCare AI");
-    expect(home).toContain('class="train-bar" href="/classroom"');
+    expect(home).toContain('class="btn train-open" href="/classroom">100 दिन ट्रेनिंग');
+    expect(home).toContain("100 Days Hajj Training Program<small>100 दिन हज ट्रेनिंग</small>");
+    expect(home).not.toContain("train-bar");
+    expect(home).not.toContain(">100 दिन</a>");
+    expect(home).not.toContain("100 दिन तैयारी");
+    expect(home).not.toContain("02 · 100 दिन हज ट्रेनिंग प्रोग्राम");
+    expect(home.match(/100 दिन ट्रेनिंग/g)).toEqual(["100 दिन ट्रेनिंग"]);
     expect(home).toContain("HajCare AI Classroom खोलें");
     expect(home).not.toContain("Healthcare AI Classroom");
     expect(home).not.toContain("HajjCare");
