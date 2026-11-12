@@ -8,6 +8,10 @@
     { "source": "/volunteer/training", "destination": "/app.html" },
     { "source": "/volunteer", "destination": "/app.html" },
     { "source": "/service-fee", "destination": "/app.html" },
+    { "source": "/reset-password", "destination": "/app.html" },
+    { "source": "/privacy-policy", "destination": "/privacy-policy.html" },
+    { "source": "/privacy", "destination": "/privacy-policy.html" },
+    { "source": "/account-deletion", "destination": "/privacy-policy.html" },
     { "source": "/((?!videos/).*)", "destination": "/index.html" }
   ],
   "headers": [
