@@ -90,6 +90,32 @@ describe("talbiyah line text", () => {
     expect(clock(40, 39.9, 3.8)).toBe(3);
   });
 
+  it("shows the confirmed Hindi meaning, in its four lines, in the opening caption", async () => {
+    const confirmed =
+      "हाज़िर हूँ, ऐ अल्लाह, मैं हाज़िर हूँ। हाज़िर हूँ, तेरा कोई शरीक नहीं, मैं हाज़िर हूँ। बेशक सारी तारीफ़, सारी नेमतें और सारी बादशाहत तेरी ही है, तेरा कोई शरीक नहीं।";
+    const lines = [
+      "हाज़िर हूँ, ऐ अल्लाह, मैं हाज़िर हूँ।",
+      "हाज़िर हूँ, तेरा कोई शरीक नहीं, मैं हाज़िर हूँ।",
+      "बेशक सारी तारीफ़, सारी नेमतें और सारी बादशाहत तेरी ही है,",
+      "तेरा कोई शरीक नहीं।",
+    ];
+    expect(lines.join(" ")).toBe(confirmed);
+    expect(HI).toBe(confirmed);
+    expect(home).toContain(confirmed);
+    for (const line of lines) expect(script).toContain(`hi: "${line}"`);
+
+    document.body.innerHTML = `<div id="intro"><div id="opener" class="dopen"></div></div><audio id="talbiya"></audio><audio id="hmean"></audio>`;
+    window.eval(script);
+    const panel = document.getElementById("talbiyah-lines")!;
+    expect(panel.hidden).toBe(true);
+    (window as unknown as { __hcShowTalbiyahMeaning: () => void }).__hcShowTalbiyahMeaning();
+    expect(panel.hidden).toBe(false);
+    const hindi = panel.querySelector(".tl-hi")!;
+    expect(hindi.textContent).toBe(confirmed);
+    expect([...hindi.querySelectorAll(".tl-bit")].map((bit) => bit.textContent)).toEqual(lines);
+    expect(panel.querySelector(".tl-ar")!.compareDocumentPosition(hindi) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
   it("locks girl-first, then small Arabic plus Hindi with the old male voice", async () => {
     expect(home).toContain('data-f="assets/talbiya-female-1x.mp3?v=1"');
     expect(home).toContain('id="hmean" src="assets/talbiya-hindi-meaning.mp3?v=1"');
