@@ -36,12 +36,12 @@ describe("talbiyah line text", () => {
     expect(app).toContain("a.src=a.dataset[voice]");
     expect(home).toContain('aria-label="touch करें"');
     expect(home).toContain('class="otxt">touch करें</span>');
-    expect(home).toContain('class="ofing"');
+    expect(home).not.toContain('class="ofing"');
     expect(home).not.toContain("छूकर दरवाज़ा खोलें");
     expect(app).toContain("tx.textContent='touch करें'");
     expect(app).not.toContain("tap.textContent='छूकर शुरू करें'");
-    expect(read("public/style.css")).toContain("@keyframes ofing");
-    expect(read("public/style.css")).toContain("#opener .ofing{animation:none!important}");
+    expect(read("public/style.css")).not.toContain("#opener .ofing");
+    expect(read("public/style.css")).not.toContain("@keyframes ofing");
     expect(home).toContain('src="talbiyah-lines.js?v=38"');
     expect(script).not.toMatch(/\.mp3|new Audio|\.play\(|\.src\s*=/);
     const css = read("public/style.css");
