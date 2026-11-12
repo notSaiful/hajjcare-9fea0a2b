@@ -88,44 +88,139 @@
       var list = document.getElementById("list");
       if (list) list.textContent = "";
       var loginFree = typeof root.__hcSubmitTrainingRegistration === "function";
+      if (!train.dataset.hcNavLock) {
+        train.dataset.hcNavLock = "1";
+        train.addEventListener("submit", function (e) {
+          if (e.preventDefault) e.preventDefault();
+        }, true);
+      }
       if (loginFree && typeof root.__hcPrepareTrainingRegistration === "function") root.__hcPrepareTrainingRegistration(train);
       else if (typeof root.__hcMountTrainingGate === "function") root.__hcMountTrainingGate(train);
       train.onsubmit = function (e) {
         if (e && e.preventDefault) e.preventDefault();
+        if (e && e.stopPropagation) e.stopPropagation();
         var res = train.querySelector(".res");
         if (!res) return false;
-        res.textContent = "";
+        res.setAttribute("aria-live", "polite");
         var submit = loginFree ? root.__hcSubmitTrainingRegistration : window.__hcSubmitTrainingEnrollment;
         if (typeof submit !== "function") {
-          res.textContent = en()
+          res.textContent = "";
+          var missing = document.createElement("div");
+          missing.className = "note hc-train-error";
+          missing.setAttribute("role", "alert");
+          missing.textContent = en()
             ? "Nothing was saved. The enrollment service is not available in this page."
             : "कुछ सेव नहीं हुआ। इस पेज पर एनरोलमेंट सेवा उपलब्ध नहीं है।";
+          res.appendChild(missing);
           return false;
         }
+        if (train.dataset.hcBusy === "1") return false;
+        train.dataset.hcBusy = "1";
+        var button = train.querySelector("button[type='submit'], button");
+        if (button && !button.dataset.hcLabel) button.dataset.hcLabel = button.textContent || "";
+        var controls = train.querySelectorAll("input, select, textarea, button");
+        for (var i = 0; i < controls.length; i++) {
+          if (controls[i].name === "company_website") continue;
+          controls[i].disabled = true;
+        }
+        if (button) button.textContent = en() ? "Submitting…" : "जमा हो रहा है…";
+        res.textContent = "";
+        var pending = document.createElement("div");
+        pending.className = "note hc-train-pending";
+        pending.setAttribute("role", "status");
+        pending.textContent = en() ? "Submitting…" : "जमा हो रहा है…";
+        res.appendChild(pending);
+        function markOff(el) {
+          el.hidden = true;
+          if (el.classList) el.classList.add("hc-off");
+        }
+        function unlock() {
+          train.dataset.hcBusy = "";
+          var again = train.querySelectorAll("input, select, textarea, button, .hc-off");
+          for (var j = 0; j < again.length; j++) {
+            if (again[j].name === "company_website") continue;
+            again[j].disabled = false;
+            again[j].hidden = false;
+            if (again[j].classList) again[j].classList.remove("hc-off");
+          }
+          if (button && button.dataset.hcLabel) button.textContent = button.dataset.hcLabel;
+          var kids = train.children;
+          for (var k = 0; k < kids.length; k++) {
+            kids[k].hidden = false;
+            if (kids[k].classList) kids[k].classList.remove("hc-off");
+          }
+        }
         submit(train).then(function (out) {
-          res.textContent = "";
+          train.dataset.hcBusy = "";
           var saved = !!(out && out.ok === true && out.receiptId);
-          var box = document.createElement("div");
           var fallback = en() ? "Nothing was saved." : "कुछ सेव नहीं हुआ।";
           var text = out && out.message ? out.message : fallback;
           if (!saved && /^\s*saved\b/i.test(text)) text = fallback;
-          box.className = saved ? "ok" : "note";
-          if (saved && loginFree) {
-            var thanks = document.createElement("p");
-            thanks.className = "hc-save-thanks";
-            thanks.textContent = "आपका रजिस्ट्रेशन मुकम्मल हुआ। अल्लाह आपका हज मबरूर और कबूल करे।";
-            var receipt = document.createElement("p");
-            receipt.className = "hc-save-receipt";
-            receipt.textContent = String(out.receiptId || "");
-            box.appendChild(thanks);
-            box.appendChild(receipt);
+          res.textContent = "";
+          if (!(saved && loginFree)) {
+            unlock();
+            var plain = document.createElement("div");
+            plain.className = saved ? "ok" : "note hc-train-error";
+            if (!saved) plain.setAttribute("role", "alert");
+            plain.textContent = text;
+            res.appendChild(plain);
+            return;
           }
-          var detail = document.createElement("p");
-          detail.textContent = text;
-          box.appendChild(detail);
+          try { train.reset(); } catch (err) { /* ignore */ }
+          var kids = train.children;
+          for (var n = 0; n < kids.length; n++) {
+            if (kids[n].classList && kids[n].classList.contains("res")) continue;
+            markOff(kids[n]);
+          }
+          var fields = train.querySelectorAll("input, select, textarea, button");
+          for (var f = 0; f < fields.length; f++) {
+            if (fields[f].name === "company_website") continue;
+            fields[f].disabled = true;
+            markOff(fields[f]);
+          }
+          var box = document.createElement("div");
+          box.className = "ok hc-train-success";
+          box.setAttribute("role", "status");
+          var mark = document.createElement("div");
+          mark.className = "hc-save-mark";
+          mark.setAttribute("aria-hidden", "true");
+          mark.textContent = "✓";
+          var thanks = document.createElement("p");
+          thanks.className = "hc-save-thanks";
+          thanks.textContent = "आपका रजिस्ट्रेशन मुकम्मल हुआ। अल्लाह आपका हज मबरूर और कबूल करे।";
+          var sub = document.createElement("p");
+          sub.className = "hc-save-sub";
+          sub.textContent = "आपका रजिस्ट्रेशन सफलतापूर्वक हो गया है";
+          var card = document.createElement("div");
+          card.className = "hc-save-card";
+          var label = document.createElement("p");
+          label.className = "hc-save-label";
+          label.textContent = "Registration reference";
+          var receipt = document.createElement("p");
+          receipt.className = "hc-save-receipt";
+          receipt.textContent = String(out.receiptId || "");
+          var receiptLabel = document.createElement("p");
+          receiptLabel.className = "hc-save-receipt-label";
+          receiptLabel.textContent = "Receipt · रसीद";
+          card.appendChild(label);
+          card.appendChild(receipt);
+          card.appendChild(receiptLabel);
+          box.appendChild(mark);
+          box.appendChild(thanks);
+          box.appendChild(sub);
+          box.appendChild(card);
           res.appendChild(box);
+          if (typeof res.scrollIntoView === "function") {
+            try { res.scrollIntoView({ block: "center" }); } catch (e2) { /* jsdom */ }
+          }
         }).catch(function () {
-          res.textContent = en() ? "Nothing was saved. The server did not confirm the request." : "कुछ सेव नहीं हुआ। सर्वर ने पुष्टि नहीं की।";
+          res.textContent = "";
+          unlock();
+          var failed = document.createElement("div");
+          failed.className = "note hc-train-error";
+          failed.setAttribute("role", "alert");
+          failed.textContent = en() ? "Nothing was saved. The server did not confirm the request." : "कुछ सेव नहीं हुआ। सर्वर ने पुष्टि नहीं की।";
+          res.appendChild(failed);
         });
         return false;
       };
