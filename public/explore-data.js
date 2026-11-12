@@ -27,3 +27,62 @@ window.TRAIN=[["Quran",2,"क़ुरआन"],["Hadith",2,"हदीस"],["Dua
 window.ARKAN=[["Intention & sincerity","नीयत और इख़्लास"],["Types of Hajj: Tamattu, Qiran, Ifrad","हज की क़िस्में: तमत्तो, क़िरान, इफ़राद"],["Miqat & Ihram","मीक़ात और एहराम"],["Talbiyah","तल्बिया"],["Prohibitions of Ihram","एहराम की पाबंदियाँ"],["Tawaf","तवाफ़"],["Sa'i","सई"],["8 Dhul Hijjah — Mina","8 ज़िलहिज्जा — मिना"],["Day of Arafah","यौम-ए-अरफ़ा"],["Muzdalifah","मुज़दलिफ़ा"],["Rami — Jamarat","रमी — जमरात"],["Qurbani","क़ुर्बानी"],["Halq / Taqsir","हल्क़ / तक़सीर"],["Tawaf al-Ifadah","तवाफ़-ए-इफ़ाज़ा"],["Days of Tashreeq","अय्याम-ए-तशरीक़"],["Tawaf al-Wada","तवाफ़-ए-विदा"],["Ziyarat of Madinah","मदीना की ज़ियारत"],["Common mistakes","आम ग़लतियाँ"],["Women's masail","ख़्वातीन के मसाइल"],["Elderly & sick pilgrims","बुज़ुर्ग और बीमार हाजी"]];
 window.DOC=[["Heat & hydration","गर्मी और पानी"],["Feet & walking","पैर और पैदल चलना"],["Diabetes & BP care","शुगर और बीपी"],["Vaccines & medicines","टीके और दवाइयाँ"],["Food hygiene","खाने की सफ़ाई"]];
 window.MABROOR=[["Welcome back — Hajj Mabroor","वापसी मुबारक — हज मबरूर"],["Gratitude to Allah","अल्लाह का शुक्र"],["Guard the prayer","नमाज़ की हिफ़ाज़त"],["Good character at home","घर में अच्छा अख़लाक़"],["Honesty in earning","हलाल कमाई"],["Keeping the tongue clean","ज़ुबान की हिफ़ाज़त"],["Daily Quran","रोज़ क़ुरआन"],["Serving parents","वालिदैन की ख़िदमत"],["Charity","सदक़ा"],["Patience","सब्र"]];
+// Official Saudi PDFs. Linked, not stored. URLs verified HTTP 200 application/pdf on 12 Nov 2026.
+// Hindi, then English, then Urdu, then the remaining verified languages in source order.
+// Not included: unverified Umrah languages, and Hajj Chinese / German / Italian.
+window.OFFICIAL_GUIDES={
+source:"https://haj.gov.sa/en/Awareness-Center/Awareness-Guides",
+groups:[
+{en:"Umrah guide",hi:"उमरा गाइड",items:[
+{lang:"Hindi",mb:"2.01",url:"https://haj.gov.sa/-/media/Project/HAJJ/PDF-and-FILES/Awareness-Guides/UMRAH-VISIT-GUIDE/Hindi/HI-Umrah-visit-Guide.pdf"},
+{lang:"English",mb:"4.84",url:"https://haj.gov.sa/-/media/Project/HAJJ/PDF-and-FILES/Awareness-Guides/UMRAH-VISIT-GUIDE/English/EN-Umrah-visit-Guide.pdf"},
+{lang:"Urdu",mb:"4.38",url:"https://haj.gov.sa/-/media/Project/HAJJ/PDF-and-FILES/Awareness-Guides/UMRAH-VISIT-GUIDE/Urdu/UR-umrah-visit-Guide.pdf"},
+{lang:"Arabic",mb:"4.82",url:"https://haj.gov.sa/-/media/Project/HAJJ/PDF-and-FILES/Awareness-Guides/UMRAH-VISIT-GUIDE/Arabic/AR-Umrah-Visit-Guide.pdf"},
+{lang:"French",mb:"2.48",url:"https://haj.gov.sa/-/media/Project/HAJJ/PDF-and-FILES/Awareness-Guides/UMRAH-VISIT-GUIDE/French/FR-Umrah-visit-Guide.pdf"},
+{lang:"Bengali",mb:"4.51",url:"https://haj.gov.sa/-/media/Project/HAJJ/PDF-and-FILES/Awareness-Guides/UMRAH-VISIT-GUIDE/Bengali/BN-Umrah-visit-Guide.pdf"},
+{lang:"Persian",mb:"4.69",url:"https://haj.gov.sa/-/media/Project/HAJJ/PDF-and-FILES/Awareness-Guides/UMRAH-VISIT-GUIDE/Persian/FA-umrah-visit-Guide.pdf"},
+{lang:"Malay",mb:"4.51",url:"https://haj.gov.sa/-/media/Project/HAJJ/PDF-and-FILES/Awareness-Guides/UMRAH-VISIT-GUIDE/Malay/MS-umrah-visit-Guide.pdf"},
+{lang:"Turkish",mb:"4.55",url:"https://haj.gov.sa/-/media/Project/HAJJ/PDF-and-FILES/Awareness-Guides/UMRAH-VISIT-GUIDE/Turkey/TR-Umrah-Visit-Guide.pdf"},
+{lang:"Indonesian",mb:"4.52",url:"https://haj.gov.sa/-/media/Project/HAJJ/PDF-and-FILES/Awareness-Guides/UMRAH-VISIT-GUIDE/Indonesia/ID-Umrah-visit-Guide.pdf"}
+]},
+{en:"Hajj guide",hi:"हज गाइड",items:[
+{lang:"Hindi",mb:"3.29",url:"https://haj.gov.sa/-/media/Project/HAJJ/PDF-and-FILES/Awareness-Guides/Hajj-Guide/hi-hajj-guide.pdf"},
+{lang:"English",mb:"4.20",url:"https://haj.gov.sa/-/media/Project/HAJJ/PDF-and-FILES/Awareness-Guides/Hajj-Guide/en-hajj-guide.pdf"},
+{lang:"Urdu",mb:"4.36",url:"https://haj.gov.sa/-/media/Project/HAJJ/PDF-and-FILES/Awareness-Guides/Hajj-Guide/ur-hajj-guide.pdf"},
+{lang:"Arabic",mb:"2.87",url:"https://haj.gov.sa/-/media/Project/HAJJ/PDF-and-FILES/Awareness-Guides/Hajj-Guide/ar-hajj-guide.pdf"},
+{lang:"French",mb:"4.21",url:"https://haj.gov.sa/-/media/Project/HAJJ/PDF-and-FILES/Awareness-Guides/Hajj-Guide/fr-hajj-guide.pdf"},
+{lang:"Turkish",mb:"4.21",url:"https://haj.gov.sa/-/media/Project/HAJJ/PDF-and-FILES/Awareness-Guides/Hajj-Guide/tr-hajj-guide.pdf"},
+{lang:"Indonesian",mb:"3.23",url:"https://haj.gov.sa/-/media/Project/HAJJ/PDF-and-FILES/Awareness-Guides/Hajj-Guide/id-hajj-guide.pdf"},
+{lang:"Bengali",mb:"3.30",url:"https://haj.gov.sa/-/media/Project/HAJJ/PDF-and-FILES/Awareness-Guides/Hajj-Guide/bn-hajj-guide.pdf"},
+{lang:"Persian",mb:"4.29",url:"https://haj.gov.sa/-/media/Project/HAJJ/PDF-and-FILES/Awareness-Guides/Hajj-Guide/fa-hajj-guide.pdf"},
+{lang:"Malay",mb:"4.22",url:"https://haj.gov.sa/-/media/Project/HAJJ/PDF-and-FILES/Awareness-Guides/Hajj-Guide/ms-hajj-guide.pdf"},
+{lang:"Russian",mb:"3.24",url:"https://haj.gov.sa/-/media/Project/HAJJ/PDF-and-FILES/Awareness-Guides/Hajj-Guide/ru-hajj-guide.pdf"},
+{lang:"Spanish",mb:"4.21",url:"https://haj.gov.sa/-/media/Project/HAJJ/PDF-and-FILES/Awareness-Guides/Hajj-Guide/es-hajj-guide.pdf"},
+{lang:"Portuguese",mb:"4.21",url:"https://haj.gov.sa/-/media/Project/HAJJ/PDF-and-FILES/Awareness-Guides/Hajj-Guide/pt-hajj-guide.pdf"},
+{lang:"Swahili",mb:"3.24",url:"https://haj.gov.sa/-/media/Project/HAJJ/PDF-and-FILES/Awareness-Guides/Hajj-Guide/sw-hajj-guide.pdf"},
+{lang:"Hausa",mb:"3.24",url:"https://haj.gov.sa/-/media/Project/HAJJ/PDF-and-FILES/Awareness-Guides/Hajj-Guide/ha-hajj-guide.pdf"},
+{lang:"Amharic",mb:"3.28",url:"https://haj.gov.sa/-/media/Project/HAJJ/PDF-and-FILES/Awareness-Guides/Hajj-Guide/am-hajj-guide.pdf"},
+{lang:"Uzbek",mb:"3.28",url:"https://haj.gov.sa/-/media/Project/HAJJ/PDF-and-FILES/Awareness-Guides/Hajj-Guide/uz-hajj-guide.pdf"},
+{lang:"Sinhala",mb:"4.25",url:"https://haj.gov.sa/-/media/Project/HAJJ/PDF-and-FILES/Awareness-Guides/Hajj-Guide/si-hajj-guide.pdf"}
+]},
+{en:"Cyber security guide",hi:"साइबर सुरक्षा गाइड",items:[
+{lang:"Hindi",mb:"7.95",url:"https://haj.gov.sa/-/media/Project/HAJJ/PDF-and-FILES/Awareness-Guides/Cyber-Guide/HI-Cyber-Guide-.pdf"},
+{lang:"English",mb:"6.19",url:"https://haj.gov.sa/-/media/Project/HAJJ/PDF-and-FILES/Awareness-Guides/Cyber-Guide/EN-Cyber-Guide-.pdf"},
+{lang:"Urdu",mb:"2.89",url:"https://haj.gov.sa/-/media/Project/HAJJ/PDF-and-FILES/Awareness-Guides/Cyber-Guide/UR-Cyber-Guide-.pdf"},
+{lang:"Arabic",mb:"6.04",url:"https://haj.gov.sa/-/media/Project/HAJJ/PDF-and-FILES/Awareness-Guides/Cyber-Guide/AR-Cyber-Guide-.pdf"},
+{lang:"French",mb:"7.38",url:"https://haj.gov.sa/-/media/Project/HAJJ/PDF-and-FILES/Awareness-Guides/Cyber-Guide/FR-Cyber-Guide-.pdf"},
+{lang:"Turkish",mb:"8.02",url:"https://haj.gov.sa/-/media/Project/HAJJ/PDF-and-FILES/Awareness-Guides/Cyber-Guide/TR-Cyber-Guide-.pdf"},
+{lang:"Indonesian",mb:"6.01",url:"https://haj.gov.sa/-/media/Project/HAJJ/PDF-and-FILES/Awareness-Guides/Cyber-Guide/ID-Cyber-Guide-.pdf"},
+{lang:"Persian",mb:"5.97",url:"https://haj.gov.sa/-/media/Project/HAJJ/PDF-and-FILES/Awareness-Guides/Cyber-Guide/FA-Cyber-Guide-.pdf"},
+{lang:"Malay",mb:"5.96",url:"https://haj.gov.sa/-/media/Project/HAJJ/PDF-and-FILES/Awareness-Guides/Cyber-Guide/MS-Cyber-Guide-.pdf"},
+{lang:"Russian",mb:"8.09",url:"https://haj.gov.sa/-/media/Project/HAJJ/PDF-and-FILES/Awareness-Guides/Cyber-Guide/RU-Cyber-Guide-.pdf"},
+{lang:"Spanish",mb:"5.88",url:"https://haj.gov.sa/-/media/Project/HAJJ/PDF-and-FILES/Awareness-Guides/Cyber-Guide/ES-Cyber-Guide-.pdf"},
+{lang:"Hausa",mb:"6.60",url:"https://haj.gov.sa/-/media/Project/HAJJ/PDF-and-FILES/Awareness-Guides/Cyber-Guide/HA-Cyber-Guide-.pdf"},
+{lang:"Amharic",mb:"39.37",large:true,url:"https://haj.gov.sa/-/media/Project/HAJJ/PDF-and-FILES/Awareness-Guides/Cyber-Guide/AM-Cyber-Guide-.pdf"},
+{lang:"Sinhala",mb:"2.92",url:"https://haj.gov.sa/-/media/Project/HAJJ/PDF-and-FILES/Awareness-Guides/Cyber-Guide/SI-Cyber-Guide-.pdf"},
+{lang:"Bengali",mb:"8.24",url:"https://haj.gov.sa/-/media/Project/HAJJ/PDF-and-FILES/Awareness-Guides/Cyber-Guide/BN-Cyber-Guide.pdf"},
+{lang:"Portuguese",mb:"6.32",url:"https://haj.gov.sa/-/media/Project/HAJJ/PDF-and-FILES/Awareness-Guides/Cyber-Guide/PT-Cyber-Guide.pdf"},
+{lang:"Swahili",mb:"6.49",url:"https://haj.gov.sa/-/media/Project/HAJJ/PDF-and-FILES/Awareness-Guides/Cyber-Guide/SW-Cyber-Guide.pdf"},
+{lang:"Uzbek",mb:"6.41",url:"https://haj.gov.sa/-/media/Project/HAJJ/PDF-and-FILES/Awareness-Guides/Cyber-Guide/UZ-Cyber-Guide.pdf"}
+]}
+]};
