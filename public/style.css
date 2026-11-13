@@ -518,3 +518,6 @@ main section.wrap{padding-top:4.5rem;padding-bottom:4.5rem}
 #talbiya-tap{position:fixed;left:50%;bottom:calc(max(16px,env(safe-area-inset-bottom,0px)) + 8px);transform:translateX(-50%);z-index:86;font:500 14px/1.2 Mukta,sans-serif;padding:6px 12px;border-radius:999px;border:1px solid #c9a45c;background:#fffaf0;color:#1f3b2c}
 @media(max-width:430px){#talbiyah-lines{left:10px!important;right:10px!important;padding:8px 12px!important}#talbiyah-lines .tl-ar{font-size:.8rem!important;line-height:1.45!important}#talbiyah-lines .tl-hi{font-size:.7rem!important;line-height:1.4!important}}
 @media(min-width:900px){#talbiyah-lines .tl-ar{font-size:.95rem!important;line-height:1.5!important}#talbiyah-lines .tl-hi{font-size:.8rem!important}}
+/* Return visits skip the door so Back lands on the menu. First visit is unchanged. */
+html.hc-door-done #intro{opacity:0!important;visibility:hidden!important;pointer-events:none!important;transition:none!important}
+html.hc-door-done body.locked{overflow:auto}

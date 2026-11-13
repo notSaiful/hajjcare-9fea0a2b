@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useLanguage, LANGUAGES } from "@/contexts/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { Menu, LogOut, User, Globe, Check, Sun, SunDim } from "lucide-react";
+import { Menu, LogOut, User, Globe, Check, Sun, SunDim, ArrowLeft } from "lucide-react";
 import { SunlightModeToggle } from "@/components/SunlightModeToggle";
 import { LargeTextToggle } from "@/components/LargeTextToggle";
 import {
@@ -24,8 +24,21 @@ export const SimpleHeader = ({ logoSrc = logo }: { logoSrc?: string }) => {
   return (
     <header className="sticky top-0 z-50 bg-card/95 backdrop-blur-md border-b border-border/50">
       <div className="container max-w-3xl mx-auto px-4 sm:px-6 h-16 sm:h-18 flex items-center justify-between">
-        {/* Logo & Title */}
-        <a href="/" className="flex items-center gap-3 min-w-0 group">
+        <div className="flex items-center gap-1 min-w-0">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="h-10 w-10 shrink-0 rounded-xl"
+            aria-label="Back"
+            onClick={() => {
+              if (window.history.length > 1) navigate(-1);
+              else window.location.assign("/home");
+            }}
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </Button>
+          <a href="/home" className="flex items-center gap-3 min-w-0 group">
           <div className="relative">
             <img 
               src={logoSrc} 
@@ -42,6 +55,7 @@ export const SimpleHeader = ({ logoSrc = logo }: { logoSrc?: string }) => {
             HajCare AI
           </span>
         </a>
+        </div>
 
         <div className="flex items-center gap-1 sm:gap-2">
           {/* Sunlight Mode Toggle */}

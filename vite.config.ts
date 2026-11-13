@@ -31,7 +31,9 @@ function demoRouting(): Plugin {
     else if (pathOnly === "/privacy" || pathOnly === "/privacy-policy" || pathOnly === "/account-deletion") nextPath = "/privacy-policy.html";
     else if (pathOnly === "/sukoon") nextPath = "/sukoon.html";
     else if (!pathOnly.includes(".") && !pathOnly.startsWith("/@") && !pathOnly.startsWith("/src/") && !pathOnly.startsWith("/node_modules/")) {
-      nextPath = "/index.html";
+      // Extension-less paths are the React app so a refresh of /rules, /home, /circulars
+      // does not fall through to the door page.
+      nextPath = "/app.html";
     }
     if (nextPath !== pathOnly) req.url = nextPath + search;
     next();
