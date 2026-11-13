@@ -41,6 +41,17 @@ vi.mock("@/hooks/useAuth", () => ({
   }),
 }));
 
+vi.mock("@/contexts/AuthContext", () => ({
+  useAuthContext: () => ({
+    user: null,
+    session: null,
+    isAuthenticated: false,
+    loading: false,
+    signOut: vi.fn(),
+  }),
+  AuthProvider: ({ children }: { children: React.ReactNode }) => children,
+}));
+
 vi.mock("sonner", () => ({
   toast: { error: vi.fn(), success: vi.fn() },
 }));
@@ -56,6 +67,7 @@ vi.mock("@/integrations/supabase/client", () => ({
       eq: vi.fn().mockReturnThis(),
       maybeSingle: vi.fn().mockResolvedValue({ data: null }),
     })),
+    rpc: vi.fn().mockResolvedValue({ data: null, error: null }),
   },
 }));
 

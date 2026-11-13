@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Footer } from "@/components/Footer";
@@ -18,8 +19,10 @@ export function MainLayout({ children, showHeader = true, showFooter = true }: M
         <AppSidebar />
         <div className="flex-1 flex flex-col min-w-0">
           {showHeader && (
-            <header className="sticky top-0 z-50 bg-card/95 backdrop-blur-md border-b border-border/50 h-14 flex items-center px-4">
+            <header className="sticky top-0 z-50 bg-card/95 backdrop-blur-md border-b border-border/50 h-14 flex items-center gap-2 px-4">
               <SidebarTrigger className="h-9 w-9 rounded-lg hover:bg-muted/80" />
+              <Link to="/home" className="text-sm font-semibold text-foreground">होम</Link>
+              <a href="/#explore" className="text-sm font-medium text-muted-foreground">मेनू</a>
             </header>
           )}
           <main className="flex-1">{children}</main>

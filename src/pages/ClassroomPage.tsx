@@ -12,7 +12,7 @@ import {
 import { BookOpen, Download, GraduationCap, MessageCircle } from "lucide-react";
 
 const MENU = [
-  { href: "/", hi: "डैशबोर्ड", en: "Dashboard" },
+  { href: "/home", hi: "डैशबोर्ड", en: "Dashboard" },
   { href: "/classroom", hi: "क्लासरूम", en: "Classroom" },
   { href: "/library#quran", hi: "क़ुरआन लाइब्रेरी", en: "Quran Library" },
   { href: "/explore#hadith", hi: "हदीस लाइब्रेरी", en: "Hadith Library" },
