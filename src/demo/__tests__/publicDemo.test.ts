@@ -125,7 +125,7 @@ describe("approved public demo", () => {
     expect(home).toContain('href="explore.html#guides"');
     expect(home).toContain('href="explore.html#videos"');
     expect(library).toContain('id="quran"');
-    expect(explore).toContain('href="${c[0]===\'quran\'?\'library.html#quran\':\'#\'+c[0]}"');
+    expect(explore).toContain('href="${c[0]===\'quran\'?\'library.html#quran\':\'/explore#\'+c[0]}"');
   });
 
   it("embeds the Makkah YouTube live on the Hajj and Umrah guides", () => {
@@ -224,7 +224,13 @@ describe("approved public demo", () => {
       expect(vercel.rewrites.findIndex((rule) => rule.source === source)).toBeLessThan(vercel.rewrites.length - 1);
     }
     expect(vercel.rewrites).toContainEqual({ source: "/sukoon", destination: "/sukoon.html" });
-    expect(vercel.rewrites.at(-1)).toEqual({ source: "/((?!videos/).*)", destination: "/index.html" });
+    expect(vercel.rewrites.at(-1)).toEqual({ source: "/((?!videos/).*)", destination: "/app.html" });
+    expect(read("public/android-back.js")).toContain('addListener("backButton"');
+    expect(read("public/android-back.js")).toContain("exitApp");
+    expect(read("public/android-back.js")).toContain('confirm("HajCare AI');
+    expect(read("public/explore.js")).toContain("'/explore#'+i[0]");
+    expect(read("public/explore.js")).not.toContain(":'#'+i[0]");
+    expect(read("public/index.html")).toContain("hc-door-done");
     const policy = read("public/privacy-policy.html");
     expect(policy).toContain("Last updated: 12 Nov 2026");
     expect(policy).toContain("SAZO Management Private Limited");
@@ -331,7 +337,7 @@ describe("demo registration bridge", () => {
     );
     const form = document.querySelector("form") as HTMLFormElement;
     const event = new Event("submit", { bubbles: true, cancelable: true });
-    form.onsubmit?.(event);
+    form.onsubmit?.(event as SubmitEvent);
     expect(event.defaultPrevented).toBe(true);
     expect(localStorage.getItem("hc-train")).toBeNull();
     expect(document.querySelector(".res")?.textContent).toMatch(/Nothing was saved/);

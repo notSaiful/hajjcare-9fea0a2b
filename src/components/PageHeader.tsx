@@ -40,7 +40,7 @@ const iconVariantClasses: Record<string, string> = {
 export function PageHeader({
   title,
   subtitle,
-  backLink = "/",
+  backLink = "/home",
   icon: Icon,
   iconVariant = "primary",
   className,
