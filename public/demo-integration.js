@@ -87,7 +87,7 @@
       try { localStorage.removeItem("hc-train"); } catch (e) { /* private mode */ }
       var list = document.getElementById("list");
       if (list) list.textContent = "";
-      var loginFree = typeof root.__hcSubmitTrainingRegistration === "function";
+      var loginFree = h !== "enroll" && typeof root.__hcSubmitTrainingRegistration === "function";
       if (!train.dataset.hcNavLock) {
         train.dataset.hcNavLock = "1";
         train.addEventListener("submit", function (e) {
@@ -158,7 +158,14 @@
           if (!saved && /^\s*saved\b/i.test(text)) text = fallback;
           res.textContent = "";
           if (!(saved && loginFree)) {
-            unlock();
+            if (!saved) unlock();
+            else {
+              var hideKids = train.children;
+              for (var n0 = 0; n0 < hideKids.length; n0++) {
+                if (hideKids[n0].classList && hideKids[n0].classList.contains("res")) continue;
+                markOff(hideKids[n0]);
+              }
+            }
             var plain = document.createElement("div");
             plain.className = saved ? "ok" : "note hc-train-error";
             if (!saved) plain.setAttribute("role", "alert");

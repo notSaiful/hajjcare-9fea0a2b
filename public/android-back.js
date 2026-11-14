@@ -20,6 +20,13 @@
   }
 
   function onBack(ev) {
+    var ov = document.getElementById("demo");
+    if (ov && !ov.hidden && ov.classList.contains("on")) {
+      var back = ov.querySelector(".hc-back");
+      if (back) { back.click(); return; }
+      var close = ov.querySelector(".dx");
+      if (close) { close.click(); return; }
+    }
     if (ev && ev.canGoBack) {
       history.back();
       return;

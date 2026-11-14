@@ -19,6 +19,16 @@
     { "source": "/privacy", "destination": "/privacy-policy.html" },
     { "source": "/account-deletion", "destination": "/privacy-policy.html" },
     { "source": "/sukoon", "destination": "/sukoon.html" },
+    { "source": "/map", "destination": "/index.html" },
+    { "source": "/maps", "destination": "/index.html" },
+    { "source": "/sos", "destination": "/index.html" },
+    { "source": "/family", "destination": "/index.html" },
+    { "source": "/family-status", "destination": "/index.html" },
+    { "source": "/family-dashboard", "destination": "/index.html" },
+    { "source": "/sukoon-rd", "destination": "/index.html" },
+    { "source": "/hajj-progress", "destination": "/index.html" },
+    { "source": "/admin/live-tracking", "destination": "/index.html" },
+    { "source": "/admin/sukoon-metrics", "destination": "/index.html" },
     { "source": "/((?!videos/).*)", "destination": "/app.html" }
   ],
   "headers": [

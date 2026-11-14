@@ -1,7 +1,4 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/hooks/useAuth";
-import { useEffect } from "react";
 
 export type Circular = {
   id: string;
@@ -25,65 +22,46 @@ export type Circular = {
   auto_scraped: boolean;
 };
 
-export const useCirculars = () => {
-  const { user } = useAuth();
+const READS_KEY = "hc-circular-reads";
 
+function readLocalIds(): Set<string> {
+  try {
+    const raw = JSON.parse(localStorage.getItem(READS_KEY) || "[]");
+    return new Set(Array.isArray(raw) ? raw.filter((id) => typeof id === "string") : []);
+  } catch {
+    return new Set();
+  }
+}
+
+export const useCirculars = () => {
   const circularsQuery = useQuery({
     queryKey: ["hajj-circulars"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("hajj_circulars")
-        .select("*")
-        .eq("is_published", true)
-        .order("created_at", { ascending: false });
-      if (error) throw error;
-      return data as Circular[];
+      const key =
+        import.meta.env.VITE_TRAINING_REGISTER_PUBLISHABLE_KEY ||
+        import.meta.env.VITE_VOLUNTEER_PUBLISHABLE_KEY;
+      if (!key) return [] as Circular[];
+      const res = await fetch(
+        "https://vvbbwlfzpfvgyweeggvw.supabase.co/rest/v1/hajj_circulars?select=*&is_published=eq.true&order=created_at.desc",
+        { headers: { apikey: key, authorization: `Bearer ${key}` } },
+      );
+      if (!res.ok) throw new Error("Circulars could not be loaded");
+      return (await res.json()) as Circular[];
     },
   });
 
   const readsQuery = useQuery({
-    queryKey: ["circular-reads", user?.id],
-    enabled: !!user,
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("circular_reads")
-        .select("circular_id")
-        .eq("user_id", user!.id);
-      if (error) throw error;
-      return new Set(data.map((r: any) => r.circular_id));
-    },
+    queryKey: ["circular-reads"],
+    queryFn: async () => readLocalIds(),
   });
 
   const queryClient = useQueryClient();
 
-  useEffect(() => {
-    const channel = supabase
-      .channel("hajj-circulars-changes")
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "hajj_circulars",
-        },
-        () => {
-          queryClient.invalidateQueries({ queryKey: ["hajj-circulars"] });
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [queryClient]);
-
   const markRead = useMutation({
     mutationFn: async (circularId: string) => {
-      if (!user) return;
-      const { error } = await supabase
-        .from("circular_reads")
-        .insert({ circular_id: circularId, user_id: user.id });
-      if (error && !error.message.includes("duplicate")) throw error;
+      const next = readLocalIds();
+      next.add(circularId);
+      localStorage.setItem(READS_KEY, JSON.stringify([...next]));
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["circular-reads"] });
@@ -97,6 +75,7 @@ export const useCirculars = () => {
   return {
     circulars: circularsQuery.data || [],
     isLoading: circularsQuery.isLoading,
+    isError: circularsQuery.isError,
     readIds: readsQuery.data || new Set<string>(),
     unreadCount,
     markRead: markRead.mutate,

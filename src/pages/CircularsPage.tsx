@@ -107,7 +107,7 @@ function CircularCard({ circular, isRead, onMarkRead, lang }: { circular: Circul
 }
 
 export default function CircularsPage() {
-  const { circulars, isLoading, readIds, markRead } = useCirculars();
+  const { circulars, isLoading, isError, readIds, markRead } = useCirculars();
   const { language } = useLanguage();
   const l = (t as any)[language] || t.en;
 
@@ -120,6 +120,11 @@ export default function CircularsPage() {
           Array.from({ length: 3 }).map((_, i) => (
             <Skeleton key={i} className="h-32 w-full rounded-xl" />
           ))
+        ) : isError ? (
+          <div className="text-center py-12">
+            <Bell className="w-12 h-12 mx-auto text-muted-foreground/40 mb-3" />
+            <p className="text-muted-foreground">{language === "hi" ? "सर्कुलर लोड नहीं हो सके।" : "Circulars could not be loaded."}</p>
+          </div>
         ) : circulars.length === 0 ? (
           <div className="text-center py-12">
             <Bell className="w-12 h-12 mx-auto text-muted-foreground/40 mb-3" />

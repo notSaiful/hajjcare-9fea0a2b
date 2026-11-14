@@ -16,6 +16,39 @@ import { ServiceFeeReceiptCard } from "@/components/billing/ServiceFeeReceiptCar
 import type { ServiceFeeReceipt } from "../../supabase/functions/verify-razorpay-payment/receipt";
 import { useNavigate } from "react-router-dom";
 
+const LIVE_FEE_ORIGIN = "https://vvbbwlfzpfvgyweeggvw.supabase.co";
+
+function livePublishableKey(): string {
+  return (
+    import.meta.env.VITE_TRAINING_REGISTER_PUBLISHABLE_KEY ||
+    import.meta.env.VITE_VOLUNTEER_PUBLISHABLE_KEY ||
+    ""
+  );
+}
+
+/** Orders and receipts live on hajjcare-live. The site sign-in project does not host these functions. */
+async function callLiveFeeFunction(name: string, body: unknown): Promise<Record<string, unknown>> {
+  const key = livePublishableKey();
+  if (!key) throw new Error("Payment service is not configured on this build.");
+  const { data: sessionData } = await supabase.auth.getSession();
+  const token = sessionData.session?.access_token || key;
+  const res = await fetch(`${LIVE_FEE_ORIGIN}/functions/v1/${name}`, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      apikey: key,
+      authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(body),
+  });
+  const payload = (await res.json().catch(() => ({}))) as Record<string, unknown>;
+  if (!res.ok) {
+    const message = typeof payload.error === "string" ? payload.error : `Payment service returned ${res.status}`;
+    throw new Error(message);
+  }
+  return payload;
+}
+
 declare global {
   interface Window {
     Razorpay: new (options: Record<string, unknown>) => {
@@ -93,29 +126,21 @@ export default function PaymentPage() {
     status: "paid" | "failed"
   ) => {
     try {
-      const { data, error } = await supabase.functions.invoke(
-        "verify-razorpay-payment",
-        {
-          body: {
-            razorpay_order_id: razorpayOrderId,
-            razorpay_payment_id: razorpayPaymentId,
-            razorpay_signature: razorpaySignature,
-            base_amount: Math.round(baseAmount * 100),
-            gst_amount: Math.round(gstAmount * 100),
-            total_amount: Math.round(totalAmount * 100),
-            service_name: "HajjCare App Maintenance Service Fee",
-            customer_name: user?.user_metadata?.full_name || null,
-            customer_email: user?.email || null,
-            org_gstin: ORG_GSTIN || null,
-            status,
-          },
-        }
-      );
-      if (error || data?.success !== true) {
-        console.error("Verification error:", error);
-        return null;
-      }
-      return data;
+      const data = await callLiveFeeFunction("verify-razorpay-payment", {
+        razorpay_order_id: razorpayOrderId,
+        razorpay_payment_id: razorpayPaymentId,
+        razorpay_signature: razorpaySignature,
+        base_amount: Math.round(baseAmount * 100),
+        gst_amount: Math.round(gstAmount * 100),
+        total_amount: Math.round(totalAmount * 100),
+        service_name: "HajjCare App Maintenance Service Fee",
+        customer_name: user?.user_metadata?.full_name || null,
+        customer_email: user?.email || null,
+        org_gstin: ORG_GSTIN || null,
+        status,
+      });
+      if (data.success !== true) return null;
+      return data as { success?: boolean; receipt?: ServiceFeeReceipt };
     } catch (err) {
       console.error("Failed to verify payment:", err);
       return null;
@@ -155,13 +180,18 @@ export default function PaymentPage() {
       // Send total amount (including GST) in paise to Razorpay
       const totalInPaise = Math.round(totalAmount * 100);
 
-      const response = await supabase.functions.invoke("create-razorpay-order", {
-        body: { amount: totalInPaise, currency: "INR" },
+      const response = await callLiveFeeFunction("create-razorpay-order", {
+        amount: totalInPaise,
+        currency: "INR",
       });
 
-      if (response.error) throw new Error(response.error.message || "Failed to create order");
-
-      const { order_id, key_id, amount: orderAmount, currency } = response.data;
+      const order_id = response.order_id;
+      const key_id = response.key_id;
+      const orderAmount = response.amount;
+      const currency = response.currency;
+      if (typeof order_id !== "string" || typeof key_id !== "string") {
+        throw new Error("Payment service did not return an order.");
+      }
 
       const options = {
         key: key_id,

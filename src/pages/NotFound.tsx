@@ -13,7 +13,17 @@ const NotFound = () => {
       <div className="text-center">
         <h1 className="mb-4 text-4xl font-bold">404</h1>
         <p className="mb-4 text-xl text-muted-foreground">Oops! Page not found</p>
-        <a href="/home" className="text-primary underline hover:text-primary/90">
+        <button
+          type="button"
+          className="mb-3 text-primary underline hover:text-primary/90"
+          onClick={() => {
+            if (window.history.length > 1) window.history.back();
+            else window.location.assign("/home");
+          }}
+        >
+          ‹ वापस
+        </button>
+        <a href="/home" className="block text-primary underline hover:text-primary/90">
           Return to Home
         </a>
         <a href="/#explore" className="mt-3 block text-primary underline hover:text-primary/90">

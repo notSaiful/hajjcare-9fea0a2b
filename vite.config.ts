@@ -30,6 +30,12 @@ function demoRouting(): Plugin {
     else if (pathOnly === "/auth" || pathOnly === "/reset-password" || pathOnly === "/volunteer" || pathOnly === "/volunteer/training" || pathOnly === "/service-fee" || pathOnly === "/classroom") nextPath = "/app.html";
     else if (pathOnly === "/privacy" || pathOnly === "/privacy-policy" || pathOnly === "/account-deletion") nextPath = "/privacy-policy.html";
     else if (pathOnly === "/sukoon") nextPath = "/sukoon.html";
+    else if (
+      pathOnly === "/map" || pathOnly === "/maps" || pathOnly === "/sos" ||
+      pathOnly === "/family" || pathOnly === "/family-status" || pathOnly === "/family-dashboard" ||
+      pathOnly === "/sukoon-rd" || pathOnly === "/hajj-progress" ||
+      pathOnly === "/admin/live-tracking" || pathOnly === "/admin/sukoon-metrics"
+    ) nextPath = "/index.html";
     else if (!pathOnly.includes(".") && !pathOnly.startsWith("/@") && !pathOnly.startsWith("/src/") && !pathOnly.startsWith("/node_modules/")) {
       // Extension-less paths are the React app so a refresh of /rules, /home, /circulars
       // does not fall through to the door page.

@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { ArrowLeft, ArrowRight, LucideIcon } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { cn } from "@/lib/utils";
@@ -47,6 +47,7 @@ export function PageHeader({
   children,
 }: PageHeaderProps) {
   const { language, isRTL } = useLanguage();
+  const navigate = useNavigate();
 
   const titleText = typeof title === "string" ? title : title[language] || title.en;
   const subtitleText = subtitle
@@ -60,13 +61,17 @@ export function PageHeader({
   return (
     <div className={cn("space-y-4", className)}>
       {/* Back Button */}
-      <Link
-        to={backLink}
+      <button
+        type="button"
         className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors group"
+        onClick={() => {
+          if (window.history.length > 1) navigate(-1);
+          else navigate(backLink);
+        }}
       >
         <BackArrow className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
         <span className="text-sm font-medium">{backLabels[language] || backLabels.en}</span>
-      </Link>
+      </button>
 
       {/* Title Section */}
       <div className="flex items-start gap-4">

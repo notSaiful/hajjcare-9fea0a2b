@@ -39,11 +39,6 @@ const PreparePage = lazy(() => import("./pages/PreparePage"));
 const RitualDetailPage = lazy(() => import("./pages/RitualDetailPage"));
 const RulesBriefingPage = lazy(() => import("./pages/RulesBriefingPage"));
 const RulesSectionPage = lazy(() => import("./pages/RulesSectionPage"));
-const FamilyViewPage = lazy(() => import("./pages/FamilyViewPage"));
-const FamilyDashboardPage = lazy(() => import("./pages/FamilyDashboardPage"));
-const MapPage = lazy(() => import("./pages/MapPage"));
-
-const FamilyPage = lazy(() => import("./pages/FamilyPage"));
 const UmrahGuidePage = lazy(() => import("./pages/UmrahGuidePage"));
 const UmrahDetailPage = lazy(() => import("./pages/UmrahDetailPage"));
 const MakkahGuidePage = lazy(() => import("./pages/MakkahGuidePage"));
@@ -88,7 +83,6 @@ const FreeUmrahApplyPage = lazy(() => import("./pages/FreeUmrahApplyPage"));
 const FreeUmrahAdminPage = lazy(() => import("./pages/FreeUmrahAdminPage"));
 const FreeUmrahStatusPage = lazy(() => import("./pages/FreeUmrahStatusPage"));
 const ShiTrainingPage = lazy(() => import("./pages/ShiTrainingPage"));
-const FamilyProgressPage = lazy(() => import("./pages/FamilyProgressPage"));
 const PrivacyPolicyPage = lazy(() => import("./pages/PrivacyPolicyPage"));
 const TermsConditionsPage = lazy(() => import("./pages/TermsConditionsPage"));
 const RefundPolicyPage = lazy(() => import("./pages/RefundPolicyPage"));
@@ -101,11 +95,9 @@ const PaymentPage = lazy(() => import("./pages/PaymentPage"));
 const BillingHistoryPage = lazy(() => import("./pages/BillingHistoryPage"));
 const RewardsPage = lazy(() => import("./pages/RewardsPage"));
 const AdminPromoPage = lazy(() => import("./pages/AdminPromoPage"));
-const SukoonRdPage = lazy(() => import("./pages/SukoonRdPage"));
 const AdminOperatorsPage = lazy(() => import("./pages/AdminOperatorsPage"));
 const AdminFraudAlertsPage = lazy(() => import("./pages/AdminFraudAlertsPage"));
 const AdminAIDashboardPage = lazy(() => import("./pages/AdminAIDashboardPage"));
-const SukoonTrackingMetricsPage = lazy(() => import("./pages/SukoonTrackingMetricsPage"));
 const AdminAnalyticsPage = lazy(() => import("./pages/AdminAnalyticsPage"));
 const HajjFaqChatPage = lazy(() => import("./pages/HajjFaqChatPage"));
 const HajjQueryWizardPage = lazy(() => import("./pages/HajjQueryWizardPage"));
@@ -114,7 +106,6 @@ const VolunteerTrainingPage = lazy(() => import("./pages/VolunteerTrainingPage")
 const VolunteerDashboardPage = lazy(() => import("./pages/VolunteerDashboardPage"));
 const ResponderCommandPage = lazy(() => import("./pages/ResponderCommandPage"));
 const NationalCommandPage = lazy(() => import("./pages/NationalCommandPage"));
-const AdminLiveTrackingPage = lazy(() => import("./pages/AdminLiveTrackingPage"));
 const DeploymentRoadmapPage = lazy(() => import("./pages/DeploymentRoadmapPage"));
 const ComplianceDashboardPage = lazy(() => import("./pages/ComplianceDashboardPage"));
 const AdminWhatsAppApiPage = lazy(() => import("./pages/AdminWhatsAppApiPage"));
@@ -171,6 +162,28 @@ function PublicDemoHome() {
   return <PageLoader />;
 }
 
+/** Maps, SOS, and family tracking stay on the public door until a later version. */
+const DOOR_PATHS = new Set([
+  "/map",
+  "/maps",
+  "/sos",
+  "/family",
+  "/family-status",
+  "/family-dashboard",
+  "/sukoon-rd",
+  "/hajj-progress",
+  "/admin/live-tracking",
+  "/admin/sukoon-metrics",
+]);
+
+function LeaveOnDoor() {
+  useEffect(() => {
+    const path = window.location.pathname;
+    if (DOOR_PATHS.has(path)) window.location.assign(path + window.location.search);
+  }, []);
+  return <PageLoader />;
+}
+
 /** Static HTML lives outside the SPA. A client-side link must load that document. */
 function FullLoad({ to }: { to: string }) {
   useEffect(() => {
@@ -214,10 +227,12 @@ function AppContent() {
       <Route path="/haj-directory" element={<HajMissionDirectoryPage />} />
       <Route path="/rules" element={<RulesBriefingPage />} />
       <Route path="/rules/:sectionId" element={<RulesSectionPage />} />
-      <Route path="/family-status" element={<FamilyViewPage />} />
-      <Route path="/family-dashboard" element={<FamilyDashboardPage />} />
-      <Route path="/family" element={<FamilyPage />} />
-      <Route path="/map" element={<MapPage />} />
+      <Route path="/family-status" element={<LeaveOnDoor />} />
+      <Route path="/family-dashboard" element={<LeaveOnDoor />} />
+      <Route path="/family" element={<LeaveOnDoor />} />
+      <Route path="/map" element={<LeaveOnDoor />} />
+      <Route path="/maps" element={<LeaveOnDoor />} />
+      <Route path="/sos" element={<LeaveOnDoor />} />
       <Route path="/hajj-buildings" element={<HajjBuildingsPage />} />
       <Route path="/medical-facilities" element={<MedicalFacilitiesPage />} />
       <Route path="/open" element={<OpenAppPage />} />
@@ -253,7 +268,7 @@ function AppContent() {
       <Route path="/join-group" element={<HajiJoinGroupPage />} />
       <Route path="/my-hajj-group" element={<HajiGroupDashboardPage />} />
       <Route path="/shi-training" element={<ShiTrainingPage />} />
-      <Route path="/hajj-progress" element={<FamilyProgressPage />} />
+      <Route path="/hajj-progress" element={<LeaveOnDoor />} />
       <Route path="/terms-conditions" element={<TermsConditionsPage />} />
       <Route path="/refund-policy" element={<RefundPolicyPage />} />
       <Route path="/shipping-policy" element={<ShippingPolicyPage />} />
@@ -266,17 +281,17 @@ function AppContent() {
       <Route path="/billing-history" element={<BillingHistoryPage />} />
       <Route path="/rewards" element={<RewardsPage />} />
       <Route path="/admin/promo" element={<AdminOnlyRoute><AdminPromoPage /></AdminOnlyRoute>} />
-      <Route path="/sukoon-rd" element={<SukoonRdPage />} />
+      <Route path="/sukoon-rd" element={<LeaveOnDoor />} />
       <Route path="/admin/operators" element={<AdminOnlyRoute><AdminOperatorsPage /></AdminOnlyRoute>} />
       <Route path="/admin/fraud-alerts" element={<AdminOnlyRoute><AdminFraudAlertsPage /></AdminOnlyRoute>} />
       <Route path="/admin/ai-dashboard" element={<AdminOnlyRoute><AdminAIDashboardPage /></AdminOnlyRoute>} />
-      <Route path="/admin/sukoon-metrics" element={<AdminOnlyRoute><SukoonTrackingMetricsPage /></AdminOnlyRoute>} />
+      <Route path="/admin/sukoon-metrics" element={<LeaveOnDoor />} />
       <Route path="/admin/analytics" element={<AdminOnlyRoute><AdminAnalyticsPage /></AdminOnlyRoute>} />
       <Route path="/hajj-faq" element={<HajjFaqChatPage />} />
       <Route path="/hajj-wizard" element={<HajjQueryWizardPage />} />
       <Route path="/command-center" element={<ResponderCommandPage />} />
       <Route path="/national-command" element={<NationalCommandPage />} />
-      <Route path="/admin/live-tracking" element={<AdminOnlyRoute><AdminLiveTrackingPage /></AdminOnlyRoute>} />
+      <Route path="/admin/live-tracking" element={<LeaveOnDoor />} />
       <Route path="/deployment-roadmap" element={<DeploymentRoadmapPage />} />
       <Route path="/admin/compliance" element={<AdminOnlyRoute><ComplianceDashboardPage /></AdminOnlyRoute>} />
       <Route path="/admin/whatsapp-api" element={<AdminOnlyRoute><AdminWhatsAppApiPage /></AdminOnlyRoute>} />
