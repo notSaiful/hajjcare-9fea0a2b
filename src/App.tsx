@@ -39,11 +39,6 @@ const PreparePage = lazy(() => import("./pages/PreparePage"));
 const RitualDetailPage = lazy(() => import("./pages/RitualDetailPage"));
 const RulesBriefingPage = lazy(() => import("./pages/RulesBriefingPage"));
 const RulesSectionPage = lazy(() => import("./pages/RulesSectionPage"));
-const FamilyViewPage = lazy(() => import("./pages/FamilyViewPage"));
-const FamilyDashboardPage = lazy(() => import("./pages/FamilyDashboardPage"));
-const MapPage = lazy(() => import("./pages/MapPage"));
-
-const FamilyPage = lazy(() => import("./pages/FamilyPage"));
 const UmrahGuidePage = lazy(() => import("./pages/UmrahGuidePage"));
 const UmrahDetailPage = lazy(() => import("./pages/UmrahDetailPage"));
 const MakkahGuidePage = lazy(() => import("./pages/MakkahGuidePage"));
@@ -88,7 +83,6 @@ const FreeUmrahApplyPage = lazy(() => import("./pages/FreeUmrahApplyPage"));
 const FreeUmrahAdminPage = lazy(() => import("./pages/FreeUmrahAdminPage"));
 const FreeUmrahStatusPage = lazy(() => import("./pages/FreeUmrahStatusPage"));
 const ShiTrainingPage = lazy(() => import("./pages/ShiTrainingPage"));
-const FamilyProgressPage = lazy(() => import("./pages/FamilyProgressPage"));
 const PrivacyPolicyPage = lazy(() => import("./pages/PrivacyPolicyPage"));
 const TermsConditionsPage = lazy(() => import("./pages/TermsConditionsPage"));
 const RefundPolicyPage = lazy(() => import("./pages/RefundPolicyPage"));
@@ -101,11 +95,9 @@ const PaymentPage = lazy(() => import("./pages/PaymentPage"));
 const BillingHistoryPage = lazy(() => import("./pages/BillingHistoryPage"));
 const RewardsPage = lazy(() => import("./pages/RewardsPage"));
 const AdminPromoPage = lazy(() => import("./pages/AdminPromoPage"));
-const SukoonRdPage = lazy(() => import("./pages/SukoonRdPage"));
 const AdminOperatorsPage = lazy(() => import("./pages/AdminOperatorsPage"));
 const AdminFraudAlertsPage = lazy(() => import("./pages/AdminFraudAlertsPage"));
 const AdminAIDashboardPage = lazy(() => import("./pages/AdminAIDashboardPage"));
-const SukoonTrackingMetricsPage = lazy(() => import("./pages/SukoonTrackingMetricsPage"));
 const AdminAnalyticsPage = lazy(() => import("./pages/AdminAnalyticsPage"));
 const HajjFaqChatPage = lazy(() => import("./pages/HajjFaqChatPage"));
 const HajjQueryWizardPage = lazy(() => import("./pages/HajjQueryWizardPage"));
@@ -114,7 +106,6 @@ const VolunteerTrainingPage = lazy(() => import("./pages/VolunteerTrainingPage")
 const VolunteerDashboardPage = lazy(() => import("./pages/VolunteerDashboardPage"));
 const ResponderCommandPage = lazy(() => import("./pages/ResponderCommandPage"));
 const NationalCommandPage = lazy(() => import("./pages/NationalCommandPage"));
-const AdminLiveTrackingPage = lazy(() => import("./pages/AdminLiveTrackingPage"));
 const DeploymentRoadmapPage = lazy(() => import("./pages/DeploymentRoadmapPage"));
 const ComplianceDashboardPage = lazy(() => import("./pages/ComplianceDashboardPage"));
 const AdminWhatsAppApiPage = lazy(() => import("./pages/AdminWhatsAppApiPage"));
@@ -163,23 +154,170 @@ const PageLoader = memo(() => (
 PageLoader.displayName = "PageLoader";
 
 
-function LeaveToDemo() {
+/** Client transitions to "/" load the public menu. assign, not replace, so Android back can return. */
+function PublicDemoHome() {
   useEffect(() => {
-    window.location.replace("/");
+    window.location.assign("/#explore");
   }, []);
-  return null;
+  return <PageLoader />;
+}
+
+/** Maps, SOS, and family tracking stay on the public door until a later version. */
+const DOOR_PATHS = new Set([
+  "/map",
+  "/maps",
+  "/sos",
+  "/family",
+  "/family-status",
+  "/family-dashboard",
+  "/sukoon-rd",
+  "/hajj-progress",
+  "/admin/live-tracking",
+  "/admin/sukoon-metrics",
+]);
+
+function LeaveOnDoor() {
+  useEffect(() => {
+    const path = window.location.pathname;
+    if (DOOR_PATHS.has(path)) window.location.assign(path + window.location.search);
+  }, []);
+  return <PageLoader />;
+}
+
+/** Static HTML lives outside the SPA. A client-side link must load that document. */
+function FullLoad({ to }: { to: string }) {
+  useEffect(() => {
+    window.location.assign(to);
+  }, [to]);
+  return <PageLoader />;
 }
 
 function AppContent() {
   return (
     <Routes>
+      <Route path="/" element={<PublicDemoHome />} />
+      <Route path="/explore" element={<FullLoad to="/explore" />} />
+      <Route path="/library" element={<FullLoad to="/library" />} />
+      <Route path="/sukoon" element={<FullLoad to="/sukoon" />} />
+      <Route path="/visitors" element={<FullLoad to="/visitors" />} />
+      <Route path="/privacy-policy" element={<FullLoad to="/privacy-policy" />} />
+      <Route path="/privacy" element={<FullLoad to="/privacy" />} />
+      <Route path="/account-deletion" element={<FullLoad to="/account-deletion" />} />
       <Route path="/auth" element={<AuthPage />} />
       <Route path="/reset-password" element={<AuthPage />} />
+      <Route path="/home" element={<HomePage />} />
+      <Route path="/prepare" element={<PreparePage />} />
+      <Route path="/prepare/:ritualId" element={<RitualDetailPage />} />
+      <Route path="/umrah" element={<UmrahGuidePage />} />
+      <Route path="/umrah/:ritualId" element={<UmrahDetailPage />} />
+      <Route path="/makkah-guide" element={<MakkahGuidePage />} />
+      <Route path="/makkah-guide/:topicId" element={<MakkahGuideDetailPage />} />
+      <Route path="/madinah-guide" element={<MadinahGuidePage />} />
+      <Route path="/madinah-guide/:topicId" element={<MadinahGuideDetailPage />} />
+      <Route path="/preparation" element={<PreparationGuidePage />} />
+      <Route path="/dua" element={<DuaGuidePage />} />
+      <Route path="/health" element={<HealthGuidePage />} />
+      <Route path="/money" element={<MoneyGuidePage />} />
+      <Route path="/telecom" element={<TelecomGuidePage />} />
+      <Route path="/saudi-sim-update" element={<SaudiSimUpdatePage />} />
+      <Route path="/shi-dashboard-demo" element={<ShiDashboardDemoPage />} />
+      <Route path="/hajj-training-videos" element={<HajjTrainingVideosPage />} />
+      <Route path="/grievances" element={<GrievancesPage />} />
+      <Route path="/contacts" element={<ContactNumbersPage />} />
+      <Route path="/haj-directory" element={<HajMissionDirectoryPage />} />
+      <Route path="/rules" element={<RulesBriefingPage />} />
+      <Route path="/rules/:sectionId" element={<RulesSectionPage />} />
+      <Route path="/family-status" element={<LeaveOnDoor />} />
+      <Route path="/family-dashboard" element={<LeaveOnDoor />} />
+      <Route path="/family" element={<LeaveOnDoor />} />
+      <Route path="/map" element={<LeaveOnDoor />} />
+      <Route path="/maps" element={<LeaveOnDoor />} />
+      <Route path="/sos" element={<LeaveOnDoor />} />
+      <Route path="/hajj-buildings" element={<HajjBuildingsPage />} />
+      <Route path="/medical-facilities" element={<MedicalFacilitiesPage />} />
+      <Route path="/open" element={<OpenAppPage />} />
+      <Route path="/share" element={<OpenAppPage />} />
+      <Route path="/chat" element={<ChatPage />} />
+      <Route path="/tawaf-counter" element={<TawafCounterPage />} />
+      <Route path="/counter" element={<TawafCounterPage />} />
+      <Route path="/pre-hajj-india" element={<PreHajjIndiaPage />} />
+      <Route path="/pre-hajj-india/:sectionId" element={<PreHajjIndiaDetailPage />} />
+      <Route path="/post-hajj" element={<PostHajjGuidePage />} />
+      <Route path="/women" element={<WomenSolutionsPage />} />
+      <Route path="/socials" element={<SocialsPage />} />
+      <Route path="/video-call" element={<VideoCallPage />} />
+      <Route path="/qurbani" element={<QurbaniPage />} />
+      <Route path="/food-guide" element={<FoodGuidePage />} />
+      <Route path="/food" element={<FoodGuidePage />} />
+      <Route path="/help" element={<HealthHelpPage />} />
+      <Route path="/coordinator" element={<CoordinatorDashboardPage />} />
+      <Route path="/medical-alerts" element={<MedicalAlertsPage />} />
+      <Route path="/admin/roles" element={<AdminOnlyRoute><AdminRolesPage /></AdminOnlyRoute>} />
+      <Route path="/admin/seo" element={<AdminOnlyRoute><AdminSEOStatusPage /></AdminOnlyRoute>} />
+      <Route path="/admin/staff-requests" element={<AdminOnlyRoute><AdminStaffRequestsPage /></AdminOnlyRoute>} />
+      <Route path="/admin/metrics" element={<AdminOnlyRoute><EmergencyMetricsPage /></AdminOnlyRoute>} />
+      <Route path="/inspector" element={<InspectorDashboardPage />} />
+      <Route path="/haj-inspectors" element={<HajInspectorsDirectoryPage />} />
+      <Route path="/shi/:coverNumber" element={<ShiProfilePage />} />
+      <Route path="/inspector-directory" element={<InspectorDirectoryPage />} />
+      <Route path="/admin/inspectors" element={<AdminOnlyRoute><AdminInspectorsPage /></AdminOnlyRoute>} />
+      <Route path="/admin/inspectors/upload" element={<AdminOnlyRoute><AdminInspectorUploadPage /></AdminOnlyRoute>} />
+      <Route path="/inspector-group" element={<InspectorGroupManagePage />} />
+      <Route path="/haj-inspector-register" element={<InspectorRegisterPage />} />
+      <Route path="/inspector-register" element={<InspectorRegisterPage />} />
+      <Route path="/join-group" element={<HajiJoinGroupPage />} />
+      <Route path="/my-hajj-group" element={<HajiGroupDashboardPage />} />
+      <Route path="/shi-training" element={<ShiTrainingPage />} />
+      <Route path="/hajj-progress" element={<LeaveOnDoor />} />
+      <Route path="/terms-conditions" element={<TermsConditionsPage />} />
+      <Route path="/refund-policy" element={<RefundPolicyPage />} />
+      <Route path="/shipping-policy" element={<ShippingPolicyPage />} />
+      <Route path="/contact-us" element={<ContactUsPage />} />
+      <Route path="/about-us" element={<AboutUsPage />} />
+      <Route path="/pricing" element={<PricingDisclosurePage />} />
+      <Route path="/govt-services" element={<GovtServicesPage />} />
+      <Route path="/payment" element={<PaymentPage />} />
+      <Route path="/service-fee" element={<PaymentPage />} />
+      <Route path="/billing-history" element={<BillingHistoryPage />} />
+      <Route path="/rewards" element={<RewardsPage />} />
+      <Route path="/admin/promo" element={<AdminOnlyRoute><AdminPromoPage /></AdminOnlyRoute>} />
+      <Route path="/sukoon-rd" element={<LeaveOnDoor />} />
+      <Route path="/admin/operators" element={<AdminOnlyRoute><AdminOperatorsPage /></AdminOnlyRoute>} />
+      <Route path="/admin/fraud-alerts" element={<AdminOnlyRoute><AdminFraudAlertsPage /></AdminOnlyRoute>} />
+      <Route path="/admin/ai-dashboard" element={<AdminOnlyRoute><AdminAIDashboardPage /></AdminOnlyRoute>} />
+      <Route path="/admin/sukoon-metrics" element={<LeaveOnDoor />} />
+      <Route path="/admin/analytics" element={<AdminOnlyRoute><AdminAnalyticsPage /></AdminOnlyRoute>} />
+      <Route path="/hajj-faq" element={<HajjFaqChatPage />} />
+      <Route path="/hajj-wizard" element={<HajjQueryWizardPage />} />
+      <Route path="/command-center" element={<ResponderCommandPage />} />
+      <Route path="/national-command" element={<NationalCommandPage />} />
+      <Route path="/admin/live-tracking" element={<LeaveOnDoor />} />
+      <Route path="/deployment-roadmap" element={<DeploymentRoadmapPage />} />
+      <Route path="/admin/compliance" element={<AdminOnlyRoute><ComplianceDashboardPage /></AdminOnlyRoute>} />
+      <Route path="/admin/whatsapp-api" element={<AdminOnlyRoute><AdminWhatsAppApiPage /></AdminOnlyRoute>} />
+      <Route path="/error/forbidden" element={<ForbiddenPage />} />
+      <Route path="/error/rate-limited" element={<ForbiddenPage />} />
+      <Route path="/security-settings" element={<SecuritySettingsPage />} />
+      <Route path="/circulars" element={<CircularsPage />} />
+      <Route path="/admin/circulars" element={<AdminOnlyRoute><AdminCircularsPage /></AdminOnlyRoute>} />
+      <Route path="/free-umrah" element={<FreeUmrahApplyPage />} />
+      <Route path="/free-umrah/status" element={<FreeUmrahStatusPage />} />
+      <Route path="/admin/free-umrah" element={<AdminOnlyRoute><FreeUmrahAdminPage /></AdminOnlyRoute>} />
       <Route path="/volunteer/training" element={<VolunteerTrainingPage />} />
       <Route path="/volunteer" element={<VolunteerPage />} />
-      <Route path="/service-fee" element={<PaymentPage />} />
+      <Route path="/admin/volunteers" element={<AdminOnlyRoute><VolunteerDashboardPage /></AdminOnlyRoute>} />
+      <Route path="/admin/panel" element={<AdminOnlyRoute><AdminControlPanelPage /></AdminOnlyRoute>} />
       <Route path="/classroom" element={<ClassroomPage />} />
-      <Route path="*" element={<LeaveToDemo />} />
+      <Route path="/profile" element={<ProfilePage />} />
+      <Route path="/lost-and-found" element={<LostAndFoundPage />} />
+      <Route path="/mashair-map" element={<MashairMapPage />} />
+      <Route path="/madinah-hotels" element={<MadinahHotelsPage />} />
+      <Route path="/mina-tents" element={<MinaTentLocationsPage />} />
+      <Route path="/mina-tent-locations" element={<MinaTentLocationsPage />} />
+      <Route path="/mina-tents/:maktabId" element={<MinaMaktabDetailPage />} />
+      <Route path="/return-to-camp" element={<ReturnToCampPage />} />
+      <Route path="/lost" element={<ReturnToCampPage />} />
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }

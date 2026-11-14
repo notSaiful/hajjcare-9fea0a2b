@@ -101,6 +101,17 @@ const VolunteerPage = () => {
 
   useEffect(() => {
     try {
+      const saved = sessionStorage.getItem("hc-volunteer-receipt");
+      if (!saved) return;
+      setVolunteerId(saved);
+      setSuccess(true);
+    } catch {
+      /* private mode */
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
       const raw = sessionStorage.getItem("hc-reg-carry");
       if (!raw) return;
       const data = JSON.parse(raw) as { name?: unknown; phone?: unknown; email?: unknown };
@@ -275,6 +286,7 @@ const VolunteerPage = () => {
         return;
       }
       setVolunteerId(reference);
+      try { sessionStorage.setItem("hc-volunteer-receipt", reference); } catch { /* private mode */ }
       setSuccess(true);
       toast({ title: "आपका रजिस्ट्रेशन मुकम्मल हुआ। अल्लाह आपका हज मबरूर और कबूल करे।", description: reference });
     } catch {

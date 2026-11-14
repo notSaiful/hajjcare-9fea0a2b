@@ -1,4 +1,3 @@
-import { supabase } from "@/integrations/supabase/client";
 import { useState, useCallback } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -8,7 +7,9 @@ type Message = {
   content: string;
 };
 
-const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/hajj-chat`;
+/** Public Hajj chat on hajjcare-live. hajj-chat on that project requires a user of that project; site sign-in is a different project, so Zoya uses ai-orchestrator. */
+const LIVE_CHAT_ORIGIN = "https://vvbbwlfzpfvgyweeggvw.supabase.co";
+const CHAT_URL = `${LIVE_CHAT_ORIGIN}/functions/v1/ai-orchestrator`;
 
 export const useHajjChat = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -37,25 +38,29 @@ export const useHajjChat = () => {
     };
 
     try {
-      // hajj-chat requires a signed-in user (verify_jwt + getUser in the function),
-      // so send the user's session token, not the publishable key.
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.access_token) {
+      const liveKey =
+        import.meta.env.VITE_TRAINING_REGISTER_PUBLISHABLE_KEY ||
+        import.meta.env.VITE_VOLUNTEER_PUBLISHABLE_KEY;
+      if (!liveKey) {
         toast({
-          title: "Sign in required",
-          description: "Please sign in to use the Hajj assistant.",
+          title: "Zoya is not configured",
+          description: "The live chat key is missing on this build.",
           variant: "destructive",
         });
-        throw new Error("Not signed in");
+        throw new Error("Chat is not configured");
       }
       const response = await fetch(CHAT_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-          Authorization: `Bearer ${session.access_token}`,
+          apikey: liveKey,
+          Authorization: `Bearer ${liveKey}`,
         },
-        body: JSON.stringify({ messages: [...messages, userMsg], language }),
+        body: JSON.stringify({
+          message: userMessage,
+          messages: [...messages, userMsg],
+          language,
+        }),
       });
 
       if (!response.ok) {

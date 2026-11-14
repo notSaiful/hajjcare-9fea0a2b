@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Loader2, Star } from "lucide-react";
 import logo from "@/assets/logo.jpeg";
 import { EmailAuthForm } from "@/components/auth/EmailAuthForm";
+import { safeNextPath } from "@/lib/safeNextPath";
 
 import { IslamicPattern } from "@/components/auth/IslamicPattern";
 import { MosqueSilhouette } from "@/components/auth/MosqueSilhouette";
@@ -26,12 +27,11 @@ const AuthPage = () => {
 
   const t = titleLabels[language as keyof typeof titleLabels] || titleLabels.en;
 
+  const nextPath = safeNextPath(params.get("next"));
+
   useEffect(() => {
-    if (!loading && isAuthenticated) {
-      if (params.get("next") === "/volunteer") navigate("/volunteer");
-      else window.location.replace("/");
-    }
-  }, [isAuthenticated, loading, navigate, params]);
+    if (!loading && isAuthenticated) navigate(nextPath, { replace: true });
+  }, [isAuthenticated, loading, navigate, nextPath]);
 
   if (loading) {
     return (
@@ -85,7 +85,7 @@ const AuthPage = () => {
         <div className="h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
 
         <CardContent className="px-5 sm:px-6 py-6">
-          <EmailAuthForm onSuccess={() => navigate("/home")} />
+          <EmailAuthForm onSuccess={() => navigate(nextPath, { replace: true })} />
           
         </CardContent>
       </Card>

@@ -152,6 +152,7 @@ footer.tf{text-align:center;padding:2.2rem 1rem;color:#c9a45c;opacity:.75;font-f
 .dbox{position:relative;width:min(560px,100%);max-height:92svh;overflow:auto;border-radius:22px;padding:1.6rem 1.4rem 1.2rem;background:linear-gradient(180deg,#fffcf4,#f6ecd6);border:1px solid #c9a45c;box-shadow:0 30px 80px rgba(0,0,0,.25),0 0 0 6px rgba(201,164,92,.12);transform:translateY(30px);transition:transform .45s cubic-bezier(.2,.8,.2,1)}
 .dov.on .dbox{transform:none}
 .dx{position:absolute;top:.8rem;right:.8rem;width:36px;height:36px;border-radius:50%;border:1px solid #c9a45c;background:#fffaf0;color:#1f3b2c;font-size:1rem;cursor:pointer}
+.hc-back{position:absolute;top:.8rem;left:.8rem;height:36px;padding:0 12px;border-radius:999px;border:1px solid #c9a45c;background:#fffaf0;color:#1f3b2c;cursor:pointer}
 .dtag{display:inline-block;font-size:.75rem;letter-spacing:.08em;padding:.2rem .7rem;border-radius:99px;background:#1f3b2c;color:#f6e7c4;margin:0 0 .6rem}
 .dp h3{font-size:1.5rem;color:#1f3b2c;margin:0}.dp h3 small{display:block;font-size:.65em;color:#8a6a2e;font-weight:400}.dsub{color:#5f6b4e;margin:.3rem 0 .9rem;font-size:.92rem}
 .dnote{font-size:.8rem;color:#7a6a4a;margin-top:.9rem;padding-top:.6rem;border-top:1px dashed rgba(184,149,79,.5)}
@@ -518,3 +519,6 @@ main section.wrap{padding-top:4.5rem;padding-bottom:4.5rem}
 #talbiya-tap{position:fixed;left:50%;bottom:calc(max(16px,env(safe-area-inset-bottom,0px)) + 8px);transform:translateX(-50%);z-index:86;font:500 14px/1.2 Mukta,sans-serif;padding:6px 12px;border-radius:999px;border:1px solid #c9a45c;background:#fffaf0;color:#1f3b2c}
 @media(max-width:430px){#talbiyah-lines{left:10px!important;right:10px!important;padding:8px 12px!important}#talbiyah-lines .tl-ar{font-size:.8rem!important;line-height:1.45!important}#talbiyah-lines .tl-hi{font-size:.7rem!important;line-height:1.4!important}}
 @media(min-width:900px){#talbiyah-lines .tl-ar{font-size:.95rem!important;line-height:1.5!important}#talbiyah-lines .tl-hi{font-size:.8rem!important}}
+/* Return visits skip the door so Back lands on the menu. First visit is unchanged. */
+html.hc-door-done #intro{opacity:0!important;visibility:hidden!important;pointer-events:none!important;transition:none!important}
+html.hc-door-done body.locked{overflow:auto}
