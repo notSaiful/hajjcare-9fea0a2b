@@ -1,10 +1,26 @@
-/** Configurable first day. Dates are calendar days in India (Asia/Kolkata). Day 1 stays unlocked. */
-export const CLASSROOM_RELEASE_START_IST = "2026-11-20";
+/** Configurable first episode. Dates are calendar days in India (Asia/Kolkata). */
+export const CLASSROOM_RELEASE_START_IST = "2026-12-07";
+export const CLASSROOM_DAY_COUNT = 100;
 
-export const PUBLIC_DAYS = [
-  { day: 1, title_hi: "नीयत: हज इबादत है, सैर नहीं", title_en: "Niyyah: Hajj is worship, not a trip" },
-  { day: 2, title_hi: "दिन 2", title_en: "Day 2" },
-];
+function titleFor(day) {
+  if (day === 1) {
+    return {
+      title_hi: "नीयत: हज इबादत है, सैर नहीं",
+      title_en: "Niyyah: Hajj is worship, not a trip",
+      title_ur: "نیت: حج عبادت ہے، سیر نہیں",
+    };
+  }
+  return {
+    title_hi: `दिन ${day}`,
+    title_en: `Day ${day}`,
+    title_ur: `دن ${day}`,
+  };
+}
+
+export const PUBLIC_DAYS = Array.from({ length: CLASSROOM_DAY_COUNT }, (_, index) => ({
+  day: index + 1,
+  ...titleFor(index + 1),
+}));
 
 export function istDateString(date = new Date()) {
   return new Intl.DateTimeFormat("en-CA", {
@@ -27,15 +43,13 @@ export function unlockDateIst(day, start = CLASSROOM_RELEASE_START_IST) {
 }
 
 export function isDayUnlocked(day, todayIst, start = CLASSROOM_RELEASE_START_IST) {
-  if (day === 1) return true;
   return todayIst >= unlockDateIst(day, start);
 }
 
 export function dayStatus(day, todayIst, completed) {
   if (!isDayUnlocked(day, todayIst)) return "locked";
   if (completed) return "completed";
-  if (todayIst === unlockDateIst(day) || (day === 1 && todayIst <= unlockDateIst(1))) return "current";
-  if (todayIst < unlockDateIst(day)) return "upcoming";
+  if (todayIst === unlockDateIst(day)) return "current";
   return "available";
 }
 
@@ -45,4 +59,26 @@ export function publicProgramme(todayIst) {
     const status = dayStatus(item.day, todayIst, false);
     return { ...item, unlocks, status };
   });
+}
+
+export function formatLongDate(iso) {
+  const [year, month, day] = iso.split("-").map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  return new Intl.DateTimeFormat("en-GB", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(date);
+}
+
+export function formatShortDate(iso) {
+  const [year, month, day] = iso.split("-").map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  return new Intl.DateTimeFormat("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(date);
 }

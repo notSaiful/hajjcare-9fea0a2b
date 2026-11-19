@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { SEO } from "@/components/SEO";
 import { SimpleHeader } from "@/components/SimpleHeader";
@@ -24,18 +24,48 @@ import {
   INTRO_EN,
   INTRO_HI,
   planEpisode,
+  quizResultMessage,
   type EpisodePlan,
 } from "@/data/classroomPlan";
-import { istDateString, publicProgramme } from "@/data/classroomRelease.js";
+import { formatLongDate, formatShortDate, isDayUnlocked, istDateString, publicProgramme, unlockDateIst } from "@/data/classroomRelease.js";
 import { BookOpen, Download, GraduationCap, MessageCircle } from "lucide-react";
 
+const CLASS_FLOW = ["intro", "quran", "hadith", "dua", "arkan", "doctor", "naat", "quiz"] as const;
+
+const FLOW_LABEL = {
+  intro: { en: "Intro", hi: "परिचय", ur: "تعارف" },
+  quran: { en: "Quran", hi: "क़ुरआन", ur: "قرآن" },
+  hadith: { en: "Hadith", hi: "हदीस", ur: "حدیث" },
+  dua: { en: "Dua", hi: "दुआ", ur: "دعا" },
+  arkan: { en: "Main Hajj Lesson", hi: "मुख्य हज सबक", ur: "حج کا اصل سبق" },
+  doctor: { en: "Doctor Corner", hi: "डॉक्टर कॉर्नर", ur: "ڈاکٹر کارنر" },
+  naat: { en: "Naat", hi: "नात", ur: "نعت" },
+  quiz: { en: "Quiz", hi: "क्विज़", ur: "کوئز" },
+} as const;
+
+function softChime() {
+  const audioWindow = window as Window & { AudioContext?: typeof AudioContext; webkitAudioContext?: typeof AudioContext };
+  const Context = audioWindow.AudioContext || audioWindow.webkitAudioContext;
+  if (!Context) return;
+  const context = new Context();
+  const oscillator = context.createOscillator();
+  const gain = context.createGain();
+  oscillator.frequency.value = 523;
+  gain.gain.setValueAtTime(0.0001, context.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.04, context.currentTime + 0.03);
+  gain.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + 0.4);
+  oscillator.connect(gain);
+  gain.connect(context.destination);
+  oscillator.start();
+  oscillator.stop(context.currentTime + 0.45);
+}
 const MENU = [
-  { href: "/", hi: "डैशबोर्ड", en: "Dashboard" },
-  { href: "/classroom", hi: "क्लासरूम", en: "Classroom" },
-  { href: "/library#quran", hi: "क़ुरआन लाइब्रेरी", en: "Quran Library" },
-  { href: "/explore#hadith", hi: "हदीस लाइब्रेरी", en: "Hadith Library" },
-  { href: "/#duas", hi: "दुआ संग्रह", en: "Dua Collection" },
-  { href: "/#journey", hi: "मेरा हज सफ़र", en: "My Hajj Journey" },
+  { href: "/", hi: "डैशबोर्ड", en: "Dashboard", ur: "ڈیش بورڈ" },
+  { href: "/classroom", hi: "हज क्लासरूम (100 दिन)", en: "Hajj Classroom (100 Days Training)", ur: "حج کلاس روم" },
+  { href: "/library#quran", hi: "क़ुरआन लाइब्रेरी", en: "Quran Library", ur: "قرآن لائبریری" },
+  { href: "/explore#hadith", hi: "हदीस लाइब्रेरी", en: "Hadith Library", ur: "حدیث لائبریری" },
+  { href: "/#duas", hi: "दुआ संग्रह", en: "Dua Collection", ur: "دعا مجموعہ" },
+  { href: "/#journey", hi: "मेरा हज सफ़र", en: "My Hajj Journey", ur: "میرا حج سفر" },
 ] as const;
 
 function hindiFirst(language: string) {
@@ -189,6 +219,10 @@ function DayQuiz({ quiz, language }: { quiz: ClassroomQuiz; language: string }) 
       {locked ? (
         <div className="mt-4">
           <p className="text-base font-semibold">स्कोर: {score}/10</p>
+          <p className="mt-2 text-sm" data-testid="quiz-result">
+            <span className="block">{quizResultMessage(score).hi}</span>
+            <span className="mt-1 block">{quizResultMessage(score).en}</span>
+          </p>
           <button type="button" className={`${waClass} mt-3`} onClick={retry}>
             दोबारा कोशिश करें
           </button>
@@ -233,6 +267,7 @@ function SideVideoBox({
         <iframe
           className="h-full w-full"
           data-section={section}
+          data-end={item.end_seconds ?? ""}
           src={classroomSideEmbedSrc(item, { jsApi: true })}
           title={`${item.title_en} — Day ${item.day}`}
           allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
@@ -246,7 +281,7 @@ function SideVideoBox({
 }
 
 export default function ClassroomPage() {
-  const { language, isRTL } = useLanguage();
+  const { language, isRTL, setLanguage } = useLanguage();
   const classes = useMemo(() => publishedClasses(), []);
   const [day, setDay] = useState(classes[0]?.day ?? 0);
   const selected = classes.find((item) => item.day === day) ?? classes[0];
@@ -317,7 +352,11 @@ export default function ClassroomPage() {
         new win.YT.Player(frame, {
           events: {
             onStateChange: (event: { data: number; target: { getCurrentTime: () => number } }) => {
-              if (event.data === 0 || event.data === 1 || event.data === 2) record(key, event.target.getCurrentTime());
+              const time = event.target.getCurrentTime();
+              if (event.data === 0 || event.data === 1 || event.data === 2) record(key, time);
+              const endAt = Number(frame.dataset.end || 0);
+              const finished = event.data === 0 || (endAt > 0 && time >= endAt - 0.4);
+              if (finished) advanceClassRef.current();
             },
           },
         });
@@ -346,6 +385,35 @@ export default function ClassroomPage() {
     if (!section || section.seconds == null) return "अवधि जाँच बाकी";
     return formatQuizClock(section.seconds);
   };
+  const dayOpen = selected ? isDayUnlocked(selected.day, todayIst) : false;
+  const [classRun, setClassRun] = useState<{ index: number; phase: "transition" | "play" } | null>(null);
+  const advanceClassRef = useRef<() => void>(() => {});
+  advanceClassRef.current = () => {
+    setClassRun((current) => {
+      if (!current || current.phase !== "play") return current;
+      const next = current.index + 1;
+      if (next >= CLASS_FLOW.length) return null;
+      return { index: next, phase: "transition" };
+    });
+  };
+  useEffect(() => {
+    if (!classRun || classRun.phase !== "transition") return;
+    softChime();
+    const timer = window.setTimeout(() => {
+      setClassRun((current) => current ? { ...current, phase: "play" } : current);
+    }, 2000);
+    return () => window.clearTimeout(timer);
+  }, [classRun]);
+  useEffect(() => {
+    if (!classRun || classRun.phase !== "play") return;
+    const key = CLASS_FLOW[classRun.index];
+    if (key !== "intro" && key !== "quran") return;
+    const timer = window.setTimeout(() => advanceClassRef.current(), 4000);
+    return () => window.clearTimeout(timer);
+  }, [classRun]);
+  const [infoTab, setInfoTab] = useState<"about" | "sheet" | "takeaways" | "notes" | "downloads">("about");
+  const flowKey = classRun ? CLASS_FLOW[classRun.index] : null;
+  const flowLabel = flowKey ? FLOW_LABEL[flowKey] : null;
 
   return (
     <div className="min-h-screen bg-[#f6f3ec] text-[#1f4d3a]" dir={isRTL ? "rtl" : "ltr"}>
@@ -355,13 +423,19 @@ export default function ClassroomPage() {
         path="/classroom"
       />
       <SimpleHeader />
+      {classRun?.phase === "transition" && flowLabel ? (
+        <div data-testid="section-transition" className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#1f4d3a] text-[#f6f3ec]">
+          <div className="mb-4 h-16 w-28 rounded-t-full border-4 border-[#c9a45c] border-b-0" aria-hidden />
+          <p className="text-2xl font-semibold">{language === "ur" ? flowLabel.ur : language === "hi" ? flowLabel.hi : flowLabel.en}</p>
+        </div>
+      ) : null}
       <div className="mx-auto grid max-w-7xl gap-4 px-3 py-4 sm:px-5 lg:grid-cols-[13.5rem_minmax(0,1fr)_18.5rem] lg:items-start">
         <nav
           aria-label={hindiFirst(language) ? "क्लासरूम मेनू" : "Classroom menu"}
           className="order-5 flex gap-2 overflow-x-auto pb-1 lg:sticky lg:top-20 lg:order-none lg:col-start-1 lg:row-span-2 lg:flex-col lg:overflow-visible lg:pb-0"
         >
           {MENU.map((item) => {
-            const current = item.en === "Classroom";
+            const current = item.href === "/classroom";
             return (
               <a
                 key={item.en}
@@ -373,10 +447,18 @@ export default function ClassroomPage() {
                     : "border-[#e4dcc8] bg-white text-[#1f4d3a] hover:border-[#c9a45c]"
                 }`}
               >
-                <Pair hi={item.hi} en={item.en} language={language} primaryClass="text-sm font-semibold" />
+                <Pair hi={item.hi} en={language === "ur" ? item.ur : item.en} language={language} primaryClass="text-sm font-semibold" />
               </a>
             );
           })}
+          <p className="min-w-[9.5rem] shrink-0 rounded-2xl border border-dashed border-[#e4dcc8] px-3 py-2.5 text-sm text-[#8a6a2e] lg:min-w-0" aria-disabled="true">
+            {language === "hi" ? "शिक्षक / हज गाइड" : language === "ur" ? "استاد / حج گائیڈ" : "Teacher / Hajj Guide"}
+          </p>
+          {digits ? (
+            <a className="min-w-[9.5rem] shrink-0 rounded-2xl border border-[#e4dcc8] bg-white px-3 py-2.5 text-sm font-semibold lg:min-w-0" href={`https://wa.me/${digits}`} target="_blank" rel="noopener noreferrer">
+              {language === "hi" ? "WhatsApp पर पूछें" : language === "ur" ? "واٹس ایپ پر پوچھیں" : "Ask on WhatsApp"}
+            </a>
+          ) : null}
         </nav>
 
         <div className="order-1 min-w-0 space-y-3 lg:order-none lg:col-start-2 lg:row-start-1 lg:space-y-4">
@@ -384,13 +466,27 @@ export default function ClassroomPage() {
             <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#8a6a2e]">HajCare AI</p>
             <h1 className="mt-1 text-xl font-semibold sm:text-3xl">
               <Pair
-                hi="HajCare AI क्लासरूम"
-                en="HajCare AI Classroom"
+                hi="100 दिन मुफ़्त हज प्रशिक्षण"
+                en="100 Days Free Hajj Training Programme"
                 language={language}
                 primaryClass="leading-tight"
                 secondaryClass="mt-1 text-sm font-medium text-[#5f6b4e]"
               />
             </h1>
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              {(["en", "hi", "ur"] as const).map((code) => (
+                <button
+                  key={code}
+                  type="button"
+                  data-lang={code}
+                  className={`rounded-full border px-3 py-1 text-sm ${language === code ? "border-[#1f4d3a] bg-[#1f4d3a] text-[#f6f3ec]" : "border-[#e4dcc8] bg-white"}`}
+                  onClick={() => setLanguage(code)}
+                >
+                  {code === "en" ? "English" : code === "hi" ? "हिंदी" : "اردو"}
+                </button>
+              ))}
+              <TextToSpeechButton text={introSpeech} size="sm" />
+            </div>
             <p className="mt-2 hidden text-sm text-[#5f6b4e] sm:block">
               {hindiFirst(language)
                 ? "रिकॉर्डेड कक्षा, अध्ययन सामग्री, और WhatsApp पर सवाल। लाइव कक्षा नहीं।"
@@ -398,6 +494,18 @@ export default function ClassroomPage() {
             </p>
           </header>
 
+          {!dayOpen ? (
+            <section data-testid="opens-on" className="rounded-3xl border border-[#c9a45c] bg-white p-5">
+              <p className="text-lg font-semibold">
+                {language === "hi"
+                  ? `${formatShortDate(unlockDateIst(selected?.day ?? 1))} को खुलेगा`
+                  : language === "ur"
+                    ? `${formatShortDate(unlockDateIst(selected?.day ?? 1))} کو کھلے گا`
+                    : `Opens on ${formatShortDate(unlockDateIst(selected?.day ?? 1))}`}
+              </p>
+            </section>
+          ) : (
+          <>
           {selected ? (
             <section className="overflow-hidden rounded-3xl border border-[#e4dcc8] bg-white" aria-label={selected.title_en}>
               <div className="bg-[#1f4d3a] px-3 py-2 text-[#f6f3ec] sm:px-5 sm:py-4">
@@ -408,12 +516,23 @@ export default function ClassroomPage() {
                 </p>
                 <h2 className="mt-1 text-xl font-semibold sm:text-2xl">
                   <Pair
-                    hi={selected.title_hi}
-                    en={selected.title_en}
+                    hi={selected.day === 1 ? "नीयत – हज एक इबादत है, सफ़र नहीं" : selected.title_hi}
+                    en={selected.day === 1 ? "Niyyat – Hajj is Worship, Not a Trip" : selected.title_en}
                     language={language}
                     secondaryClass="mt-1 text-sm text-[#f6f3ec]/80"
                   />
                 </h2>
+                <p className="mt-2 text-sm text-[#e4cb87]" data-testid="episode-date">
+                  {formatLongDate(unlockDateIst(selected.day))} ({language === "hi" ? `दिन ${selected.day} / 100` : language === "ur" ? `دن ${selected.day} / 100` : `Day ${selected.day} of 100`})
+                </p>
+                <button
+                  type="button"
+                  data-testid="start-class"
+                  className={`${waClass} mt-3`}
+                  onClick={() => setClassRun({ index: 0, phase: "transition" })}
+                >
+                  {language === "hi" ? "क्लास शुरू करें" : language === "ur" ? "کلاس شروع کریں" : "Start Class"}
+                </button>
                 {selected.note_hi && selected.note_en ? (
                   <p className="mt-2 hidden text-sm text-[#f6f3ec]/80 sm:block">
                     {hindiFirst(language) ? selected.note_hi : selected.note_en}
@@ -454,16 +573,56 @@ export default function ClassroomPage() {
           )}
 
           {plan ? (
-            <p className={`rounded-2xl border px-3 py-2 text-sm font-semibold ${plan.exceedsCap ? "border-[#9b2c2c] bg-[#fdecec] text-[#9b2c2c]" : "border-[#e4dcc8] bg-white"}`} data-testid="episode-total">
-              {formatEpisodeTotal(plan)}
-              {plan.exceedsCap ? " — OVER CAP · admin review" : ""}
+            <>
+            <div className={`rounded-2xl border px-3 py-2 text-sm font-semibold ${plan.exceedsCap ? "border-[#9b2c2c] bg-[#fdecec] text-[#9b2c2c]" : "border-[#e4dcc8] bg-white"}`} data-testid="episode-total">
+              <p>
+                {language === "hi" ? "इस क्लास में" : language === "ur" ? "اس کلاس میں" : "This Class Includes"} ({language === "hi" ? "कुल अवधि" : language === "ur" ? "کل مدت" : "Total Duration"}: {formatEpisodeTotal(plan)})
+                {plan.exceedsCap ? " — OVER CAP · admin review" : ""}
+              </p>
+              <div className="mt-2 flex gap-2 overflow-x-auto pb-1" data-testid="section-chips">
+                {plan.sections.map((section) => (
+                  <span key={section.key} className="shrink-0 rounded-full border border-[#c9a45c] bg-white px-3 py-1 text-xs font-semibold text-[#1f4d3a]">
+                    {language === "ur" ? FLOW_LABEL[section.key].ur : language === "hi" ? FLOW_LABEL[section.key].hi : FLOW_LABEL[section.key].en}
+                    {" "}
+                    {section.seconds == null ? "—" : formatQuizClock(section.seconds)}
+                  </span>
+                ))}
+              </div>
               <span className="mt-1 block h-1.5 overflow-hidden rounded-full bg-[#e4dcc8]">
                 <span
                   className="block h-full bg-[#1f4d3a] transition-all duration-500"
                   style={{ width: `${Math.min(100, Math.round((playedTotal / plan.capSeconds) * 100))}%` }}
                 />
               </span>
-            </p>
+            </div>
+            <div className="rounded-3xl border border-[#e4dcc8] bg-white p-3" data-testid="class-tabs">
+              <div className="flex gap-2 overflow-x-auto">
+                {([
+                  ["about", "About Today's Topic", "आज का विषय", "آج کا موضوع"],
+                  ["sheet", "Study Sheet", "अध्ययन पत्र", "مطالعہ"],
+                  ["takeaways", "Key Takeaways", "मुख्य बातें", "اہم باتیں"],
+                  ["notes", "Notes", "नोट्स", "نوٹس"],
+                  ["downloads", "Downloads", "डाउनलोड", "ڈاؤن لوڈ"],
+                ] as const).map(([id, en, hi, ur]) => (
+                  <button key={id} type="button" className={`shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${infoTab === id ? "bg-[#1f4d3a] text-[#f6f3ec]" : "bg-[#f6f3ec]"}`} onClick={() => setInfoTab(id)}>
+                    {language === "hi" ? hi : language === "ur" ? ur : en}
+                  </button>
+                ))}
+              </div>
+              <div className="mt-3 text-sm">
+                {infoTab === "about" ? <p>{introSpeech}</p> : null}
+                {infoTab === "sheet" ? (studySheet ? <a className="font-semibold text-[#1f4d3a]" href={studySheet.url}>{hindiFirst(language) ? studySheet.label_hi : studySheet.label_en}</a> : <p>Coming soon</p>) : null}
+                {infoTab === "takeaways" || infoTab === "notes" ? <p>{language === "hi" ? "जल्द आएगा" : language === "ur" ? "جلد آ رہا ہے" : "Coming soon"}</p> : null}
+                {infoTab === "downloads" ? (
+                  <ul>
+                    {selected?.materials.map((material) => (
+                      <li key={material.url}><a className="text-[#1f4d3a]" href={material.url}>{hindiFirst(language) ? material.label_hi : material.label_en}</a></li>
+                    ))}
+                  </ul>
+                ) : null}
+              </div>
+            </div>
+            </>
           ) : null}
 
           {selected ? (
@@ -562,6 +721,8 @@ export default function ClassroomPage() {
             <p>TO BE CONTINUED IN THE NEXT EPISODE...</p>
             <p className="mt-2">Thank you for attending today's HajCare AI Hajj Training Session.</p>
           </section>
+          </>
+          )}
         </div>
 
         <div className="order-4 min-w-0 space-y-4 lg:col-start-2 lg:row-start-2">
@@ -613,7 +774,9 @@ export default function ClassroomPage() {
                         <span className="text-xs font-semibold uppercase tracking-wide text-[#8a6a2e]">
                           {hindiFirst(language) ? `दिन ${item.day}` : `Day ${item.day}`}
                           {" · "}
-                          {status === "completed"
+                          {status === "locked"
+                            ? (language === "hi" ? `बंद · ${formatShortDate(unlockDateIst(item.day))}` : language === "ur" ? `بند · ${formatShortDate(unlockDateIst(item.day))}` : `Opens on ${formatShortDate(unlockDateIst(item.day))}`)
+                            : status === "completed"
                             ? (hindiFirst(language) ? "पूरा" : "Completed")
                             : status === "current"
                               ? (hindiFirst(language) ? "आज" : "Today")
@@ -654,6 +817,29 @@ export default function ClassroomPage() {
         </div>
 
         <aside className="order-3 space-y-4 lg:sticky lg:top-20 lg:col-start-3 lg:row-start-1 lg:row-span-2">
+          <section className="rounded-3xl border border-[#e4dcc8] bg-white p-4" data-testid="course-progress">
+            <h2 className="text-sm font-semibold text-[#8a6a2e]">{language === "hi" ? "कोर्स प्रगति" : language === "ur" ? "کورس کی پیشرفت" : "Course Progress"}</h2>
+            <p className="mt-3 text-3xl font-semibold text-[#1f4d3a]">{programme.filter((item) => item.status === "completed").length}<span className="text-base text-[#5f6b4e]">/100</span></p>
+            <p className="mt-1 text-xs text-[#5f6b4e]">
+              {language === "hi" ? "जारी" : language === "ur" ? "جاری" : "In progress"}: {programme.filter((item) => item.status === "current").length}
+              {" · "}
+              {language === "hi" ? "बाकी" : language === "ur" ? "باقی" : "Remaining"}: {programme.filter((item) => item.status === "locked").length}
+            </p>
+          </section>
+          <section className="rounded-3xl border border-[#e4dcc8] bg-white p-4" data-testid="next-episode">
+            <h2 className="text-sm font-semibold text-[#8a6a2e]">{language === "hi" ? "अगली कड़ी" : language === "ur" ? "اگلی قسط" : "Next Episode"}</h2>
+            <p className="mt-2 text-sm font-semibold">{language === "hi" ? "दिन 2 बंद" : language === "ur" ? "دن 2 بند" : "Day 2 locked"}</p>
+            <p className="text-xs text-[#5f6b4e]">{language === "hi" ? `${formatShortDate(unlockDateIst(2))} को खुलेगा` : language === "ur" ? `${formatShortDate(unlockDateIst(2))} کو کھلے گا` : `Opens on ${formatShortDate(unlockDateIst(2))}`}</p>
+          </section>
+          <section className="rounded-3xl border border-[#e4dcc8] bg-white p-4" data-testid="need-help">
+            <h2 className="text-sm font-semibold text-[#8a6a2e]">{language === "hi" ? "मदद चाहिए" : language === "ur" ? "مدد چاہیے" : "Need Help"}</h2>
+            {displayNumber ? <p className="mt-2 text-sm font-semibold">{displayNumber}</p> : null}
+            {selected && digits ? (
+              <a className={`${waClass} mt-3 w-full`} href={`https://wa.me/${digits}`} target="_blank" rel="noopener noreferrer">
+                {language === "hi" ? "WhatsApp पर पूछें" : language === "ur" ? "واٹس ایپ" : "Ask on WhatsApp"}
+              </a>
+            ) : null}
+          </section>
           <section className="rounded-3xl border border-[#e4dcc8] bg-white p-4" aria-labelledby="class-teacher">
             <h2 id="class-teacher" className="text-sm font-semibold uppercase tracking-wide text-[#8a6a2e]">
               {hindiFirst(language) ? "शिक्षक" : "Teacher"}

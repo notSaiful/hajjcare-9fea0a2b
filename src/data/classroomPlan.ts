@@ -120,6 +120,13 @@ export function sectionSeconds(plan: EpisodePlan, key: SectionKey): number | nul
   return plan.sections.find((section) => section.key === key)?.seconds ?? null;
 }
 
+export function quizResultMessage(score: number): { hi: string; en: string } {
+  if (score >= 9) return { hi: "माशाअल्लाह! बेहतरीन", en: "MashaAllah! Excellent" };
+  if (score >= 7) return { hi: "शाबाश! बहुत अच्छा, अल्लाह आपके इल्म में बरकत दे", en: "Shabash! Very good, may Allah bless your knowledge" };
+  if (score >= 5) return { hi: "अच्छी कोशिश, इंशाअल्लाह और बेहतर होगा", en: "Good effort, InshaAllah you will do even better" };
+  return { hi: "कोई बात नहीं, दोबारा तैयारी करें, अल्लाह आसानी फ़रमाए", en: "No worries, prepare again, may Allah make it easy" };
+}
+
 export function formatEpisodeTotal(plan: EpisodePlan): string {
   return `${formatQuizClock(plan.totalSeconds)} / ${formatQuizClock(plan.capSeconds)}`;
 }

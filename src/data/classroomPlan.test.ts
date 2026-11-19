@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { CLASSROOM_CLASSES, CLASSROOM_QUIZ, CLASSROOM_SCRIPTURE, CLASSROOM_SIDE_VIDEOS } from "./classroom";
-import { EPISODE_CAP_SECONDS, SECTION_ORDER, formatEpisodeTotal, planEpisode } from "./classroomPlan";
+import { EPISODE_CAP_SECONDS, SECTION_ORDER, formatEpisodeTotal, planEpisode, quizResultMessage } from "./classroomPlan";
 import { isDayUnlocked, publicProgramme, unlockDateIst } from "./classroomRelease.js";
 
 const day1 = CLASSROOM_CLASSES[0];
@@ -56,15 +56,31 @@ describe("30 minute episode cap", () => {
 });
 
 describe("IST release", () => {
-  it("keeps Day 1 unlocked and locks Day 2 until the next IST date", () => {
-    expect(unlockDateIst(1)).toBe("2026-11-20");
-    expect(unlockDateIst(2)).toBe("2026-11-21");
-    expect(isDayUnlocked(1, "2026-11-19")).toBe(true);
-    expect(isDayUnlocked(2, "2026-11-20")).toBe(false);
-    expect(isDayUnlocked(2, "2026-11-21")).toBe(true);
-    const today = publicProgramme("2026-11-20");
-    expect(today.find((item) => item.day === 2)?.status).toBe("locked");
-    const later = publicProgramme("2026-11-21");
-    expect(later.find((item) => item.day === 2)?.status).not.toBe("locked");
+  it("opens one day at a time from 7 Dec 2026 through 16 Mar 2027", () => {
+    expect(unlockDateIst(1)).toBe("2026-12-07");
+    expect(unlockDateIst(2)).toBe("2026-12-08");
+    expect(unlockDateIst(100)).toBe("2027-03-16");
+    expect(publicProgramme("2026-12-06").every((item) => item.status === "locked")).toBe(true);
+    expect(publicProgramme("2026-12-06")).toHaveLength(100);
+    const dayOne = publicProgramme("2026-12-07");
+    expect(dayOne.filter((item) => item.status !== "locked").map((item) => item.day)).toEqual([1]);
+    const twoDays = publicProgramme("2026-12-08");
+    expect(twoDays.filter((item) => item.status !== "locked").map((item) => item.day)).toEqual([1, 2]);
+    expect(publicProgramme("2027-03-16").every((item) => item.status !== "locked")).toBe(true);
+    expect(isDayUnlocked(1, "2026-12-06")).toBe(false);
+    expect(isDayUnlocked(1, "2026-12-07")).toBe(true);
+  });
+});
+
+describe("quiz result messages", () => {
+  it("uses the four score bands", () => {
+    expect(quizResultMessage(10).en).toBe("MashaAllah! Excellent");
+    expect(quizResultMessage(9).hi).toBe("माशाअल्लाह! बेहतरीन");
+    expect(quizResultMessage(8).en).toBe("Shabash! Very good, may Allah bless your knowledge");
+    expect(quizResultMessage(7).hi).toContain("शाबाश");
+    expect(quizResultMessage(6).en).toBe("Good effort, InshaAllah you will do even better");
+    expect(quizResultMessage(5).hi).toContain("अच्छी कोशिश");
+    expect(quizResultMessage(4).en).toBe("No worries, prepare again, may Allah make it easy");
+    expect(quizResultMessage(0).hi).toContain("कोई बात नहीं");
   });
 });
