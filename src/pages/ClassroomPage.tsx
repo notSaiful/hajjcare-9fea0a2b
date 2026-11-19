@@ -269,11 +269,19 @@ function SideVideoBox({
   );
 }
 
-export default function ClassroomPage() {
+export default function ClassroomPage({
+  playDay,
+  ignoreLock = false,
+  previewNote,
+}: {
+  playDay?: number;
+  ignoreLock?: boolean;
+  previewNote?: { note_en?: string; note_hi?: string };
+} = {}) {
   const { language, isRTL, setLanguage } = useLanguage();
   const classes = useMemo(() => publishedClasses(), []);
-  const [day, setDay] = useState(classes[0]?.day ?? 0);
-  const selected = classes.find((item) => item.day === day) ?? classes[0];
+  const [day, setDay] = useState(playDay ?? classes[0]?.day ?? 0);
+  const selected = classes.find((item) => item.day === day) ?? (playDay ? undefined : classes[0]);
   const studySheet = selected?.materials.find((item) => !fileDownload(item.url));
   const digits = resolveWhatsAppDigits(import.meta.env.VITE_HAJCARE_WHATSAPP_NUMBER);
   const displayNumber = formatWhatsAppDisplay(digits);
@@ -374,7 +382,7 @@ export default function ClassroomPage() {
     if (!section || section.seconds == null) return "अवधि जाँच बाकी";
     return formatQuizClock(section.seconds);
   };
-  const dayOpen = selected ? isDayUnlocked(selected.day, todayIst) : false;
+  const dayOpen = ignoreLock || (selected ? isDayUnlocked(selected.day, todayIst) : false);
   const [classRun, setClassRun] = useState<{ index: number; phase: "transition" | "play" } | null>(null);
   const advanceClassRef = useRef<() => void>(() => {});
   advanceClassRef.current = () => {
@@ -506,6 +514,12 @@ export default function ClassroomPage() {
                     ? `${formatShortDate(unlockDateIst(selected?.day ?? 1))} کو کھلے گا`
                     : `Opens on ${formatShortDate(unlockDateIst(selected?.day ?? 1))}`}
               </p>
+            </section>
+          ) : ignoreLock && !selected ? (
+            <section data-testid="day-preview" className="rounded-3xl border border-[#e4dcc8] bg-white p-5">
+              <h2 className="text-lg font-semibold">Day {day}</h2>
+              <p className="mt-2 text-sm">{previewNote?.note_hi || "जल्द आएगा"}</p>
+              <p className="mt-1 text-sm text-[#5f6b4e]">{previewNote?.note_en || "Coming soon"}</p>
             </section>
           ) : (
           <>

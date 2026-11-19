@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { CLASSROOM_CLASSES, CLASSROOM_SCRIPTURE, CLASSROOM_SIDE_VIDEOS } from "@/data/classroom";
 import { publicProgramme, formatShortDate } from "@/data/classroomRelease.js";
+import ClassroomPage from "@/pages/ClassroomPage";
 
 const programme = publicProgramme();
 const dayOne = CLASSROOM_CLASSES[0];
@@ -25,6 +26,29 @@ export default function ClassroomAdminPage() {
   const { user } = useAuth();
   const [status, setStatus] = useState("Draft — not saved to server");
   const [open, setOpen] = useState<number | null>(1);
+  const [play, setPlay] = useState<number | null>(null);
+  const [previewNote, setPreviewNote] = useState<{ note_en?: string; note_hi?: string }>();
+
+  async function previewDay(dayNumber: number) {
+    setPlay(null);
+    setStatus("Checking the admin session…");
+    const { data } = await supabase.auth.getSession();
+    const token = data.session?.access_token;
+    const response = await fetch("/api/classroom", {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
+    const payload = await response.json() as {
+      admin?: boolean;
+      releasedBodies?: Record<string, { note_en?: string; note_hi?: string }>;
+    };
+    if (payload.admin !== true) {
+      setStatus("The server did not confirm an admin session, so this day stays locked.");
+      return;
+    }
+    setPreviewNote(payload.releasedBodies?.[String(dayNumber)]);
+    setPlay(dayNumber);
+    setStatus(`Previewing day ${dayNumber}. The unlock date is ignored for this admin view.`);
+  }
 
   async function saveDayOne() {
     setStatus("Saving…");
@@ -67,6 +91,15 @@ export default function ClassroomAdminPage() {
               <span>Day {day.day} · {formatShortDate(day.unlocks)} · {day.status}</span>
               <span>{day.title_en}</span>
             </button>
+            <div className="px-4 pb-3">
+              <button
+                type="button"
+                className="rounded-full border border-[#1f4d3a] px-3 py-1 text-xs font-semibold"
+                onClick={() => previewDay(day.day)}
+              >
+                Preview / Play Day {day.day}
+              </button>
+            </div>
             {open === day.day && day.day === 1 ? (
               <div className="border-t border-[#e4dcc8] px-4 py-3 text-sm">
                 <p>{dayOne.title_en}</p>
@@ -82,6 +115,11 @@ export default function ClassroomAdminPage() {
           </li>
         ))}
       </ol>
+      {play != null ? (
+        <div className="mt-6" data-testid="admin-player">
+          <ClassroomPage key={play} playDay={play} ignoreLock previewNote={previewNote} />
+        </div>
+      ) : null}
     </main>
   );
 }

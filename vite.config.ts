@@ -15,10 +15,11 @@ function classroomApi(): Plugin {
     const pathOnly = raw.split("?")[0];
     if (pathOnly !== "/api/classroom") return next();
     const asOf = new URL(raw, "http://classroom.local").searchParams.get("asOf");
-    import("./api/classroom.js").then(({ classroomApiPayload }) => {
+    import("./api/classroom.js").then(async ({ classroomApiPayload, callerIsAdmin }) => {
+      const admin = await callerIsAdmin(req.headers.authorization);
       res.setHeader("content-type", "application/json; charset=utf-8");
       res.setHeader("cache-control", "no-store");
-      res.end(JSON.stringify(classroomApiPayload(asOf, { allowSimulation: true })));
+      res.end(JSON.stringify(classroomApiPayload(asOf, { allowSimulation: true, admin })));
     }).catch(next);
   };
   return {
