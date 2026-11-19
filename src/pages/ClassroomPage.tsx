@@ -513,7 +513,7 @@ export default function ClassroomPage({
   const flowKey = classRun ? CLASS_FLOW[classRun.index] : null;
   const flowLabel = flowKey ? FLOW_LABEL[flowKey] : null;
   const [pickedKey, setPickedKey] = useState("intro");
-  const activeKey = classRun?.phase === "play" && flowKey ? flowKey : pickedKey;
+  const activeKey = classRun && flowKey ? flowKey : pickedKey;
   const mainVideo = (() => {
     if (activeKey === "hadith" && scripture) {
       return { id: scripture.hadith_youtube_id, end: "", src: `https://www.youtube-nocookie.com/embed/${scripture.hadith_youtube_id}?rel=0&modestbranding=1&playsinline=1&enablejsapi=1` };
@@ -695,7 +695,7 @@ export default function ClassroomPage({
                   {language === "hi" ? "क्लास शुरू करें" : language === "ur" ? "کلاس شروع کریں" : "Start Class"}
                 </button>
               </div>
-              <div className="relative min-h-[220px] bg-[#10281f]" data-testid="main-player">
+              <div className="relative min-h-[220px] bg-[#10281f]" data-testid="main-player" data-run={classRun ? `${classRun.index}:${classRun.phase}` : "idle"}>
                 <img src={kaabaBanner} alt="" className="absolute inset-0 h-full w-full object-cover opacity-70" />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#1f4d3a] via-[#1f4d3a]/50 to-[#1f4d3a]/20" />
                 <div className="relative px-4 py-4 text-[#f6f3ec]">
