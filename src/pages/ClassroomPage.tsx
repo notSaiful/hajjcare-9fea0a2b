@@ -60,6 +60,38 @@ function softChime() {
   oscillator.start();
   oscillator.stop(context.currentTime + 0.45);
 }
+const QURAN_RECITATION = "https://everyayah.com/data/Alafasy_128kbps/098005.mp3";
+
+function speakLesson(text: string, lang: string): Promise<"ended" | "blocked"> {
+  return new Promise((resolve) => {
+    if (!text || !("speechSynthesis" in window)) {
+      resolve("blocked");
+      return;
+    }
+    let settled = false;
+    const done = (result: "ended" | "blocked") => {
+      if (settled) return;
+      settled = true;
+      resolve(result);
+    };
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = lang === "hi" ? "hi-IN" : lang === "ur" ? "ur-PK" : "en-US";
+    utterance.rate = 0.9;
+    const startedAt = performance.now();
+    const watchdog = window.setTimeout(() => done("blocked"), 1500);
+    utterance.onstart = () => window.clearTimeout(watchdog);
+    utterance.onend = () => {
+      window.clearTimeout(watchdog);
+      done(performance.now() - startedAt < 3000 ? "blocked" : "ended");
+    };
+    utterance.onerror = () => {
+      window.clearTimeout(watchdog);
+      done("blocked");
+    };
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(utterance);
+  });
+}
 const MENU = [
   { href: "/", hi: "डैशबोर्ड", en: "Dashboard", ur: "ڈیش بورڈ" },
   { href: "/classroom", hi: "हज क्लासरूम (100 दिन)", en: "Hajj Classroom (100 Days Training)", ur: "حج کلاس روم" },
@@ -310,7 +342,7 @@ export default function ClassroomPage({
         dua: { youtubeId: dua.youtube_id, start: dua.start_seconds, end: dua.end_seconds },
         arkan: { youtubeId: arkan.youtube_id, start: arkan.start_seconds, end: arkan.end_seconds },
         doctor: { youtubeId: doctor.youtube_id, start: doctor.start_seconds, end: doctor.end_seconds },
-        naat: { youtubeId: selected.youtube_id },
+        naat: { youtubeId: selected.youtube_id, start: selected.start_seconds, end: selected.end_seconds },
         quizSeconds: CLASSROOM_QUIZ.seconds,
       })
     : null;
@@ -424,13 +456,59 @@ export default function ClassroomPage({
     }, 2000);
     return () => window.clearTimeout(timer);
   }, [classRun]);
+  const [speechBlocked, setSpeechBlocked] = useState(false);
   useEffect(() => {
     if (!classRun || classRun.phase !== "play") return;
     const key = CLASS_FLOW[classRun.index];
-    if (key !== "intro" && key !== "quran") return;
-    const timer = window.setTimeout(() => advanceClassRef.current(), 4000);
-    return () => window.clearTimeout(timer);
-  }, [classRun]);
+    if (key !== "intro" && key !== "quran") {
+      setSpeechBlocked(false);
+      return;
+    }
+    let cancelled = false;
+    let timer = 0;
+    const finish = () => {
+      if (!cancelled) advanceClassRef.current();
+    };
+    const audio = key === "quran" ? new Audio(QURAN_RECITATION) : null;
+    if (key === "intro") {
+      void speakLesson(introSpeech, language).then((result) => {
+        if (cancelled) return;
+        if (result === "ended") finish();
+        else {
+          setSpeechBlocked(true);
+          timer = window.setTimeout(finish, 90_000);
+        }
+      });
+    } else {
+      setSpeechBlocked(false);
+      timer = window.setTimeout(() => {
+        audio?.pause();
+        if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+        finish();
+      }, 120_000);
+      const meaning = language === "hi" ? scripture?.hindi : scripture?.english;
+      const speakMeaning = () => {
+        if (!cancelled && meaning) void speakLesson(meaning, language === "hi" ? "hi" : "en");
+      };
+      if (audio) {
+        audio.onended = speakMeaning;
+        audio.onerror = () => {
+          if (!cancelled) setSpeechBlocked(true);
+          speakMeaning();
+        };
+        audio.play().catch(() => {
+          if (!cancelled) setSpeechBlocked(true);
+          speakMeaning();
+        });
+      }
+    }
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+      audio?.pause();
+      if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+    };
+  }, [classRun, introSpeech, language, scripture?.english, scripture?.hindi]);
   const [infoTab, setInfoTab] = useState<"about" | "sheet" | "takeaways" | "notes" | "downloads">("about");
   const flowKey = classRun ? CLASS_FLOW[classRun.index] : null;
   const flowLabel = flowKey ? FLOW_LABEL[flowKey] : null;
@@ -444,7 +522,12 @@ export default function ClassroomPage({
     if (activeKey === "arkan" && arkan) return { id: arkan.youtube_id, end: arkan.end_seconds ?? "", src: classroomSideEmbedSrc(arkan, { jsApi: true }) };
     if (activeKey === "doctor" && doctor) return { id: doctor.youtube_id, end: doctor.end_seconds ?? "", src: classroomSideEmbedSrc(doctor, { jsApi: true }) };
     if (activeKey === "naat" && selected?.youtube_id) {
-      return { id: selected.youtube_id, end: "", src: `https://www.youtube-nocookie.com/embed/${selected.youtube_id}?rel=0&modestbranding=1&playsinline=1&enablejsapi=1` };
+      const clip = {
+        youtube_id: selected.youtube_id,
+        start_seconds: selected.start_seconds,
+        end_seconds: selected.end_seconds,
+      };
+      return { id: selected.youtube_id, end: selected.end_seconds ?? "", src: classroomSideEmbedSrc(clip, { jsApi: true }) };
     }
     return null;
   })();
@@ -619,6 +702,11 @@ export default function ClassroomPage({
                   <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#e4cb87]">Day 1 · Niyyat</p>
                   <p className="text-lg font-semibold">Hajj is Worship, Not a Trip</p>
                   <p className="text-sm text-[#e4cb87]">नीयत – हज एक इबादत है, सफ़र नहीं</p>
+                  {speechBlocked && (activeKey === "intro" || activeKey === "quran") ? (
+                    <p className="mt-3 rounded-2xl bg-white/15 px-3 py-2 text-sm" data-testid="listen-prompt">
+                      {language === "hi" ? "आवाज़ रुकी है। सुनें दबाएँ — यह हिस्सा अपने पूरे समय तक रहेगा।" : "Speech is blocked. Press Listen — this part stays for its full time."}
+                    </p>
+                  ) : null}
                 </div>
                 {mainVideo ? (
                   <iframe

@@ -16,7 +16,7 @@ function dayOnePlan() {
     dua: { youtubeId: dua.youtube_id, start: dua.start_seconds, end: dua.end_seconds },
     arkan: { youtubeId: arkan.youtube_id, start: arkan.start_seconds, end: arkan.end_seconds },
     doctor: { youtubeId: doctor.youtube_id, start: doctor.start_seconds, end: doctor.end_seconds },
-    naat: { youtubeId: day1.youtube_id },
+    naat: { youtubeId: day1.youtube_id, start: day1.start_seconds, end: day1.end_seconds },
     quizSeconds: CLASSROOM_QUIZ.seconds,
   });
 }
@@ -25,17 +25,17 @@ describe("30 minute episode cap", () => {
   it("keeps Day 1 at or under 30:00 and preserves the Arkan clip", () => {
     const plan = dayOnePlan();
     expect(plan.sections.every((section) => section.seconds != null)).toBe(true);
-    expect(plan.totalSeconds).toBe(29 * 60 + 58);
+    expect(plan.totalSeconds).toBe(29 * 60 + 32);
     expect(plan.exceedsCap).toBe(false);
     expect(plan.totalSeconds).toBeLessThanOrEqual(EPISODE_CAP_SECONDS);
     expect(plan.sections.map((section) => section.key)).toEqual([...SECTION_ORDER]);
     expect(plan.sections.find((section) => section.key === "doctor")?.seconds).toBe(7 * 60 + 27);
-    expect(plan.sections.find((section) => section.key === "naat")?.seconds).toBe(9 * 60 + 6);
+    expect(plan.sections.find((section) => section.key === "naat")?.seconds).toBe(180);
     expect(plan.sections.find((section) => section.key === "arkan")).toMatchObject({
-      seconds: 260,
-      embedEnd: 260,
+      seconds: 600,
+      embedEnd: 600,
     });
-    expect(formatEpisodeTotal(plan)).toBe("29:58 / 30:00");
+    expect(formatEpisodeTotal(plan)).toBe("29:32 / 30:00");
     expect(formatEpisodeTotal(plan)).not.toBe("30:00 / 30:00");
   });
 

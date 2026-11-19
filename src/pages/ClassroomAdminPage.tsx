@@ -196,7 +196,7 @@ export default function ClassroomAdminPage() {
                 <button type="button" className="ml-2 rounded-full border border-[#1f4d3a] px-4 py-2 text-sm font-semibold" onClick={saveDayOne}>
                   Publish
                 </button>
-                <p className="text-xs text-[#5f6b4e]">YouTube links are enough. Lock and unlock follow the release date. Day 1’s counted total is 29:58.</p>
+                <p className="text-xs text-[#5f6b4e]">YouTube links are enough. Lock and unlock follow the release date. Day 1’s counted total is 29:32.</p>
               </div>
             ) : null}
           </li>
