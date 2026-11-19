@@ -37,10 +37,10 @@ describe("classroom catalogue", () => {
     ]);
     const arkan = CLASSROOM_SIDE_VIDEOS.find((item) => item.key === "arkan");
     expect(arkan?.start_seconds).toBe(0);
-    expect(arkan?.end_seconds).toBe(600);
-    expect(arkan?.caption).toBe("पहले 10 मिनट — बाक़ी हिस्सा अगले दिन जारी रहेगा (To be continued next day)");
+    expect(arkan?.end_seconds).toBe(260);
+    expect(arkan?.caption).toBe("पहले 4 मिनट 20 सेकंड — बाक़ी हिस्सा अगले दिन जारी रहेगा (To be continued next day)");
     expect(classroomSideEmbedSrc(arkan!)).toBe(
-      "https://www.youtube-nocookie.com/embed/eIZ6g15gtqM?rel=0&modestbranding=1&playsinline=1&start=0&end=600",
+      "https://www.youtube-nocookie.com/embed/eIZ6g15gtqM?rel=0&modestbranding=1&playsinline=1&start=0&end=260",
     );
     expect(
       CLASSROOM_SIDE_VIDEOS.filter((item) => item.key !== "arkan").map((item) => classroomSideEmbedSrc(item)),

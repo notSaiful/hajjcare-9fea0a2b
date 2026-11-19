@@ -150,8 +150,8 @@ export const CLASSROOM_SIDE_VIDEOS: ClassroomSideVideo[] = [
     title_en: "Arkan",
     youtube_id: "eIZ6g15gtqM",
     start_seconds: 0,
-    end_seconds: 600,
-    caption: "पहले 10 मिनट — बाक़ी हिस्सा अगले दिन जारी रहेगा (To be continued next day)",
+    end_seconds: 260,
+    caption: "पहले 4 मिनट 20 सेकंड — बाक़ी हिस्सा अगले दिन जारी रहेगा (To be continued next day)",
   },
   {
     key: "dua",

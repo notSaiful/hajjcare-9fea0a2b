@@ -25,17 +25,17 @@ describe("30 minute episode cap", () => {
   it("keeps Day 1 at or under 30:00 and preserves the Arkan clip", () => {
     const plan = dayOnePlan();
     expect(plan.sections.every((section) => section.seconds != null)).toBe(true);
-    expect(plan.totalSeconds).toBe(35 * 60 + 38);
-    expect(plan.exceedsCap).toBe(true);
-    expect(plan.totalSeconds).toBeGreaterThan(EPISODE_CAP_SECONDS);
+    expect(plan.totalSeconds).toBe(29 * 60 + 58);
+    expect(plan.exceedsCap).toBe(false);
+    expect(plan.totalSeconds).toBeLessThanOrEqual(EPISODE_CAP_SECONDS);
     expect(plan.sections.map((section) => section.key)).toEqual([...SECTION_ORDER]);
     expect(plan.sections.find((section) => section.key === "doctor")?.seconds).toBe(7 * 60 + 27);
     expect(plan.sections.find((section) => section.key === "naat")?.seconds).toBe(9 * 60 + 6);
     expect(plan.sections.find((section) => section.key === "arkan")).toMatchObject({
-      seconds: 600,
-      embedEnd: 600,
+      seconds: 260,
+      embedEnd: 260,
     });
-    expect(formatEpisodeTotal(plan)).toBe("35:38 / 30:00");
+    expect(formatEpisodeTotal(plan)).toBe("29:58 / 30:00");
     expect(formatEpisodeTotal(plan)).not.toBe("30:00 / 30:00");
   });
 
@@ -80,6 +80,6 @@ describe("quiz result messages", () => {
     expect(quizResultMessage(7).en).toBe("Shabash! You have passed.");
     expect(quizResultMessage(6).ur).toContain("شاباش");
     expect(quizResultMessage(5).en).toBe("No problem. Please revise today's lesson and try again.");
-    expect(quizResultMessage(0).hi).toContain("कोई बात नहीं");
+    expect(quizResultMessage(0).hi).toContain("कृपया फिर से तैयारी करें");
   });
 });

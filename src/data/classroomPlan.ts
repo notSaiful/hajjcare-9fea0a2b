@@ -144,7 +144,7 @@ export function quizResultMessage(score: number, total = 10): { hi: string; en: 
     };
   }
   return {
-    hi: "कोई बात नहीं। आज का पाठ दोहराएँ और फिर कोशिश करें।",
+    hi: "कोई बात नहीं। कृपया फिर से तैयारी करें।",
     en: "No problem. Please revise today's lesson and try again.",
     ur: "کوئی بات نہیں۔ آج کا سبق دوبارہ پڑھیں اور پھر کوشش کریں۔",
   };
