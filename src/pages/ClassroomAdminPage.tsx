@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { CLASSROOM_DAYS, CLASSROOM_SCRIPTURE, CLASSROOM_SIDE_VIDEOS } from "@/data/classroom";
+import { CLASSROOM_CLASSES, CLASSROOM_SCRIPTURE, CLASSROOM_SIDE_VIDEOS } from "@/data/classroom";
 import { publicProgramme, formatShortDate } from "@/data/classroomRelease.js";
 
 const programme = publicProgramme();
-const dayOne = CLASSROOM_DAYS[0];
+const dayOne = CLASSROOM_CLASSES[0];
 
 /** The generated client has no classroom_days type until the migration is applied. */
 function daysTable() {
