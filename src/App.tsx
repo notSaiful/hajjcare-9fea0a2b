@@ -140,6 +140,7 @@ const SaudiSimUpdatePage = lazy(() => import("./pages/SaudiSimUpdatePage"));
 const ShiDashboardDemoPage = lazy(() => import("./pages/ShiDashboardDemoPage"));
 const HajjTrainingVideosPage = lazy(() => import("./pages/HajjTrainingVideosPage"));
 const ClassroomPage = lazy(() => import("./pages/ClassroomPage"));
+const ClassroomAdminPage = lazy(() => import("./pages/ClassroomAdminPage"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -179,6 +180,7 @@ function AppContent() {
       <Route path="/volunteer" element={<VolunteerPage />} />
       <Route path="/service-fee" element={<PaymentPage />} />
       <Route path="/classroom" element={<ClassroomPage />} />
+      <Route path="/admin/classroom" element={<AdminOnlyRoute><ClassroomAdminPage /></AdminOnlyRoute>} />
       <Route path="*" element={<LeaveToDemo />} />
     </Routes>
   );

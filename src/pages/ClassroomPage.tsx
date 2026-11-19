@@ -29,6 +29,7 @@ import {
 } from "@/data/classroomPlan";
 import { formatLongDate, formatShortDate, isDayUnlocked, istDateString, publicProgramme, unlockDateIst } from "@/data/classroomRelease.js";
 import { BookOpen, Download, GraduationCap, MessageCircle } from "lucide-react";
+import kaabaBanner from "@/assets/rules/kaaba.jpg";
 
 const CLASS_FLOW = ["intro", "quran", "hadith", "dua", "arkan", "doctor", "naat", "quiz"] as const;
 
@@ -259,23 +260,11 @@ function SideVideoBox({
           secondaryClass="mt-1 text-sm font-medium text-[#5f6b4e]"
         />
       </h2>
-      <p className="px-3 pb-2 text-xs font-semibold text-[#8a6a2e] sm:px-5" data-duration={section}>
+      <p className="px-3 pb-3 text-xs font-semibold text-[#8a6a2e] sm:px-5" data-duration={section} data-video-id={item.youtube_id}>
         {clock}
         {review ? " · admin review" : ""}
       </p>
-      <div className="aspect-video bg-black">
-        <iframe
-          className="h-full w-full"
-          data-section={section}
-          data-end={item.end_seconds ?? ""}
-          src={classroomSideEmbedSrc(item, { jsApi: true })}
-          title={`${item.title_en} — Day ${item.day}`}
-          allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-          allowFullScreen
-          referrerPolicy="strict-origin-when-cross-origin"
-        />
-      </div>
-      {item.caption ? <p className="px-3 py-2 text-sm text-[#5f6b4e] sm:px-5">{item.caption}</p> : null}
+      {item.caption ? <p className="px-3 pb-3 text-sm text-[#5f6b4e] sm:px-5">{item.caption}</p> : null}
     </section>
   );
 }
@@ -414,6 +403,20 @@ export default function ClassroomPage() {
   const [infoTab, setInfoTab] = useState<"about" | "sheet" | "takeaways" | "notes" | "downloads">("about");
   const flowKey = classRun ? CLASS_FLOW[classRun.index] : null;
   const flowLabel = flowKey ? FLOW_LABEL[flowKey] : null;
+  const [pickedKey, setPickedKey] = useState("intro");
+  const activeKey = classRun?.phase === "play" && flowKey ? flowKey : pickedKey;
+  const mainVideo = (() => {
+    if (activeKey === "hadith" && scripture) {
+      return { id: scripture.hadith_youtube_id, src: `https://www.youtube-nocookie.com/embed/${scripture.hadith_youtube_id}?rel=0&modestbranding=1&playsinline=1&enablejsapi=1` };
+    }
+    if (activeKey === "dua" && dua) return { id: dua.youtube_id, src: classroomSideEmbedSrc(dua, { jsApi: true }) };
+    if (activeKey === "arkan" && arkan) return { id: arkan.youtube_id, src: classroomSideEmbedSrc(arkan, { jsApi: true }) };
+    if (activeKey === "doctor" && doctor) return { id: doctor.youtube_id, src: classroomSideEmbedSrc(doctor, { jsApi: true }) };
+    if (activeKey === "naat" && selected?.youtube_id) {
+      return { id: selected.youtube_id, src: `https://www.youtube-nocookie.com/embed/${selected.youtube_id}?rel=0&modestbranding=1&playsinline=1&enablejsapi=1` };
+    }
+    return null;
+  })();
 
   return (
     <div className="min-h-screen bg-[#f6f3ec] text-[#1f4d3a]" dir={isRTL ? "rtl" : "ltr"}>
@@ -509,11 +512,6 @@ export default function ClassroomPage() {
           {selected ? (
             <section className="overflow-hidden rounded-3xl border border-[#e4dcc8] bg-white" aria-label={selected.title_en}>
               <div className="bg-[#1f4d3a] px-3 py-2 text-[#f6f3ec] sm:px-5 sm:py-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#e4cb87]">
-                  {hindiFirst(language)
-                    ? (selected.label_hi ?? `दिन ${selected.day} · रिकॉर्डेड`)
-                    : (selected.label_en ?? `Day ${selected.day} · Recorded`)}
-                </p>
                 <h2 className="mt-1 text-xl font-semibold sm:text-2xl">
                   <Pair
                     hi={selected.day === 1 ? "नीयत – हज एक इबादत है, सफ़र नहीं" : selected.title_hi}
@@ -533,10 +531,28 @@ export default function ClassroomPage() {
                 >
                   {language === "hi" ? "क्लास शुरू करें" : language === "ur" ? "کلاس شروع کریں" : "Start Class"}
                 </button>
-                {selected.note_hi && selected.note_en ? (
-                  <p className="mt-2 hidden text-sm text-[#f6f3ec]/80 sm:block">
-                    {hindiFirst(language) ? selected.note_hi : selected.note_en}
-                  </p>
+              </div>
+              <div className="relative min-h-[220px] bg-[#10281f]" data-testid="main-player">
+                <img src={kaabaBanner} alt="" className="absolute inset-0 h-full w-full object-cover opacity-70" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#1f4d3a] via-[#1f4d3a]/50 to-[#1f4d3a]/20" />
+                <div className="relative px-4 py-4 text-[#f6f3ec]">
+                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#e4cb87]">Day 1 · Niyyat</p>
+                  <p className="text-lg font-semibold">Hajj is Worship, Not a Trip</p>
+                  <p className="text-sm text-[#e4cb87]">नीयत – हज एक इबादत है, सफ़र नहीं</p>
+                </div>
+                {mainVideo ? (
+                  <iframe
+                    key={mainVideo.id}
+                    data-testid="main-iframe"
+                    data-section={activeKey}
+                    data-video-id={mainVideo.id}
+                    className="relative aspect-video w-full"
+                    src={mainVideo.src}
+                    title={activeKey}
+                    allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+                    allowFullScreen
+                    referrerPolicy="strict-origin-when-cross-origin"
+                  />
                 ) : null}
               </div>
 
@@ -581,11 +597,16 @@ export default function ClassroomPage() {
               </p>
               <div className="mt-2 flex gap-2 overflow-x-auto pb-1" data-testid="section-chips">
                 {plan.sections.map((section) => (
-                  <span key={section.key} className="shrink-0 rounded-full border border-[#c9a45c] bg-white px-3 py-1 text-xs font-semibold text-[#1f4d3a]">
+                  <button
+                    key={section.key}
+                    type="button"
+                    className="shrink-0 rounded-full border border-[#c9a45c] bg-white px-3 py-1 text-xs font-semibold text-[#1f4d3a]"
+                    onClick={() => { setClassRun(null); setPickedKey(section.key); }}
+                  >
                     {language === "ur" ? FLOW_LABEL[section.key].ur : language === "hi" ? FLOW_LABEL[section.key].hi : FLOW_LABEL[section.key].en}
                     {" "}
                     {section.seconds == null ? "—" : formatQuizClock(section.seconds)}
-                  </span>
+                  </button>
                 ))}
               </div>
               <span className="mt-1 block h-1.5 overflow-hidden rounded-full bg-[#e4dcc8]">
@@ -661,18 +682,7 @@ export default function ClassroomPage() {
                   <Pair hi="हदीस" en="Hadith" language={language} secondaryClass="mt-1 text-sm font-medium text-[#5f6b4e]" />
                 </h2>
                 <p className="mt-1 text-xs font-semibold text-[#8a6a2e]" data-duration="hadith">{clockFor("hadith")}</p>
-                <p className="mt-3 text-sm font-semibold">{scripture.hadith_label}</p>
-              </div>
-              <div className="aspect-video bg-black">
-                <iframe
-                  className="h-full w-full"
-                  data-section="hadith"
-                  src={`https://www.youtube-nocookie.com/embed/${encodeURIComponent(scripture.hadith_youtube_id)}?rel=0&modestbranding=1&playsinline=1&enablejsapi=1`}
-                  title={scripture.hadith_label}
-                  allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-                  allowFullScreen
-                  referrerPolicy="strict-origin-when-cross-origin"
-                />
+                <p className="mt-3 text-sm font-semibold" data-video-id={scripture.hadith_youtube_id}>{scripture.hadith_label}</p>
               </div>
             </section>
           ) : null}
@@ -686,28 +696,11 @@ export default function ClassroomPage() {
               <h2 className="text-lg font-semibold">
                 <Pair hi="नात" en="Naat" language={language} secondaryClass="mt-1 text-sm font-medium text-[#5f6b4e]" />
               </h2>
-              <p className="mt-1 text-xs font-semibold text-[#8a6a2e]" data-duration="naat">
+              <p className="mt-1 text-xs font-semibold text-[#8a6a2e]" data-duration="naat" data-video-id={selected?.youtube_id ?? ""}>
                 {clockFor("naat")}
                 {plan?.sections.find((item) => item.key === "naat")?.adminReview ? " · admin review" : ""}
               </p>
             </div>
-            {selected?.youtube_id ? (
-              <div className="aspect-video bg-black">
-                <iframe
-                  className="h-full w-full"
-                  data-section="naat"
-                  src={`https://www.youtube-nocookie.com/embed/${encodeURIComponent(selected.youtube_id)}?rel=0&modestbranding=1&playsinline=1&enablejsapi=1`}
-                  title={`${selected.title_en} — Day ${selected.day}`}
-                  allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-                  allowFullScreen
-                  referrerPolicy="strict-origin-when-cross-origin"
-                />
-              </div>
-            ) : (
-              <p className="px-3 pb-4 text-sm text-[#5f6b4e] sm:px-5">
-                {hindiFirst(language) ? "इस दिन की नात अभी नहीं है।" : "No naat is set for this day yet."}
-              </p>
-            )}
           </section>
 
           {selected?.day === CLASSROOM_QUIZ.day ? (
