@@ -454,8 +454,9 @@ export default function ClassroomPage() {
           )}
 
           {plan ? (
-            <p className="rounded-2xl border border-[#e4dcc8] bg-white px-3 py-2 text-sm font-semibold" data-testid="episode-total">
+            <p className={`rounded-2xl border px-3 py-2 text-sm font-semibold ${plan.exceedsCap ? "border-[#9b2c2c] bg-[#fdecec] text-[#9b2c2c]" : "border-[#e4dcc8] bg-white"}`} data-testid="episode-total">
               {formatEpisodeTotal(plan)}
+              {plan.exceedsCap ? " — OVER CAP · admin review" : ""}
               <span className="mt-1 block h-1.5 overflow-hidden rounded-full bg-[#e4dcc8]">
                 <span
                   className="block h-full bg-[#1f4d3a] transition-all duration-500"

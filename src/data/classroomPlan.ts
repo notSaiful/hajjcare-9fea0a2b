@@ -17,15 +17,16 @@ export const INTRO_ALLOCATION_SECONDS = 90;
 export const QURAN_ALLOCATION_SECONDS = 2 * 60;
 
 /**
- * Full YouTube lengths.
- * yt-dlp could not read this environment (YouTube asked for a sign-in).
- * Hadith 83s and Dua 72s are the lengths the owner already stated (1:23 and 1:12).
- * Naat and Doctor stay null until a length can be verified. They are not given a guessed end time.
+ * Full YouTube lengths in seconds.
+ * Naat 9:06 and Doctor 7:27 were verified by the owner with yt-dlp.
+ * Hadith 1:23 and Dua 1:12 are the lengths already stated for those uploads.
+ * Arkan uses its existing end−start instead of the full file.
+ * None of these lengths add a new start or end to the player.
  */
 export const YOUTUBE_FULL_SECONDS: Record<string, number | null> = {
-  J76Dtc0MePA: null,
+  J76Dtc0MePA: 9 * 60 + 6,
   jpGJemWoVHI: 83,
-  yCu43qBV0RY: null,
+  yCu43qBV0RY: 7 * 60 + 27,
   C5gHbAgfrVo: null,
   hRlmshVxs1w: 72,
 };
@@ -78,10 +79,9 @@ function clipSeconds(clip: ClipInput): { seconds: number | null; adminReview: bo
 }
 
 /**
- * Timetable for one day.
- * Flexible sections are Arkan and Doctor. Naat and Quiz take what remains of the 30 minutes.
- * A flexible or filler video is never given a new end time. If fitting it would need an
- * arbitrary cut, the section is flagged for admin review and its existing end is kept.
+ * Timetable for one day. Every section with a known length is added.
+ * Nothing is shortened here. A total over 30:00 is reported as over cap
+ * for admin review, and existing start/end values are left unchanged.
  */
 export function planEpisode(input: {
   introSeconds?: number;
@@ -93,60 +93,25 @@ export function planEpisode(input: {
   naat: ClipInput;
   quizSeconds: number;
 }): EpisodePlan {
-  const hadith = clipSeconds(input.hadith);
-  const dua = clipSeconds(input.dua);
-  const arkan = clipSeconds(input.arkan);
-  const doctor = clipSeconds(input.doctor);
-  const naat = clipSeconds(input.naat);
-  const fixed: PlannedSection[] = [
+  const sections: PlannedSection[] = [
     { key: "intro", seconds: input.introSeconds ?? INTRO_ALLOCATION_SECONDS, adminReview: false, embedEnd: null },
     { key: "quran", seconds: input.quranSeconds ?? QURAN_ALLOCATION_SECONDS, adminReview: false, embedEnd: null },
-    { key: "hadith", ...hadith },
-    { key: "dua", ...dua },
+    { key: "hadith", ...clipSeconds(input.hadith) },
+    { key: "dua", ...clipSeconds(input.dua) },
+    { key: "arkan", ...clipSeconds(input.arkan) },
+    { key: "doctor", ...clipSeconds(input.doctor) },
+    { key: "naat", ...clipSeconds(input.naat) },
+    { key: "quiz", seconds: input.quizSeconds, adminReview: false, embedEnd: null },
   ];
-  const flexible: PlannedSection[] = [
-    { key: "arkan", ...arkan },
-    { key: "doctor", ...doctor },
-  ];
-  const placed = [...fixed, ...flexible];
-  const used = placed.reduce((sum, section) => sum + (section.seconds ?? 0), 0);
-  let remaining = Math.max(0, EPISODE_CAP_SECONDS - used);
-
-  const quizNatural = input.quizSeconds;
-  const quizSeconds = Math.min(quizNatural, remaining);
-  const quizReview = quizSeconds < quizNatural;
-  remaining -= quizSeconds;
-
-  let naatSeconds = naat.seconds;
-  let naatReview = naat.adminReview;
-  if (naatSeconds == null) {
-    naatSeconds = remaining;
-    naatReview = true;
-  } else if (naatSeconds > remaining) {
-    naatReview = true;
-    naatSeconds = remaining;
-  } else {
-    remaining -= naatSeconds;
-  }
-
-  const sections: PlannedSection[] = [
-    ...fixed,
-    ...flexible.map((section) => {
-      if (section.seconds == null) return section;
-      return section;
-    }),
-    { key: "naat", seconds: naatSeconds, adminReview: naatReview, embedEnd: naat.embedEnd },
-    { key: "quiz", seconds: quizSeconds, adminReview: quizReview, embedEnd: null },
-  ];
-
   const ordered = SECTION_ORDER.map((key) => sections.find((section) => section.key === key)!);
   const totalSeconds = ordered.reduce((sum, section) => sum + (section.seconds ?? 0), 0);
+  const exceedsCap = totalSeconds > EPISODE_CAP_SECONDS;
   const adminReview = ordered.filter((section) => section.adminReview).map((section) => section.key);
   return {
     sections: ordered,
     totalSeconds,
     capSeconds: EPISODE_CAP_SECONDS,
-    exceedsCap: totalSeconds > EPISODE_CAP_SECONDS,
+    exceedsCap,
     adminReview,
   };
 }

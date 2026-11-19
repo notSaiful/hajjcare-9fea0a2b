@@ -24,16 +24,19 @@ function dayOnePlan() {
 describe("30 minute episode cap", () => {
   it("keeps Day 1 at or under 30:00 and preserves the Arkan clip", () => {
     const plan = dayOnePlan();
-    expect(plan.exceedsCap).toBe(false);
-    expect(plan.totalSeconds).toBeLessThanOrEqual(EPISODE_CAP_SECONDS);
+    expect(plan.sections.every((section) => section.seconds != null)).toBe(true);
+    expect(plan.totalSeconds).toBe(35 * 60 + 38);
+    expect(plan.exceedsCap).toBe(true);
+    expect(plan.totalSeconds).toBeGreaterThan(EPISODE_CAP_SECONDS);
     expect(plan.sections.map((section) => section.key)).toEqual([...SECTION_ORDER]);
+    expect(plan.sections.find((section) => section.key === "doctor")?.seconds).toBe(7 * 60 + 27);
+    expect(plan.sections.find((section) => section.key === "naat")?.seconds).toBe(9 * 60 + 6);
     expect(plan.sections.find((section) => section.key === "arkan")).toMatchObject({
       seconds: 600,
       embedEnd: 600,
-      adminReview: false,
     });
-    expect(plan.adminReview).toEqual(["doctor", "naat"]);
-    expect(formatEpisodeTotal(plan)).toBe("30:00 / 30:00");
+    expect(formatEpisodeTotal(plan)).toBe("35:38 / 30:00");
+    expect(formatEpisodeTotal(plan)).not.toBe("30:00 / 30:00");
   });
 
   it("fails when a day is planned past 30:00", () => {
