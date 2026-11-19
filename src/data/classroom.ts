@@ -46,7 +46,7 @@ export const CLASSROOM_CLASSES: ClassroomClass[] = [
     day: 1,
     title_hi: "नीयत: हज इबादत है, सैर नहीं",
     title_en: "Niyyah: Hajj is worship, not a trip",
-    youtube_id: null,
+    youtube_id: "J76Dtc0MePA",
     local_video_16x9: "/videos/day1-1min-16x9.mp4",
     local_video_9x16: "/videos/day1-1min-9x16.mp4",
     label_hi: "दिन 1 — 1 मिनट क्लास",
@@ -74,6 +74,192 @@ export const CLASSROOM_CLASSES: ClassroomClass[] = [
     ],
   },
 ];
+
+/**
+ * Extra players for one class day. Not recorded classes: they stay out of
+ * the class list, materials, teacher box, and WhatsApp box.
+ */
+export interface ClassroomSideVideo {
+  key: string;
+  day: number;
+  title_hi: string;
+  title_en: string;
+  youtube_id: string;
+  /** Set only when the embed should play a clip. */
+  start_seconds?: number;
+  end_seconds?: number;
+  caption?: string;
+}
+
+export function classroomSideEmbedSrc(item: Pick<ClassroomSideVideo, "youtube_id" | "start_seconds" | "end_seconds">): string {
+  const base = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(item.youtube_id)}?rel=0&modestbranding=1&playsinline=1`;
+  const clip: string[] = [];
+  if (item.start_seconds != null) clip.push(`start=${item.start_seconds}`);
+  if (item.end_seconds != null) clip.push(`end=${item.end_seconds}`);
+  return clip.length ? `${base}&${clip.join("&")}` : base;
+}
+
+/** Day 1 Quran text plus one Hadith player. Not a recorded class. */
+export interface ClassroomScripture {
+  key: string;
+  day: number;
+  title_hi: string;
+  title_en: string;
+  reference: string;
+  arabic: string;
+  hindi: string;
+  english: string;
+  hadith_label: string;
+  hadith_youtube_id: string;
+}
+
+export const CLASSROOM_SCRIPTURE: ClassroomScripture[] = [
+  {
+    key: "quran-hadith",
+    day: 1,
+    title_hi: "क़ुरआन और हदीस",
+    title_en: "Quran & Hadith",
+    reference: "Surah Al-Bayyinah 98:5 / सूरह अल-बय्यिना 98:5",
+    arabic:
+      "وَمَآ أُمِرُوٓا۟ إِلَّا لِيَعْبُدُوا۟ ٱللَّهَ مُخْلِصِينَ لَهُ ٱلدِّينَ حُنَفَآءَ وَيُقِيمُوا۟ ٱلصَّلَوٰةَ وَيُؤْتُوا۟ ٱلزَّكَوٰةَ ۚ وَذَٰلِكَ دِينُ ٱلْقَيِّمَةِ",
+    hindi:
+      "और उन्हें आदेश भी बस यही दिया गया था कि वे अल्लाह की बन्दगी करें, निष्ठा एवं विनयशीलता को उसके लिए विशिष्ट करके, बिलकुल एकाग्र होकर, और नमाज़ की पाबन्दी करें और ज़कात दें। और यही है सत्यवादी समुदाय का धर्म।",
+    english:
+      "And they were not commanded except to worship Allah, [being] sincere to Him in religion, inclining to truth, and to establish prayer and to give zakah. And that is the correct religion.",
+    hadith_label: "इन्नमल अअमालु बिन्निय्यात / Actions are judged by intentions (Sahih al-Bukhari 1)",
+    hadith_youtube_id: "jpGJemWoVHI",
+  },
+];
+
+export const CLASSROOM_SIDE_VIDEOS: ClassroomSideVideo[] = [
+  {
+    key: "doctor-corner",
+    day: 1,
+    title_hi: "डॉक्टर कॉर्नर",
+    title_en: "Doctor Corner",
+    youtube_id: "yCu43qBV0RY",
+  },
+  {
+    key: "arkan",
+    day: 1,
+    title_hi: "अरकान",
+    title_en: "Arkan",
+    youtube_id: "C5gHbAgfrVo",
+    start_seconds: 0,
+    end_seconds: 600,
+    caption: "पहले 10 मिनट — बाक़ी हिस्सा अगले दिन जारी रहेगा (To be continued next day)",
+  },
+  {
+    key: "dua",
+    day: 1,
+    title_hi: "सफ़र की दुआ",
+    title_en: "Safar ki Dua",
+    youtube_id: "hRlmshVxs1w",
+  },
+];
+
+/** Static Day 1 quiz. No scores are stored. */
+export interface ClassroomQuizQuestion {
+  prompt: string;
+  options: readonly [string, string, string, string];
+  correct: 0 | 1 | 2 | 3;
+}
+
+export interface ClassroomQuiz {
+  day: number;
+  title_hi: string;
+  title_en: string;
+  seconds: number;
+  questions: readonly ClassroomQuizQuestion[];
+}
+
+export const CLASSROOM_QUIZ: ClassroomQuiz = {
+  day: 1,
+  title_hi: "दिन 1 क्विज़",
+  title_en: "Day 1 Quiz",
+  seconds: 180,
+  questions: [
+    {
+      prompt: "नियत का असल मक़ाम क्या है?",
+      options: ["ज़ुबान", "दिल", "काग़ज़ पर लिखना", "लोगों को बताना"],
+      correct: 1,
+    },
+    {
+      prompt: '"इन्नमल आमालु बिन्नियात" का मतलब क्या है?',
+      options: ["अमलों का दारोमदार नियतों पर है", "सफ़र में दुआ पढ़ो", "इल्म हासिल करो", "सब्र करो"],
+      correct: 0,
+    },
+    {
+      prompt: "यह हदीस किस किताब की पहली हदीस है?",
+      options: ["सहीह बुख़ारी", "सहीह मुस्लिम", "जामे तिरमिज़ी", "सुनन अबू दाऊद"],
+      correct: 0,
+    },
+    {
+      prompt: "इस हदीस के रावी कौन हैं?",
+      options: [
+        "हज़रत अबू बक्र (रज़ि.)",
+        "हज़रत उमर बिन ख़त्ताब (रज़ि.)",
+        "हज़रत अबू हुरैरा (रज़ि.)",
+        "हज़रत अली (रज़ि.)",
+      ],
+      correct: 1,
+    },
+    {
+      prompt: "सूरह अल-बय्यिना 98:5 के मुताबिक़ लोगों को क्या हुक्म दिया गया?",
+      options: [
+        "सिर्फ़ सफ़र करना",
+        "दीन को अल्लाह के लिए ख़ालिस करके उसी की इबादत करना",
+        "दिखावे के लिए अमल करना",
+        "सिर्फ़ किताबें पढ़ना",
+      ],
+      correct: 1,
+    },
+    {
+      prompt: "98:5 में इबादत के साथ किन दो अमल का ज़िक्र है?",
+      options: ["रोज़ा और हज", "नमाज़ कायम करना और ज़कात देना", "सदक़ा और उमरा", "जिहाद और हिजरत"],
+      correct: 1,
+    },
+    {
+      prompt: "सफ़र की दुआ कब पढ़ी जाती है?",
+      options: ["सफ़र ख़त्म होने के हफ़्ते बाद", "सवारी पर सवार होते वक़्त", "सिर्फ़ मक्का पहुँचकर", "सिर्फ़ रात में"],
+      correct: 1,
+    },
+    {
+      prompt: "सफ़र की दुआ किन अल्फ़ाज़ से शुरू होती है?",
+      options: [
+        "सुब्हानल्लज़ी सख़्ख़-र लना हाज़ा",
+        "अल्हम्दु लिल्लाहि रब्बिल आलमीन",
+        "रब्बिज़नी इल्मा",
+        "ला इलाह इल्लल्लाह",
+      ],
+      correct: 0,
+    },
+    {
+      prompt: "हज का सफ़र किस नियत से होना चाहिए?",
+      options: ["लोगों में इज़्ज़त के लिए", "ख़रीदारी के लिए", "सिर्फ़ अल्लाह की रज़ा के लिए", "सोशल मीडिया पोस्ट के लिए"],
+      correct: 2,
+    },
+    {
+      prompt: 'सफ़र की दुआ "सुब्हानल्लज़ी सख़्ख़-र लना हाज़ा..." किस सूरह की आयत है?',
+      options: ["सूरह यासीन", "सूरह अज़-ज़ुख़रुफ़ (43:13)", "सूरह अल-बय्यिना", "सूरह अल-फ़ातिहा"],
+      correct: 1,
+    },
+  ],
+};
+
+export function formatQuizClock(seconds: number): string {
+  const safe = Math.max(0, Math.floor(seconds));
+  const minutes = Math.floor(safe / 60);
+  const remain = safe % 60;
+  return `${minutes}:${remain.toString().padStart(2, "0")}`;
+}
+
+export function quizScore(
+  questions: readonly Pick<ClassroomQuizQuestion, "correct">[],
+  answers: readonly (number | null)[],
+): number {
+  return questions.reduce((sum, question, index) => sum + (answers[index] === question.correct ? 1 : 0), 0);
+}
 
 export function publishedClasses(): ClassroomClass[] {
   return CLASSROOM_CLASSES.filter((item) => item.published).sort((a, b) => a.day - b.day);

@@ -1,13 +1,22 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { SEO } from "@/components/SEO";
 import { SimpleHeader } from "@/components/SimpleHeader";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
   buildClassroomWhatsAppUrl,
+  CLASSROOM_QUIZ,
+  CLASSROOM_SCRIPTURE,
+  CLASSROOM_SIDE_VIDEOS,
+  classroomSideEmbedSrc,
+  formatQuizClock,
   formatWhatsAppDisplay,
   publishedClasses,
+  quizScore,
   resolveWhatsAppDigits,
   type ClassroomClass,
+  type ClassroomQuiz,
+  type ClassroomScripture,
+  type ClassroomSideVideo,
 } from "@/data/classroom";
 import { BookOpen, Download, GraduationCap, MessageCircle } from "lucide-react";
 
@@ -66,6 +75,183 @@ function WhatsAppLink({ item, className, children }: { item: ClassroomClass; cla
 
 const waClass =
   "inline-flex items-center justify-center gap-2 rounded-full bg-[#1f7a4d] px-4 py-2 text-sm font-semibold text-white hover:bg-[#17663f]";
+
+function ScriptureBox({ item, language }: { item: ClassroomScripture; language: string }) {
+  return (
+    <section className="overflow-hidden rounded-3xl border border-[#e4dcc8] bg-white" aria-labelledby={`scripture-${item.key}`}>
+      <div className="px-3 py-3 sm:px-5 sm:py-4">
+        <h2 id={`scripture-${item.key}`} className="text-lg font-semibold">
+          <Pair
+            hi={item.title_hi}
+            en={item.title_en}
+            language={language}
+            secondaryClass="mt-1 text-sm font-medium text-[#5f6b4e]"
+          />
+        </h2>
+        <p className="mt-2 text-sm font-semibold text-[#8a6a2e]">{item.reference}</p>
+        <p className="mt-3 text-right font-arabic text-2xl leading-loose" dir="rtl" lang="ar">
+          {item.arabic}
+        </p>
+        <p className="mt-3 text-sm leading-relaxed" lang="hi">
+          {item.hindi}
+        </p>
+        <p className="mt-2 text-sm leading-relaxed text-[#5f6b4e]" lang="en">
+          {item.english}
+        </p>
+        <p className="mt-4 text-sm font-semibold">{item.hadith_label}</p>
+      </div>
+      <div className="aspect-video bg-black">
+        <iframe
+          className="h-full w-full"
+          src={`https://www.youtube-nocookie.com/embed/${encodeURIComponent(item.hadith_youtube_id)}?rel=0&modestbranding=1&playsinline=1`}
+          title={item.hadith_label}
+          allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+          allowFullScreen
+          referrerPolicy="strict-origin-when-cross-origin"
+        />
+      </div>
+    </section>
+  );
+}
+
+function DayQuiz({ quiz, language }: { quiz: ClassroomQuiz; language: string }) {
+  const [started, setStarted] = useState(false);
+  const [secondsLeft, setSecondsLeft] = useState(quiz.seconds);
+  const [answers, setAnswers] = useState<(number | null)[]>(() => quiz.questions.map(() => null));
+  const [locked, setLocked] = useState(false);
+  const allAnswered = answers.every((answer) => answer != null);
+
+  useEffect(() => {
+    if (!started || locked) return;
+    if (secondsLeft <= 0) {
+      setLocked(true);
+      return;
+    }
+    const timer = window.setTimeout(() => setSecondsLeft((current) => current - 1), 1000);
+    return () => window.clearTimeout(timer);
+  }, [started, locked, secondsLeft]);
+
+  useEffect(() => {
+    if (started && allAnswered) setLocked(true);
+  }, [started, allAnswered]);
+
+  function choose(questionIndex: number, optionIndex: number) {
+    if (!started || locked || answers[questionIndex] != null) return;
+    setAnswers((current) => current.map((answer, index) => (index === questionIndex ? optionIndex : answer)));
+  }
+
+  function retry() {
+    setStarted(false);
+    setSecondsLeft(quiz.seconds);
+    setAnswers(quiz.questions.map(() => null));
+    setLocked(false);
+  }
+
+  const score = quizScore(quiz.questions, answers);
+
+  return (
+    <section className="rounded-3xl border border-[#e4dcc8] bg-white px-3 py-3 sm:px-5 sm:py-4" aria-labelledby="day-quiz">
+      <h2 id="day-quiz" className="text-lg font-semibold">
+        <Pair
+          hi={quiz.title_hi}
+          en={quiz.title_en}
+          language={language}
+          secondaryClass="mt-1 text-sm font-medium text-[#5f6b4e]"
+        />
+      </h2>
+      {!started ? (
+        <button
+          type="button"
+          className={`${waClass} mt-3`}
+          onClick={() => {
+            setSecondsLeft(quiz.seconds);
+            setStarted(true);
+          }}
+        >
+          क्विज़ शुरू करें
+        </button>
+      ) : (
+        <p className="mt-3 text-sm font-semibold" aria-live="polite">
+          समय: {formatQuizClock(secondsLeft)}
+        </p>
+      )}
+      {started ? (
+        <ol className="mt-4 space-y-4">
+          {quiz.questions.map((question, questionIndex) => {
+            const picked = answers[questionIndex];
+            const reveal = picked != null || locked;
+            return (
+              <li key={question.prompt}>
+                <p className="text-sm font-semibold">
+                  {questionIndex + 1}. {question.prompt}
+                </p>
+                {picked != null ? (
+                  <p className={`mt-1 text-xs font-semibold ${picked === question.correct ? "text-[#1f7a4d]" : "text-[#9b2c2c]"}`}>
+                    {picked === question.correct ? "सही" : "ग़लत"}
+                  </p>
+                ) : null}
+                <div className="mt-2 grid gap-2">
+                  {question.options.map((option, optionIndex) => {
+                    const isCorrect = optionIndex === question.correct;
+                    const isPick = picked === optionIndex;
+                    let tone = "border-[#e4dcc8] bg-white";
+                    if (reveal && isCorrect) tone = "border-[#1f7a4d] bg-[#e7f5ec]";
+                    else if (reveal && isPick) tone = "border-[#9b2c2c] bg-[#fdecec]";
+                    return (
+                      <button
+                        key={option}
+                        type="button"
+                        className={`rounded-2xl border px-3 py-2 text-start text-sm disabled:cursor-default ${tone}`}
+                        disabled={!started || locked || picked != null}
+                        onClick={() => choose(questionIndex, optionIndex)}
+                      >
+                        {option}
+                      </button>
+                    );
+                  })}
+                </div>
+              </li>
+            );
+          })}
+        </ol>
+      ) : null}
+      {locked ? (
+        <div className="mt-4">
+          <p className="text-base font-semibold">स्कोर: {score}/10</p>
+          <button type="button" className={`${waClass} mt-3`} onClick={retry}>
+            दोबारा कोशिश करें
+          </button>
+        </div>
+      ) : null}
+    </section>
+  );
+}
+
+function SideVideoBox({ item, language }: { item: ClassroomSideVideo; language: string }) {
+  return (
+    <section className="overflow-hidden rounded-3xl border border-[#e4dcc8] bg-white" aria-labelledby={`side-${item.key}`}>
+      <h2 id={`side-${item.key}`} className="px-3 py-3 text-lg font-semibold sm:px-5 sm:py-4">
+        <Pair
+          hi={item.title_hi}
+          en={item.title_en}
+          language={language}
+          secondaryClass="mt-1 text-sm font-medium text-[#5f6b4e]"
+        />
+      </h2>
+      <div className="aspect-video bg-black">
+        <iframe
+          className="h-full w-full"
+          src={classroomSideEmbedSrc(item)}
+          title={`${item.title_en} — Day ${item.day}`}
+          allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+          allowFullScreen
+          referrerPolicy="strict-origin-when-cross-origin"
+        />
+      </div>
+      {item.caption ? <p className="px-3 py-2 text-sm text-[#5f6b4e] sm:px-5">{item.caption}</p> : null}
+    </section>
+  );
+}
 
 export default function ClassroomPage() {
   const { language, isRTL } = useLanguage();
@@ -217,6 +403,20 @@ export default function ClassroomPage() {
               {hindiFirst(language) ? "अभी कोई रिकॉर्डेड कक्षा प्रकाशित नहीं है।" : "No recorded class is published yet."}
             </p>
           )}
+
+          {selected
+            ? CLASSROOM_SCRIPTURE.filter((item) => item.day === selected.day).map((item) => (
+                <ScriptureBox key={item.key} item={item} language={language} />
+              ))
+            : null}
+
+          {selected
+            ? CLASSROOM_SIDE_VIDEOS.filter((item) => item.day === selected.day).map((item) => (
+                <SideVideoBox key={item.key} item={item} language={language} />
+              ))
+            : null}
+
+          {selected?.day === CLASSROOM_QUIZ.day ? <DayQuiz quiz={CLASSROOM_QUIZ} language={language} /> : null}
         </div>
 
         <div className="order-4 min-w-0 space-y-4 lg:col-start-2 lg:row-start-2">
