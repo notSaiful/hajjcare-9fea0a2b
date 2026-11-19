@@ -34,7 +34,7 @@ import kaabaBanner from "@/assets/rules/kaaba.jpg";
 const CLASS_FLOW = ["intro", "quran", "hadith", "dua", "arkan", "doctor", "naat", "quiz"] as const;
 
 const FLOW_LABEL = {
-  intro: { en: "Intro", hi: "परिचय", ur: "تعارف" },
+  intro: { en: "Welcome & Intro", hi: "स्वागत और परिचय", ur: "خوش آمدید اور تعارف" },
   quran: { en: "Quran", hi: "क़ुरआन", ur: "قرآن" },
   hadith: { en: "Hadith", hi: "हदीस", ur: "حدیث" },
   dua: { en: "Dua", hi: "दुआ", ur: "دعا" },
@@ -149,7 +149,20 @@ function DayQuiz({ quiz, language }: { quiz: ClassroomQuiz; language: string }) 
     setLocked(false);
   }
 
+  useEffect(() => {
+    if (!locked) return;
+    try {
+      const key = "hajcare-classroom-done";
+      const current = JSON.parse(localStorage.getItem(key) || "[]") as number[];
+      if (!current.includes(quiz.day)) localStorage.setItem(key, JSON.stringify([...current, quiz.day]));
+    } catch {
+      /* Progress stays on this page even if storage is blocked. */
+    }
+  }, [locked, quiz.day]);
+
   const score = quizScore(quiz.questions, answers);
+  const result = quizResultMessage(score, quiz.questions.length);
+  const resultLine = language === "ur" ? result.ur : language === "hi" ? result.hi : result.en;
 
   return (
     <section className="rounded-3xl border border-[#e4dcc8] bg-white px-3 py-3 sm:px-5 sm:py-4" aria-labelledby="day-quiz">
@@ -220,10 +233,7 @@ function DayQuiz({ quiz, language }: { quiz: ClassroomQuiz; language: string }) 
       {locked ? (
         <div className="mt-4">
           <p className="text-base font-semibold">स्कोर: {score}/10</p>
-          <p className="mt-2 text-sm" data-testid="quiz-result">
-            <span className="block">{quizResultMessage(score).hi}</span>
-            <span className="mt-1 block">{quizResultMessage(score).en}</span>
-          </p>
+          <p className="mt-2 text-sm" data-testid="quiz-result">{resultLine}</p>
           <button type="button" className={`${waClass} mt-3`} onClick={retry}>
             दोबारा कोशिश करें
           </button>
@@ -383,6 +393,15 @@ export default function ClassroomPage({
     return formatQuizClock(section.seconds);
   };
   const dayOpen = ignoreLock || (selected ? isDayUnlocked(selected.day, todayIst) : false);
+  const [doneDays, setDoneDays] = useState<number[]>([]);
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("hajcare-classroom-done");
+      setDoneDays(raw ? JSON.parse(raw) as number[] : []);
+    } catch {
+      setDoneDays([]);
+    }
+  }, []);
   const [classRun, setClassRun] = useState<{ index: number; phase: "transition" | "play" } | null>(null);
   const advanceClassRef = useRef<() => void>(() => {});
   advanceClassRef.current = () => {
@@ -395,9 +414,13 @@ export default function ClassroomPage({
   };
   useEffect(() => {
     if (!classRun || classRun.phase !== "transition") return;
-    softChime();
+    try {
+      softChime();
+    } catch {
+      /* A blocked audio device must not stop the lesson. */
+    }
     const timer = window.setTimeout(() => {
-      setClassRun((current) => current ? { ...current, phase: "play" } : current);
+      setClassRun((current) => (current?.phase === "transition" ? { ...current, phase: "play" } : current));
     }, 2000);
     return () => window.clearTimeout(timer);
   }, [classRun]);
@@ -415,16 +438,43 @@ export default function ClassroomPage({
   const activeKey = classRun?.phase === "play" && flowKey ? flowKey : pickedKey;
   const mainVideo = (() => {
     if (activeKey === "hadith" && scripture) {
-      return { id: scripture.hadith_youtube_id, src: `https://www.youtube-nocookie.com/embed/${scripture.hadith_youtube_id}?rel=0&modestbranding=1&playsinline=1&enablejsapi=1` };
+      return { id: scripture.hadith_youtube_id, end: "", src: `https://www.youtube-nocookie.com/embed/${scripture.hadith_youtube_id}?rel=0&modestbranding=1&playsinline=1&enablejsapi=1` };
     }
-    if (activeKey === "dua" && dua) return { id: dua.youtube_id, src: classroomSideEmbedSrc(dua, { jsApi: true }) };
-    if (activeKey === "arkan" && arkan) return { id: arkan.youtube_id, src: classroomSideEmbedSrc(arkan, { jsApi: true }) };
-    if (activeKey === "doctor" && doctor) return { id: doctor.youtube_id, src: classroomSideEmbedSrc(doctor, { jsApi: true }) };
+    if (activeKey === "dua" && dua) return { id: dua.youtube_id, end: dua.end_seconds ?? "", src: classroomSideEmbedSrc(dua, { jsApi: true }) };
+    if (activeKey === "arkan" && arkan) return { id: arkan.youtube_id, end: arkan.end_seconds ?? "", src: classroomSideEmbedSrc(arkan, { jsApi: true }) };
+    if (activeKey === "doctor" && doctor) return { id: doctor.youtube_id, end: doctor.end_seconds ?? "", src: classroomSideEmbedSrc(doctor, { jsApi: true }) };
     if (activeKey === "naat" && selected?.youtube_id) {
-      return { id: selected.youtube_id, src: `https://www.youtube-nocookie.com/embed/${selected.youtube_id}?rel=0&modestbranding=1&playsinline=1&enablejsapi=1` };
+      return { id: selected.youtube_id, end: "", src: `https://www.youtube-nocookie.com/embed/${selected.youtube_id}?rel=0&modestbranding=1&playsinline=1&enablejsapi=1` };
     }
     return null;
   })();
+  useEffect(() => {
+    const frame = document.querySelector<HTMLIFrameElement>("iframe[data-testid='main-iframe']");
+    if (!frame || frame.dataset.bound === "1") return;
+    const win = window as Window & { YT?: { Player: new (el: HTMLIFrameElement, opts: unknown) => void }; onYouTubeIframeAPIReady?: () => void };
+    const attach = () => {
+      if (!win.YT?.Player || frame.dataset.bound === "1") return;
+      frame.dataset.bound = "1";
+      new win.YT.Player(frame, {
+        events: {
+          onStateChange: (event: { data: number; target: { getCurrentTime: () => number } }) => {
+            const time = event.target.getCurrentTime();
+            const endAt = Number(frame.dataset.end || 0);
+            const finished = event.data === 0 || (endAt > 0 && time >= endAt - 0.4);
+            if (finished) advanceClassRef.current();
+          },
+        },
+      });
+    };
+    if (win.YT?.Player) attach();
+    else {
+      const previous = win.onYouTubeIframeAPIReady;
+      win.onYouTubeIframeAPIReady = () => {
+        previous?.();
+        attach();
+      };
+    }
+  }, [activeKey, mainVideo?.id]);
 
   return (
     <div className="min-h-screen bg-[#f6f3ec] text-[#1f4d3a]" dir={isRTL ? "rtl" : "ltr"}>
@@ -437,6 +487,7 @@ export default function ClassroomPage({
       {classRun?.phase === "transition" && flowLabel ? (
         <div data-testid="section-transition" className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#1f4d3a] text-[#f6f3ec]">
           <div className="mb-4 h-16 w-28 rounded-t-full border-4 border-[#c9a45c] border-b-0" aria-hidden />
+          <p className="text-sm font-semibold uppercase tracking-[0.12em] text-[#8a6a2e]">Next</p>
           <p className="text-2xl font-semibold">{language === "ur" ? flowLabel.ur : language === "hi" ? flowLabel.hi : flowLabel.en}</p>
         </div>
       ) : null}
@@ -474,7 +525,7 @@ export default function ClassroomPage({
 
         <div className="order-1 min-w-0 space-y-3 lg:order-none lg:col-start-2 lg:row-start-1 lg:space-y-4">
           <header className="rounded-3xl border border-[#e4dcc8] bg-white px-3 py-2 sm:px-5 sm:py-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#8a6a2e]">HajCare AI</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#8a6a2e]">HAJCARE AI · 100 DAYS FREE HAJJ TRAINING</p>
             <h1 className="mt-1 text-xl font-semibold sm:text-3xl">
               <Pair
                 hi="100 दिन मुफ़्त हज प्रशिक्षण"
@@ -504,6 +555,21 @@ export default function ClassroomPage({
                 : "Recorded classes, study materials, and questions on WhatsApp. No live class."}
             </p>
           </header>
+          <section data-testid="training-calendar" className="rounded-3xl border border-[#e4dcc8] bg-white p-3">
+            <h2 className="text-sm font-semibold">Training Calendar · 7 Dec 2026 – 16 Mar 2027</h2>
+            <ul className="mt-2 grid max-h-64 grid-cols-1 gap-1 overflow-auto sm:grid-cols-2">
+              {programme.map((item) => {
+                const done = doneDays.includes(item.day);
+                const locked = item.status === "locked";
+                const tone = done ? "bg-[#e7f5ec] text-[#1f4d3a]" : locked ? "bg-[#eceae4] text-[#6b675d]" : "bg-[#e7f5ec] text-[#1f4d3a]";
+                return (
+                  <li key={item.day} className={`rounded-xl px-2 py-1 text-xs ${tone}`} data-calendar-day={item.day} data-calendar-status={done ? "completed" : item.status}>
+                    {done ? "✓ " : ""}Day {item.day} · {item.title_en} · {formatShortDate(item.unlocks)} · {done ? "Completed" : locked ? "Locked" : "Available"}
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
 
           {!dayOpen ? (
             <section data-testid="opens-on" className="rounded-3xl border border-[#c9a45c] bg-white p-5">
@@ -560,6 +626,7 @@ export default function ClassroomPage({
                     data-testid="main-iframe"
                     data-section={activeKey}
                     data-video-id={mainVideo.id}
+                    data-end={mainVideo.end}
                     className="relative aspect-video w-full"
                     src={mainVideo.src}
                     title={activeKey}

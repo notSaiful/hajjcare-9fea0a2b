@@ -120,11 +120,34 @@ export function sectionSeconds(plan: EpisodePlan, key: SectionKey): number | nul
   return plan.sections.find((section) => section.key === key)?.seconds ?? null;
 }
 
-export function quizResultMessage(score: number): { hi: string; en: string } {
-  if (score >= 9) return { hi: "माशाअल्लाह! बेहतरीन", en: "MashaAllah! Excellent" };
-  if (score >= 7) return { hi: "शाबाश! बहुत अच्छा, अल्लाह आपके इल्म में बरकत दे", en: "Shabash! Very good, may Allah bless your knowledge" };
-  if (score >= 5) return { hi: "अच्छी कोशिश, इंशाअल्लाह और बेहतर होगा", en: "Good effort, InshaAllah you will do even better" };
-  return { hi: "कोई बात नहीं, दोबारा तैयारी करें, अल्लाह आसानी फ़रमाए", en: "No worries, prepare again, may Allah make it easy" };
+export function quizResultMessage(score: number, total = 10): { hi: string; en: string; ur: string } {
+  const percent = total > 0 ? (score / total) * 100 : 0;
+  if (percent >= 100) {
+    return {
+      hi: "मुबारक हो! माशाअल्लाह! सारे उत्तर सही हैं।",
+      en: "Congratulations! MashaAllah! All answers are correct.",
+      ur: "مبارک ہو! ماشاء اللہ! تمام جواب درست ہیں۔",
+    };
+  }
+  if (percent >= 80) {
+    return {
+      hi: "माशाअल्लाह! बहुत अच्छी कोशिश।",
+      en: "MashaAllah! Very good effort.",
+      ur: "ماشاء اللہ! بہت اچھی کوشش۔",
+    };
+  }
+  if (percent >= 60) {
+    return {
+      hi: "शाबाश! आप उत्तीर्ण हुए।",
+      en: "Shabash! You have passed.",
+      ur: "شاباش! آپ کامیاب ہوئے۔",
+    };
+  }
+  return {
+    hi: "कोई बात नहीं। आज का पाठ दोहराएँ और फिर कोशिश करें।",
+    en: "No problem. Please revise today's lesson and try again.",
+    ur: "کوئی بات نہیں۔ آج کا سبق دوبارہ پڑھیں اور پھر کوشش کریں۔",
+  };
 }
 
 export function formatEpisodeTotal(plan: EpisodePlan): string {

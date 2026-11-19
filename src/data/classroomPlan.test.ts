@@ -74,13 +74,12 @@ describe("IST release", () => {
 
 describe("quiz result messages", () => {
   it("uses the four score bands", () => {
-    expect(quizResultMessage(10).en).toBe("MashaAllah! Excellent");
-    expect(quizResultMessage(9).hi).toBe("माशाअल्लाह! बेहतरीन");
-    expect(quizResultMessage(8).en).toBe("Shabash! Very good, may Allah bless your knowledge");
-    expect(quizResultMessage(7).hi).toContain("शाबाश");
-    expect(quizResultMessage(6).en).toBe("Good effort, InshaAllah you will do even better");
-    expect(quizResultMessage(5).hi).toContain("अच्छी कोशिश");
-    expect(quizResultMessage(4).en).toBe("No worries, prepare again, may Allah make it easy");
+    expect(quizResultMessage(10).en).toBe("Congratulations! MashaAllah! All answers are correct.");
+    expect(quizResultMessage(9).en).toBe("MashaAllah! Very good effort.");
+    expect(quizResultMessage(8).hi).toContain("माशाअल्लाह");
+    expect(quizResultMessage(7).en).toBe("Shabash! You have passed.");
+    expect(quizResultMessage(6).ur).toContain("شاباش");
+    expect(quizResultMessage(5).en).toBe("No problem. Please revise today's lesson and try again.");
     expect(quizResultMessage(0).hi).toContain("कोई बात नहीं");
   });
 });
