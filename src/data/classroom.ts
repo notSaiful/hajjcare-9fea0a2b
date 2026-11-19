@@ -46,7 +46,7 @@ export const CLASSROOM_CLASSES: ClassroomClass[] = [
     day: 1,
     title_hi: "नीयत: हज इबादत है, सैर नहीं",
     title_en: "Niyyah: Hajj is worship, not a trip",
-    youtube_id: null,
+    youtube_id: "J76Dtc0MePA",
     local_video_16x9: "/videos/day1-1min-16x9.mp4",
     local_video_9x16: "/videos/day1-1min-9x16.mp4",
     label_hi: "दिन 1 — 1 मिनट क्लास",

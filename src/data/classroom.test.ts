@@ -12,9 +12,9 @@ import {
 const day1 = CLASSROOM_CLASSES[0];
 
 describe("classroom catalogue", () => {
-  it("publishes only the existing Day 1 trailer", () => {
+  it("publishes Day 1 with the naat YouTube id and the existing local files", () => {
     expect(publishedClasses().map((item) => item.day)).toEqual([1]);
-    expect(day1.youtube_id).toBeNull();
+    expect(day1.youtube_id).toBe("J76Dtc0MePA");
     expect(day1.teacher).toBeNull();
     expect(day1.local_video_16x9).toBe("/videos/day1-1min-16x9.mp4");
     expect(day1.local_video_9x16).toBe("/videos/day1-1min-9x16.mp4");
