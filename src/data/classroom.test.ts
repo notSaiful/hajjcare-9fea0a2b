@@ -8,6 +8,7 @@ import {
   CLASSROOM_QUIZ,
   CLASSROOM_SCRIPTURE,
   CLASSROOM_SIDE_VIDEOS,
+  classroomSideEmbedSrc,
   formatQuizClock,
   publishedClasses,
   quizScore,
@@ -33,6 +34,19 @@ describe("classroom catalogue", () => {
       [1, "doctor-corner", "Doctor Corner", "डॉक्टर कॉर्नर", "yCu43qBV0RY"],
       [1, "arkan", "Arkan", "अरकान", "C5gHbAgfrVo"],
       [1, "dua", "Safar ki Dua", "सफ़र की दुआ", "hRlmshVxs1w"],
+    ]);
+    const arkan = CLASSROOM_SIDE_VIDEOS.find((item) => item.key === "arkan");
+    expect(arkan?.start_seconds).toBe(0);
+    expect(arkan?.end_seconds).toBe(600);
+    expect(arkan?.caption).toBe("पहले 10 मिनट — बाक़ी हिस्सा अगले दिन जारी रहेगा (To be continued next day)");
+    expect(classroomSideEmbedSrc(arkan!)).toBe(
+      "https://www.youtube-nocookie.com/embed/C5gHbAgfrVo?rel=0&modestbranding=1&playsinline=1&start=0&end=600",
+    );
+    expect(
+      CLASSROOM_SIDE_VIDEOS.filter((item) => item.key !== "arkan").map((item) => classroomSideEmbedSrc(item)),
+    ).toEqual([
+      "https://www.youtube-nocookie.com/embed/yCu43qBV0RY?rel=0&modestbranding=1&playsinline=1",
+      "https://www.youtube-nocookie.com/embed/hRlmshVxs1w?rel=0&modestbranding=1&playsinline=1",
     ]);
     expect(CLASSROOM_SCRIPTURE).toEqual([
       {

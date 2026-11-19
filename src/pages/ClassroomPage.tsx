@@ -7,6 +7,7 @@ import {
   CLASSROOM_QUIZ,
   CLASSROOM_SCRIPTURE,
   CLASSROOM_SIDE_VIDEOS,
+  classroomSideEmbedSrc,
   formatQuizClock,
   formatWhatsAppDisplay,
   publishedClasses,
@@ -240,13 +241,14 @@ function SideVideoBox({ item, language }: { item: ClassroomSideVideo; language: 
       <div className="aspect-video bg-black">
         <iframe
           className="h-full w-full"
-          src={`https://www.youtube-nocookie.com/embed/${encodeURIComponent(item.youtube_id)}?rel=0&modestbranding=1&playsinline=1`}
+          src={classroomSideEmbedSrc(item)}
           title={`${item.title_en} — Day ${item.day}`}
           allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
           allowFullScreen
           referrerPolicy="strict-origin-when-cross-origin"
         />
       </div>
+      {item.caption ? <p className="px-3 py-2 text-sm text-[#5f6b4e] sm:px-5">{item.caption}</p> : null}
     </section>
   );
 }

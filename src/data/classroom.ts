@@ -85,6 +85,18 @@ export interface ClassroomSideVideo {
   title_hi: string;
   title_en: string;
   youtube_id: string;
+  /** Set only when the embed should play a clip. */
+  start_seconds?: number;
+  end_seconds?: number;
+  caption?: string;
+}
+
+export function classroomSideEmbedSrc(item: Pick<ClassroomSideVideo, "youtube_id" | "start_seconds" | "end_seconds">): string {
+  const base = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(item.youtube_id)}?rel=0&modestbranding=1&playsinline=1`;
+  const clip: string[] = [];
+  if (item.start_seconds != null) clip.push(`start=${item.start_seconds}`);
+  if (item.end_seconds != null) clip.push(`end=${item.end_seconds}`);
+  return clip.length ? `${base}&${clip.join("&")}` : base;
 }
 
 /** Day 1 Quran text plus one Hadith player. Not a recorded class. */
@@ -133,6 +145,9 @@ export const CLASSROOM_SIDE_VIDEOS: ClassroomSideVideo[] = [
     title_hi: "अरकान",
     title_en: "Arkan",
     youtube_id: "C5gHbAgfrVo",
+    start_seconds: 0,
+    end_seconds: 600,
+    caption: "पहले 10 मिनट — बाक़ी हिस्सा अगले दिन जारी रहेगा (To be continued next day)",
   },
   {
     key: "dua",
