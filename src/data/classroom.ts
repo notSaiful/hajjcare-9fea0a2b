@@ -148,7 +148,7 @@ export const CLASSROOM_SIDE_VIDEOS: ClassroomSideVideo[] = [
     day: 1,
     title_hi: "अरकान",
     title_en: "Arkan",
-    youtube_id: "C5gHbAgfrVo",
+    youtube_id: "eIZ6g15gtqM",
     start_seconds: 0,
     end_seconds: 600,
     caption: "पहले 10 मिनट — बाक़ी हिस्सा अगले दिन जारी रहेगा (To be continued next day)",

@@ -27,7 +27,7 @@ export const YOUTUBE_FULL_SECONDS: Record<string, number | null> = {
   J76Dtc0MePA: 9 * 60 + 6,
   jpGJemWoVHI: 83,
   yCu43qBV0RY: 7 * 60 + 27,
-  C5gHbAgfrVo: null,
+  eIZ6g15gtqM: null,
   hRlmshVxs1w: 72,
 };
 
