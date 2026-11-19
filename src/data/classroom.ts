@@ -91,12 +91,16 @@ export interface ClassroomSideVideo {
   caption?: string;
 }
 
-export function classroomSideEmbedSrc(item: Pick<ClassroomSideVideo, "youtube_id" | "start_seconds" | "end_seconds">): string {
+export function classroomSideEmbedSrc(
+  item: Pick<ClassroomSideVideo, "youtube_id" | "start_seconds" | "end_seconds">,
+  options?: { jsApi?: boolean },
+): string {
   const base = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(item.youtube_id)}?rel=0&modestbranding=1&playsinline=1`;
   const clip: string[] = [];
   if (item.start_seconds != null) clip.push(`start=${item.start_seconds}`);
   if (item.end_seconds != null) clip.push(`end=${item.end_seconds}`);
-  return clip.length ? `${base}&${clip.join("&")}` : base;
+  const url = clip.length ? `${base}&${clip.join("&")}` : base;
+  return options?.jsApi ? `${url}&enablejsapi=1` : url;
 }
 
 /** Day 1 Quran text plus one Hadith player. Not a recorded class. */

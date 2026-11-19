@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { SEO } from "@/components/SEO";
 import { SimpleHeader } from "@/components/SimpleHeader";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -15,9 +16,17 @@ import {
   resolveWhatsAppDigits,
   type ClassroomClass,
   type ClassroomQuiz,
-  type ClassroomScripture,
   type ClassroomSideVideo,
 } from "@/data/classroom";
+import { TextToSpeechButton } from "@/components/TextToSpeechButton";
+import {
+  formatEpisodeTotal,
+  INTRO_EN,
+  INTRO_HI,
+  planEpisode,
+  type EpisodePlan,
+} from "@/data/classroomPlan";
+import { istDateString, publicProgramme } from "@/data/classroomRelease.js";
 import { BookOpen, Download, GraduationCap, MessageCircle } from "lucide-react";
 
 const MENU = [
@@ -75,44 +84,6 @@ function WhatsAppLink({ item, className, children }: { item: ClassroomClass; cla
 
 const waClass =
   "inline-flex items-center justify-center gap-2 rounded-full bg-[#1f7a4d] px-4 py-2 text-sm font-semibold text-white hover:bg-[#17663f]";
-
-function ScriptureBox({ item, language }: { item: ClassroomScripture; language: string }) {
-  return (
-    <section className="overflow-hidden rounded-3xl border border-[#e4dcc8] bg-white" aria-labelledby={`scripture-${item.key}`}>
-      <div className="px-3 py-3 sm:px-5 sm:py-4">
-        <h2 id={`scripture-${item.key}`} className="text-lg font-semibold">
-          <Pair
-            hi={item.title_hi}
-            en={item.title_en}
-            language={language}
-            secondaryClass="mt-1 text-sm font-medium text-[#5f6b4e]"
-          />
-        </h2>
-        <p className="mt-2 text-sm font-semibold text-[#8a6a2e]">{item.reference}</p>
-        <p className="mt-3 text-right font-arabic text-2xl leading-loose" dir="rtl" lang="ar">
-          {item.arabic}
-        </p>
-        <p className="mt-3 text-sm leading-relaxed" lang="hi">
-          {item.hindi}
-        </p>
-        <p className="mt-2 text-sm leading-relaxed text-[#5f6b4e]" lang="en">
-          {item.english}
-        </p>
-        <p className="mt-4 text-sm font-semibold">{item.hadith_label}</p>
-      </div>
-      <div className="aspect-video bg-black">
-        <iframe
-          className="h-full w-full"
-          src={`https://www.youtube-nocookie.com/embed/${encodeURIComponent(item.hadith_youtube_id)}?rel=0&modestbranding=1&playsinline=1`}
-          title={item.hadith_label}
-          allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-          allowFullScreen
-          referrerPolicy="strict-origin-when-cross-origin"
-        />
-      </div>
-    </section>
-  );
-}
 
 function DayQuiz({ quiz, language }: { quiz: ClassroomQuiz; language: string }) {
   const [started, setStarted] = useState(false);
@@ -227,9 +198,25 @@ function DayQuiz({ quiz, language }: { quiz: ClassroomQuiz; language: string }) 
   );
 }
 
-function SideVideoBox({ item, language }: { item: ClassroomSideVideo; language: string }) {
+function SideVideoBox({
+  item,
+  language,
+  section,
+  clock,
+  review,
+}: {
+  item: ClassroomSideVideo;
+  language: string;
+  section: string;
+  clock: string;
+  review: boolean;
+}) {
   return (
-    <section className="overflow-hidden rounded-3xl border border-[#e4dcc8] bg-white" aria-labelledby={`side-${item.key}`}>
+    <section
+      data-section={section}
+      className="overflow-hidden rounded-3xl border border-[#e4dcc8] bg-white scroll-mt-24 transition-opacity duration-500"
+      aria-labelledby={`side-${item.key}`}
+    >
       <h2 id={`side-${item.key}`} className="px-3 py-3 text-lg font-semibold sm:px-5 sm:py-4">
         <Pair
           hi={item.title_hi}
@@ -238,10 +225,15 @@ function SideVideoBox({ item, language }: { item: ClassroomSideVideo; language: 
           secondaryClass="mt-1 text-sm font-medium text-[#5f6b4e]"
         />
       </h2>
+      <p className="px-3 pb-2 text-xs font-semibold text-[#8a6a2e] sm:px-5" data-duration={section}>
+        {clock}
+        {review ? " · admin review" : ""}
+      </p>
       <div className="aspect-video bg-black">
         <iframe
           className="h-full w-full"
-          src={classroomSideEmbedSrc(item)}
+          data-section={section}
+          src={classroomSideEmbedSrc(item, { jsApi: true })}
           title={`${item.title_en} — Day ${item.day}`}
           allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
           allowFullScreen
@@ -261,6 +253,99 @@ export default function ClassroomPage() {
   const studySheet = selected?.materials.find((item) => !fileDownload(item.url));
   const digits = resolveWhatsAppDigits(import.meta.env.VITE_HAJCARE_WHATSAPP_NUMBER);
   const displayNumber = formatWhatsAppDisplay(digits);
+  const [searchParams] = useSearchParams();
+  const asOf = searchParams.get("asOf");
+  const todayIst = asOf || istDateString();
+  const programme = useMemo(() => publicProgramme(todayIst), [todayIst]);
+  const scripture = CLASSROOM_SCRIPTURE.find((item) => item.day === selected?.day);
+  const side = (key: string) => CLASSROOM_SIDE_VIDEOS.find((item) => item.key === key && item.day === selected?.day);
+  const dua = side("dua");
+  const arkan = side("arkan");
+  const doctor = side("doctor-corner");
+  const plan: EpisodePlan | null = selected && scripture && dua && arkan && doctor
+    ? planEpisode({
+        hadith: { youtubeId: scripture.hadith_youtube_id },
+        dua: { youtubeId: dua.youtube_id, start: dua.start_seconds, end: dua.end_seconds },
+        arkan: { youtubeId: arkan.youtube_id, start: arkan.start_seconds, end: arkan.end_seconds },
+        doctor: { youtubeId: doctor.youtube_id, start: doctor.start_seconds, end: doctor.end_seconds },
+        naat: { youtubeId: selected.youtube_id },
+        quizSeconds: CLASSROOM_QUIZ.seconds,
+      })
+    : null;
+  const [releasedNotes, setReleasedNotes] = useState<Record<string, { note_hi: string; note_en: string }>>({});
+  const [played, setPlayed] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    const query = asOf ? `?asOf=${encodeURIComponent(asOf)}` : "";
+    fetch(`/api/classroom${query}`)
+      .then((response) => response.json())
+      .then((payload: { releasedBodies?: Record<string, { note_hi: string; note_en: string }> }) => {
+        setReleasedNotes(payload.releasedBodies ?? {});
+      })
+      .catch(() => setReleasedNotes({}));
+  }, [asOf]);
+
+  useEffect(() => {
+    if (!selected) return;
+    try {
+      const raw = localStorage.getItem(`hajcare-classroom-playback:${selected.day}`);
+      setPlayed(raw ? JSON.parse(raw) as Record<string, number> : {});
+    } catch {
+      setPlayed({});
+    }
+  }, [selected]);
+
+  useEffect(() => {
+    const win = window as Window & {
+      YT?: { Player: new (el: HTMLIFrameElement, opts: unknown) => void };
+      onYouTubeIframeAPIReady?: () => void;
+    };
+    const record = (key: string, seconds: number) => {
+      if (!selected) return;
+      setPlayed((current) => {
+        const next = { ...current, [key]: Math.max(current[key] ?? 0, Math.floor(seconds)) };
+        localStorage.setItem(`hajcare-classroom-playback:${selected.day}`, JSON.stringify(next));
+        return next;
+      });
+    };
+    const bind = () => {
+      if (!win.YT?.Player) return;
+      document.querySelectorAll<HTMLIFrameElement>("iframe[data-section]").forEach((frame) => {
+        if (frame.dataset.bound === "1") return;
+        frame.dataset.bound = "1";
+        const key = frame.dataset.section || "";
+        new win.YT.Player(frame, {
+          events: {
+            onStateChange: (event: { data: number; target: { getCurrentTime: () => number } }) => {
+              if (event.data === 0 || event.data === 1 || event.data === 2) record(key, event.target.getCurrentTime());
+            },
+          },
+        });
+      });
+    };
+    if (win.YT?.Player) {
+      bind();
+      return;
+    }
+    const previous = win.onYouTubeIframeAPIReady;
+    win.onYouTubeIframeAPIReady = () => {
+      previous?.();
+      bind();
+    };
+    if (!document.querySelector("script[src='https://www.youtube.com/iframe_api']")) {
+      const script = document.createElement("script");
+      script.src = "https://www.youtube.com/iframe_api";
+      document.body.appendChild(script);
+    }
+  }, [selected]);
+
+  const playedTotal = Object.values(played).reduce((sum, value) => sum + value, 0);
+  const introSpeech = hindiFirst(language) ? INTRO_HI : INTRO_EN;
+  const clockFor = (key: EpisodePlan["sections"][number]["key"]) => {
+    const section = plan?.sections.find((item) => item.key === key);
+    if (!section || section.seconds == null) return "अवधि जाँच बाकी";
+    return formatQuizClock(section.seconds);
+  };
 
   return (
     <div className="min-h-screen bg-[#f6f3ec] text-[#1f4d3a]" dir={isRTL ? "rtl" : "ltr"}>
@@ -351,42 +436,6 @@ export default function ClassroomPage() {
                 </a>
               ) : null}
 
-              {selected.youtube_id ? (
-                <div className="aspect-video bg-black">
-                  <iframe
-                    className="h-full w-full"
-                    src={`https://www.youtube-nocookie.com/embed/${encodeURIComponent(selected.youtube_id)}?rel=0&modestbranding=1&playsinline=1`}
-                    title={`${selected.title_en} — Day ${selected.day}`}
-                    allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-                    allowFullScreen
-                    referrerPolicy="strict-origin-when-cross-origin"
-                  />
-                </div>
-              ) : (
-                <div className="bg-black">
-                  {selected.local_video_16x9 ? (
-                    <video
-                      key={`wide-${selected.day}`}
-                      className="mx-auto hidden max-h-[70vh] w-full bg-black md:block"
-                      controls
-                      playsInline
-                      preload="metadata"
-                      src={selected.local_video_16x9}
-                    />
-                  ) : null}
-                  {(selected.local_video_9x16 || selected.local_video_16x9) ? (
-                    <video
-                      key={`tall-${selected.day}`}
-                      className="mx-auto block aspect-[9/16] w-full max-w-sm bg-black md:hidden"
-                      controls
-                      playsInline
-                      preload="metadata"
-                      src={selected.local_video_9x16 || selected.local_video_16x9}
-                    />
-                  ) : null}
-                </div>
-              )}
-
               <div className="flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
                 <p className="text-sm text-[#5f6b4e]">
                   {hindiFirst(language)
@@ -404,19 +453,114 @@ export default function ClassroomPage() {
             </p>
           )}
 
-          {selected
-            ? CLASSROOM_SCRIPTURE.filter((item) => item.day === selected.day).map((item) => (
-                <ScriptureBox key={item.key} item={item} language={language} />
-              ))
-            : null}
+          {plan ? (
+            <p className="rounded-2xl border border-[#e4dcc8] bg-white px-3 py-2 text-sm font-semibold" data-testid="episode-total">
+              {formatEpisodeTotal(plan)}
+              <span className="mt-1 block h-1.5 overflow-hidden rounded-full bg-[#e4dcc8]">
+                <span
+                  className="block h-full bg-[#1f4d3a] transition-all duration-500"
+                  style={{ width: `${Math.min(100, Math.round((playedTotal / plan.capSeconds) * 100))}%` }}
+                />
+              </span>
+            </p>
+          ) : null}
 
-          {selected
-            ? CLASSROOM_SIDE_VIDEOS.filter((item) => item.day === selected.day).map((item) => (
-                <SideVideoBox key={item.key} item={item} language={language} />
-              ))
-            : null}
+          {selected ? (
+            <section data-section="intro" className="rounded-3xl border border-[#e4dcc8] bg-white px-3 py-3 scroll-mt-24 transition-opacity duration-500 sm:px-5 sm:py-4">
+              <h2 className="text-lg font-semibold">
+                <Pair hi="परिचय" en="Intro" language={language} secondaryClass="mt-1 text-sm font-medium text-[#5f6b4e]" />
+              </h2>
+              <p className="mt-1 text-xs font-semibold text-[#8a6a2e]" data-duration="intro">{clockFor("intro")}</p>
+              <p className="mt-3 text-sm leading-relaxed" lang={hindiFirst(language) ? "hi" : "en"}>{introSpeech}</p>
+              <p className="mt-2 text-sm leading-relaxed text-[#5f6b4e]" lang={hindiFirst(language) ? "en" : "hi"}>
+                {hindiFirst(language) ? INTRO_EN : INTRO_HI}
+              </p>
+              <div className="mt-3">
+                <TextToSpeechButton text={introSpeech} size="sm" />
+              </div>
+            </section>
+          ) : null}
 
-          {selected?.day === CLASSROOM_QUIZ.day ? <DayQuiz quiz={CLASSROOM_QUIZ} language={language} /> : null}
+          {scripture ? (
+            <section data-section="quran" className="rounded-3xl border border-[#e4dcc8] bg-white px-3 py-3 scroll-mt-24 transition-opacity duration-500 sm:px-5 sm:py-4">
+              <h2 className="text-lg font-semibold">
+                <Pair hi="क़ुरआन" en="Quran" language={language} secondaryClass="mt-1 text-sm font-medium text-[#5f6b4e]" />
+              </h2>
+              <p className="mt-1 text-xs font-semibold text-[#8a6a2e]" data-duration="quran">{clockFor("quran")}</p>
+              <p className="mt-2 text-sm font-semibold text-[#8a6a2e]">{scripture.reference}</p>
+              <p className="mt-3 text-right font-arabic text-2xl leading-loose" dir="rtl" lang="ar">{scripture.arabic}</p>
+              <p className="mt-3 text-sm leading-relaxed" lang="hi">{scripture.hindi}</p>
+              <p className="mt-2 text-sm leading-relaxed text-[#5f6b4e]" lang="en">{scripture.english}</p>
+            </section>
+          ) : null}
+
+          {scripture ? (
+            <section data-section="hadith" className="overflow-hidden rounded-3xl border border-[#e4dcc8] bg-white scroll-mt-24 transition-opacity duration-500">
+              <div className="px-3 py-3 sm:px-5 sm:py-4">
+                <h2 className="text-lg font-semibold">
+                  <Pair hi="हदीस" en="Hadith" language={language} secondaryClass="mt-1 text-sm font-medium text-[#5f6b4e]" />
+                </h2>
+                <p className="mt-1 text-xs font-semibold text-[#8a6a2e]" data-duration="hadith">{clockFor("hadith")}</p>
+                <p className="mt-3 text-sm font-semibold">{scripture.hadith_label}</p>
+              </div>
+              <div className="aspect-video bg-black">
+                <iframe
+                  className="h-full w-full"
+                  data-section="hadith"
+                  src={`https://www.youtube-nocookie.com/embed/${encodeURIComponent(scripture.hadith_youtube_id)}?rel=0&modestbranding=1&playsinline=1&enablejsapi=1`}
+                  title={scripture.hadith_label}
+                  allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+                  allowFullScreen
+                  referrerPolicy="strict-origin-when-cross-origin"
+                />
+              </div>
+            </section>
+          ) : null}
+
+          {dua ? <SideVideoBox item={dua} language={language} section="dua" clock={clockFor("dua")} review={Boolean(plan?.sections.find((item) => item.key === "dua")?.adminReview)} /> : null}
+          {arkan ? <SideVideoBox item={arkan} language={language} section="arkan" clock={clockFor("arkan")} review={Boolean(plan?.sections.find((item) => item.key === "arkan")?.adminReview)} /> : null}
+          {doctor ? <SideVideoBox item={doctor} language={language} section="doctor" clock={clockFor("doctor")} review={Boolean(plan?.sections.find((item) => item.key === "doctor")?.adminReview)} /> : null}
+
+          <section data-section="naat" className="overflow-hidden rounded-3xl border border-[#e4dcc8] bg-white scroll-mt-24 transition-opacity duration-500">
+            <div className="px-3 py-3 sm:px-5 sm:py-4">
+              <h2 className="text-lg font-semibold">
+                <Pair hi="नात" en="Naat" language={language} secondaryClass="mt-1 text-sm font-medium text-[#5f6b4e]" />
+              </h2>
+              <p className="mt-1 text-xs font-semibold text-[#8a6a2e]" data-duration="naat">
+                {clockFor("naat")}
+                {plan?.sections.find((item) => item.key === "naat")?.adminReview ? " · admin review" : ""}
+              </p>
+            </div>
+            {selected?.youtube_id ? (
+              <div className="aspect-video bg-black">
+                <iframe
+                  className="h-full w-full"
+                  data-section="naat"
+                  src={`https://www.youtube-nocookie.com/embed/${encodeURIComponent(selected.youtube_id)}?rel=0&modestbranding=1&playsinline=1&enablejsapi=1`}
+                  title={`${selected.title_en} — Day ${selected.day}`}
+                  allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+                  allowFullScreen
+                  referrerPolicy="strict-origin-when-cross-origin"
+                />
+              </div>
+            ) : (
+              <p className="px-3 pb-4 text-sm text-[#5f6b4e] sm:px-5">
+                {hindiFirst(language) ? "इस दिन की नात अभी नहीं है।" : "No naat is set for this day yet."}
+              </p>
+            )}
+          </section>
+
+          {selected?.day === CLASSROOM_QUIZ.day ? (
+            <div data-section="quiz" className="scroll-mt-24 transition-opacity duration-500">
+              <p className="mb-1 text-xs font-semibold text-[#8a6a2e]" data-duration="quiz">{clockFor("quiz")}</p>
+              <DayQuiz quiz={CLASSROOM_QUIZ} language={language} />
+            </div>
+          ) : null}
+
+          <section data-section="end" className="rounded-3xl border border-[#e4dcc8] bg-white px-3 py-4 text-sm font-semibold sm:px-5">
+            <p>TO BE CONTINUED IN THE NEXT EPISODE...</p>
+            <p className="mt-2">Thank you for attending today's HajCare AI Hajj Training Session.</p>
+          </section>
         </div>
 
         <div className="order-4 min-w-0 space-y-4 lg:col-start-2 lg:row-start-2">
@@ -455,9 +599,10 @@ export default function ClassroomPage() {
             <ul className="mt-3 flex gap-3 overflow-x-auto pb-1">
               {classes.map((item) => {
                 const active = item.day === selected?.day;
+                const status = programme.find((entry) => entry.day === item.day)?.status ?? "current";
                 return (
                   <li key={item.day} className="w-56 shrink-0">
-                    <article className={`rounded-2xl border p-3 ${active ? "border-[#1f4d3a] bg-[#f3f7f2]" : "border-[#e4dcc8]"}`}>
+                    <article className={`rounded-2xl border p-3 ${active ? "border-[#1f4d3a] bg-[#f3f7f2]" : "border-[#e4dcc8]"}`} data-day-status={status}>
                       <button
                         type="button"
                         className="w-full text-start"
@@ -466,6 +611,12 @@ export default function ClassroomPage() {
                       >
                         <span className="text-xs font-semibold uppercase tracking-wide text-[#8a6a2e]">
                           {hindiFirst(language) ? `दिन ${item.day}` : `Day ${item.day}`}
+                          {" · "}
+                          {status === "completed"
+                            ? (hindiFirst(language) ? "पूरा" : "Completed")
+                            : status === "current"
+                              ? (hindiFirst(language) ? "आज" : "Today")
+                              : (hindiFirst(language) ? "खुला" : "Open")}
                         </span>
                         <span className="mt-1 block">
                           <Pair hi={item.title_hi} en={item.title_en} language={language} primaryClass="text-sm font-semibold" />
@@ -474,6 +625,25 @@ export default function ClassroomPage() {
                       <WhatsAppLink item={item} className={`${waClass} mt-3 w-full`}>
                         WhatsApp
                       </WhatsAppLink>
+                    </article>
+                  </li>
+                );
+              })}
+              {programme.filter((item) => !classes.some((existing) => existing.day === item.day)).map((item) => {
+                const locked = item.status === "locked";
+                const note = releasedNotes[String(item.day)];
+                return (
+                  <li key={item.day} className="w-56 shrink-0">
+                    <article className="rounded-2xl border border-[#e4dcc8] p-3" data-day-status={item.status}>
+                      <p className="text-xs font-semibold uppercase tracking-wide text-[#8a6a2e]">
+                        {hindiFirst(language) ? `दिन ${item.day}` : `Day ${item.day}`}
+                        {" · "}
+                        {locked
+                          ? (hindiFirst(language) ? `बंद · ${item.unlocks}` : `Locked · ${item.unlocks}`)
+                          : (hindiFirst(language) ? "खुला" : "Open")}
+                      </p>
+                      <p className="mt-1 text-sm font-semibold">{hindiFirst(language) ? item.title_hi : item.title_en}</p>
+                      {note ? <p className="mt-2 text-xs text-[#5f6b4e]">{hindiFirst(language) ? note.note_hi : note.note_en}</p> : null}
                     </article>
                   </li>
                 );

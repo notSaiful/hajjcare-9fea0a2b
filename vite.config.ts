@@ -9,7 +9,29 @@ import { assertVolunteerProjectUrl } from "./src/volunteer/project";
 import { trainingConfigSource } from "./src/training/publicKey";
 import { trainingRegisterConfigSource } from "./src/training/registerKey";
 
-/** Match vercel.json: demo at /, /explore, /library; React app for other extension-less routes. */
+function classroomApi(): Plugin {
+  const serve: Connect.NextHandleFunction = (req, res, next) => {
+    const raw = req.url || "/";
+    const pathOnly = raw.split("?")[0];
+    if (pathOnly !== "/api/classroom") return next();
+    const asOf = new URL(raw, "http://classroom.local").searchParams.get("asOf");
+    import("./api/classroom.js").then(({ classroomApiPayload }) => {
+      res.setHeader("content-type", "application/json; charset=utf-8");
+      res.setHeader("cache-control", "no-store");
+      res.end(JSON.stringify(classroomApiPayload(asOf, { allowSimulation: true })));
+    }).catch(next);
+  };
+  return {
+    name: "hajcare-classroom-api",
+    configureServer(server) {
+      server.middlewares.use(serve);
+    },
+    configurePreviewServer(server) {
+      server.middlewares.use(serve);
+    },
+  };
+}
+
 function demoRouting(): Plugin {
   const rewrite: Connect.NextHandleFunction = (req, res, next) => {
     const raw = req.url || "/";
@@ -135,7 +157,7 @@ export default defineConfig(({ mode }) => {
     host: "::",
     port: 8080,
   },
-  plugins: [react(), demoRouting(), trainingClientConfig(mode), trainingRegisterClientConfig(mode), supabasePreconnect(mode), mode === "development" && componentTagger()].filter(Boolean),
+  plugins: [classroomApi(), react(), demoRouting(), trainingClientConfig(mode), trainingRegisterClientConfig(mode), supabasePreconnect(mode), mode === "development" && componentTagger()].filter(Boolean),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
