@@ -27,7 +27,10 @@ export const MASLAK_SECTIONS: readonly SectionKey[] = ["hadith", "dua", "lesson"
 
 export interface PreviewClip {
   id: string;
-  kind: "youtube" | "file" | "quiz";
+  kind: "youtube" | "file" | "quiz" | "external";
+  pageUrl?: string;
+  platform?: string;
+  uploader?: string;
   youtubeId?: string;
   sourceUrl?: string;
   fileSrc?: string;
@@ -115,6 +118,9 @@ export function clipsFromSlot(slot: SectionSlot | undefined): PreviewClip[] {
     language: media.language ?? undefined,
     duration: media.durationLabel ?? undefined,
     maslak: media.maslak,
+    pageUrl: media.pageUrl,
+    platform: media.platform,
+    uploader: media.uploader,
     startSeconds: media.startSeconds,
     endSeconds: media.endSeconds,
     note: media.note,
@@ -128,7 +134,7 @@ export function visibleClips(slot: SectionSlot | undefined, stored: PreviewClip[
 }
 
 function asClip(value: Partial<PreviewClip> | null | undefined): PreviewClip | null {
-  if (!value || (value.kind !== "youtube" && value.kind !== "file" && value.kind !== "quiz")) return null;
+  if (!value || (value.kind !== "youtube" && value.kind !== "file" && value.kind !== "quiz" && value.kind !== "external")) return null;
   return {
     id: value.id || "legacy",
     kind: value.kind,
@@ -144,6 +150,9 @@ function asClip(value: Partial<PreviewClip> | null | undefined): PreviewClip | n
     startSeconds: value.startSeconds,
     endSeconds: value.endSeconds,
     note: value.note,
+    pageUrl: value.pageUrl,
+    platform: value.platform,
+    uploader: value.uploader,
   };
 }
 

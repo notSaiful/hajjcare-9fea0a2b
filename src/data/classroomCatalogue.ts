@@ -97,8 +97,12 @@ export const MAX_SECTION_VIDEOS = 3;
 export type SectionSlot = SectionMedia | readonly SectionMedia[] | null;
 
 export interface SectionMedia {
-  kind: "youtube" | "file" | "quiz";
+  kind: "youtube" | "file" | "quiz" | "external";
   youtubeId?: string;
+  /** Public page for a non-YouTube video. */
+  pageUrl?: string;
+  platform?: string;
+  uploader?: string;
   startSeconds?: number;
   endSeconds?: number;
   fileSrc?: string;
@@ -156,6 +160,42 @@ function blankSections(): Record<SectionKey, SectionSlot> {
     naat: null,
     quiz: null,
   };
+}
+
+function external(
+  pageUrl: string,
+  platform: string,
+  uploader: string,
+  durationLabel: string | null,
+  language: string | null,
+  citation: string,
+  maslak: "shia" | "sunni",
+): SectionMedia {
+  return { kind: "external", pageUrl, platform, uploader, durationLabel, language, citation, maslak };
+}
+
+/** Embed a public video when the platform allows it. Other pages stay as a link. */
+export function externalPlayerSrc(pageUrl: string): string | null {
+  let url: URL;
+  try {
+    url = new URL(pageUrl);
+  } catch {
+    return null;
+  }
+  if (url.protocol !== "https:") return null;
+  const host = url.hostname.replace(/^www\./, "").toLowerCase();
+  if (host === "dailymotion.com" || host.endsWith(".dailymotion.com")) {
+    const id = url.pathname.match(/\/video\/([a-zA-Z0-9]+)/)?.[1];
+    return id ? `https://www.dailymotion.com/embed/video/${id}` : null;
+  }
+  if (host === "vimeo.com" || host === "player.vimeo.com") {
+    const id = url.pathname.match(/(\d{6,})/)?.[1];
+    return id ? `https://player.vimeo.com/video/${id}` : null;
+  }
+  if (host === "facebook.com" || host.endsWith(".facebook.com") || host === "fb.watch") {
+    return `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(pageUrl)}&show_text=false`;
+  }
+  return null;
 }
 
 function youtube(
@@ -504,14 +544,36 @@ const SHORTLIST: Record<number, Partial<Record<SectionKey, SectionMedia | Sectio
       { maslak: "shia" },
     ),
   },
-  16: {
-    expert: youtube(
-      "iq3aaGYMgCw",
-      "2:32",
+  15: {
+    expert: external(
+      "https://www.dailymotion.com/video/x9jkcu2",
+      "Dailymotion",
+      "ARY Qtv",
+      "34:33",
       "Urdu",
-      "Maa Bap Ki Ahmiyat | Maa Baap Achy ya Bure | Walidain - Parents | Maulana Imran Attari About Family",
-      { maslak: "sunni" },
+      "Deen aur Khawateen - Topic : Ahkam e Hajj - 15 May 2025 - ARY Qtv",
+      "sunni",
     ),
+  },
+  16: {
+    expert: [
+      youtube(
+        "iq3aaGYMgCw",
+        "2:32",
+        "Urdu",
+        "Maa Bap Ki Ahmiyat | Maa Baap Achy ya Bure | Walidain - Parents | Maulana Imran Attari About Family",
+        { maslak: "sunni" },
+      ),
+      external(
+        "https://al-islam.org/media/four-rights-father-parents-islam",
+        "Al-Islam.org",
+        "Sayed Ammar Nakshawani",
+        null,
+        "English",
+        "Four Rights Of The Father - Parents In Islam",
+        "shia",
+      ),
+    ],
   },
   17: {
     expert: [
@@ -566,13 +628,24 @@ const SHORTLIST: Record<number, Partial<Record<SectionKey, SectionMedia | Sectio
     ),
   },
   20: {
-    dua: youtube(
-      "0PWpwJpsjwc",
-      "1:28",
-      "Arabic / Urdu",
-      "Youm e Arfa ki Dua | 9 Zilhajj ki Dua | Hajj Ki Masnoon Duain",
-      { maslak: "sunni" },
-    ),
+    dua: [
+      youtube(
+        "0PWpwJpsjwc",
+        "1:28",
+        "Arabic / Urdu",
+        "Youm e Arfa ki Dua | 9 Zilhajj ki Dua | Hajj Ki Masnoon Duain",
+        { maslak: "sunni" },
+      ),
+      external(
+        "https://www.dailymotion.com/video/x9kay7q",
+        "Dailymotion",
+        "Nour Ala Nour",
+        "4:30",
+        "Arabic",
+        "مناجاة الإمام الجواد عليه السلام بطلب الحج — Imam Jawad a.s",
+        "shia",
+      ),
+    ],
   },
   24: {
     expert: youtube(
@@ -1625,6 +1698,7 @@ export function sectionClips(slot: SectionSlot | undefined): SectionMedia[] {
 function clipReady(media: SectionMedia): boolean {
   if (media.kind === "youtube") return Boolean(media.youtubeId);
   if (media.kind === "file") return Boolean(media.fileSrc);
+  if (media.kind === "external") return Boolean(media.pageUrl);
   return media.kind === "quiz";
 }
 

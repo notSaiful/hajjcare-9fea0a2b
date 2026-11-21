@@ -38,6 +38,7 @@ import { LargeTextToggle } from "@/components/LargeTextToggle";
 import { LANGUAGES, useLanguage } from "@/contexts/LanguageContext";
 import { CLASSROOM_QUIZ, classroomSideEmbedSrc, quizScore } from "@/data/classroom";
 import {
+  externalPlayerSrc,
   CARD_LABEL,
   CARD_ORDER,
   CLASSROOM_DAYS,
@@ -531,6 +532,41 @@ function MediaBlock({ media, day, browserOnly }: { media: SectionMedia; day: num
       </div>
     );
   }
+  if (media.kind === "external" && media.pageUrl) {
+    const src = externalPlayerSrc(media.pageUrl);
+    return (
+      <div className="mt-3" data-external-video={media.platform || "link"}>
+        {src ? (
+          <iframe
+            title={media.citation}
+            className="aspect-video w-full rounded-2xl bg-black"
+            src={src}
+            allow="accelerometer; encrypted-media; picture-in-picture; fullscreen"
+            allowFullScreen
+          />
+        ) : (
+          <a
+            href={media.pageUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex min-h-24 flex-col justify-center rounded-2xl border border-[#e6d3a1] bg-white px-4 py-4"
+          >
+            <span className="text-lg font-semibold text-[#1a4d3c]">Video dekhein</span>
+            <span className="mt-1 text-sm text-[#6d6456]">{media.platform || "Link"} · nayi tab</span>
+          </a>
+        )}
+        <p className="mt-2 text-sm leading-snug text-[#1b4a38]">
+          <span className="font-semibold">Video title: </span>
+          {media.citation}
+        </p>
+        <p className="mt-1 text-sm text-[#6d6456]">
+          {media.platform}
+          {media.uploader ? ` · ${media.uploader}` : ""}
+        </p>
+        {browserOnly ? <p className="mt-1 text-sm font-semibold text-[#8d6b2f]">Preview: sirf is browser mein save</p> : null}
+      </div>
+    );
+  }
   if (media.kind === "file" && media.fileSrc) {
     return (
       <div className="mt-3">
@@ -613,6 +649,18 @@ function clipToMedia(clip: PreviewClip, fileSrc?: string): SectionMedia {
       durationLabel: clip.duration ?? null,
       language: clip.language ?? null,
       citation: clip.title || clip.fileName || "Is browser ki video",
+      note: clip.note,
+    };
+  }
+  if (clip.kind === "external") {
+    return {
+      kind: "external",
+      pageUrl: clip.pageUrl,
+      platform: clip.platform,
+      uploader: clip.uploader,
+      durationLabel: clip.duration ?? null,
+      language: clip.language ?? null,
+      citation: clip.title || "Video",
       note: clip.note,
     };
   }

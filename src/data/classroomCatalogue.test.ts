@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   CALENDAR_BLOCKS,
   CLASSROOM_DAYS,
+  externalPlayerSrc,
   OFFICIAL_CALENDAR,
   SECTION_ORDER,
   classroomDay,
@@ -65,10 +66,15 @@ describe("100 day classroom catalogue", () => {
     expect(ids(12, "hadith")).toEqual(["shia:KTsNpEvlrbE"]);
     expect(ids(13, "expert")).toEqual(["sunni:3Kuq92HAgYE", "shia:c8AFNEn256w"]);
     expect(ids(18, "lesson")).toEqual(["sunni:VViRV15Lgww", "shia:s-wjVYxNxrw"]);
-    expect(ids(20, "dua")).toEqual(["sunni:0PWpwJpsjwc"]);
+    expect(ids(20, "dua")).toEqual(["sunni:0PWpwJpsjwc", "shia:undefined"]);
+    expect(sectionClips(classroomDay(20)?.sections.dua)[1]?.pageUrl).toBe("https://www.dailymotion.com/video/x9kay7q");
+    expect(externalPlayerSrc("https://www.dailymotion.com/video/x9kay7q")).toBe("https://www.dailymotion.com/embed/video/x9kay7q");
+    expect(externalPlayerSrc("https://al-islam.org/media/four-rights-father-parents-islam")).toBeNull();
     expect(ids(27, "expert")).toEqual(["sunni:vB3VYJLhgu4", "shia:aZqL9AklMb8"]);
     expect(ids(30, "lesson")).toEqual(["sunni:OVEX4xXMd8s"]);
-    for (const day of [15, 21, 22, 23, 26]) {
+    expect(sectionClips(classroomDay(15)?.sections.expert)[0]?.pageUrl).toContain("dailymotion.com/video/x9jkcu2");
+    expect(sectionClips(classroomDay(16)?.sections.expert)[1]?.platform).toBe("Al-Islam.org");
+    for (const day of [21, 22, 23, 26]) {
       expect(comingSoonKeys(classroomDay(day)!)).toEqual([...SECTION_ORDER]);
     }
     expect(sectionClips(classroomDay(8)?.sections.lesson)).toHaveLength(1);
