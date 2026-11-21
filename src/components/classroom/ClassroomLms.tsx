@@ -301,8 +301,9 @@ export function ClassroomDashboardPage() {
                     <TopicMark day={day} className="mt-1 h-12 w-12" />
                   </span>
                   <span className="min-w-0 flex-1">
+                    <span className="block text-[11px] font-semibold leading-snug text-[#8d6b2f]">{day.block_hi}</span>
                     <span className="lms-serif block text-2xl leading-tight text-[#1b4a38]">{day.short}</span>
-                    <span className="mt-0.5 block text-base leading-snug text-[#1b4a38]">{topic}</span>
+                    <span className="mt-0.5 block text-base leading-snug text-[#1b4a38]">{day.title_hi}</span>
                     <span className="mt-1 block text-sm font-semibold text-[#6d6456]">{statusLabel(day, complete, attached)}</span>
                   </span>
                   <span
@@ -328,6 +329,7 @@ function PremiumCard({ day }: { day: ClassroomDayContent }) {
     <article data-screen="day-card" data-day={day.day} className="rounded-[28px] border border-[#e6d3a1] bg-[#f7f1e4] px-4 py-5 shadow-[0_18px_50px_rgba(0,0,0,0.28)]">
       <p className="text-center text-[11px] font-semibold tracking-[0.16em] text-[#8d6b2f]">HAJCARE AI CLASSROOM · 100 DAYS</p>
       <p className="mt-4 text-center text-xs font-semibold tracking-[0.16em] text-[#1b4a38]">DAY {String(day.day).padStart(2, "0")} / 100</p>
+      <p className="mt-1 text-center text-sm font-semibold text-[#8d6b2f]">{day.block_hi}</p>
       <h1 className="lms-serif mt-1 text-center text-5xl text-[#1b4a38]">{day.short}</h1>
       {day.arabic ? (
         <p className="text-center font-arabic text-2xl text-[#c4a15a]" dir="rtl" lang="ar">
@@ -339,7 +341,8 @@ function PremiumCard({ day }: { day: ClassroomDayContent }) {
       </div>
       <p className="mt-4 text-center text-[11px] font-semibold tracking-[0.16em] text-[#8d6b2f]">ROZ KA MAUZOO</p>
       <p className="lms-serif text-center text-3xl text-[#1b4a38]">{day.short}</p>
-      <p className="mt-1 text-center text-base leading-snug text-[#1b4a38]">{topic}</p>
+      <p className="mt-1 text-center text-base leading-snug text-[#1b4a38]">{day.title_hi}</p>
+      {language !== "hi" ? <p className="mt-1 text-center text-sm text-[#5f6b4e]">{topic}</p> : null}
       <div className="mx-auto mt-3 h-2 w-2 rotate-45 bg-[#c4a15a]" aria-hidden />
       <p className="mt-3 text-center text-base">Konsi video dekhni hai?</p>
       <div className="mt-3 grid grid-cols-2 gap-2">
@@ -614,7 +617,10 @@ export function ClassroomDayPage() {
           ← Back to 100 Days Classroom
         </button>
         <p className="mt-3 text-center text-xs font-semibold tracking-[0.14em] text-[#8d6b2f]">DAY {String(day.day).padStart(2, "0")} / 100</p>
-        <h1 className="lms-serif mt-1 text-center text-4xl leading-tight text-[#1b4a38]">{topic}</h1>
+        <p className="mt-1 text-center text-sm font-semibold text-[#8d6b2f]">{day.block_hi}</p>
+        <p className="lms-serif mt-1 text-center text-4xl leading-tight text-[#1b4a38]">{day.short}</p>
+        <h1 className="mt-1 text-center text-2xl leading-snug text-[#1b4a38]">{day.title_hi}</h1>
+        {language !== "hi" ? <p className="mt-1 text-center text-base text-[#5f6b4e]">{topic}</p> : null}
         <div className="mx-auto mt-4 h-36 w-full max-w-[16rem] overflow-hidden rounded-3xl border-4 border-[#e4cb87]">
           <img src={kaaba} alt="" className="h-full w-full object-cover" />
         </div>

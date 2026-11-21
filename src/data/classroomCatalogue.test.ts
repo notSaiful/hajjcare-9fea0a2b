@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
+  CALENDAR_BLOCKS,
   CLASSROOM_DAYS,
+  OFFICIAL_CALENDAR,
   SECTION_ORDER,
-  TOPIC_DISCREPANCY,
   classroomDay,
   comingSoonKeys,
   readySectionCount,
@@ -10,41 +11,29 @@ import {
 } from "./classroomCatalogue";
 
 describe("100 day classroom catalogue", () => {
-  it("builds 100 distinct day numbers and does not give every day the same topic", () => {
+  it("gives every day its own official Hindi title and block", () => {
     expect(CLASSROOM_DAYS).toHaveLength(100);
-    expect(CLASSROOM_DAYS.map((item) => item.day)).toEqual(Array.from({ length: 100 }, (_, index) => index + 1));
-    const topics = new Set(CLASSROOM_DAYS.map((item) => item.title_hi));
-    expect(topics.size).toBeGreaterThan(15);
-    expect(topics.size).toBeLessThan(100);
+    expect(new Set(CLASSROOM_DAYS.map((item) => item.title_hi)).size).toBe(100);
+    expect(classroomDay(1)?.block_hi).toBe("नींव और नीयत");
+    expect(classroomDay(11)?.block_hi).toBe("दिल और घर की तैयारी");
+    expect(classroomDay(54)?.block_hi).toBe(CALENDAR_BLOCKS[5].hi);
+    expect(classroomDay(100)?.block_hi).toBe("जुमा, वापसी और हज के बाद की ज़िंदगी");
+    expect(CLASSROOM_DAYS.every((item) => item.source === "official-calendar")).toBe(true);
   });
 
-  it("keeps Day 1 from the release file and Days 2–3 from the shortlist, not the spec examples", () => {
-    const day1 = classroomDay(1);
-    const day2 = classroomDay(2);
-    const day3 = classroomDay(3);
-    expect(day1?.title_hi).toBe("नीयत: हज इबादत है, सैर नहीं");
-    expect(day1?.source).toBe("classroom-release");
-    expect(day2?.short).toBe("Ihram");
-    expect(day2?.title_hi).toBe(TOPIC_DISCREPANCY.previewDay2);
-    expect(day2?.title_en).not.toMatch(/Ahmiyat/i);
-    expect(day3?.short).toBe("Miqat");
-    expect(day3?.title_hi).toBe(TOPIC_DISCREPANCY.previewDay3);
-    expect(day3?.title_en).not.toBe("Hajj kya hai?");
-    expect(TOPIC_DISCREPANCY.specDay2).toBe("Hajj ki Ahmiyat aur Fazilat");
+  it("uses the official calendar for the days that used to disagree", () => {
+    expect(classroomDay(2)?.short).toBe("Ihram");
+    expect(classroomDay(2)?.title_hi).toBe(OFFICIAL_CALENDAR.day2);
+    expect(classroomDay(3)?.short).toBe("Miqat");
+    expect(classroomDay(8)?.title_hi).toBe("हज के तीन तरीक़े: तमत्तो, क़िरान, इफ़राद");
+    expect(classroomDay(8)?.short).toBe("Teen Tareeqe");
+    expect(classroomDay(12)?.short).toBe("Huqooq-ul-Ibaad");
+    expect(classroomDay(54)?.short).toBe("Arafah");
+    expect(classroomDay(54)?.title_hi).toBe("9 ज़िलहिज्जा: अरफ़ा — हज का दिल");
+    expect(classroomDay(63)?.short).toBe("Tawaf-e-Ziyarat");
   });
 
-  it("uses the homepage week theme from day 8 and leaves Dua as Coming Soon", () => {
-    const day8 = classroomDay(8);
-    expect(day8?.source).toBe("homepage-week");
-    expect(day8?.title_hi).toContain("हज क्या है");
-    expect(day8?.title_hi).toContain("हज की फ़ज़ीलत");
-    expect(comingSoonKeys(day8!)).toEqual([...SECTION_ORDER]);
-    for (const day of [1, 2, 3, 7]) {
-      expect(classroomDay(day)?.sections.dua).toBeNull();
-    }
-  });
-
-  it("plays only shortlist or existing classroom videos, and speaks only languages that have a script", () => {
+  it("keeps Days 1–7 videos and leaves every later section Coming Soon", () => {
     const day1 = classroomDay(1)!;
     expect(day1.sections.doctor?.youtubeId).toBe("yCu43qBV0RY");
     expect(day1.sections.quran?.youtubeId).toBe("sRYo5YSpPqE");
@@ -57,7 +46,9 @@ describe("100 day classroom catalogue", () => {
     expect(spokenTopic(day1, "ur")).toBe(day1.title_ur);
     expect(spokenTopic(day1, "ta")).toBeNull();
     expect(classroomDay(5)?.sections.doctor).toBeNull();
-    expect(classroomDay(5)?.sections.lesson).toBeNull();
     expect(classroomDay(2)?.sections.expert?.durationLabel).toBeNull();
+    for (const day of CLASSROOM_DAYS.filter((item) => item.day > 7)) {
+      expect(comingSoonKeys(day)).toEqual([...SECTION_ORDER]);
+    }
   });
 });
