@@ -142,6 +142,10 @@ export default function ClassroomAdminPage() {
   return (
     <main className="min-h-screen bg-[#f6f3ec] px-4 py-6 text-[#1f4d3a]" data-testid="classroom-admin">
       <h1 className="text-2xl font-semibold">HajCare AI Classroom</h1>
+      <p className="mt-2 text-sm">
+        <a href="/classroom/admin" className="font-semibold underline">Classroom Videos</a>
+        {" "}— preview list for days 1–100. It uses the classroom Edit toggle and does not change this login.
+      </p>
       <p className="mt-2 max-w-3xl text-sm">
         Open a day, edit its lesson, then Save Draft. Preview plays the full lesson and ignores the release date only after the server confirms your admin role. Publish tries the classroom_days table. That table is not on the database yet, so a failed publish keeps the browser draft. Export JSON downloads it.
       </p>
