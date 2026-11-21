@@ -81,7 +81,8 @@ describe("preview video attachments", () => {
     expect(maslakWarning("lesson", [{ id: "a", kind: "youtube", maslak: "sunni" }])).toMatch(/Shia video/);
     expect(maslakGap("naat", both)).toBeNull();
     expect(maslakGap("dua", [{ id: "a", kind: "youtube", maslak: "neutral" }])).toBeNull();
-    expect(maslakGap("expert", [])).toBeNull();
+    expect(maslakGap("expert", [])).toBe("empty");
+    expect(maslakWarning("naat", [])).toMatch(/dono video/);
     expect(maslakGap("doctor", shia)).toBeNull();
     expect(maslakGap("quran", [{ id: "a", kind: "youtube", maslak: "sunni" }])).toBeNull();
     expect(maslakGap("quiz", shia)).toBeNull();

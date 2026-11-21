@@ -55,7 +55,7 @@ import {
 } from "@/data/classroomCatalogue";
 import { quizResultMessage } from "@/data/classroomPlan";
 import { useTextToSpeech } from "@/hooks/useTextToSpeech";
-import { attachmentsForDay, fileObjectUrl, storedClips, visibleClips, type PreviewClip } from "@/data/classroomAttachments";
+import { attachmentsForDay, fileObjectUrl, maslakWarning, storedClips, visibleClips, type PreviewClip } from "@/data/classroomAttachments";
 import { dayIsFinished, dayIsUnlocked, firstOpenDay, PREVIEW_EDIT_KEY } from "@/data/classroomUnlock";
 import { SectionAttach } from "@/components/classroom/SectionAttach";
 
@@ -762,6 +762,7 @@ export function ClassroomDayPage() {
             const active = Math.min(activeClip[key] ?? 0, Math.max(clips.length - 1, 0));
             const currentClip = clips[active];
             const summary = clips.length > 1 ? `${clips.length} videos` : (clips[0]?.duration ?? "Duration jald dastiyab hogi");
+            const warning = maslakWarning(key, clips);
             return (
               <li key={key} id={`section-${key}`} className="scroll-mt-20">
                 {available ? (
@@ -790,6 +791,11 @@ export function ClassroomDayPage() {
                         <Play className="h-5 w-5" aria-hidden />
                       </span>
                     </button>
+                    {warning ? (
+                      <p className="mt-2 rounded-2xl bg-[#f4e4c4] px-3 py-2 text-sm font-semibold text-[#6b4a16]" role="status" data-maslak-warning={key}>
+                        {warning}
+                      </p>
+                    ) : null}
                     {open === key ? (
                       <div data-video-list={key}>
                         <ol className="mt-3 space-y-2">
@@ -833,6 +839,7 @@ export function ClassroomDayPage() {
                         {index + 1}. {SECTION_LABEL[key]}
                       </span>
                       <span className="block text-sm">Coming Soon · Jald dastiyab hoga</span>
+                      {warning ? <span className="mt-1 block text-sm font-semibold text-[#6b4a16]" role="status" data-maslak-warning={key}>{warning}</span> : null}
                     </span>
                     <Clock className="h-6 w-6 shrink-0" aria-hidden />
                   </div>

@@ -114,6 +114,7 @@ export function clipsFromSlot(slot: SectionSlot | undefined): PreviewClip[] {
     title: media.citation,
     language: media.language ?? undefined,
     duration: media.durationLabel ?? undefined,
+    maslak: media.maslak,
     startSeconds: media.startSeconds,
     endSeconds: media.endSeconds,
     note: media.note,
@@ -201,8 +202,9 @@ function clipMaslak(value: string | undefined): Maslak {
 }
 
 /** "shia" or "sunni" when that side is tagged and the other side is missing. Neutral clips do not fill the gap. */
-export function maslakGap(section: SectionKey, clips: readonly PreviewClip[]): "shia" | "sunni" | null {
+export function maslakGap(section: SectionKey, clips: readonly PreviewClip[]): "shia" | "sunni" | "empty" | null {
   if (!MASLAK_SECTIONS.includes(section)) return null;
+  if (clips.length === 0) return "empty";
   let shia = false;
   let sunni = false;
   for (const clip of clips) {
@@ -218,6 +220,7 @@ export function maslakWarning(section: SectionKey, clips: readonly PreviewClip[]
   const gap = maslakGap(section, clips);
   if (gap === "shia") return "Sirf Shia tag hai. Sunni video bhi chahiye.";
   if (gap === "sunni") return "Sirf Sunni tag hai. Shia video bhi chahiye.";
+  if (gap === "empty") return "Shia aur Sunni dono video chahiye.";
   return null;
 }
 

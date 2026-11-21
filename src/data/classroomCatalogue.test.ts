@@ -39,8 +39,10 @@ describe("100 day classroom catalogue", () => {
     expect(sectionClips(day1.sections.doctor)[0]?.youtubeId).toBe("yCu43qBV0RY");
     expect(sectionClips(day1.sections.quran)[0]?.youtubeId).toBe("sRYo5YSpPqE");
     expect(sectionClips(day1.sections.hadith)[0]?.citation).toContain("Sahih al-Bukhari");
-    expect(sectionClips(day1.sections.lesson)[0]?.youtubeId).toBe("eIZ6g15gtqM");
-    expect(sectionClips(day1.sections.lesson)[0]?.endSeconds).toBe(600);
+    expect(sectionClips(day1.sections.lesson).map((clip) => [clip.youtubeId, clip.maslak])).toEqual([
+      ["35s1bifIeqs", "sunni"],
+      ["n1mcNozJjBs", "shia"],
+    ]);
     expect(sectionClips(day1.sections.quiz)[0]?.kind).toBe("quiz");
     expect(sectionClips(classroomDay(2)?.sections.doctor).map((clip) => clip.youtubeId)).toEqual(["sVXL2MnB-nQ", "Eb--MldbiZk"]);
     expect(readySectionCount(day1)).toBe(7);
@@ -49,8 +51,27 @@ describe("100 day classroom catalogue", () => {
     expect(spokenTopic(day1, "ta")).toBeNull();
     expect(classroomDay(5)?.sections.doctor).toBeNull();
     expect(sectionClips(classroomDay(2)?.sections.expert)[0]?.durationLabel).toBeNull();
-    for (const day of CLASSROOM_DAYS.filter((item) => item.day > 7)) {
+    for (const day of CLASSROOM_DAYS.filter((item) => item.day > 30)) {
       expect(comingSoonKeys(day)).toEqual([...SECTION_ORDER]);
     }
+  });
+
+  it("fills days 8–30 from the approved pick list and leaves the empty days empty", () => {
+    const ids = (day: number, section: "lesson" | "expert" | "hadith" | "dua") =>
+      sectionClips(classroomDay(day)?.sections[section]).map((clip) => `${clip.maslak}:${clip.youtubeId}`);
+    expect(ids(8, "lesson")).toEqual(["sunni:o8XoQoVgzhQ"]);
+    expect(ids(9, "lesson")).toEqual(["sunni:Dx8geAT6Rng", "shia:tY55IE31JfU"]);
+    expect(ids(11, "expert")).toEqual(["shia:-HDRpdpoKzg"]);
+    expect(ids(12, "hadith")).toEqual(["shia:KTsNpEvlrbE"]);
+    expect(ids(13, "expert")).toEqual(["sunni:3Kuq92HAgYE", "shia:c8AFNEn256w"]);
+    expect(ids(18, "lesson")).toEqual(["sunni:VViRV15Lgww", "shia:s-wjVYxNxrw"]);
+    expect(ids(20, "dua")).toEqual(["sunni:0PWpwJpsjwc"]);
+    expect(ids(27, "expert")).toEqual(["sunni:vB3VYJLhgu4", "shia:aZqL9AklMb8"]);
+    expect(ids(30, "lesson")).toEqual(["sunni:OVEX4xXMd8s"]);
+    for (const day of [15, 21, 22, 23, 26]) {
+      expect(comingSoonKeys(classroomDay(day)!)).toEqual([...SECTION_ORDER]);
+    }
+    expect(sectionClips(classroomDay(8)?.sections.lesson)).toHaveLength(1);
+    expect(sectionClips(classroomDay(9)?.sections.lesson).length).toBeLessThanOrEqual(3);
   });
 });

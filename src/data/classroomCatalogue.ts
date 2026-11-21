@@ -19,7 +19,7 @@
  * Public clients still cannot SELECT that table. training_enrollments is not involved.
  */
 
-import { CLASSROOM_CLASSES, CLASSROOM_SIDE_VIDEOS } from "./classroom";
+import { CLASSROOM_SIDE_VIDEOS } from "./classroom";
 
 export const SECTION_ORDER = [
   "quran",
@@ -107,6 +107,8 @@ export interface SectionMedia {
   /** Video title or an existing classroom label. Not a new Quran or Hadith citation. */
   citation: string;
   note?: string;
+  /** Preview tag. Quran and Doctor Corner stay untagged. */
+  maslak?: "shia" | "sunni" | "neutral";
 }
 
 export interface ClassroomDayContent {
@@ -161,7 +163,7 @@ function youtube(
   durationLabel: string | null,
   language: string | null,
   citation: string,
-  extra?: Partial<Pick<SectionMedia, "startSeconds" | "endSeconds" | "note">>,
+  extra?: Partial<Pick<SectionMedia, "startSeconds" | "endSeconds" | "note" | "maslak">>,
 ): SectionMedia {
   return { kind: "youtube", youtubeId, durationLabel, language, citation, ...extra };
 }
@@ -203,6 +205,22 @@ const SHORTLIST: Record<number, Partial<Record<SectionKey, SectionMedia | Sectio
       language: "Hindi",
       citation: "दिन 1 क्विज़",
     },
+    lesson: [
+      youtube(
+        "35s1bifIeqs",
+        "1:48",
+        "Urdu",
+        "Intention of Hajj - حج کی نیت | Maulana Ilyas Qadri | Hajj Special",
+        { maslak: "sunni" },
+      ),
+      youtube(
+        "n1mcNozJjBs",
+        "13:38",
+        "English",
+        "Introduction to Hajj Series | Hajj w/ Sayed Ahmed Qazwini",
+        { maslak: "shia" },
+      ),
+    ],
   },
   2: {
     doctor: [
@@ -378,6 +396,263 @@ const SHORTLIST: Record<number, Partial<Record<SectionKey, SectionMedia | Sectio
       "14:36",
       "Hindi",
       "अगर आप Hajj करने जा रहे हैं तो जान लें सभी अरकान और सही तरीका। How to perform Hajj?",
+    ),
+  },
+  /**
+   * Days 8–30 from the approved Shia/Sunni pick list.
+   * A row with no suitable video is left out. Nothing is invented.
+   */
+  8: {
+    lesson: youtube(
+      "o8XoQoVgzhQ",
+      "6:10",
+      "Urdu",
+      "HAJJ ki Qismen | three Types of HAJJ | Mufti Saeed Majadari",
+      { maslak: "sunni" },
+    ),
+  },
+  9: {
+    lesson: [
+      youtube(
+        "Dx8geAT6Rng",
+        "33:48",
+        "English",
+        "Part 13 of 14 | Story of Prophet Ibrahim | Building the Ka'bah",
+        { maslak: "sunni" },
+      ),
+      youtube(
+        "tY55IE31JfU",
+        "39:10",
+        "English",
+        "When Prophet Ibrahim Built the Kabaa - Sayed Saleh Qazwini",
+        { maslak: "shia" },
+      ),
+    ],
+  },
+  10: {
+    lesson: youtube(
+      "klC1XGkMs5Y",
+      "8:54",
+      "Urdu",
+      "Hajj Mabroor Ki Nishaniyan | Hajj Mabroor Karny Ka Tareeka Aur Fazilat | Mufti Qasim Attari",
+      { maslak: "sunni" },
+    ),
+  },
+  11: {
+    lesson: youtube(
+      "YmSil4TmtmI",
+      "34:50",
+      "Urdu",
+      "Zindagi Sanwarain Episode 29 | Tauba Ke Fazail | Haji Fuzail Raza Attari",
+      { maslak: "sunni" },
+    ),
+    expert: youtube(
+      "-HDRpdpoKzg",
+      "25:04",
+      "English",
+      "Repentance - Sayyid Ahmad Qazwini",
+      { maslak: "shia" },
+    ),
+  },
+  12: {
+    expert: youtube(
+      "pChA0GuTNPk",
+      "3:53",
+      "Urdu",
+      "Logo Ke Huqooq | Haqooq Ul Ibaad | Shaykh Mufti Tauqeer",
+      { maslak: "sunni" },
+    ),
+    hadith: youtube(
+      "KTsNpEvlrbE",
+      "34:32",
+      "English",
+      "Sabeel Media | Risalat al-Huquq | Treatise of Rights | Imam Zain ul Abideen",
+      { maslak: "shia" },
+    ),
+  },
+  13: {
+    expert: [
+      youtube(
+        "3Kuq92HAgYE",
+        "2:01",
+        "Urdu",
+        "Qarz Ke Paiso Se Hajj Aur Umrah Karna Jaiz Hai Ya Nahi? | Islamic Bayan | Raham TV",
+        { maslak: "sunni" },
+      ),
+      youtube(
+        "c8AFNEn256w",
+        "20:39",
+        "English",
+        "Can I Go to Hajj with an Outstanding Mortgage? | Hajj w/ Sayed Ahmed Qazwini",
+        { maslak: "shia" },
+      ),
+    ],
+  },
+  14: {
+    expert: youtube(
+      "cP5OV8pItPo",
+      "1:21",
+      "Urdu",
+      "Khutba Hajjatul Wida - Waris kay liye Wasiyat Karna Kesa - Mufti Qasim Attari",
+      { maslak: "sunni" },
+    ),
+    lesson: youtube(
+      "Fr6YD1RW5-s",
+      "12:58",
+      "English",
+      "Write Your Will (Wasiya) Before Going to Hajj | Hajj w/ Sayed Ahmed Qazwini",
+      { maslak: "shia" },
+    ),
+  },
+  16: {
+    expert: youtube(
+      "iq3aaGYMgCw",
+      "2:32",
+      "Urdu",
+      "Maa Bap Ki Ahmiyat | Maa Baap Achy ya Bure | Walidain - Parents | Maulana Imran Attari About Family",
+      { maslak: "sunni" },
+    ),
+  },
+  17: {
+    expert: [
+      youtube(
+        "4aGY0ezo1K8",
+        "22:28",
+        "Urdu",
+        "Haraam Kamai se Hajj Aur Umrah Karna - Molana Ishaq Madni",
+        { maslak: "sunni" },
+      ),
+      youtube(
+        "VynBLauYuEs",
+        "18:38",
+        "English",
+        "Khums: An Important Obligation Before Going to Hajj | Hajj w/ Sayed Ahmed Qazwini",
+        { maslak: "shia" },
+      ),
+    ],
+  },
+  18: {
+    lesson: [
+      youtube(
+        "VViRV15Lgww",
+        "11:34",
+        "Urdu",
+        "Wuzu ka Tareeqa | Practical | وضوکا طریقہ @Mufti Obaid Shareef Sahab",
+        { maslak: "sunni" },
+      ),
+      youtube(
+        "s-wjVYxNxrw",
+        "2:50",
+        "English",
+        "How to perform Wudhu? (Ablution) According to Shia Islam",
+        { maslak: "shia" },
+      ),
+    ],
+  },
+  19: {
+    lesson: youtube(
+      "FcwmK-9t3lY",
+      "19:12",
+      "Urdu",
+      "Namaz Ki Ahmiyat | Mufti Tariq Masood",
+      { maslak: "sunni" },
+    ),
+    expert: youtube(
+      "cmvES7JJ0m4",
+      "1:18:50",
+      "English",
+      "The Secrets of Salah Workshop | Sayed Ahmed Qazwini | MYC",
+      { maslak: "shia" },
+    ),
+  },
+  20: {
+    dua: youtube(
+      "0PWpwJpsjwc",
+      "1:28",
+      "Arabic / Urdu",
+      "Youm e Arfa ki Dua | 9 Zilhajj ki Dua | Hajj Ki Masnoon Duain",
+      { maslak: "sunni" },
+    ),
+  },
+  24: {
+    expert: youtube(
+      "Ylf9ACcMAKU",
+      "16:05",
+      "Urdu/Hindi",
+      "Hajj Ka Samaan | Hajj Packing | Hajj Ka Luggage | Haj Ka Safar | Mufti Shahjahan Qasmi Madanapalle",
+      { maslak: "sunni" },
+    ),
+  },
+  25: {
+    expert: youtube(
+      "Ol2Pjr7LtUI",
+      "20:12",
+      "Hindi/Urdu",
+      "Maal Kharch Karne Ke Aadab - Etiquetts of Spending Money In Islam By Adv. Faiz Syed",
+      { maslak: "sunni" },
+    ),
+  },
+  27: {
+    expert: [
+      youtube(
+        "vB3VYJLhgu4",
+        "2:42",
+        "Arabic",
+        "الحرص على صحبة الأخيار في السفر إلى الحج - الشيخ عبد الرزاق البدر",
+        { maslak: "sunni" },
+      ),
+      youtube(
+        "aZqL9AklMb8",
+        "7:13",
+        "English",
+        "10 Islamic Etiquette/Recommendations for Travelling | Sheikh Mohammed Al-Hilli",
+        { maslak: "shia" },
+      ),
+    ],
+  },
+  28: {
+    expert: [
+      youtube(
+        "Ngz4a2C9F5c",
+        "36:34",
+        "Urdu",
+        "Sabr Ki Ahmiyat Aur Fayde By Noorul Hasan Salafi",
+        { maslak: "sunni" },
+      ),
+      youtube(
+        "LFe2Oi53cek",
+        "1:06:30",
+        "English",
+        "The Power of Patience: How do I Master it? | Muharram 2024 Night 7 | Sheikh Mohammed Al-Hilli",
+        { maslak: "shia" },
+      ),
+    ],
+  },
+  29: {
+    expert: [
+      youtube(
+        "A-TTxfgG4pQ",
+        "5:12",
+        "Urdu",
+        "Tawakkal In Islam | Mufti Muhammad Khurram Rehmani | Tawakkal Ke Faide | ARY Qtv",
+        { maslak: "sunni" },
+      ),
+      youtube(
+        "fgeSz7N-r5I",
+        "35:25",
+        "English",
+        "Lecture#9 Tawakul - Sayed Hossein Qazwini (Ramadhan 1445AH)",
+        { maslak: "shia" },
+      ),
+    ],
+  },
+  30: {
+    lesson: youtube(
+      "OVEX4xXMd8s",
+      "1:22",
+      "Urdu/Hindi",
+      "Safar-e-Hajj par rawangi | Mufti Abdul Raheem",
+      { maslak: "sunni" },
     ),
   },
 };
@@ -1296,9 +1571,7 @@ const OFFICIAL_DAYS: DailyTopic[] = [
   }
 ];
 
-function dayOneFromClassroom(): Partial<Record<SectionKey, SectionMedia>> {
-  const lesson = CLASSROOM_CLASSES.find((item) => item.day === 1);
-  const arkan = CLASSROOM_SIDE_VIDEOS.find((item) => item.day === 1 && item.key === "arkan");
+function dayOneFromClassroom(): Partial<Record<SectionKey, SectionMedia | SectionMedia[]>> {
   const doctor = CLASSROOM_SIDE_VIDEOS.find((item) => item.day === 1 && item.key === "doctor-corner");
   const picked = { ...SHORTLIST[1] };
   if (doctor?.youtube_id) {
@@ -1307,21 +1580,6 @@ function dayOneFromClassroom(): Partial<Record<SectionKey, SectionMedia>> {
       "7:27",
       "English",
       "DOCTOR'S ADVICE TO ALL HAJIS | HAJJ 2026 | @drfaisalsays",
-    );
-  }
-  if (arkan?.youtube_id) {
-    picked.lesson = youtube(
-      arkan.youtube_id,
-      "10:00",
-      null,
-      arkan.caption || arkan.title_en,
-      {
-        startSeconds: arkan.start_seconds,
-        endSeconds: arkan.end_seconds,
-        note: lesson?.label_hi
-          ? `Recorded 1-minute class bhi maujood hai (${lesson.label_hi}). Is slot par classroom ka Arkan clip hai.`
-          : undefined,
-      },
     );
   }
   return picked;
