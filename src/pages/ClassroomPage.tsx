@@ -5,6 +5,7 @@ import { SimpleHeader } from "@/components/SimpleHeader";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
   buildClassroomWhatsAppUrl,
+  CLASSROOM_CLASSES,
   CLASSROOM_QUIZ,
   CLASSROOM_SCRIPTURE,
   CLASSROOM_SIDE_VIDEOS,
@@ -61,6 +62,81 @@ function softChime() {
   oscillator.stop(context.currentTime + 0.45);
 }
 const QURAN_RECITATION = "https://everyayah.com/data/Alafasy_128kbps/098005.mp3";
+
+function programmeTopic(item: { day: number; title_en: string }) {
+  return item.title_en === `Day ${item.day}` ? null : item.title_en;
+}
+
+function segmentLinks(day: number) {
+  const watch = (id?: string | null) => (id ? `https://www.youtube.com/watch?v=${id}` : null);
+  const lesson = CLASSROOM_CLASSES.find((item) => item.day === day);
+  const scripture = CLASSROOM_SCRIPTURE.find((item) => item.day === day);
+  const side = (key: string) => CLASSROOM_SIDE_VIDEOS.find((item) => item.day === day && item.key === key);
+  return [
+    { key: "doctor", label: "Doctor Corner", href: watch(side("doctor-corner")?.youtube_id) },
+    { key: "quran", label: "Quran Tilawat", href: day === 1 ? QURAN_RECITATION : null },
+    { key: "hadith", label: "Hadith", href: watch(scripture?.hadith_youtube_id) },
+    { key: "expert", label: "Expert Guidance", href: null },
+    { key: "lesson", label: "Main Lesson", href: watch(side("arkan")?.youtube_id) },
+    { key: "quiz", label: "Quiz", href: null },
+    { key: "naat", label: "Naat", href: watch(lesson?.youtube_id) },
+  ];
+}
+
+function DayClassTile({
+  item,
+  done,
+  onOpen,
+}: {
+  item: { day: number; title_en: string; status: string };
+  done: boolean;
+  onOpen: () => void;
+}) {
+  const topic = programmeTopic(item);
+  const label = topic ? `Day ${item.day} ${topic}` : `Day ${item.day}`;
+  return (
+    <li
+      className={`min-w-0 rounded-2xl border p-2 text-center ${item.status === "locked" ? "border-[#e4dcc8] bg-[#f7f5f0]" : "border-[#1f4d3a] bg-[#f3f7f2]"}`}
+      data-calendar-day={item.day}
+      data-calendar-status={done ? "completed" : item.status}
+    >
+      <button type="button" className="w-full break-words text-xs font-semibold leading-snug line-clamp-3" onClick={onOpen}>
+        {done ? "✓ " : ""}{label}
+      </button>
+      <button
+        type="button"
+        className="mx-auto mt-2 flex h-12 w-12 items-center justify-center rounded-full bg-[#1f4d3a] text-[#f6f3ec]"
+        aria-label={label}
+        onClick={onOpen}
+      >
+        <GraduationCap className="h-6 w-6" aria-hidden />
+      </button>
+      <p className="mt-2 break-words text-[11px] leading-snug text-[#5f6b4e] line-clamp-3">
+        Roz ka Mauzoo: {topic ?? "—"}
+      </p>
+      <label className="mt-2 block text-left text-[11px] font-semibold text-[#1f4d3a]">
+        Konsi video dekhni hai?
+        <select
+          className="mt-1 w-full rounded-lg border border-[#e4dcc8] bg-white px-1 py-1 text-[11px] font-medium"
+          defaultValue=""
+          aria-label={`Konsi video dekhni hai? Day ${item.day}`}
+          onChange={(event) => {
+            const href = event.target.value;
+            event.target.value = "";
+            if (href) window.open(href, "_blank", "noopener,noreferrer");
+          }}
+        >
+          <option value="">Chunein</option>
+          {segmentLinks(item.day).map((link) => (
+            <option key={link.key} value={link.href ?? ""} disabled={!link.href}>
+              {link.href ? link.label : `${link.label} — Jald dastiyab hoga`}
+            </option>
+          ))}
+        </select>
+      </label>
+    </li>
+  );
+}
 
 function speakLesson(text: string, lang: string): Promise<"ended" | "blocked"> {
   return new Promise((resolve) => {
@@ -323,7 +399,7 @@ export default function ClassroomPage({
   const { language, isRTL, setLanguage } = useLanguage();
   const classes = useMemo(() => publishedClasses(), []);
   const [day, setDay] = useState(playDay ?? classes[0]?.day ?? 0);
-  const selected = classes.find((item) => item.day === day) ?? (playDay ? undefined : classes[0]);
+  const selected = classes.find((item) => item.day === day);
   const studySheet = selected?.materials.find((item) => !fileDownload(item.url));
   const digits = resolveWhatsAppDigits(import.meta.env.VITE_HAJCARE_WHATSAPP_NUMBER);
   const displayNumber = formatWhatsAppDisplay(digits);
@@ -424,7 +500,7 @@ export default function ClassroomPage({
     if (!section || section.seconds == null) return "अवधि जाँच बाकी";
     return formatQuizClock(section.seconds);
   };
-  const dayOpen = ignoreLock || (selected ? isDayUnlocked(selected.day, todayIst) : false);
+  const dayOpen = ignoreLock || isDayUnlocked(day || 1, todayIst);
   const [doneDays, setDoneDays] = useState<number[]>([]);
   useEffect(() => {
     try {
@@ -640,17 +716,10 @@ export default function ClassroomPage({
           </header>
           <section data-testid="training-calendar" className="rounded-3xl border border-[#e4dcc8] bg-white p-3">
             <h2 className="text-sm font-semibold">Training Calendar · 7 Dec 2026 – 16 Mar 2027</h2>
-            <ul className="mt-2 grid max-h-64 grid-cols-1 gap-1 overflow-auto sm:grid-cols-2">
-              {programme.map((item) => {
-                const done = doneDays.includes(item.day);
-                const locked = item.status === "locked";
-                const tone = done ? "bg-[#e7f5ec] text-[#1f4d3a]" : locked ? "bg-[#eceae4] text-[#6b675d]" : "bg-[#e7f5ec] text-[#1f4d3a]";
-                return (
-                  <li key={item.day} className={`rounded-xl px-2 py-1 text-xs ${tone}`} data-calendar-day={item.day} data-calendar-status={done ? "completed" : item.status}>
-                    {done ? "✓ " : ""}Day {item.day} · {item.title_en} · {formatShortDate(item.unlocks)} · {done ? "Completed" : locked ? "Locked" : "Available"}
-                  </li>
-                );
-              })}
+            <ul className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+              {programme.map((item) => (
+                <DayClassTile key={item.day} item={item} done={doneDays.includes(item.day)} onOpen={() => setDay(item.day)} />
+              ))}
             </ul>
           </section>
 
@@ -658,10 +727,10 @@ export default function ClassroomPage({
             <section data-testid="opens-on" className="rounded-3xl border border-[#c9a45c] bg-white p-5">
               <p className="text-lg font-semibold">
                 {language === "hi"
-                  ? `${formatShortDate(unlockDateIst(selected?.day ?? 1))} को खुलेगा`
+                  ? `${formatShortDate(unlockDateIst(day || 1))} को खुलेगा`
                   : language === "ur"
-                    ? `${formatShortDate(unlockDateIst(selected?.day ?? 1))} کو کھلے گا`
-                    : `Opens on ${formatShortDate(unlockDateIst(selected?.day ?? 1))}`}
+                    ? `${formatShortDate(unlockDateIst(day || 1))} کو کھلے گا`
+                    : `Opens on ${formatShortDate(unlockDateIst(day || 1))}`}
               </p>
             </section>
           ) : ignoreLock && !selected ? (
