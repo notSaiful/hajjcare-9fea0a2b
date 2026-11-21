@@ -55,7 +55,7 @@ import {
 } from "@/data/classroomCatalogue";
 import { quizResultMessage } from "@/data/classroomPlan";
 import { useTextToSpeech } from "@/hooks/useTextToSpeech";
-import { attachmentKey, attachmentsForDay, fileObjectUrl, readAttachments } from "@/data/classroomAttachments";
+import { attachmentsForDay, fileObjectUrl, storedClips, visibleClips, type PreviewClip } from "@/data/classroomAttachments";
 import { dayIsFinished, dayIsUnlocked, firstOpenDay } from "@/data/classroomUnlock";
 import { SectionAttach } from "@/components/classroom/SectionAttach";
 
@@ -605,32 +605,36 @@ function useEditMode() {
   return { edit, set };
 }
 
-function playingMedia(catalogue: SectionMedia | null, extra: ReturnType<typeof readAttachments>[string] | undefined, fileSrc: string | undefined): { media: SectionMedia | null; browserOnly: boolean } {
-  if (extra?.kind === "youtube" && extra.youtubeId) {
+function clipToMedia(clip: PreviewClip, fileSrc?: string): SectionMedia {
+  if (clip.kind === "file") {
     return {
-      browserOnly: true,
-      media: {
-        kind: "youtube",
-        youtubeId: extra.youtubeId,
-        durationLabel: extra.duration ?? null,
-        language: extra.language ?? null,
-        citation: extra.title || "Is browser ki video",
-      },
+      kind: "file",
+      fileSrc: clip.fileSrc || fileSrc,
+      durationLabel: clip.duration ?? null,
+      language: clip.language ?? null,
+      citation: clip.title || clip.fileName || "Is browser ki video",
+      note: clip.note,
     };
   }
-  if (extra?.kind === "file" && fileSrc) {
+  if (clip.kind === "quiz") {
     return {
-      browserOnly: true,
-      media: {
-        kind: "file",
-        fileSrc,
-        durationLabel: extra.duration ?? null,
-        language: extra.language ?? null,
-        citation: extra.title || extra.fileName || "Is browser ki video",
-      },
+      kind: "quiz",
+      durationLabel: clip.duration ?? null,
+      language: clip.language ?? null,
+      citation: clip.title || "Quiz",
+      note: clip.note,
     };
   }
-  return { browserOnly: false, media: catalogue };
+  return {
+    kind: "youtube",
+    youtubeId: clip.youtubeId,
+    startSeconds: clip.startSeconds,
+    endSeconds: clip.endSeconds,
+    durationLabel: clip.duration ?? null,
+    language: clip.language ?? null,
+    citation: clip.title || "Is browser ki video",
+    note: clip.note,
+  };
 }
 
 export function ClassroomDayPage() {
@@ -648,19 +652,19 @@ export function ClassroomDayPage() {
     if (!day || unlocked) return;
     navigate(`/classroom/day/${openDay}?notice=locked`, { replace: true });
   }, [day, unlocked, navigate, openDay]);
-  useAttachmentRevision();
-  const attached = readAttachments();
+  const attachmentRevision = useAttachmentRevision();
   const [fileUrls, setFileUrls] = useState<Record<string, string>>({});
   const [open, setOpen] = useState<SectionKey | null>(null);
+  const [activeClip, setActiveClip] = useState<Partial<Record<SectionKey, number>>>({});
   const ready = day
-    ? SECTION_ORDER.filter((key) => Boolean(attached[attachmentKey(day.day, key)]) || sectionReady(day.sections[key])).length
+    ? SECTION_ORDER.filter((key) => visibleClips(day.sections[key], storedClips(day.day, key)).length > 0).length
     : 0;
   const complete = day ? dayIsFinished(day.day, done, played) : false;
 
   useEffect(() => {
     const key = window.location.hash.replace("#", "") as SectionKey;
     if (!day || !unlocked) return;
-    const hasAttachment = Boolean(readAttachments()[attachmentKey(day.day, key)]);
+    const hasAttachment = storedClips(day.day, key) !== null;
     if (SECTION_ORDER.includes(key) && (hasAttachment || sectionReady(day.sections[key]))) {
       setOpen(key);
       markPlayed(day.day);
@@ -669,19 +673,20 @@ export function ClassroomDayPage() {
   }, [day, unlocked, markPlayed]);
 
   useEffect(() => {
-    if (!day || !open) return;
-    const key = attachmentKey(day.day, open);
-    const extra = attached[key];
-    if (extra?.kind !== "file" || fileUrls[key]) return;
+    if (!day || !open || attachmentRevision < 0) return;
+    const clips = visibleClips(day.sections[open], storedClips(day.day, open));
     let cancelled = false;
-    void fileObjectUrl(day.day, open).then((url) => {
-      if (cancelled || !url) return;
-      setFileUrls((current) => ({ ...current, [key]: url }));
-    });
+    for (const clip of clips) {
+      if (clip.kind !== "file" || clip.fileSrc || fileUrls[clip.id]) continue;
+      void fileObjectUrl(day.day, open, clip.id).then((url) => {
+        if (cancelled || !url) return;
+        setFileUrls((current) => ({ ...current, [clip.id]: url }));
+      });
+    }
     return () => {
       cancelled = true;
     };
-  }, [day, open, attached, fileUrls]);
+  }, [day, open, fileUrls, attachmentRevision]);
 
   const topic = day ? displayTopic(day, language) : "";
   const progress = useMemo(() => (day ? Math.round((ready / SECTION_ORDER.length) * 100) : 0), [day, ready]);
@@ -746,22 +751,23 @@ export function ClassroomDayPage() {
         <ol className="mt-4 space-y-3">
           {SECTION_ORDER.map((key, index) => {
             const catalogue = day.sections[key];
-            const extra = attached[attachmentKey(day.day, key)];
-            const resolved = playingMedia(catalogue, extra, fileUrls[attachmentKey(day.day, key)]);
-            const media = resolved.media;
-            const available = Boolean(extra) || sectionReady(catalogue);
+            const clips = visibleClips(catalogue, storedClips(day.day, key));
+            const available = clips.length > 0;
             const Icon = SECTION_ICON[key];
-            const duration = media?.durationLabel ?? (extra ? "Duration optional" : null);
+            const active = Math.min(activeClip[key] ?? 0, Math.max(clips.length - 1, 0));
+            const currentClip = clips[active];
+            const summary = clips.length > 1 ? `${clips.length} videos` : (clips[0]?.duration ?? "Duration jald dastiyab hogi");
             return (
               <li key={key} id={`section-${key}`} className="scroll-mt-20">
-                {available && (media || extra) ? (
-                  <div className={`rounded-3xl border bg-white p-3 ${resolved.browserOnly ? "border-[#c4a15a]" : "border-[#e7dcc4]"}`}>
+                {available ? (
+                  <div className="rounded-3xl border border-[#e7dcc4] bg-white p-3" data-section={key}>
                     <button
                       type="button"
                       className="flex w-full items-center gap-3 text-left"
                       onClick={() => {
                         const next = open === key ? null : key;
                         setOpen(next);
+                        setActiveClip((current) => ({ ...current, [key]: 0 }));
                         if (next) markPlayed(day.day);
                       }}
                     >
@@ -771,8 +777,8 @@ export function ClassroomDayPage() {
                           {index + 1}. {SECTION_LABEL[key]}
                         </span>
                         <span className="block text-sm text-[#6d6456]">
-                          {duration ?? catalogue?.durationLabel ?? "Duration jald dastiyab hogi"}
-                          {(media?.language || catalogue?.language) ? ` · ${media?.language || catalogue?.language}` : ""}
+                          {summary}
+                          {clips.length === 1 && clips[0]?.language ? ` · ${clips[0].language}` : ""}
                         </span>
                       </span>
                       <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#1a4d3c] text-[#f7f1e4]">
@@ -780,9 +786,32 @@ export function ClassroomDayPage() {
                       </span>
                     </button>
                     {open === key ? (
-                      <div>
-                        {catalogue?.note && !resolved.browserOnly ? <p className="mt-2 text-sm text-[#6d6456]">{catalogue.note}</p> : null}
-                        {media ? <MediaBlock media={media} day={day.day} browserOnly={resolved.browserOnly} /> : <p className="mt-2 text-sm">Video khul rahi hai…</p>}
+                      <div data-video-list={key}>
+                        <ol className="mt-3 space-y-2">
+                          {clips.map((clip, clipIndex) => (
+                            <li key={clip.id}>
+                              <button
+                                type="button"
+                                className={`flex w-full items-center gap-3 rounded-2xl border px-3 py-3 text-left ${clipIndex === active ? "border-[#1a4d3c] bg-[#f3f7f2]" : "border-[#e7dcc4] bg-[#f7f1e4]"}`}
+                                onClick={() => {
+                                  setActiveClip((current) => ({ ...current, [key]: clipIndex }));
+                                  markPlayed(day.day);
+                                }}
+                              >
+                                <span className="text-sm font-semibold text-[#8d6b2f]">Video {clipIndex + 1}/{clips.length}</span>
+                                <span className="min-w-0 flex-1 text-base text-[#1b4a38]">{clip.title || clip.fileName || "Video"}</span>
+                                <Play className="h-5 w-5 shrink-0 text-[#1a4d3c]" aria-hidden />
+                              </button>
+                            </li>
+                          ))}
+                        </ol>
+                        {currentClip ? (
+                          currentClip.kind === "file" && !currentClip.fileSrc && !fileUrls[currentClip.id] ? (
+                            <p className="mt-2 text-sm">Video khul rahi hai…</p>
+                          ) : (
+                            <MediaBlock media={clipToMedia(currentClip, fileUrls[currentClip.id])} day={day.day} browserOnly={!currentClip.id.startsWith("catalogue-")} />
+                          )
+                        ) : null}
                       </div>
                     ) : null}
                   </div>
@@ -802,7 +831,7 @@ export function ClassroomDayPage() {
                   <SectionAttach
                     day={day.day}
                     section={key}
-                    attachment={extra}
+                    clips={clips}
                     onChange={() => {
                       window.dispatchEvent(new Event("hajcare-attachments"));
                       setOpen(key);

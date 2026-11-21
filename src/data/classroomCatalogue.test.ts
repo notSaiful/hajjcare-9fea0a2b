@@ -7,6 +7,7 @@ import {
   classroomDay,
   comingSoonKeys,
   readySectionCount,
+  sectionClips,
   spokenTopic,
 } from "./classroomCatalogue";
 
@@ -35,18 +36,19 @@ describe("100 day classroom catalogue", () => {
 
   it("keeps Days 1–7 videos and leaves every later section Coming Soon", () => {
     const day1 = classroomDay(1)!;
-    expect(day1.sections.doctor?.youtubeId).toBe("yCu43qBV0RY");
-    expect(day1.sections.quran?.youtubeId).toBe("sRYo5YSpPqE");
-    expect(day1.sections.hadith?.citation).toContain("Sahih al-Bukhari");
-    expect(day1.sections.lesson?.youtubeId).toBe("eIZ6g15gtqM");
-    expect(day1.sections.lesson?.endSeconds).toBe(600);
-    expect(day1.sections.quiz?.kind).toBe("quiz");
+    expect(sectionClips(day1.sections.doctor)[0]?.youtubeId).toBe("yCu43qBV0RY");
+    expect(sectionClips(day1.sections.quran)[0]?.youtubeId).toBe("sRYo5YSpPqE");
+    expect(sectionClips(day1.sections.hadith)[0]?.citation).toContain("Sahih al-Bukhari");
+    expect(sectionClips(day1.sections.lesson)[0]?.youtubeId).toBe("eIZ6g15gtqM");
+    expect(sectionClips(day1.sections.lesson)[0]?.endSeconds).toBe(600);
+    expect(sectionClips(day1.sections.quiz)[0]?.kind).toBe("quiz");
+    expect(sectionClips(classroomDay(2)?.sections.doctor).map((clip) => clip.youtubeId)).toEqual(["sVXL2MnB-nQ", "Eb--MldbiZk"]);
     expect(readySectionCount(day1)).toBe(7);
     expect(comingSoonKeys(day1)).toEqual(["dua"]);
     expect(spokenTopic(day1, "ur")).toBe(day1.title_ur);
     expect(spokenTopic(day1, "ta")).toBeNull();
     expect(classroomDay(5)?.sections.doctor).toBeNull();
-    expect(classroomDay(2)?.sections.expert?.durationLabel).toBeNull();
+    expect(sectionClips(classroomDay(2)?.sections.expert)[0]?.durationLabel).toBeNull();
     for (const day of CLASSROOM_DAYS.filter((item) => item.day > 7)) {
       expect(comingSoonKeys(day)).toEqual([...SECTION_ORDER]);
     }

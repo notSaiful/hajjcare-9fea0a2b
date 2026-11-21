@@ -1,107 +1,117 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { MAX_SECTION_VIDEOS, type SectionKey } from "@/data/classroomCatalogue";
 import {
   PREVIEW_SAVE_LABEL,
-  removeAttachment,
+  moveClip,
+  removeClip,
   saveFileAttachment,
   saveYoutubeAttachment,
-  type PreviewAttachment,
+  type PreviewClip,
 } from "@/data/classroomAttachments";
-import type { SectionKey } from "@/data/classroomCatalogue";
 
 export function SectionAttach({
   day,
   section,
-  attachment,
+  clips,
   onChange,
 }: {
   day: number;
   section: SectionKey;
-  attachment: PreviewAttachment | undefined;
+  clips: PreviewClip[];
   onChange: () => void;
 }) {
   const [form, setForm] = useState(false);
+  const [replaceId, setReplaceId] = useState<string | null>(null);
   const [link, setLink] = useState("");
   const [title, setTitle] = useState("");
   const [language, setLanguage] = useState("");
   const [duration, setDuration] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const details = { title, language, duration, base: clips };
 
-  useEffect(() => {
-    setTitle(attachment?.title ?? "");
-    setLanguage(attachment?.language ?? "");
-    setDuration(attachment?.duration ?? "");
+  function openAdd() {
+    setReplaceId(null);
+    setLink("");
+    setTitle("");
+    setLanguage("");
+    setDuration("");
     setError("");
-  }, [attachment]);
+    setForm(true);
+  }
 
-  const details = { title, language, duration };
+  function openReplace(clip: PreviewClip) {
+    setReplaceId(clip.id);
+    setLink(clip.sourceUrl ?? "");
+    setTitle(clip.title ?? "");
+    setLanguage(clip.language ?? "");
+    setDuration(clip.duration ?? "");
+    setError("");
+    setForm(true);
+  }
 
   async function saveLink(event: React.FormEvent) {
     event.preventDefault();
     setBusy(true);
-    const result = saveYoutubeAttachment({ day, section, url: link, ...details });
+    const result = saveYoutubeAttachment({ day, section, url: link, ...details, replaceId: replaceId ?? undefined });
     setBusy(false);
     if (!result.ok) {
       setError(result.message);
       return;
     }
-    setLink("");
     setForm(false);
-    setError("");
+    setReplaceId(null);
     onChange();
   }
 
   async function onFile(file: File | undefined) {
     if (!file) return;
     setBusy(true);
-    const result = await saveFileAttachment({ day, section, file, ...details });
+    const result = await saveFileAttachment({ day, section, file, ...details, replaceId: replaceId ?? undefined });
     setBusy(false);
     if (!result.ok) {
       setError(result.message);
       return;
     }
     setForm(false);
-    setError("");
-    onChange();
-  }
-
-  async function clear() {
-    setBusy(true);
-    await removeAttachment(day, section);
-    setBusy(false);
-    setForm(false);
+    setReplaceId(null);
     onChange();
   }
 
   return (
     <div data-attach={section} className="mt-2 rounded-2xl border border-[#e6d3a1] bg-[#fffaf0] p-3">
       <p className="text-sm font-semibold text-[#8d6b2f]">{PREVIEW_SAVE_LABEL}</p>
-      {attachment ? (
-        <p className="mt-1 text-sm text-[#1b4a38]">
-          Lagi hui video: {attachment.title || attachment.fileName || attachment.youtubeId}
-        </p>
-      ) : null}
-      {attachment ? (
-        <div className="mt-2 flex gap-2">
-          <button type="button" className="h-12 flex-1 rounded-2xl bg-[#1a4d3c] text-base font-semibold text-[#f7f1e4]" onClick={() => setForm((open) => !open)}>
-            Badlein
-          </button>
-          <button type="button" className="h-12 flex-1 rounded-2xl border border-[#1a4d3c] text-base font-semibold text-[#1a4d3c]" onClick={() => void clear()} disabled={busy}>
-            Hatayein
-          </button>
-        </div>
-      ) : null}
-      {!attachment && !form ? (
-        <button
-          type="button"
-          className="mt-2 h-12 w-full rounded-2xl bg-[#1a4d3c] text-base font-semibold text-[#f7f1e4]"
-          onClick={() => setForm(true)}
-        >
+      <p className="mt-1 text-sm text-[#1b4a38]">{clips.length} / {MAX_SECTION_VIDEOS} video</p>
+      <ol className="mt-2 space-y-2">
+        {clips.map((clip, index) => (
+          <li key={clip.id} className="rounded-2xl border border-[#e7dcc4] bg-white p-3">
+            <p className="text-sm font-semibold text-[#8d6b2f]">Video {index + 1}/{clips.length}</p>
+            <p className="text-base text-[#1b4a38]">{clip.title || clip.fileName || clip.youtubeId}</p>
+            <div className="mt-2 grid grid-cols-2 gap-2">
+              <button type="button" className="h-11 rounded-2xl border border-[#1a4d3c] text-sm font-semibold text-[#1a4d3c]" disabled={index === 0} onClick={() => { moveClip(day, section, clips, index, -1); onChange(); }}>
+                Upar
+              </button>
+              <button type="button" className="h-11 rounded-2xl border border-[#1a4d3c] text-sm font-semibold text-[#1a4d3c]" disabled={index === clips.length - 1} onClick={() => { moveClip(day, section, clips, index, 1); onChange(); }}>
+                Neeche
+              </button>
+              <button type="button" className="h-11 rounded-2xl bg-[#1a4d3c] text-sm font-semibold text-[#f7f1e4]" onClick={() => openReplace(clip)}>
+                Badlein
+              </button>
+              <button type="button" className="h-11 rounded-2xl border border-[#1a4d3c] text-sm font-semibold text-[#1a4d3c]" disabled={busy} onClick={() => { void removeClip(day, section, clips, clip.id).then(onChange); }}>
+                Hatayein
+              </button>
+            </div>
+          </li>
+        ))}
+      </ol>
+      {clips.length < MAX_SECTION_VIDEOS && !form ? (
+        <button type="button" className="mt-3 h-12 w-full rounded-2xl bg-[#1a4d3c] text-base font-semibold text-[#f7f1e4]" onClick={openAdd}>
           Video lagayein
         </button>
       ) : null}
       {form ? (
         <form className="mt-3 space-y-2" onSubmit={(event) => void saveLink(event)}>
+          <p className="text-sm font-semibold text-[#1b4a38]">{replaceId ? "Video badlein" : "Nayi video"}</p>
           <label className="block text-sm font-semibold text-[#1b4a38]">
             YouTube link
             <input
@@ -150,4 +160,3 @@ export function SectionAttach({
     </div>
   );
 }
-

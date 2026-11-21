@@ -10,8 +10,11 @@
  * {
  *   short, title_hi, title_en, title_ur, icon,
  *   sections: { quran|hadith|dua|lesson|doctor|expert|naat|quiz:
- *     { youtubeId, fileSrc, durationLabel, language, citation } | null }
+ *     { youtubeId, fileSrc, durationLabel, language, citation }
+ *     | [ up to 3 of those objects ]
+ *     | null }
  * }
+ * A single object is still one video. An array is the ordered list, maximum 3.
  * Public clients still cannot SELECT that table. training_enrollments is not involved.
  */
 
@@ -87,6 +90,11 @@ export type TopicIcon =
 
 export type DaySource = "official-calendar";
 
+export const MAX_SECTION_VIDEOS = 3;
+
+/** One clip, or up to three ordered clips. Null means the section is empty. */
+export type SectionSlot = SectionMedia | readonly SectionMedia[] | null;
+
 export interface SectionMedia {
   kind: "youtube" | "file" | "quiz";
   youtubeId?: string;
@@ -111,7 +119,7 @@ export interface ClassroomDayContent {
   source: DaySource;
   /** Block name from the official calendar overview. */
   block_hi: string;
-  sections: Record<SectionKey, SectionMedia | null>;
+  sections: Record<SectionKey, SectionSlot>;
 }
 
 /** Block names from the official calendar overview. Wrapped PDF lines are joined. */
@@ -134,7 +142,7 @@ export function blockFor(day: number): (typeof CALENDAR_BLOCKS)[number] {
   return band;
 }
 
-function blankSections(): Record<SectionKey, SectionMedia | null> {
+function blankSections(): Record<SectionKey, SectionSlot> {
   return {
     quran: null,
     hadith: null,
@@ -162,7 +170,7 @@ function youtube(
  * Dua is omitted on purpose: the shortlist has no Dua URL.
  * Empty slots stay null and render as Coming Soon.
  */
-const SHORTLIST: Record<number, Partial<Record<SectionKey, SectionMedia>>> = {
+const SHORTLIST: Record<number, Partial<Record<SectionKey, SectionMedia | SectionMedia[]>>> = {
   1: {
     quran: youtube(
       "sRYo5YSpPqE",
@@ -196,12 +204,10 @@ const SHORTLIST: Record<number, Partial<Record<SectionKey, SectionMedia>>> = {
     },
   },
   2: {
-    doctor: youtube(
-      "sVXL2MnB-nQ",
-      "7:25",
-      "English",
-      "Prickly Heat - British Hajj Delegation",
-    ),
+    doctor: [
+      youtube("sVXL2MnB-nQ", "7:25", "English", "Prickly Heat - British Hajj Delegation"),
+      youtube("Eb--MldbiZk", null, null, "Lanacane gel short — Mufti Abdur-Rahman ibn Yusuf Mangera"),
+    ],
     quran: youtube(
       "xX18qS2lVqA",
       "1:43",
@@ -1351,11 +1357,20 @@ export function classroomDay(day: number): ClassroomDayContent | null {
   return CLASSROOM_DAYS.find((item) => item.day === day) ?? null;
 }
 
-export function sectionReady(media: SectionMedia | null): boolean {
-  if (!media) return false;
+export function sectionClips(slot: SectionSlot | undefined): SectionMedia[] {
+  if (!slot) return [];
+  const list = Array.isArray(slot) ? [...slot] : [slot];
+  return list.slice(0, MAX_SECTION_VIDEOS);
+}
+
+function clipReady(media: SectionMedia): boolean {
   if (media.kind === "youtube") return Boolean(media.youtubeId);
   if (media.kind === "file") return Boolean(media.fileSrc);
   return media.kind === "quiz";
+}
+
+export function sectionReady(slot: SectionSlot | undefined): boolean {
+  return sectionClips(slot).some(clipReady);
 }
 
 export function readySectionCount(day: ClassroomDayContent): number {
