@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import {
   Award,
   BookOpen,
@@ -15,6 +15,7 @@ import {
   HelpCircle,
   Landmark,
   ListChecks,
+  Lock,
   Luggage,
   MapPin,
   Mountain,
@@ -55,10 +56,13 @@ import {
 import { quizResultMessage } from "@/data/classroomPlan";
 import { useTextToSpeech } from "@/hooks/useTextToSpeech";
 import { attachmentKey, attachmentsForDay, fileObjectUrl, readAttachments } from "@/data/classroomAttachments";
+import { dayIsFinished, dayIsUnlocked, firstOpenDay } from "@/data/classroomUnlock";
 import { SectionAttach } from "@/components/classroom/SectionAttach";
 
 const DONE_KEY = "hajcare-classroom-preview-done";
+const PLAYED_KEY = "hajcare-classroom-preview-played";
 const EDIT_KEY = "hajcare-classroom-preview-edit";
+const LOCK_MESSAGE = "Pichla din mukammal karein";
 
 const TOPIC_ICON: Record<TopicIcon, typeof Compass> = {
   niyyat: Compass,
@@ -105,25 +109,34 @@ function useClassroomFonts() {
   }, []);
 }
 
-function readDone(): number[] {
+function readIdList(key: string): number[] {
   try {
-    const parsed = JSON.parse(localStorage.getItem(DONE_KEY) || "[]") as unknown;
-    return Array.isArray(parsed) ? parsed.filter((item) => Number.isInteger(item)) : [];
+    const parsed = JSON.parse(localStorage.getItem(key) || "[]") as unknown;
+    return Array.isArray(parsed) ? parsed.filter((item) => Number.isInteger(item) && item >= 1 && item <= 100) : [];
   } catch {
     return [];
   }
 }
 
-function useDoneDays() {
-  const [done, setDone] = useState<number[]>(() => (typeof window === "undefined" ? [] : readDone()));
-  function toggle(day: number) {
+function useProgress() {
+  const [done, setDone] = useState<number[]>(() => (typeof window === "undefined" ? [] : readIdList(DONE_KEY)));
+  const [played, setPlayed] = useState<number[]>(() => (typeof window === "undefined" ? [] : readIdList(PLAYED_KEY)));
+  const toggle = useCallback((day: number) => {
     setDone((current) => {
       const next = current.includes(day) ? current.filter((item) => item !== day) : [...current, day];
       localStorage.setItem(DONE_KEY, JSON.stringify(next));
       return next;
     });
-  }
-  return { done, toggle };
+  }, []);
+  const markPlayed = useCallback((day: number) => {
+    setPlayed((current) => {
+      if (current.includes(day)) return current;
+      const next = [...current, day];
+      localStorage.setItem(PLAYED_KEY, JSON.stringify(next));
+      return next;
+    });
+  }, []);
+  return { done, played, toggle, markPlayed };
 }
 
 function Shell({ children }: { children: React.ReactNode }) {
@@ -236,13 +249,20 @@ function useAttachmentRevision() {
 }
 
 export function ClassroomDashboardPage() {
-  const { done } = useDoneDays();
+  const { done, played } = useProgress();
+  const { edit } = useEditMode();
   const { language } = useLanguage();
   const navigate = useNavigate();
   useAttachmentRevision();
   const attachedDays = new Set(CLASSROOM_DAYS.filter((day) => attachmentsForDay(day.day).length > 0).map((day) => day.day));
   const [jump, setJump] = useState("1");
-  const finished = CLASSROOM_DAYS.filter((day) => done.includes(day.day)).length;
+  const [notice, setNotice] = useState("");
+  const current = firstOpenDay(done, played);
+  const today = CLASSROOM_DAYS[current - 1];
+  const finished = CLASSROOM_DAYS.filter((day) => dayIsFinished(day.day, done, played)).length;
+  useEffect(() => {
+    document.getElementById("aaj-ka-din")?.scrollIntoView({ block: "start" });
+  }, [current]);
   return (
     <Shell>
       <SEO title="HajCare AI Classroom" description="100 Days Hajj Training. Free recorded classes." path="/classroom" />
@@ -251,13 +271,29 @@ export function ClassroomDashboardPage() {
         <h1 className="lms-serif mt-1 text-center text-4xl text-[#f7f1e4]">HajCare AI Classroom</h1>
         <p className="mt-2 text-center text-base text-[#f3e6c4]">Muft. Login zaroori nahi. Har din ka card alag mauzoo dikhata hai.</p>
         <p className="mt-3 text-center text-sm font-semibold text-[#e4cb87]">{finished} / 100 mukammal</p>
-        <LanguageAndListen day={CLASSROOM_DAYS[0]} />
+        <section id="aaj-ka-din" data-aaj={current} className="mt-4 rounded-3xl border border-[#e4cb87] bg-[#f7f1e4] px-4 py-4 text-[#1b4a38]">
+          <p className="text-center text-xs font-semibold tracking-[0.16em] text-[#8d6b2f]">AAJ KA DIN</p>
+          <p className="lms-serif mt-1 text-center text-4xl">{today.short}</p>
+          <p className="mt-1 text-center text-base leading-snug">{today.title_hi}</p>
+          <p className="mt-1 text-center text-sm text-[#6d6456]">Day {today.day} · {today.block_hi}</p>
+          <Link to={`/classroom/day/${today.day}`} className="mt-3 flex h-12 items-center justify-center rounded-2xl bg-[#1a4d3c] text-base font-semibold text-[#f7f1e4]">
+            Aaj ka din kholen
+          </Link>
+        </section>
+        {notice ? <p className="mt-3 rounded-2xl bg-[#1a4d3c] px-3 py-3 text-center text-sm text-[#f7f1e4]" role="status">{notice}</p> : null}
+        <LanguageAndListen day={today} />
         <form
           className="mt-4 flex gap-2"
           onSubmit={(event) => {
             event.preventDefault();
             const day = Number(jump);
-            if (day >= 1 && day <= 100) navigate(`/classroom/day/${day}`);
+            if (day < 1 || day > 100) return;
+            if (!dayIsUnlocked(day, done, played, edit)) {
+              setNotice(`${LOCK_MESSAGE}. Aaj ka din ${current} hai.`);
+              document.getElementById("aaj-ka-din")?.scrollIntoView({ block: "start" });
+              return;
+            }
+            navigate(`/classroom/day/${day}`);
           }}
         >
           <label className="min-w-0 flex-1 text-sm font-semibold text-[#f7f1e4]">
@@ -281,38 +317,61 @@ export function ClassroomDashboardPage() {
         </Link>
         <ol className="mt-5 space-y-3">
           {CLASSROOM_DAYS.map((day) => {
-            const complete = done.includes(day.day);
+            const complete = dayIsFinished(day.day, done, played);
+            const unlocked = dayIsUnlocked(day.day, done, played, edit);
+            const locked = !unlocked;
             const attached = attachedDays.has(day.day);
             const ready = attached || readySectionCount(day) > 0;
             const topic = displayTopic(day, language);
-            const label = `Day ${day.day} ${day.short}. ${topic}. ${statusLabel(day, complete, attached)}`;
-            return (
-              <li key={day.day}>
-                <Link
-                  to={`/classroom/day/${day.day}`}
-                  data-day-card={day.day}
-                  data-topic={day.title_hi}
-                  aria-label={label}
-                  className="flex items-center gap-3 rounded-3xl border border-[#e6d3a1] bg-[#f7f1e4] px-3 py-3 shadow-sm"
+            const isCurrent = day.day === current;
+            const status = locked ? LOCK_MESSAGE : isCurrent ? "Aaj ka din" : statusLabel(day, complete, attached);
+            const label = `Day ${day.day} ${day.short}. ${topic}. ${status}`;
+            const body = (
+              <>
+                <span className="flex w-16 shrink-0 flex-col items-center">
+                  <span className="text-xs font-bold tracking-[0.12em] text-[#8d6b2f]">DAY</span>
+                  <span className="text-xl font-bold leading-none text-[#1b4a38]">{String(day.day).padStart(2, "0")}</span>
+                  <TopicMark day={day} className="mt-1 h-12 w-12" />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-[11px] font-semibold leading-snug text-[#8d6b2f]">{day.block_hi}</span>
+                  <span className="lms-serif block text-2xl leading-tight text-[#1b4a38]">{day.short}</span>
+                  <span className="mt-0.5 block text-base leading-snug text-[#1b4a38]">{day.title_hi}</span>
+                  <span className="mt-1 block text-sm font-semibold text-[#6d6456]">{status}</span>
+                </span>
+                <span
+                  className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full ${locked ? "bg-[#e7dfd0] text-[#8a8172]" : "bg-[#1a4d3c] text-[#f7f1e4]"}`}
+                  aria-hidden
                 >
-                  <span className="flex w-16 shrink-0 flex-col items-center">
-                    <span className="text-xs font-bold tracking-[0.12em] text-[#8d6b2f]">DAY</span>
-                    <span className="text-xl font-bold leading-none text-[#1b4a38]">{String(day.day).padStart(2, "0")}</span>
-                    <TopicMark day={day} className="mt-1 h-12 w-12" />
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block text-[11px] font-semibold leading-snug text-[#8d6b2f]">{day.block_hi}</span>
-                    <span className="lms-serif block text-2xl leading-tight text-[#1b4a38]">{day.short}</span>
-                    <span className="mt-0.5 block text-base leading-snug text-[#1b4a38]">{day.title_hi}</span>
-                    <span className="mt-1 block text-sm font-semibold text-[#6d6456]">{statusLabel(day, complete, attached)}</span>
-                  </span>
-                  <span
-                    className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full ${ready || complete ? "bg-[#1a4d3c] text-[#f7f1e4]" : "bg-[#efe7d6] text-[#8d6b2f]"}`}
-                    aria-hidden
+                  {locked ? <Lock className="h-6 w-6" /> : complete ? <Check className="h-6 w-6" /> : ready || isCurrent ? <Play className="h-6 w-6" /> : <Clock className="h-6 w-6" />}
+                </span>
+              </>
+            );
+            const className = `flex items-center gap-3 rounded-3xl border px-3 py-3 shadow-sm ${
+              locked
+                ? "border-[#e4dcc8] bg-[#efe8d8] opacity-70"
+                : isCurrent
+                  ? "border-[#c4a15a] bg-[#fffaf0] ring-2 ring-[#c4a15a]"
+                  : "border-[#e6d3a1] bg-[#f7f1e4]"
+            }`;
+            return (
+              <li key={day.day} id={isCurrent ? "aaj-ka-din-card" : undefined}>
+                {locked ? (
+                  <div data-day-card={day.day} data-topic={day.title_hi} data-locked="true" aria-disabled="true" aria-label={label} className={className}>
+                    {body}
+                  </div>
+                ) : (
+                  <Link
+                    to={`/classroom/day/${day.day}`}
+                    data-day-card={day.day}
+                    data-topic={day.title_hi}
+                    data-current={isCurrent ? "true" : undefined}
+                    aria-label={label}
+                    className={className}
                   >
-                    {complete ? <Check className="h-6 w-6" /> : ready ? <Play className="h-6 w-6" /> : <Clock className="h-6 w-6" />}
-                  </span>
-                </Link>
+                    {body}
+                  </Link>
+                )}
               </li>
             );
           })}
@@ -411,7 +470,25 @@ function CardButton({
 
 export function ClassroomDayCardPage() {
   const params = useParams();
-  const day = classroomDay(Number(params.dayNumber));
+  const navigate = useNavigate();
+  const { done, played } = useProgress();
+  const { edit } = useEditMode();
+  const dayNumber = Number(params.dayNumber);
+  const day = classroomDay(dayNumber);
+  const openDay = firstOpenDay(done, played);
+  useEffect(() => {
+    if (!day) return;
+    if (!dayIsUnlocked(day.day, done, played, edit)) {
+      navigate(`/classroom/day/${openDay}?notice=locked`, { replace: true });
+    }
+  }, [day, done, played, edit, navigate, openDay]);
+  if (day && !dayIsUnlocked(day.day, done, played, edit)) {
+    return (
+      <Shell>
+        <p className="rounded-3xl bg-[#f7f1e4] px-4 py-6 text-center text-lg text-[#1b4a38]">{LOCK_MESSAGE}. Aaj ka din {openDay} hai.</p>
+      </Shell>
+    );
+  }
   if (!day) {
     return (
       <Shell>
@@ -559,11 +636,18 @@ function playingMedia(catalogue: SectionMedia | null, extra: ReturnType<typeof r
 export function ClassroomDayPage() {
   const params = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const dayNumber = Number(params.dayNumber);
   const day = classroomDay(dayNumber);
   const { language } = useLanguage();
-  const { done, toggle } = useDoneDays();
+  const { done, played, toggle, markPlayed } = useProgress();
   const { edit, set: setEdit } = useEditMode();
+  const openDay = firstOpenDay(done, played);
+  const unlocked = day ? dayIsUnlocked(day.day, done, played, edit) : false;
+  useEffect(() => {
+    if (!day || unlocked) return;
+    navigate(`/classroom/day/${openDay}?notice=locked`, { replace: true });
+  }, [day, unlocked, navigate, openDay]);
   useAttachmentRevision();
   const attached = readAttachments();
   const [fileUrls, setFileUrls] = useState<Record<string, string>>({});
@@ -571,17 +655,18 @@ export function ClassroomDayPage() {
   const ready = day
     ? SECTION_ORDER.filter((key) => Boolean(attached[attachmentKey(day.day, key)]) || sectionReady(day.sections[key])).length
     : 0;
-  const complete = day ? done.includes(day.day) : false;
+  const complete = day ? dayIsFinished(day.day, done, played) : false;
 
   useEffect(() => {
     const key = window.location.hash.replace("#", "") as SectionKey;
-    if (!day) return;
+    if (!day || !unlocked) return;
     const hasAttachment = Boolean(readAttachments()[attachmentKey(day.day, key)]);
     if (SECTION_ORDER.includes(key) && (hasAttachment || sectionReady(day.sections[key]))) {
       setOpen(key);
+      markPlayed(day.day);
       document.getElementById(`section-${key}`)?.scrollIntoView({ block: "start" });
     }
-  }, [day]);
+  }, [day, unlocked, markPlayed]);
 
   useEffect(() => {
     if (!day || !open) return;
@@ -609,10 +694,23 @@ export function ClassroomDayPage() {
     );
   }
 
+  if (!unlocked) {
+    return (
+      <Shell>
+        <p className="rounded-3xl bg-[#f7f1e4] px-4 py-6 text-center text-lg text-[#1b4a38]">{LOCK_MESSAGE}. Aaj ka din {openDay} hai.</p>
+      </Shell>
+    );
+  }
+
   return (
     <Shell>
       <SEO title={`HajCare AI Classroom · Day ${day.day}`} description={day.title_en} path={`/classroom/day/${day.day}`} />
       <article data-screen="day-board" data-day={day.day} className="rounded-[28px] border border-[#e6d3a1] bg-[#f7f1e4] px-4 py-5">
+        {searchParams.get("notice") === "locked" ? (
+          <p className="mb-3 rounded-2xl bg-[#fff6df] px-3 py-3 text-center text-base text-[#1b4a38]" role="status">
+            Yeh din abhi band hai. {LOCK_MESSAGE}. Aaj ka din yahan hai.
+          </p>
+        ) : null}
         <button type="button" className="min-h-11 text-base font-semibold text-[#1b4a38]" onClick={() => navigate("/classroom")}>
           ← Back to 100 Days Classroom
         </button>
@@ -658,7 +756,15 @@ export function ClassroomDayPage() {
               <li key={key} id={`section-${key}`} className="scroll-mt-20">
                 {available && (media || extra) ? (
                   <div className={`rounded-3xl border bg-white p-3 ${resolved.browserOnly ? "border-[#c4a15a]" : "border-[#e7dcc4]"}`}>
-                    <button type="button" className="flex w-full items-center gap-3 text-left" onClick={() => setOpen(open === key ? null : key)}>
+                    <button
+                      type="button"
+                      className="flex w-full items-center gap-3 text-left"
+                      onClick={() => {
+                        const next = open === key ? null : key;
+                        setOpen(next);
+                        if (next) markPlayed(day.day);
+                      }}
+                    >
                       <Icon className="h-7 w-7 shrink-0 text-[#1a4d3c]" aria-hidden />
                       <span className="min-w-0 flex-1">
                         <span className="block text-lg font-semibold text-[#1b4a38]">
