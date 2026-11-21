@@ -27,18 +27,20 @@ function restHeaders(key, extra = {}) {
 export async function listClassroomVideos() {
   const { url, anon, service } = config();
   const key = anon || service;
-  if (!url || !key) return { status: 503, body: { ok: false, reason: "no-config" } };
+  // 200 with ok:false so a missing table does not print a failed request for pilgrims.
+  // The board then keeps the static catalogue.
+  if (!url || !key) return { status: 200, body: { ok: false, reason: "no-config" } };
   try {
     const response = await fetch(
       `${url}/rest/v1/classroom_videos?select=day,section,position,url,platform,title,tag,review_pending&order=day.asc,section.asc,position.asc`,
       { headers: restHeaders(key) },
     );
-    if (!response.ok) return { status: 503, body: { ok: false, reason: "unavailable" } };
+    if (!response.ok) return { status: 200, body: { ok: false, reason: "unavailable" } };
     const rows = await response.json();
-    if (!Array.isArray(rows)) return { status: 503, body: { ok: false, reason: "unavailable" } };
+    if (!Array.isArray(rows)) return { status: 200, body: { ok: false, reason: "unavailable" } };
     return { status: 200, body: { ok: true, videos: rows } };
   } catch {
-    return { status: 503, body: { ok: false, reason: "unavailable" } };
+    return { status: 200, body: { ok: false, reason: "unavailable" } };
   }
 }
 
