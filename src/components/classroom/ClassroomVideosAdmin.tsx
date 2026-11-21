@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { SEO } from "@/components/SEO";
 import { CLASSROOM_DAYS, SECTION_LABEL, SECTION_ORDER, classroomDay, type SectionKey } from "@/data/classroomCatalogue";
-import { storedClips, visibleClips } from "@/data/classroomAttachments";
+import { browserFileClips } from "@/data/classroomAttachments";
+import { useClassroomVideoRows } from "@/data/classroomRemote";
+import { boardClips } from "@/data/classroomVideoRows";
 import { PREVIEW_EDIT_KEY } from "@/data/classroomUnlock";
 import { SectionAttach } from "@/components/classroom/SectionAttach";
 import { Shell } from "@/components/classroom/ClassroomLms";
@@ -33,6 +35,7 @@ function useAttachmentRevision() {
 export default function ClassroomVideosAdmin() {
   const { edit, set } = useEditMode();
   const revision = useAttachmentRevision();
+  const remote = useClassroomVideoRows();
   const [params, setParams] = useSearchParams();
   const requested = Number(params.get("day"));
   const dayNumber = Number.isInteger(requested) && requested >= 1 && requested <= 100 ? requested : 1;
@@ -53,7 +56,7 @@ export default function ClassroomVideosAdmin() {
         <label className="mt-4 flex min-h-12 items-center justify-between gap-3 rounded-2xl border border-[#e6d3a1] bg-white px-3 py-2">
           <span>
             <span className="block text-base font-semibold text-[#1b4a38]">Admin / Edit mode</span>
-            <span className="block text-xs text-[#6d6456]">Yahi switch board par bhi hai. Login nahi maangta.</span>
+            <span className="block text-xs text-[#6d6456]">Yahi switch board par bhi hai. Link server par tabhi save hota hai jab /admin/classroom wala admin login ho.</span>
           </span>
           <input
             data-edit-toggle
@@ -88,7 +91,7 @@ export default function ClassroomVideosAdmin() {
             </Link>
             <ol className="mt-4 space-y-4">
               {SECTION_ORDER.map((key) => (
-                <SectionEditor key={key} dayNumber={day.day} section={key} revision={revision} />
+                <SectionEditor key={key} dayNumber={day.day} section={key} revision={revision} remoteOk={remote.ok} rows={remote.rows} />
               ))}
             </ol>
           </>
@@ -100,10 +103,29 @@ export default function ClassroomVideosAdmin() {
   );
 }
 
-function SectionEditor({ dayNumber, section, revision }: { dayNumber: number; section: SectionKey; revision: number }) {
+function SectionEditor({
+  dayNumber,
+  section,
+  revision,
+  remoteOk,
+  rows,
+}: {
+  dayNumber: number;
+  section: SectionKey;
+  revision: number;
+  remoteOk: boolean;
+  rows: Parameters<typeof boardClips>[0]["rows"];
+}) {
   const day = classroomDay(dayNumber);
   if (!day) return null;
-  const clips = visibleClips(day.sections[section], storedClips(dayNumber, section));
+  const clips = boardClips({
+    remoteOk,
+    rows,
+    day: dayNumber,
+    section,
+    catalogue: day.sections[section],
+    browserFiles: browserFileClips(dayNumber, section),
+  });
   return (
     <li id={`admin-section-${section}`} data-admin-section={section} data-revision={revision}>
       <h3 className="text-lg font-semibold text-[#1b4a38]">{SECTION_LABEL[section]}</h3>

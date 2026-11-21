@@ -194,6 +194,10 @@ function writeAttachments(map: AttachmentMap) {
   window.dispatchEvent(new Event("hajcare-attachments"));
 }
 
+export function browserFileClips(day: number, section: SectionKey): PreviewClip[] {
+  return (storedClips(day, section) ?? []).filter((clip) => clip.kind === "file");
+}
+
 export function storedClips(day: number, section: SectionKey, map = readAttachments()): PreviewClip[] | null {
   const row = map[attachmentKey(day, section)];
   return row ? row.clips : null;

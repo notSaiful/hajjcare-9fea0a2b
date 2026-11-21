@@ -1,16 +1,18 @@
 import { useState } from "react";
 import { MAX_SECTION_VIDEOS, type SectionKey } from "@/data/classroomCatalogue";
 import {
-  PREVIEW_SAVE_LABEL,
   maslakWarning,
   moveClip,
   removeClip,
   saveFileAttachment,
-  saveYoutubeAttachment,
   setClipMaslak,
+  youtubeIdFromUrl,
   type Maslak,
   type PreviewClip,
 } from "@/data/classroomAttachments";
+import { saveClassroomSection } from "@/data/classroomRemote";
+import { platformForUrl } from "@/data/classroomVideoRows";
+import { useAuth } from "@/hooks/useAuth";
 
 export function SectionAttach({
   day,
@@ -32,8 +34,23 @@ export function SectionAttach({
   const [maslak, setMaslak] = useState<Maslak>("neutral");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
-  const details = { title, language, duration, maslak, base: clips };
+  const { session } = useAuth();
+  const details = { title, language, duration, maslak };
   const warning = maslakWarning(section, clips);
+  const links = clips.filter((clip) => clip.kind !== "file");
+  const files = clips.filter((clip) => clip.kind === "file");
+
+  async function persist(nextLinks: PreviewClip[]) {
+    setBusy(true);
+    const result = await saveClassroomSection({ day, section, clips: nextLinks, token: session?.access_token });
+    setBusy(false);
+    if (!result.ok) {
+      setError(result.message);
+      return false;
+    }
+    onChange();
+    return true;
+  }
 
   function openAdd() {
     setReplaceId(null);
@@ -59,22 +76,68 @@ export function SectionAttach({
 
   async function saveLink(event: React.FormEvent) {
     event.preventDefault();
-    setBusy(true);
-    const result = saveYoutubeAttachment({ day, section, url: link, ...details, replaceId: replaceId ?? undefined });
-    setBusy(false);
-    if (!result.ok) {
-      setError(result.message);
+    const youtubeId = youtubeIdFromUrl(link);
+    if (!youtubeId && !link.trim().startsWith("https://")) {
+      setError("Yeh link nahi hai.");
       return;
     }
-    setForm(false);
-    setReplaceId(null);
-    onChange();
+    const nextClip: PreviewClip = {
+      id: replaceId || `remote-new-${Date.now()}`,
+      kind: youtubeId ? "youtube" : "external",
+      youtubeId: youtubeId ?? undefined,
+      sourceUrl: link.trim(),
+      pageUrl: youtubeId ? undefined : link.trim(),
+      platform: platformForUrl(link.trim()),
+      title: title.trim() || undefined,
+      language: language.trim() || undefined,
+      duration: duration.trim() || undefined,
+      maslak,
+    };
+    const next = [...links];
+    if (replaceId) {
+      const index = next.findIndex((clip) => clip.id === replaceId);
+      if (index < 0) {
+        setError("Yeh video nahi mili.");
+        return;
+      }
+      next[index] = { ...next[index], ...nextClip, id: replaceId };
+    } else if (clips.length >= MAX_SECTION_VIDEOS) {
+      setError("Is section mein teen video se zyada nahi.");
+      return;
+    } else {
+      next.push(nextClip);
+    }
+    if (await persist(next)) {
+      setForm(false);
+      setReplaceId(null);
+    }
   }
 
   async function onFile(file: File | undefined) {
     if (!file) return;
     setBusy(true);
-    const result = await saveFileAttachment({ day, section, file, ...details, replaceId: replaceId ?? undefined });
+    const replacing = clips.find((clip) => clip.id === replaceId);
+    if (replacing && replacing.kind !== "file") {
+      const removed = await saveClassroomSection({
+        day,
+        section,
+        clips: links.filter((clip) => clip.id !== replacing.id),
+        token: session?.access_token,
+      });
+      if (!removed.ok) {
+        setBusy(false);
+        setError(removed.message);
+        return;
+      }
+    }
+    const result = await saveFileAttachment({
+      day,
+      section,
+      file,
+      ...details,
+      base: files,
+      replaceId: replacing?.kind === "file" ? replacing.id : undefined,
+    });
     setBusy(false);
     if (!result.ok) {
       setError(result.message);
@@ -85,9 +148,42 @@ export function SectionAttach({
     onChange();
   }
 
+  function onTag(clip: PreviewClip, nextTag: Maslak) {
+    if (clip.kind === "file") {
+      setClipMaslak(day, section, files, clip.id, nextTag);
+      onChange();
+      return;
+    }
+    void persist(links.map((item) => (item.id === clip.id ? { ...item, maslak: nextTag } : item)));
+  }
+
+  function onMove(clip: PreviewClip, direction: -1 | 1) {
+    if (clip.kind === "file") {
+      const index = files.findIndex((item) => item.id === clip.id);
+      moveClip(day, section, files, index, direction);
+      onChange();
+      return;
+    }
+    const index = links.findIndex((item) => item.id === clip.id);
+    const next = index + direction;
+    if (index < 0 || next < 0 || next >= links.length) return;
+    const copy = [...links];
+    const [item] = copy.splice(index, 1);
+    copy.splice(next, 0, item);
+    void persist(copy);
+  }
+
+  function onRemove(clip: PreviewClip) {
+    if (clip.kind === "file") {
+      void removeClip(day, section, files, clip.id).then(onChange);
+      return;
+    }
+    void persist(links.filter((item) => item.id !== clip.id));
+  }
+
   return (
     <div data-attach={section} className="mt-2 rounded-2xl border border-[#e6d3a1] bg-[#fffaf0] p-3">
-      <p className="text-sm font-semibold text-[#8d6b2f]">{PREVIEW_SAVE_LABEL}</p>
+      <p className="text-sm font-semibold text-[#8d6b2f]">Link server par save hota hai. Device file sirf is browser mein rehti hai.</p>
       <p className="mt-1 text-sm text-[#1b4a38]">{clips.length} / {MAX_SECTION_VIDEOS} video</p>
       {warning ? (
         <p className="mt-2 rounded-2xl bg-[#f4e4c4] px-3 py-2 text-sm font-semibold text-[#6b4a16]" role="status" data-maslak-warning={section}>
@@ -108,10 +204,7 @@ export function SectionAttach({
                 value={clip.maslak ?? "neutral"}
                 aria-label={`${section} video ${index + 1} maslak`}
                 className="mt-1 h-12 w-full rounded-2xl border border-[#e4dcc8] bg-white px-3 text-base"
-                onChange={(event) => {
-                  setClipMaslak(day, section, clips, clip.id, event.target.value as Maslak);
-                  onChange();
-                }}
+                onChange={(event) => onTag(clip, event.target.value as Maslak)}
               >
                 <option value="neutral">Neutral</option>
                 <option value="sunni">Sunni</option>
@@ -119,16 +212,16 @@ export function SectionAttach({
               </select>
             </label>
             <div className="mt-2 grid grid-cols-2 gap-2">
-              <button type="button" className="h-11 rounded-2xl border border-[#1a4d3c] text-sm font-semibold text-[#1a4d3c]" disabled={index === 0} onClick={() => { moveClip(day, section, clips, index, -1); onChange(); }}>
+              <button type="button" className="h-11 rounded-2xl border border-[#1a4d3c] text-sm font-semibold text-[#1a4d3c]" disabled={index === 0 || busy} onClick={() => onMove(clip, -1)}>
                 Upar
               </button>
-              <button type="button" className="h-11 rounded-2xl border border-[#1a4d3c] text-sm font-semibold text-[#1a4d3c]" disabled={index === clips.length - 1} onClick={() => { moveClip(day, section, clips, index, 1); onChange(); }}>
+              <button type="button" className="h-11 rounded-2xl border border-[#1a4d3c] text-sm font-semibold text-[#1a4d3c]" disabled={index === clips.length - 1 || busy} onClick={() => onMove(clip, 1)}>
                 Neeche
               </button>
               <button type="button" className="h-11 rounded-2xl bg-[#1a4d3c] text-sm font-semibold text-[#f7f1e4]" onClick={() => openReplace(clip)}>
                 Badlein
               </button>
-              <button type="button" className="h-11 rounded-2xl border border-[#1a4d3c] text-sm font-semibold text-[#1a4d3c]" disabled={busy} onClick={() => { void removeClip(day, section, clips, clip.id).then(onChange); }}>
+              <button type="button" className="h-11 rounded-2xl border border-[#1a4d3c] text-sm font-semibold text-[#1a4d3c]" disabled={busy} onClick={() => onRemove(clip)}>
                 Hatayein
               </button>
             </div>
@@ -158,7 +251,7 @@ export function SectionAttach({
             Link lagayein
           </button>
           <label className="flex h-12 cursor-pointer items-center justify-center rounded-2xl border border-[#e6d3a1] bg-white text-base font-semibold text-[#1b4a38]">
-            Device se video chunein
+            Device se video chunein (sirf is browser)
             <input
               type="file"
               accept="video/*"

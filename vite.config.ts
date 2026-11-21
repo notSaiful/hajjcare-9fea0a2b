@@ -33,6 +33,41 @@ function classroomApi(): Plugin {
   };
 }
 
+function classroomVideosApi(): Plugin {
+  const serve: Connect.NextHandleFunction = (req, res, next) => {
+    const pathOnly = (req.url || "/").split("?")[0];
+    if (pathOnly !== "/api/classroom-videos") return next();
+    const finish = (body: unknown) => {
+      (req as { body?: unknown }).body = body;
+      import("./api/classroom-videos.js").then(async ({ handleClassroomVideos }) => {
+        await handleClassroomVideos(req, res);
+      }).catch(next);
+    };
+    if (req.method === "GET") {
+      finish(undefined);
+      return;
+    }
+    const chunks: Buffer[] = [];
+    req.on("data", (chunk) => chunks.push(Buffer.from(chunk)));
+    req.on("end", () => {
+      try {
+        finish(JSON.parse(Buffer.concat(chunks).toString("utf8") || "{}"));
+      } catch (error) {
+        next(error);
+      }
+    });
+  };
+  return {
+    name: "hajcare-classroom-videos-api",
+    configureServer(server) {
+      server.middlewares.use(serve);
+    },
+    configurePreviewServer(server) {
+      server.middlewares.use(serve);
+    },
+  };
+}
+
 function demoRouting(): Plugin {
   const rewrite: Connect.NextHandleFunction = (req, res, next) => {
     const raw = req.url || "/";
@@ -158,7 +193,7 @@ export default defineConfig(({ mode }) => {
     host: "::",
     port: 8080,
   },
-  plugins: [classroomApi(), react(), demoRouting(), trainingClientConfig(mode), trainingRegisterClientConfig(mode), supabasePreconnect(mode), mode === "development" && componentTagger()].filter(Boolean),
+  plugins: [classroomApi(), classroomVideosApi(), react(), demoRouting(), trainingClientConfig(mode), trainingRegisterClientConfig(mode), supabasePreconnect(mode), mode === "development" && componentTagger()].filter(Boolean),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

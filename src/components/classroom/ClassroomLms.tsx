@@ -56,7 +56,9 @@ import {
 } from "@/data/classroomCatalogue";
 import { quizResultMessage } from "@/data/classroomPlan";
 import { useTextToSpeech } from "@/hooks/useTextToSpeech";
-import { attachmentsForDay, fileObjectUrl, maslakWarning, storedClips, visibleClips, type PreviewClip } from "@/data/classroomAttachments";
+import { browserFileClips, fileObjectUrl, maslakWarning, type PreviewClip } from "@/data/classroomAttachments";
+import { useClassroomVideoRows } from "@/data/classroomRemote";
+import { boardClips } from "@/data/classroomVideoRows";
 import { dayIsFinished, dayIsUnlocked, firstOpenDay, PREVIEW_EDIT_KEY } from "@/data/classroomUnlock";
 import { SectionAttach } from "@/components/classroom/SectionAttach";
 
@@ -700,29 +702,38 @@ export function ClassroomDayPage() {
     if (!day || unlocked) return;
     navigate(`/classroom/day/${openDay}?notice=locked`, { replace: true });
   }, [day, unlocked, navigate, openDay]);
+  const remote = useClassroomVideoRows();
+  const clipsFor = useCallback((key: SectionKey) => boardClips({
+    remoteOk: remote.ok,
+    rows: remote.rows,
+    day: day?.day ?? 0,
+    section: key,
+    catalogue: day?.sections[key],
+    browserFiles: day ? browserFileClips(day.day, key) : [],
+  }), [remote.ok, remote.rows, day]);
   const attachmentRevision = useAttachmentRevision();
   const [fileUrls, setFileUrls] = useState<Record<string, string>>({});
   const [open, setOpen] = useState<SectionKey | null>(null);
   const [activeClip, setActiveClip] = useState<Partial<Record<SectionKey, number>>>({});
   const ready = day
-    ? SECTION_ORDER.filter((key) => visibleClips(day.sections[key], storedClips(day.day, key)).length > 0).length
+    ? SECTION_ORDER.filter((key) => clipsFor(key).length > 0).length
     : 0;
   const complete = day ? dayIsFinished(day.day, done, played) : false;
 
   useEffect(() => {
     const key = window.location.hash.replace("#", "") as SectionKey;
     if (!day || !unlocked) return;
-    const hasAttachment = storedClips(day.day, key) !== null;
+    const hasAttachment = clipsFor(key).length > 0;
     if (SECTION_ORDER.includes(key) && (hasAttachment || sectionReady(day.sections[key]))) {
       setOpen(key);
       markPlayed(day.day);
       document.getElementById(`section-${key}`)?.scrollIntoView({ block: "start" });
     }
-  }, [day, unlocked, markPlayed]);
+  }, [day, unlocked, markPlayed, clipsFor]);
 
   useEffect(() => {
     if (!day || !open || attachmentRevision < 0) return;
-    const clips = visibleClips(day.sections[open], storedClips(day.day, open));
+    const clips = clipsFor(open);
     let cancelled = false;
     for (const clip of clips) {
       if (clip.kind !== "file" || clip.fileSrc || fileUrls[clip.id]) continue;
@@ -734,7 +745,7 @@ export function ClassroomDayPage() {
     return () => {
       cancelled = true;
     };
-  }, [day, open, fileUrls, attachmentRevision]);
+  }, [day, open, fileUrls, attachmentRevision, clipsFor]);
 
   const topic = day ? displayTopic(day, language) : "";
   const progress = useMemo(() => (day ? Math.round((ready / SECTION_ORDER.length) * 100) : 0), [day, ready]);
@@ -803,8 +814,7 @@ export function ClassroomDayPage() {
         <LanguageAndListen day={day} />
         <ol className="mt-4 space-y-3">
           {SECTION_ORDER.map((key, index) => {
-            const catalogue = day.sections[key];
-            const clips = visibleClips(catalogue, storedClips(day.day, key));
+            const clips = clipsFor(key);
             const available = clips.length > 0;
             const Icon = SECTION_ICON[key];
             const active = Math.min(activeClip[key] ?? 0, Math.max(clips.length - 1, 0));
