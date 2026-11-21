@@ -24,6 +24,9 @@ export interface ClassroomClass {
   title_en: string;
   /** YouTube video id for an unlisted recording. Null when the recording is a local file. */
   youtube_id: string | null;
+  /** Optional clip window for the class video. */
+  start_seconds?: number;
+  end_seconds?: number;
   /** Existing site file. Used when youtube_id is empty. */
   local_video_16x9?: string;
   local_video_9x16?: string;
@@ -47,6 +50,8 @@ export const CLASSROOM_CLASSES: ClassroomClass[] = [
     title_hi: "नीयत: हज इबादत है, सैर नहीं",
     title_en: "Niyyah: Hajj is worship, not a trip",
     youtube_id: "J76Dtc0MePA",
+    start_seconds: 0,
+    end_seconds: 180,
     local_video_16x9: "/videos/day1-1min-16x9.mp4",
     local_video_9x16: "/videos/day1-1min-9x16.mp4",
     label_hi: "दिन 1 — 1 मिनट क्लास",
@@ -91,12 +96,16 @@ export interface ClassroomSideVideo {
   caption?: string;
 }
 
-export function classroomSideEmbedSrc(item: Pick<ClassroomSideVideo, "youtube_id" | "start_seconds" | "end_seconds">): string {
+export function classroomSideEmbedSrc(
+  item: Pick<ClassroomSideVideo, "youtube_id" | "start_seconds" | "end_seconds">,
+  options?: { jsApi?: boolean },
+): string {
   const base = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(item.youtube_id)}?rel=0&modestbranding=1&playsinline=1`;
   const clip: string[] = [];
   if (item.start_seconds != null) clip.push(`start=${item.start_seconds}`);
   if (item.end_seconds != null) clip.push(`end=${item.end_seconds}`);
-  return clip.length ? `${base}&${clip.join("&")}` : base;
+  const url = clip.length ? `${base}&${clip.join("&")}` : base;
+  return options?.jsApi ? `${url}&enablejsapi=1` : url;
 }
 
 /** Day 1 Quran text plus one Hadith player. Not a recorded class. */
@@ -144,7 +153,7 @@ export const CLASSROOM_SIDE_VIDEOS: ClassroomSideVideo[] = [
     day: 1,
     title_hi: "अरकान",
     title_en: "Arkan",
-    youtube_id: "C5gHbAgfrVo",
+    youtube_id: "eIZ6g15gtqM",
     start_seconds: 0,
     end_seconds: 600,
     caption: "पहले 10 मिनट — बाक़ी हिस्सा अगले दिन जारी रहेगा (To be continued next day)",

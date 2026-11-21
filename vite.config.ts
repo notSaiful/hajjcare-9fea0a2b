@@ -9,7 +9,30 @@ import { assertVolunteerProjectUrl } from "./src/volunteer/project";
 import { trainingConfigSource } from "./src/training/publicKey";
 import { trainingRegisterConfigSource } from "./src/training/registerKey";
 
-/** Match vercel.json: demo at /, /explore, /library; React app for other extension-less routes. */
+function classroomApi(): Plugin {
+  const serve: Connect.NextHandleFunction = (req, res, next) => {
+    const raw = req.url || "/";
+    const pathOnly = raw.split("?")[0];
+    if (pathOnly !== "/api/classroom") return next();
+    const asOf = new URL(raw, "http://classroom.local").searchParams.get("asOf");
+    import("./api/classroom.js").then(async ({ classroomApiPayload, callerIsAdmin }) => {
+      const check = await callerIsAdmin(req.headers.authorization);
+      res.setHeader("content-type", "application/json; charset=utf-8");
+      res.setHeader("cache-control", "no-store");
+      res.end(JSON.stringify(classroomApiPayload(asOf, { allowSimulation: true, admin: check.admin, adminReason: check.reason })));
+    }).catch(next);
+  };
+  return {
+    name: "hajcare-classroom-api",
+    configureServer(server) {
+      server.middlewares.use(serve);
+    },
+    configurePreviewServer(server) {
+      server.middlewares.use(serve);
+    },
+  };
+}
+
 function demoRouting(): Plugin {
   const rewrite: Connect.NextHandleFunction = (req, res, next) => {
     const raw = req.url || "/";
@@ -27,7 +50,7 @@ function demoRouting(): Plugin {
     else if (pathOnly === "/library") nextPath = "/library.html";
     else if (pathOnly === "/visitors") nextPath = "/visitors.html";
     else if (pathOnly === "/" || pathOnly === "/index.html") nextPath = "/index.html";
-    else if (pathOnly === "/auth" || pathOnly === "/reset-password" || pathOnly === "/volunteer" || pathOnly === "/volunteer/training" || pathOnly === "/service-fee" || pathOnly === "/classroom") nextPath = "/app.html";
+    else if (pathOnly === "/auth" || pathOnly === "/reset-password" || pathOnly === "/volunteer" || pathOnly === "/volunteer/training" || pathOnly === "/service-fee" || pathOnly === "/classroom" || pathOnly.startsWith("/classroom/day/") || pathOnly === "/admin/classroom") nextPath = "/app.html";
     else if (pathOnly === "/privacy" || pathOnly === "/privacy-policy" || pathOnly === "/account-deletion") nextPath = "/privacy-policy.html";
     else if (pathOnly === "/sukoon") nextPath = "/sukoon.html";
     else if (!pathOnly.includes(".") && !pathOnly.startsWith("/@") && !pathOnly.startsWith("/src/") && !pathOnly.startsWith("/node_modules/")) {
@@ -135,7 +158,7 @@ export default defineConfig(({ mode }) => {
     host: "::",
     port: 8080,
   },
-  plugins: [react(), demoRouting(), trainingClientConfig(mode), trainingRegisterClientConfig(mode), supabasePreconnect(mode), mode === "development" && componentTagger()].filter(Boolean),
+  plugins: [classroomApi(), react(), demoRouting(), trainingClientConfig(mode), trainingRegisterClientConfig(mode), supabasePreconnect(mode), mode === "development" && componentTagger()].filter(Boolean),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

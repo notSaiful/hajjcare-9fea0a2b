@@ -32,7 +32,7 @@ describe("classroom catalogue", () => {
     ]);
     expect(CLASSROOM_SIDE_VIDEOS.map((item) => [item.day, item.key, item.title_en, item.title_hi, item.youtube_id])).toEqual([
       [1, "doctor-corner", "Doctor Corner", "डॉक्टर कॉर्नर", "yCu43qBV0RY"],
-      [1, "arkan", "Arkan", "अरकान", "C5gHbAgfrVo"],
+      [1, "arkan", "Arkan", "अरकान", "eIZ6g15gtqM"],
       [1, "dua", "Safar ki Dua", "सफ़र की दुआ", "hRlmshVxs1w"],
     ]);
     const arkan = CLASSROOM_SIDE_VIDEOS.find((item) => item.key === "arkan");
@@ -40,7 +40,7 @@ describe("classroom catalogue", () => {
     expect(arkan?.end_seconds).toBe(600);
     expect(arkan?.caption).toBe("पहले 10 मिनट — बाक़ी हिस्सा अगले दिन जारी रहेगा (To be continued next day)");
     expect(classroomSideEmbedSrc(arkan!)).toBe(
-      "https://www.youtube-nocookie.com/embed/C5gHbAgfrVo?rel=0&modestbranding=1&playsinline=1&start=0&end=600",
+      "https://www.youtube-nocookie.com/embed/eIZ6g15gtqM?rel=0&modestbranding=1&playsinline=1&start=0&end=600",
     );
     expect(
       CLASSROOM_SIDE_VIDEOS.filter((item) => item.key !== "arkan").map((item) => classroomSideEmbedSrc(item)),

@@ -139,7 +139,9 @@ const ReturnToCampPage = lazy(() => import("./pages/ReturnToCampPage"));
 const SaudiSimUpdatePage = lazy(() => import("./pages/SaudiSimUpdatePage"));
 const ShiDashboardDemoPage = lazy(() => import("./pages/ShiDashboardDemoPage"));
 const HajjTrainingVideosPage = lazy(() => import("./pages/HajjTrainingVideosPage"));
-const ClassroomPage = lazy(() => import("./pages/ClassroomPage"));
+const ClassroomDashboardPage = lazy(() => import("./pages/ClassroomStudio").then((mod) => ({ default: mod.ClassroomDashboardPage })));
+const ClassroomDayPage = lazy(() => import("./pages/ClassroomStudio").then((mod) => ({ default: mod.ClassroomDayPage })));
+const ClassroomAdminPage = lazy(() => import("./pages/ClassroomAdminPage"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -178,7 +180,9 @@ function AppContent() {
       <Route path="/volunteer/training" element={<VolunteerTrainingPage />} />
       <Route path="/volunteer" element={<VolunteerPage />} />
       <Route path="/service-fee" element={<PaymentPage />} />
-      <Route path="/classroom" element={<ClassroomPage />} />
+      <Route path="/classroom/day/:dayNumber" element={<ClassroomDayPage />} />
+      <Route path="/classroom" element={<ClassroomDashboardPage />} />
+      <Route path="/admin/classroom" element={<AdminOnlyRoute><ClassroomAdminPage /></AdminOnlyRoute>} />
       <Route path="*" element={<LeaveToDemo />} />
     </Routes>
   );
