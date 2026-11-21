@@ -13,6 +13,7 @@
     { "source": "/volunteer/training", "destination": "/app.html" },
     { "source": "/volunteer", "destination": "/app.html" },
     { "source": "/service-fee", "destination": "/app.html" },
+    { "source": "/classroom/day/:day", "destination": "/app.html" },
     { "source": "/classroom", "destination": "/app.html" },
     { "source": "/admin/classroom", "destination": "/app.html" },
     { "source": "/reset-password", "destination": "/app.html" },
