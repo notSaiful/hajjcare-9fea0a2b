@@ -839,7 +839,7 @@ export function ClassroomDayPage() {
                         <Play className="h-5 w-5" aria-hidden />
                       </span>
                     </button>
-                    {warning ? (
+                    {edit && warning ? (
                       <p className="mt-2 rounded-2xl bg-[#f4e4c4] px-3 py-2 text-sm font-semibold text-[#6b4a16]" role="status" data-maslak-warning={key}>
                         {warning}
                       </p>
@@ -863,7 +863,7 @@ export function ClassroomDayPage() {
                                   {clip.maslak === "shia" || clip.maslak === "sunni" || clip.maslak === "neutral" ? (
                                     <span className="mt-0.5 block text-sm font-semibold text-[#8d6b2f]">
                                       {clip.maslak === "shia" ? "Shia" : clip.maslak === "sunni" ? "Sunni" : "Neutral"}
-                                      {clip.reviewPending ? <span className="ml-2 rounded-full bg-[#f4e4c4] px-2 py-0.5 text-xs" data-review-badge>Review baaki</span> : null}
+                                      {edit && clip.reviewPending ? <span className="ml-2 rounded-full bg-[#f4e4c4] px-2 py-0.5 text-xs" data-review-badge>Review baaki</span> : null}
                                     </span>
                                   ) : null}
                                 </span>
@@ -890,7 +890,7 @@ export function ClassroomDayPage() {
                         {index + 1}. {SECTION_LABEL[key]}
                       </span>
                       <span className="block text-sm">Coming Soon · Jald dastiyab hoga</span>
-                      {warning ? <span className="mt-1 block text-sm font-semibold text-[#6b4a16]" role="status" data-maslak-warning={key}>{warning}</span> : null}
+                      {edit && warning ? <span className="mt-1 block text-sm font-semibold text-[#6b4a16]" role="status" data-maslak-warning={key}>{warning}</span> : null}
                     </span>
                     <Clock className="h-6 w-6 shrink-0" aria-hidden />
                   </div>

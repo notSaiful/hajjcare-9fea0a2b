@@ -98,7 +98,10 @@ export function SectionAttach({
         {clips.map((clip, index) => (
           <li key={clip.id} className="rounded-2xl border border-[#e7dcc4] bg-white p-3">
             <p className="text-sm font-semibold text-[#8d6b2f]">Video {index + 1}/{clips.length}</p>
-            <p className="text-base text-[#1b4a38]">{clip.title || clip.fileName || clip.youtubeId}</p>
+            <p className="text-base text-[#1b4a38]">
+              {clip.title || clip.fileName || clip.youtubeId}
+              {clip.reviewPending ? <span className="ml-2 rounded-full bg-[#f4e4c4] px-2 py-0.5 text-xs font-semibold text-[#6b4a16]" data-review-badge>Review baaki</span> : null}
+            </p>
             <label className="mt-2 block text-sm font-semibold text-[#1b4a38]">
               Maslak
               <select
