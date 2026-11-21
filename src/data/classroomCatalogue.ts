@@ -113,6 +113,8 @@ export interface SectionMedia {
   note?: string;
   /** Preview tag. Quran and Doctor Corner stay untagged. */
   maslak?: "shia" | "sunni" | "neutral";
+  /** Best-available Shia match. Shown so it can be checked before it is treated as final. */
+  reviewPending?: boolean;
 }
 
 export interface ClassroomDayContent {
@@ -203,7 +205,7 @@ function youtube(
   durationLabel: string | null,
   language: string | null,
   citation: string,
-  extra?: Partial<Pick<SectionMedia, "startSeconds" | "endSeconds" | "note" | "maslak">>,
+  extra?: Partial<Pick<SectionMedia, "startSeconds" | "endSeconds" | "note" | "maslak" | "reviewPending">>,
 ): SectionMedia {
   return { kind: "youtube", youtubeId, durationLabel, language, citation, ...extra };
 }
@@ -647,14 +649,50 @@ const SHORTLIST: Record<number, Partial<Record<SectionKey, SectionMedia | Sectio
       ),
     ],
   },
-  24: {
+  21: {
     expert: youtube(
-      "Ylf9ACcMAKU",
-      "16:05",
-      "Urdu/Hindi",
-      "Hajj Ka Samaan | Hajj Packing | Hajj Ka Luggage | Haj Ka Safar | Mufti Shahjahan Qasmi Madanapalle",
-      { maslak: "sunni" },
+      "x2TOeszLIuo",
+      "1:01",
+      "English",
+      "Haj Suvidha App 2026 | Complete Guide for Pilgrims | Features, Benefits & How to Use",
+      { maslak: "neutral" },
     ),
+  },
+  22: {
+    doctor: youtube(
+      "dtRllYRn5uo",
+      null,
+      "Indonesian",
+      "Jemaah Haji Vaksin Meningitis Sebelum Berangkat",
+      { maslak: "neutral" },
+    ),
+  },
+  23: {
+    expert: youtube(
+      "eqz6fLkxnEs",
+      null,
+      "Arabic",
+      "تمارين للحج ونصائح للاستعداد لمنع الاصابات والالام العضلية",
+      { maslak: "neutral" },
+    ),
+  },
+  24: {
+    expert: [
+      youtube(
+        "Ylf9ACcMAKU",
+        "16:05",
+        "Urdu/Hindi",
+        "Hajj Ka Samaan | Hajj Packing | Hajj Ka Luggage | Haj Ka Safar | Mufti Shahjahan Qasmi Madanapalle",
+        { maslak: "sunni" },
+      ),
+      youtube(
+        "lJ1n9om6UzU",
+        null,
+        "English",
+        "Precautions for Choosing Luggage Bag for Hajj | Abdul Habib Attari | Madani Channel English",
+        { maslak: "neutral" },
+      ),
+    ],
   },
   25: {
     expert: youtube(
@@ -718,6 +756,15 @@ const SHORTLIST: Record<number, Partial<Record<SectionKey, SectionMedia | Sectio
         { maslak: "shia" },
       ),
     ],
+  },
+  26: {
+    expert: youtube(
+      "tmDfBA9qoy4",
+      null,
+      "English",
+      "Ekram Aldyf Hajj 1447 Information Webinar",
+      { maslak: "neutral" },
+    ),
   },
   30: {
     lesson: youtube(

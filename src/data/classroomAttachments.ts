@@ -40,6 +40,7 @@ export interface PreviewClip {
   language?: string;
   duration?: string;
   maslak?: Maslak;
+  reviewPending?: boolean;
   startSeconds?: number;
   endSeconds?: number;
   note?: string;
@@ -118,6 +119,7 @@ export function clipsFromSlot(slot: SectionSlot | undefined): PreviewClip[] {
     language: media.language ?? undefined,
     duration: media.durationLabel ?? undefined,
     maslak: media.maslak,
+    reviewPending: media.reviewPending,
     pageUrl: media.pageUrl,
     platform: media.platform,
     uploader: media.uploader,
@@ -153,6 +155,7 @@ function asClip(value: Partial<PreviewClip> | null | undefined): PreviewClip | n
     pageUrl: value.pageUrl,
     platform: value.platform,
     uploader: value.uploader,
+    reviewPending: value.reviewPending === true,
   };
 }
 

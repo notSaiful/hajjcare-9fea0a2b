@@ -74,9 +74,11 @@ describe("100 day classroom catalogue", () => {
     expect(ids(30, "lesson")).toEqual(["sunni:OVEX4xXMd8s"]);
     expect(sectionClips(classroomDay(15)?.sections.expert)[0]?.pageUrl).toContain("dailymotion.com/video/x9jkcu2");
     expect(sectionClips(classroomDay(16)?.sections.expert)[1]?.platform).toBe("Al-Islam.org");
-    for (const day of [21, 22, 23, 26]) {
-      expect(comingSoonKeys(classroomDay(day)!)).toEqual([...SECTION_ORDER]);
-    }
+    expect(sectionClips(classroomDay(21)?.sections.expert)[0]?.youtubeId).toBe("x2TOeszLIuo");
+    expect(sectionClips(classroomDay(22)?.sections.doctor)[0]?.maslak).toBe("neutral");
+    expect(sectionClips(classroomDay(24)?.sections.expert).map((clip) => clip.maslak)).toEqual(["sunni", "neutral"]);
+    expect(comingSoonKeys(classroomDay(25)!)).toContain("lesson");
+    expect(sectionClips(classroomDay(8)?.sections.lesson)).toHaveLength(1);
     expect(sectionClips(classroomDay(8)?.sections.lesson)).toHaveLength(1);
     expect(sectionClips(classroomDay(9)?.sections.lesson).length).toBeLessThanOrEqual(3);
   });

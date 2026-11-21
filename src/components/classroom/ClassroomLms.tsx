@@ -860,8 +860,11 @@ export function ClassroomDayPage() {
                                 <span className="text-sm font-semibold text-[#8d6b2f]">Video {clipIndex + 1}/{clips.length}</span>
                                 <span className="min-w-0 flex-1 text-base text-[#1b4a38]">
                                   {clip.title || clip.fileName || "Video"}
-                                  {clip.maslak === "shia" || clip.maslak === "sunni" ? (
-                                    <span className="mt-0.5 block text-sm font-semibold text-[#8d6b2f]">{clip.maslak === "shia" ? "Shia" : "Sunni"}</span>
+                                  {clip.maslak === "shia" || clip.maslak === "sunni" || clip.maslak === "neutral" ? (
+                                    <span className="mt-0.5 block text-sm font-semibold text-[#8d6b2f]">
+                                      {clip.maslak === "shia" ? "Shia" : clip.maslak === "sunni" ? "Sunni" : "Neutral"}
+                                      {clip.reviewPending ? <span className="ml-2 rounded-full bg-[#f4e4c4] px-2 py-0.5 text-xs" data-review-badge>Review baaki</span> : null}
+                                    </span>
                                   ) : null}
                                 </span>
                                 <Play className="h-5 w-5 shrink-0 text-[#1a4d3c]" aria-hidden />
