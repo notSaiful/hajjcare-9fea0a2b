@@ -54,8 +54,11 @@ import {
 } from "@/data/classroomCatalogue";
 import { quizResultMessage } from "@/data/classroomPlan";
 import { useTextToSpeech } from "@/hooks/useTextToSpeech";
+import { attachmentKey, attachmentsForDay, fileObjectUrl, readAttachments } from "@/data/classroomAttachments";
+import { SectionAttach } from "@/components/classroom/SectionAttach";
 
 const DONE_KEY = "hajcare-classroom-preview-done";
+const EDIT_KEY = "hajcare-classroom-preview-edit";
 
 const TOPIC_ICON: Record<TopicIcon, typeof Compass> = {
   niyyat: Compass,
@@ -212,16 +215,32 @@ function TopicMark({ day, className = "h-14 w-14" }: { day: ClassroomDayContent;
   );
 }
 
-function statusLabel(day: ClassroomDayContent, complete: boolean) {
+function statusLabel(day: ClassroomDayContent, complete: boolean, attached: boolean) {
   if (complete) return "Mukammal";
-  if (readySectionCount(day) > 0) return "Khula hua";
+  if (attached || readySectionCount(day) > 0) return "Khula hua";
   return "Jald dastiyab hoga";
+}
+
+function useAttachmentRevision() {
+  const [revision, setRevision] = useState(0);
+  useEffect(() => {
+    const refresh = () => setRevision((value) => value + 1);
+    window.addEventListener("hajcare-attachments", refresh);
+    window.addEventListener("storage", refresh);
+    return () => {
+      window.removeEventListener("hajcare-attachments", refresh);
+      window.removeEventListener("storage", refresh);
+    };
+  }, []);
+  return revision;
 }
 
 export function ClassroomDashboardPage() {
   const { done } = useDoneDays();
   const { language } = useLanguage();
   const navigate = useNavigate();
+  useAttachmentRevision();
+  const attachedDays = new Set(CLASSROOM_DAYS.filter((day) => attachmentsForDay(day.day).length > 0).map((day) => day.day));
   const [jump, setJump] = useState("1");
   const finished = CLASSROOM_DAYS.filter((day) => done.includes(day.day)).length;
   return (
@@ -263,9 +282,10 @@ export function ClassroomDashboardPage() {
         <ol className="mt-5 space-y-3">
           {CLASSROOM_DAYS.map((day) => {
             const complete = done.includes(day.day);
-            const ready = readySectionCount(day) > 0;
+            const attached = attachedDays.has(day.day);
+            const ready = attached || readySectionCount(day) > 0;
             const topic = displayTopic(day, language);
-            const label = `Day ${day.day} ${day.short}. ${topic}. ${statusLabel(day, complete)}`;
+            const label = `Day ${day.day} ${day.short}. ${topic}. ${statusLabel(day, complete, attached)}`;
             return (
               <li key={day.day}>
                 <Link
@@ -283,7 +303,7 @@ export function ClassroomDashboardPage() {
                   <span className="min-w-0 flex-1">
                     <span className="lms-serif block text-2xl leading-tight text-[#1b4a38]">{day.short}</span>
                     <span className="mt-0.5 block text-base leading-snug text-[#1b4a38]">{topic}</span>
-                    <span className="mt-1 block text-sm font-semibold text-[#6d6456]">{statusLabel(day, complete)}</span>
+                    <span className="mt-1 block text-sm font-semibold text-[#6d6456]">{statusLabel(day, complete, attached)}</span>
                   </span>
                   <span
                     className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full ${ready || complete ? "bg-[#1a4d3c] text-[#f7f1e4]" : "bg-[#efe7d6] text-[#8d6b2f]"}`}
@@ -407,7 +427,7 @@ export function ClassroomDayCardPage() {
   );
 }
 
-function MediaBlock({ media, day }: { media: SectionMedia; day: number }) {
+function MediaBlock({ media, day, browserOnly }: { media: SectionMedia; day: number; browserOnly?: boolean }) {
   if (media.kind === "youtube" && media.youtubeId) {
     const src = classroomSideEmbedSrc({
       youtube_id: media.youtubeId,
@@ -427,14 +447,18 @@ function MediaBlock({ media, day }: { media: SectionMedia; day: number }) {
           <span className="font-semibold">Video title: </span>
           {media.citation}
         </p>
+        {browserOnly ? <p className="mt-1 text-sm font-semibold text-[#8d6b2f]">Preview: sirf is browser mein save</p> : null}
       </div>
     );
   }
   if (media.kind === "file" && media.fileSrc) {
     return (
-      <video className="mt-3 w-full rounded-2xl bg-black" controls playsInline src={media.fileSrc}>
-        <track kind="captions" />
-      </video>
+      <div className="mt-3">
+        <video className="w-full rounded-2xl bg-black" controls playsInline src={media.fileSrc}>
+          <track kind="captions" />
+        </video>
+        {browserOnly ? <p className="mt-1 text-sm font-semibold text-[#8d6b2f]">Preview: sirf is browser mein save</p> : null}
+      </div>
     );
   }
   if (media.kind === "quiz" && day === CLASSROOM_QUIZ.day) return <DayQuiz />;
@@ -492,6 +516,43 @@ function DayQuiz() {
   );
 }
 
+function useEditMode() {
+  const [edit, setEdit] = useState(() => (typeof window === "undefined" ? false : localStorage.getItem(EDIT_KEY) === "1"));
+  function set(next: boolean) {
+    localStorage.setItem(EDIT_KEY, next ? "1" : "0");
+    setEdit(next);
+  }
+  return { edit, set };
+}
+
+function playingMedia(catalogue: SectionMedia | null, extra: ReturnType<typeof readAttachments>[string] | undefined, fileSrc: string | undefined): { media: SectionMedia | null; browserOnly: boolean } {
+  if (extra?.kind === "youtube" && extra.youtubeId) {
+    return {
+      browserOnly: true,
+      media: {
+        kind: "youtube",
+        youtubeId: extra.youtubeId,
+        durationLabel: extra.duration ?? null,
+        language: extra.language ?? null,
+        citation: extra.title || "Is browser ki video",
+      },
+    };
+  }
+  if (extra?.kind === "file" && fileSrc) {
+    return {
+      browserOnly: true,
+      media: {
+        kind: "file",
+        fileSrc,
+        durationLabel: extra.duration ?? null,
+        language: extra.language ?? null,
+        citation: extra.title || extra.fileName || "Is browser ki video",
+      },
+    };
+  }
+  return { browserOnly: false, media: catalogue };
+}
+
 export function ClassroomDayPage() {
   const params = useParams();
   const navigate = useNavigate();
@@ -499,18 +560,40 @@ export function ClassroomDayPage() {
   const day = classroomDay(dayNumber);
   const { language } = useLanguage();
   const { done, toggle } = useDoneDays();
+  const { edit, set: setEdit } = useEditMode();
+  useAttachmentRevision();
+  const attached = readAttachments();
+  const [fileUrls, setFileUrls] = useState<Record<string, string>>({});
   const [open, setOpen] = useState<SectionKey | null>(null);
-  const ready = day ? readySectionCount(day) : 0;
+  const ready = day
+    ? SECTION_ORDER.filter((key) => Boolean(attached[attachmentKey(day.day, key)]) || sectionReady(day.sections[key])).length
+    : 0;
   const complete = day ? done.includes(day.day) : false;
 
   useEffect(() => {
     const key = window.location.hash.replace("#", "") as SectionKey;
     if (!day) return;
-    if (SECTION_ORDER.includes(key) && sectionReady(day.sections[key])) {
+    const hasAttachment = Boolean(readAttachments()[attachmentKey(day.day, key)]);
+    if (SECTION_ORDER.includes(key) && (hasAttachment || sectionReady(day.sections[key]))) {
       setOpen(key);
       document.getElementById(`section-${key}`)?.scrollIntoView({ block: "start" });
     }
   }, [day]);
+
+  useEffect(() => {
+    if (!day || !open) return;
+    const key = attachmentKey(day.day, open);
+    const extra = attached[key];
+    if (extra?.kind !== "file" || fileUrls[key]) return;
+    let cancelled = false;
+    void fileObjectUrl(day.day, open).then((url) => {
+      if (cancelled || !url) return;
+      setFileUrls((current) => ({ ...current, [key]: url }));
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [day, open, attached, fileUrls]);
 
   const topic = day ? displayTopic(day, language) : "";
   const progress = useMemo(() => (day ? Math.round((ready / SECTION_ORDER.length) * 100) : 0), [day, ready]);
@@ -542,16 +625,33 @@ export function ClassroomDayPage() {
         <div className="mt-2 h-3 overflow-hidden rounded-full bg-[#efe7d6]" role="progressbar" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100} aria-label="Tayyari">
           <div className="h-full rounded-full bg-[#c4a15a]" style={{ width: `${progress}%` }} />
         </div>
+        <label className="mt-4 flex min-h-12 items-center justify-between gap-3 rounded-2xl border border-[#e6d3a1] bg-white px-3 py-2">
+          <span>
+            <span className="block text-base font-semibold text-[#1b4a38]">Admin / Edit mode</span>
+            <span className="block text-xs text-[#6d6456]">Video lagane ka option. Pilgrims ko band rehta hai.</span>
+          </span>
+          <input
+            data-edit-toggle
+            type="checkbox"
+            className="h-6 w-6"
+            checked={edit}
+            onChange={(event) => setEdit(event.target.checked)}
+          />
+        </label>
         <LanguageAndListen day={day} />
         <ol className="mt-4 space-y-3">
           {SECTION_ORDER.map((key, index) => {
-            const media = day.sections[key];
-            const available = sectionReady(media);
+            const catalogue = day.sections[key];
+            const extra = attached[attachmentKey(day.day, key)];
+            const resolved = playingMedia(catalogue, extra, fileUrls[attachmentKey(day.day, key)]);
+            const media = resolved.media;
+            const available = Boolean(extra) || sectionReady(catalogue);
             const Icon = SECTION_ICON[key];
+            const duration = media?.durationLabel ?? (extra ? "Duration optional" : null);
             return (
               <li key={key} id={`section-${key}`} className="scroll-mt-20">
-                {available && media ? (
-                  <div className="rounded-3xl border border-[#e7dcc4] bg-white p-3">
+                {available && (media || extra) ? (
+                  <div className={`rounded-3xl border bg-white p-3 ${resolved.browserOnly ? "border-[#c4a15a]" : "border-[#e7dcc4]"}`}>
                     <button type="button" className="flex w-full items-center gap-3 text-left" onClick={() => setOpen(open === key ? null : key)}>
                       <Icon className="h-7 w-7 shrink-0 text-[#1a4d3c]" aria-hidden />
                       <span className="min-w-0 flex-1">
@@ -559,8 +659,8 @@ export function ClassroomDayPage() {
                           {index + 1}. {SECTION_LABEL[key]}
                         </span>
                         <span className="block text-sm text-[#6d6456]">
-                          {media.durationLabel ?? "Duration jald dastiyab hogi"}
-                          {media.language ? ` · ${media.language}` : ""}
+                          {duration ?? catalogue?.durationLabel ?? "Duration jald dastiyab hogi"}
+                          {(media?.language || catalogue?.language) ? ` · ${media?.language || catalogue?.language}` : ""}
                         </span>
                       </span>
                       <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#1a4d3c] text-[#f7f1e4]">
@@ -569,8 +669,8 @@ export function ClassroomDayPage() {
                     </button>
                     {open === key ? (
                       <div>
-                        {media.note ? <p className="mt-2 text-sm text-[#6d6456]">{media.note}</p> : null}
-                        <MediaBlock media={media} day={day.day} />
+                        {catalogue?.note && !resolved.browserOnly ? <p className="mt-2 text-sm text-[#6d6456]">{catalogue.note}</p> : null}
+                        {media ? <MediaBlock media={media} day={day.day} browserOnly={resolved.browserOnly} /> : <p className="mt-2 text-sm">Video khul rahi hai…</p>}
                       </div>
                     ) : null}
                   </div>
@@ -586,6 +686,17 @@ export function ClassroomDayPage() {
                     <Clock className="h-6 w-6 shrink-0" aria-hidden />
                   </div>
                 )}
+                {edit ? (
+                  <SectionAttach
+                    day={day.day}
+                    section={key}
+                    attachment={extra}
+                    onChange={() => {
+                      window.dispatchEvent(new Event("hajcare-attachments"));
+                      setOpen(key);
+                    }}
+                  />
+                ) : null}
               </li>
             );
           })}
