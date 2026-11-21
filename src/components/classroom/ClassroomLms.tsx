@@ -152,8 +152,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
         </Link>
         <LargeTextToggle className="text-[#e4cb87] hover:bg-white/10" />
       </header>
-      <p className="px-4 pt-3 text-right text-[11px] font-semibold tracking-[0.18em] text-[#e4cb87]">PREVIEW · NOT LIVE</p>
-      <div className="mx-auto w-full max-w-md px-3 pb-16">{children}</div>
+      <div className="mx-auto w-full max-w-md px-3 pb-16 pt-3">{children}</div>
     </div>
   );
 }
