@@ -2,11 +2,15 @@ import { describe, expect, it } from "vitest";
 import { CLASSROOM_DAYS } from "./classroomCatalogue";
 import {
   ATTACHMENT_META_KEY,
+  maslakGap,
+  maslakWarning,
   moveClip,
   readAttachments,
   removeAttachment,
   saveYoutubeAttachment,
+  setClipMaslak,
   youtubeIdFromUrl,
+  type PreviewClip,
 } from "./classroomAttachments";
 
 describe("preview video attachments", () => {
@@ -65,5 +69,26 @@ describe("preview video attachments", () => {
     await removeAttachment(8, "dua");
     expect(readAttachments()["8:dua"]).toBeUndefined();
     expect(CLASSROOM_DAYS[7].sections.dua).toBe(before);
+  });
+
+  it("warns only when a maslak section has one of Shia or Sunni", () => {
+    const shia = [{ id: "a", kind: "youtube", maslak: "shia" }] as PreviewClip[];
+    const both = [
+      { id: "a", kind: "youtube", maslak: "shia" },
+      { id: "b", kind: "youtube", maslak: "sunni" },
+    ] as PreviewClip[];
+    expect(maslakGap("hadith", shia)).toBe("shia");
+    expect(maslakWarning("lesson", [{ id: "a", kind: "youtube", maslak: "sunni" }])).toMatch(/Shia video/);
+    expect(maslakGap("naat", both)).toBeNull();
+    expect(maslakGap("dua", [{ id: "a", kind: "youtube", maslak: "neutral" }])).toBeNull();
+    expect(maslakGap("expert", [])).toBeNull();
+    expect(maslakGap("doctor", shia)).toBeNull();
+    expect(maslakGap("quran", [{ id: "a", kind: "youtube", maslak: "sunni" }])).toBeNull();
+    expect(maslakGap("quiz", shia)).toBeNull();
+    localStorage.removeItem(ATTACHMENT_META_KEY);
+    const clips = [{ id: "catalogue-0-abc", kind: "youtube" as const, title: "Hadith", youtubeId: "aaaaaaaaaaa" }];
+    setClipMaslak(3, "hadith", clips, clips[0].id, "shia");
+    expect(readAttachments()["3:hadith"]?.clips[0]?.maslak).toBe("shia");
+    expect(maslakWarning("hadith", readAttachments()["3:hadith"]!.clips)).toMatch(/Sunni video/);
   });
 });

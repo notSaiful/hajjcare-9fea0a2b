@@ -15,6 +15,7 @@
     { "source": "/service-fee", "destination": "/app.html" },
     { "source": "/classroom/day/:day/card", "destination": "/app.html" },
     { "source": "/classroom/day/:day", "destination": "/app.html" },
+    { "source": "/classroom/admin", "destination": "/app.html" },
     { "source": "/classroom", "destination": "/app.html" },
     { "source": "/admin/classroom", "destination": "/app.html" },
     { "source": "/reset-password", "destination": "/app.html" },

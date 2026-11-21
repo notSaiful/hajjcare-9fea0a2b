@@ -10,10 +10,11 @@
  * {
  *   short, title_hi, title_en, title_ur, icon,
  *   sections: { quran|hadith|dua|lesson|doctor|expert|naat|quiz:
- *     { youtubeId, fileSrc, durationLabel, language, citation }
+ *     { youtubeId, fileSrc, durationLabel, language, citation, maslak }
  *     | [ up to 3 of those objects ]
  *     | null }
  * }
+ * maslak is "shia", "sunni", or "neutral".
  * A single object is still one video. An array is the ordered list, maximum 3.
  * Public clients still cannot SELECT that table. training_enrollments is not involved.
  */

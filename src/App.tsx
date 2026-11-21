@@ -142,6 +142,7 @@ const HajjTrainingVideosPage = lazy(() => import("./pages/HajjTrainingVideosPage
 const ClassroomDashboardPage = lazy(() => import("./pages/ClassroomStudio").then((mod) => ({ default: mod.ClassroomDashboardPage })));
 const ClassroomDayCardPage = lazy(() => import("./pages/ClassroomStudio").then((mod) => ({ default: mod.ClassroomDayCardPage })));
 const ClassroomDayPage = lazy(() => import("./pages/ClassroomStudio").then((mod) => ({ default: mod.ClassroomDayPage })));
+const ClassroomVideosPage = lazy(() => import("./pages/ClassroomStudio").then((mod) => ({ default: mod.ClassroomVideosPage })));
 const ClassroomAdminPage = lazy(() => import("./pages/ClassroomAdminPage"));
 
 const queryClient = new QueryClient({
@@ -183,6 +184,7 @@ function AppContent() {
       <Route path="/service-fee" element={<PaymentPage />} />
       <Route path="/classroom/day/:dayNumber/card" element={<ClassroomDayCardPage />} />
       <Route path="/classroom/day/:dayNumber" element={<ClassroomDayPage />} />
+      <Route path="/classroom/admin" element={<ClassroomVideosPage />} />
       <Route path="/classroom" element={<ClassroomDashboardPage />} />
       <Route path="/admin/classroom" element={<AdminOnlyRoute><ClassroomAdminPage /></AdminOnlyRoute>} />
       <Route path="*" element={<LeaveToDemo />} />

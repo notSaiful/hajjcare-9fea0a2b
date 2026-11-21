@@ -56,12 +56,12 @@ import {
 import { quizResultMessage } from "@/data/classroomPlan";
 import { useTextToSpeech } from "@/hooks/useTextToSpeech";
 import { attachmentsForDay, fileObjectUrl, storedClips, visibleClips, type PreviewClip } from "@/data/classroomAttachments";
-import { dayIsFinished, dayIsUnlocked, firstOpenDay } from "@/data/classroomUnlock";
+import { dayIsFinished, dayIsUnlocked, firstOpenDay, PREVIEW_EDIT_KEY } from "@/data/classroomUnlock";
 import { SectionAttach } from "@/components/classroom/SectionAttach";
 
 const DONE_KEY = "hajcare-classroom-preview-done";
 const PLAYED_KEY = "hajcare-classroom-preview-played";
-const EDIT_KEY = "hajcare-classroom-preview-edit";
+const EDIT_KEY = PREVIEW_EDIT_KEY;
 const LOCK_MESSAGE = "Pichla din mukammal karein";
 
 const TOPIC_ICON: Record<TopicIcon, typeof Compass> = {
@@ -139,7 +139,7 @@ function useProgress() {
   return { done, played, toggle, markPlayed };
 }
 
-function Shell({ children }: { children: React.ReactNode }) {
+export function Shell({ children }: { children: React.ReactNode }) {
   useClassroomFonts();
   return (
     <div className="classroom-lms min-h-screen">
@@ -747,6 +747,11 @@ export function ClassroomDayPage() {
             onChange={(event) => setEdit(event.target.checked)}
           />
         </label>
+        {edit ? (
+          <Link to={`/classroom/admin?day=${day.day}`} className="mt-2 flex h-12 items-center justify-center rounded-2xl border border-[#1a4d3c] text-base font-semibold text-[#1a4d3c]">
+            Classroom Videos
+          </Link>
+        ) : null}
         <LanguageAndListen day={day} />
         <ol className="mt-4 space-y-3">
           {SECTION_ORDER.map((key, index) => {
@@ -799,7 +804,12 @@ export function ClassroomDayPage() {
                                 }}
                               >
                                 <span className="text-sm font-semibold text-[#8d6b2f]">Video {clipIndex + 1}/{clips.length}</span>
-                                <span className="min-w-0 flex-1 text-base text-[#1b4a38]">{clip.title || clip.fileName || "Video"}</span>
+                                <span className="min-w-0 flex-1 text-base text-[#1b4a38]">
+                                  {clip.title || clip.fileName || "Video"}
+                                  {clip.maslak === "shia" || clip.maslak === "sunni" ? (
+                                    <span className="mt-0.5 block text-sm font-semibold text-[#8d6b2f]">{clip.maslak === "shia" ? "Shia" : "Sunni"}</span>
+                                  ) : null}
+                                </span>
                                 <Play className="h-5 w-5 shrink-0 text-[#1a4d3c]" aria-hidden />
                               </button>
                             </li>

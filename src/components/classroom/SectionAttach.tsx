@@ -2,10 +2,13 @@ import { useState } from "react";
 import { MAX_SECTION_VIDEOS, type SectionKey } from "@/data/classroomCatalogue";
 import {
   PREVIEW_SAVE_LABEL,
+  maslakWarning,
   moveClip,
   removeClip,
   saveFileAttachment,
   saveYoutubeAttachment,
+  setClipMaslak,
+  type Maslak,
   type PreviewClip,
 } from "@/data/classroomAttachments";
 
@@ -26,9 +29,11 @@ export function SectionAttach({
   const [title, setTitle] = useState("");
   const [language, setLanguage] = useState("");
   const [duration, setDuration] = useState("");
+  const [maslak, setMaslak] = useState<Maslak>("neutral");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
-  const details = { title, language, duration, base: clips };
+  const details = { title, language, duration, maslak, base: clips };
+  const warning = maslakWarning(section, clips);
 
   function openAdd() {
     setReplaceId(null);
@@ -36,6 +41,7 @@ export function SectionAttach({
     setTitle("");
     setLanguage("");
     setDuration("");
+    setMaslak("neutral");
     setError("");
     setForm(true);
   }
@@ -46,6 +52,7 @@ export function SectionAttach({
     setTitle(clip.title ?? "");
     setLanguage(clip.language ?? "");
     setDuration(clip.duration ?? "");
+    setMaslak(clip.maslak ?? "neutral");
     setError("");
     setForm(true);
   }
@@ -82,11 +89,32 @@ export function SectionAttach({
     <div data-attach={section} className="mt-2 rounded-2xl border border-[#e6d3a1] bg-[#fffaf0] p-3">
       <p className="text-sm font-semibold text-[#8d6b2f]">{PREVIEW_SAVE_LABEL}</p>
       <p className="mt-1 text-sm text-[#1b4a38]">{clips.length} / {MAX_SECTION_VIDEOS} video</p>
+      {warning ? (
+        <p className="mt-2 rounded-2xl bg-[#f4e4c4] px-3 py-2 text-sm font-semibold text-[#6b4a16]" role="status" data-maslak-warning={section}>
+          {warning}
+        </p>
+      ) : null}
       <ol className="mt-2 space-y-2">
         {clips.map((clip, index) => (
           <li key={clip.id} className="rounded-2xl border border-[#e7dcc4] bg-white p-3">
             <p className="text-sm font-semibold text-[#8d6b2f]">Video {index + 1}/{clips.length}</p>
             <p className="text-base text-[#1b4a38]">{clip.title || clip.fileName || clip.youtubeId}</p>
+            <label className="mt-2 block text-sm font-semibold text-[#1b4a38]">
+              Maslak
+              <select
+                value={clip.maslak ?? "neutral"}
+                aria-label={`${section} video ${index + 1} maslak`}
+                className="mt-1 h-12 w-full rounded-2xl border border-[#e4dcc8] bg-white px-3 text-base"
+                onChange={(event) => {
+                  setClipMaslak(day, section, clips, clip.id, event.target.value as Maslak);
+                  onChange();
+                }}
+              >
+                <option value="neutral">Neutral</option>
+                <option value="sunni">Sunni</option>
+                <option value="shia">Shia</option>
+              </select>
+            </label>
             <div className="mt-2 grid grid-cols-2 gap-2">
               <button type="button" className="h-11 rounded-2xl border border-[#1a4d3c] text-sm font-semibold text-[#1a4d3c]" disabled={index === 0} onClick={() => { moveClip(day, section, clips, index, -1); onChange(); }}>
                 Upar
@@ -143,6 +171,14 @@ export function SectionAttach({
           <label className="block text-sm font-semibold text-[#1b4a38]">
             Title (optional)
             <input value={title} onChange={(event) => setTitle(event.target.value)} className="mt-1 h-12 w-full rounded-2xl border border-[#e4dcc8] bg-white px-3 text-base" />
+          </label>
+          <label className="block text-sm font-semibold text-[#1b4a38]">
+            Maslak
+            <select value={maslak} onChange={(event) => setMaslak(event.target.value as Maslak)} className="mt-1 h-12 w-full rounded-2xl border border-[#e4dcc8] bg-white px-3 text-base" aria-label={`${section} new maslak`}>
+              <option value="neutral">Neutral</option>
+              <option value="sunni">Sunni</option>
+              <option value="shia">Shia</option>
+            </select>
           </label>
           <div className="grid grid-cols-2 gap-2">
             <label className="block text-sm font-semibold text-[#1b4a38]">

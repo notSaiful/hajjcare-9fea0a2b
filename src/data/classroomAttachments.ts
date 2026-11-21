@@ -5,7 +5,8 @@
  *
  * Later, after approval, each section in classroom_days.content can hold
  * either one object or an array of up to 3:
- * { youtubeId, durationLabel, language, citation }
+ * { youtubeId, durationLabel, language, citation, maslak }
+ * maslak is "shia", "sunni", or "neutral".
  * A device file would be stored only as a URL after an approved upload.
  * That is still one existing jsonb row per day. No new table, no RLS change,
  * and training_enrollments is not involved. This file does not do that save.
@@ -19,6 +20,11 @@ const DB_NAME = "hajcare-classroom-preview";
 const STORE = "files";
 const MAX_FILE_BYTES = 80 * 1024 * 1024;
 
+export type Maslak = "shia" | "sunni" | "neutral";
+
+/** Sections where a one-sided Shia or Sunni list should be flagged. Quran and Doctor Corner stay exempt. */
+export const MASLAK_SECTIONS: readonly SectionKey[] = ["hadith", "dua", "lesson", "expert", "naat"];
+
 export interface PreviewClip {
   id: string;
   kind: "youtube" | "file" | "quiz";
@@ -30,6 +36,7 @@ export interface PreviewClip {
   title?: string;
   language?: string;
   duration?: string;
+  maslak?: Maslak;
   startSeconds?: number;
   endSeconds?: number;
   note?: string;
@@ -132,6 +139,7 @@ function asClip(value: Partial<PreviewClip> | null | undefined): PreviewClip | n
     title: value.title,
     language: value.language,
     duration: value.duration,
+    maslak: value.maslak === "shia" || value.maslak === "sunni" || value.maslak === "neutral" ? value.maslak : undefined,
     startSeconds: value.startSeconds,
     endSeconds: value.endSeconds,
     note: value.note,
@@ -188,6 +196,39 @@ export function commitClips(day: number, section: SectionKey, clips: readonly Pr
   writeAttachments(map);
 }
 
+function clipMaslak(value: string | undefined): Maslak {
+  return value === "shia" || value === "sunni" ? value : "neutral";
+}
+
+/** "shia" or "sunni" when that side is tagged and the other side is missing. Neutral clips do not fill the gap. */
+export function maslakGap(section: SectionKey, clips: readonly PreviewClip[]): "shia" | "sunni" | null {
+  if (!MASLAK_SECTIONS.includes(section)) return null;
+  let shia = false;
+  let sunni = false;
+  for (const clip of clips) {
+    if (clip.maslak === "shia") shia = true;
+    if (clip.maslak === "sunni") sunni = true;
+  }
+  if (shia && !sunni) return "shia";
+  if (sunni && !shia) return "sunni";
+  return null;
+}
+
+export function maslakWarning(section: SectionKey, clips: readonly PreviewClip[]): string | null {
+  const gap = maslakGap(section, clips);
+  if (gap === "shia") return "Sirf Shia tag hai. Sunni video bhi chahiye.";
+  if (gap === "sunni") return "Sirf Sunni tag hai. Shia video bhi chahiye.";
+  return null;
+}
+
+export function setClipMaslak(day: number, section: SectionKey, clips: readonly PreviewClip[], clipIdToTag: string, maslak: Maslak) {
+  commitClips(
+    day,
+    section,
+    clips.map((clip) => (clip.id === clipIdToTag ? { ...clip, maslak } : clip)),
+  );
+}
+
 export function saveYoutubeAttachment(input: {
   day: number;
   section: SectionKey;
@@ -195,6 +236,7 @@ export function saveYoutubeAttachment(input: {
   title?: string;
   language?: string;
   duration?: string;
+  maslak?: string;
   /** Clips already on screen. Passed so a catalogue list is kept when a new one is added. */
   base?: readonly PreviewClip[];
   replaceId?: string;
@@ -210,6 +252,7 @@ export function saveYoutubeAttachment(input: {
     title: blankText(input.title),
     language: blankText(input.language),
     duration: blankText(input.duration),
+    maslak: clipMaslak(input.maslak),
   };
   if (input.replaceId) {
     const index = current.findIndex((clip) => clip.id === input.replaceId);
@@ -284,6 +327,7 @@ export async function saveFileAttachment(input: {
   title?: string;
   language?: string;
   duration?: string;
+  maslak?: string;
   base?: readonly PreviewClip[];
   replaceId?: string;
 }): Promise<{ ok: true } | { ok: false; message: string }> {
@@ -303,6 +347,7 @@ export async function saveFileAttachment(input: {
     title: blankText(input.title) || input.file.name,
     language: blankText(input.language),
     duration: blankText(input.duration),
+    maslak: clipMaslak(input.maslak),
   };
   if (input.replaceId) {
     const index = current.findIndex((clip) => clip.id === input.replaceId);

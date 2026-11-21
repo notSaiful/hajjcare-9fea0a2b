@@ -1,5 +1,8 @@
 /** Browser-only sequential unlock. Day 1 is open. Day N+1 opens after Day N is finished. */
 
+/** Same switch as the day board. It does not check an admin login. */
+export const PREVIEW_EDIT_KEY = "hajcare-classroom-preview-edit";
+
 export function dayIsFinished(day: number, done: readonly number[], played: readonly number[]): boolean {
   return done.includes(day) || played.includes(day);
 }
