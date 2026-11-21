@@ -731,3 +731,16 @@
 .font-arabic {
   font-family: 'Amiri', 'Noto Naskh Arabic', serif;
 }
+
+.classroom-lms {
+  background-color: #0e3a2c;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Cg fill='none' stroke='%23c9a45c' stroke-width='0.8' opacity='0.28'%3E%3Cpath d='M70 16 L82 58 L124 70 L82 82 L70 124 L58 82 L16 70 L58 58 Z'/%3E%3Cpath d='M70 36 L78 62 L104 70 L78 78 L70 104 L62 78 L36 70 L62 62 Z'/%3E%3C/g%3E%3C/svg%3E");
+  color: #1b4a38;
+  font-family: "Manrope", "Noto Sans Devanagari", "Noto Sans", sans-serif;
+}
+
+.classroom-lms .lms-serif {
+  font-family: "Cormorant Garamond", Georgia, "Noto Sans Devanagari", serif;
+  font-weight: 600;
+  letter-spacing: 0;
+}
