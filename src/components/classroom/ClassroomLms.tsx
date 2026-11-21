@@ -56,7 +56,7 @@ import {
 } from "@/data/classroomCatalogue";
 import { quizResultMessage } from "@/data/classroomPlan";
 import { useTextToSpeech } from "@/hooks/useTextToSpeech";
-import { browserFileClips, fileObjectUrl, maslakWarning, type PreviewClip } from "@/data/classroomAttachments";
+import { attachmentsForDay, browserFileClips, fileObjectUrl, maslakWarning, type PreviewClip } from "@/data/classroomAttachments";
 import { useClassroomVideoRows } from "@/data/classroomRemote";
 import { boardClips } from "@/data/classroomVideoRows";
 import { dayIsFinished, dayIsUnlocked, firstOpenDay, PREVIEW_EDIT_KEY } from "@/data/classroomUnlock";
