@@ -83,6 +83,7 @@ function demoRouting(): Plugin {
     }
     if (pathOnly === "/explore") nextPath = "/explore.html";
     else if (pathOnly === "/library") nextPath = "/library.html";
+    else if (pathOnly === "/library/hajj-aur-umrah-kai-masail") nextPath = "/kitab/reader.html";
     else if (pathOnly === "/visitors") nextPath = "/visitors.html";
     else if (pathOnly === "/" || pathOnly === "/index.html") nextPath = "/index.html";
     else if (pathOnly === "/auth" || pathOnly === "/reset-password" || pathOnly === "/volunteer" || pathOnly === "/volunteer/training" || pathOnly === "/service-fee" || pathOnly === "/classroom" || pathOnly === "/classroom/admin" || pathOnly.startsWith("/classroom/day/") || pathOnly === "/admin/classroom") nextPath = "/app.html";

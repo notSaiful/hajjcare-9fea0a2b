@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="hi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#1f4d3a">
+  <title>Hajj Aur Umrah Kai Masail — HajCare AI</title>
+  <link rel="stylesheet" href="/library.css">
+  <link rel="stylesheet" href="/kitab/reader.css">
+</head>
+<body>
+  <header>
+    <a class="back" href="/library" aria-label="Back to Kitab Khana">‹</a>
+    <a class="brand" href="/library">HajCare AI</a>
+  </header>
+  <main class="reader" data-reader>
+    <p class="eyebrow">Hajj &amp; Umrah Books</p>
+    <h1>Hajj Aur Umrah Kai Masail</h1>
+    <p class="meta"><b>Language:</b> Hindi · <b>Format:</b> PDF · <span id="page-count">295 pages</span></p>
+    <div class="reader-tools">
+      <button type="button" id="prev" class="reader-btn">Previous</button>
+      <label class="reader-page">Page
+        <input id="page" type="number" min="1" max="295" value="1" inputmode="numeric">
+      </label>
+      <button type="button" id="next" class="reader-btn">Next</button>
+      <a id="download" class="reader-btn reader-download" href="/kitab/hajj-aur-umrah-kai-masail-hindi.pdf" download="hajj-aur-umrah-kai-masail-hindi.pdf">Download PDF</a>
+    </div>
+    <p id="reader-status" class="lede" role="status">Opening the book…</p>
+    <div class="reader-stage">
+      <canvas id="page-canvas"></canvas>
+      <iframe id="pdf-frame" class="reader-fallback" title="Hajj Aur Umrah Kai Masail PDF" hidden></iframe>
+    </div>
+  </main>
+  <script type="module" src="/kitab/reader.js"></script>
+</body>
+</html>

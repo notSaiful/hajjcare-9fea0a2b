@@ -1,0 +1,8 @@
+.reader{max-width:920px}
+.reader-tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:12px 0}
+.reader-btn,.reader-page{min-height:44px;border:1px solid #1f4d3a;border-radius:12px;background:#fff;color:#1f4d3a;font:600 15px Mukta,sans-serif;padding:8px 12px;text-decoration:none;display:inline-flex;align-items:center}
+.reader-download{background:#1f4d3a;color:#f6f0e4}
+.reader-page input{width:4.5rem;margin-left:8px;min-height:36px;font-size:16px;border:1px solid #c9a45c;border-radius:8px;padding:4px 6px}
+.reader-stage{background:#fff;border:1px solid #c9a45c66;border-radius:16px;overflow:auto;padding:8px}
+#page-canvas{display:block;width:100%;height:auto}
+.reader-fallback{width:100%;min-height:70vh;border:0}

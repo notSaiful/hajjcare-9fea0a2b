@@ -45,7 +45,9 @@ describe("approved public demo", () => {
     expect(library).toContain("King Fahd Glorious Quran Printing Complex, Madinah (official translations)");
     expect(library).toContain('href="https://tanzil.net/"');
     expect(library).toContain(">Arabic text at Tanzil ↗</a>");
-    expect(library).not.toContain("qurancomplex.gov.sa");
+    const quranCard = library.slice(library.indexOf('class="card quran-feature"'), library.indexOf(">Awareness Guides</h3>"));
+    expect(quranCard).not.toContain("qurancomplex.gov.sa");
+    expect(library).toContain('href="https://qurancomplex.gov.sa/"');
     expect(library.match(/quranenc\.com\/(?:en|hi)\/home/g)).toEqual([
       "quranenc.com/en/home",
       "quranenc.com/hi/home",
@@ -224,7 +226,7 @@ describe("approved public demo", () => {
       expect(vercel.rewrites.findIndex((rule) => rule.source === source)).toBeLessThan(vercel.rewrites.length - 1);
     }
     expect(vercel.rewrites).toContainEqual({ source: "/sukoon", destination: "/sukoon.html" });
-    expect(vercel.rewrites.at(-1)).toEqual({ source: "/((?!videos/).*)", destination: "/index.html" });
+    expect(vercel.rewrites.at(-1)).toEqual({ source: "/((?!videos/|api/|kitab/).*)", destination: "/index.html" });
     const policy = read("public/privacy-policy.html");
     expect(policy).toContain("Last updated: 12 Nov 2026");
     expect(policy).toContain("SAZO Management Private Limited");

@@ -1,0 +1,23 @@
+{
+  "categories": [
+    {
+      "id": "hajj-umrah-books",
+      "title": "Hajj & Umrah Books",
+      "books": [
+        {
+          "id": "hajj-aur-umrah-kai-masail",
+          "slug": "hajj-aur-umrah-kai-masail",
+          "title": "Hajj Aur Umrah Kai Masail",
+          "language": "Hindi",
+          "category": "Hajj & Umrah Books",
+          "format": "PDF",
+          "status": "Published",
+          "pages": 295,
+          "cover": "/kitab/hajj-aur-umrah-kai-masail-cover.jpg",
+          "pdf": "/kitab/hajj-aur-umrah-kai-masail-hindi.pdf",
+          "reader": "/library/hajj-aur-umrah-kai-masail"
+        }
+      ]
+    }
+  ]
+}
