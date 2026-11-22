@@ -14,6 +14,7 @@ describe("Hajj & Umrah Books", () => {
     expect(catalog.categories).toHaveLength(1);
     expect(catalog.categories[0].id).toBe("hajj-umrah-books");
     expect(catalog.categories[0].title).toBe("Hajj & Umrah Books");
+    expect(catalog.categories[0].books).toHaveLength(3);
     expect(book).toMatchObject({
       id: "hajj-aur-umrah-kai-masail",
       title: "Hajj Aur Umrah Kai Masail",
@@ -24,6 +25,20 @@ describe("Hajj & Umrah Books", () => {
     });
     expect(book.pdf).toBe("/kitab/hajj-aur-umrah-kai-masail-hindi.pdf");
     expect(book.reader).toBe("/library/hajj-aur-umrah-kai-masail");
+    expect(catalog.categories[0].books[1]).toMatchObject({
+      slug: "umrah-and-visit-guide-ministry-of-hajj",
+      title: "Umrah & Visit Guide",
+      language: "English",
+      publisher: "Ministry of Hajj and Umrah, Kingdom of Saudi Arabia",
+      pages: 19,
+    });
+    expect(catalog.categories[0].books[2]).toMatchObject({
+      slug: "rites-of-hajj-and-umrah-dar-al-iftaa",
+      title: "The Rites of Hajj and 'Umrah Booklet",
+      language: "English",
+      publisher: "Dar al-Iftaa al-Misriyyah",
+      pages: 56,
+    });
   });
 
   it("keeps the Quran card and the existing source books", () => {
@@ -40,6 +55,7 @@ describe("Hajj & Umrah Books", () => {
     expect(library).not.toContain("hajj-aur-umrah-kai-masail-hindi.pdf");
     expect(library.indexOf('id="hajj-umrah-books"')).toBeGreaterThan(-1);
     expect(library.indexOf('id="hajj-umrah-books"')).toBeLessThan(library.indexOf('id="quran"'));
+    expect(library).not.toContain("बाहरी इस्लामी लाइब्रेरी");
   });
 
   it("searches by title and opens the reader without embedding the PDF on the listing", () => {
