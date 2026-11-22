@@ -9,3 +9,4 @@ main{max-width:920px;margin:auto;padding:28px 16px 40px}.eyebrow{color:#7a5e26;t
 .kitab-open,.kitab-download{display:flex;align-items:center;justify-content:center;min-height:44px;margin-top:8px;border-radius:12px;text-decoration:none;font-weight:600}
 .kitab-open{background:#1f4d3a;color:#f6f0e4}.kitab-download{border:1px solid #1f4d3a;color:#1f4d3a}
 .kitab-book .meta a{overflow-wrap:anywhere}
+.external-libs .grid{align-items:stretch}.external-card{border-top:3px solid var(--sand)}.maslak,.external-note{font-size:13px;margin:4px 0}.maslak{color:var(--green);font-weight:600}.external-note{color:var(--olive)}

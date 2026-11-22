@@ -64,7 +64,6 @@ describe("Hajj & Umrah Books", () => {
     expect(library).not.toContain("hajj-aur-umrah-kai-masail-hindi.pdf");
     expect(library.indexOf('id="hajj-umrah-books"')).toBeGreaterThan(-1);
     expect(library.indexOf('id="hajj-umrah-books"')).toBeLessThan(library.indexOf('id="quran"'));
-    expect(library).not.toContain("बाहरी इस्लामी लाइब्रेरी");
   });
 
   it("searches by title and opens the reader without embedding the PDF on the listing", () => {
@@ -79,5 +78,35 @@ describe("Hajj & Umrah Books", () => {
     expect(reader).toContain("disableAutoFetch: true");
     expect(read("vercel.json")).toContain("Accept-Ranges");
     expect(read("vercel.json")).toContain("/library/hajj-aur-umrah-kai-masail");
+  });
+
+  it("lists three external libraries without touching the hosted book", () => {
+    expect(library).toContain('id="external-islamic-libraries"');
+    expect(library).toContain("बाहरी इस्लामी लाइब्रेरी");
+    expect(library).toContain('href="https://www.al-islam.org/" target="_blank" rel="noopener noreferrer"');
+    expect(library).toContain('href="https://islamhouse.com/en" target="_blank" rel="noopener noreferrer"');
+    expect(library).toContain('href="https://www.ahlesunnatpak.com/" target="_blank" rel="noopener noreferrer"');
+    expect(library).toContain("Shia (Ahlul Bayt DILP)");
+    expect(library).toContain("Sunni (Hindi/Urdu books available)");
+    expect(library).toContain("Sunni (Barelvi/Ahle Sunnat)");
+    expect(library.match(/बाहरी वेबसाइट — सामग्री उनकी ज़िम्मेदारी/g)).toHaveLength(8);
+    expect(library).toContain('href="https://alhassanain.org/"');
+    expect(library).toContain('href="https://alhassanain.org/hindi/?com=book&amp;view=mainpage"');
+    expect(library).toContain('href="https://kitabghar.ziyaraat.net/"');
+    expect(library).toContain('href="https://islamiclibrary.com/"');
+    expect(library).toContain('href="https://kitabosunnat.com/"');
+    expect(library).toContain('href="https://darululoom-deoband.com/books/"');
+    expect(library).toContain('id="saudi-hajj-umrah-links"');
+    expect(library).toContain('href="https://www.nusuk.sa/"');
+    expect(library).toContain('href="https://hajj.nusuk.sa/"');
+    expect(library).toContain('href="https://umrah.nusuk.sa/"');
+    expect(library).toContain('href="https://haj.gov.sa/en"');
+    expect(library).toContain('href="https://qurancomplex.gov.sa/"');
+    expect(library).toContain('href="https://ksavisa.sa/"');
+    expect(library).toContain('href="https://www.moh.gov.sa/en/healthawareness/pilgrims-health/pages/default.aspx"');
+    expect(library).toContain('href="https://moia.gov.sa/Pages/default.aspx"');
+    expect(library).toContain('href="https://prh.gov.sa/"');
+    expect(library.indexOf('id="external-islamic-libraries"')).toBeGreaterThan(library.indexOf('id="quran"'));
+    expect(book.pdf).toBe("/kitab/hajj-aur-umrah-kai-masail-hindi.pdf");
   });
 });
