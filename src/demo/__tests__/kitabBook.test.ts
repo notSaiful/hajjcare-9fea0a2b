@@ -55,4 +55,18 @@ describe("Hajj & Umrah Books", () => {
     expect(read("vercel.json")).toContain("Accept-Ranges");
     expect(read("vercel.json")).toContain("/library/hajj-aur-umrah-kai-masail");
   });
+
+  it("lists three external libraries without touching the hosted book", () => {
+    expect(library).toContain('id="external-islamic-libraries"');
+    expect(library).toContain("बाहरी इस्लामी लाइब्रेरी");
+    expect(library).toContain('href="https://www.al-islam.org/" target="_blank" rel="noopener noreferrer"');
+    expect(library).toContain('href="https://islamhouse.com/en" target="_blank" rel="noopener noreferrer"');
+    expect(library).toContain('href="https://www.ahlesunnatpak.com/" target="_blank" rel="noopener noreferrer"');
+    expect(library).toContain("Shia (Ahlul Bayt DILP)");
+    expect(library).toContain("Sunni (Hindi/Urdu books available)");
+    expect(library).toContain("Sunni (Barelvi/Ahle Sunnat)");
+    expect(library.match(/बाहरी वेबसाइट — सामग्री उनकी ज़िम्मेदारी/g)).toHaveLength(3);
+    expect(library.indexOf('id="external-islamic-libraries"')).toBeGreaterThan(library.indexOf('id="quran"'));
+    expect(book.pdf).toBe("/kitab/hajj-aur-umrah-kai-masail-hindi.pdf");
+  });
 });
