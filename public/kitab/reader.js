@@ -57,6 +57,7 @@ if (book) {
   const meta = document.querySelector("main .meta");
   if (meta) {
     const bits = ["Language: " + book.language, "Format: " + book.format];
+    if (book.author) bits.push("Author: " + book.author);
     if (book.publisher) bits.push("Publisher: " + book.publisher);
     meta.textContent = bits.join(" · ") + " · ";
     if (countLabel) meta.append(countLabel);

@@ -44,6 +44,22 @@
           "cover": "/kitab/rites-of-hajj-and-umrah-dar-al-iftaa-cover.jpg",
           "pdf": "/kitab/rites-of-hajj-and-umrah-dar-al-iftaa.pdf",
           "reader": "/library/rites-of-hajj-and-umrah-dar-al-iftaa"
+        },
+        {
+          "id": "hajj-rituals-sistani",
+          "slug": "hajj-rituals-sistani",
+          "title": "Hajj Rituals",
+          "language": "English",
+          "category": "Hajj & Umrah Books",
+          "format": "PDF",
+          "status": "Published",
+          "author": "Al-Sayyid Ali Al-Husseini Al-Sistani",
+          "publisher": "The Office of His Eminence Al-Sayyid Ali Al-Husseini Al-Sistani",
+          "source": "https://www.sistani.org/files-new/book-pdf/english-book-47.pdf",
+          "pages": 150,
+          "cover": "/kitab/hajj-rituals-sistani-cover.jpg",
+          "pdf": "/kitab/hajj-rituals-sistani.pdf",
+          "reader": "/library/hajj-rituals-sistani"
         }
       ]
     }

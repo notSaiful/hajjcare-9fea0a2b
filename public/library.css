@@ -8,3 +8,4 @@ main{max-width:920px;margin:auto;padding:28px 16px 40px}.eyebrow{color:#7a5e26;t
 .kitab-cover{width:min(180px,100%);height:auto;border-radius:8px;border:1px solid #c9a45c66;margin-bottom:10px;background:#f6f0e4}
 .kitab-open,.kitab-download{display:flex;align-items:center;justify-content:center;min-height:44px;margin-top:8px;border-radius:12px;text-decoration:none;font-weight:600}
 .kitab-open{background:#1f4d3a;color:#f6f0e4}.kitab-download{border:1px solid #1f4d3a;color:#1f4d3a}
+.kitab-book .meta a{overflow-wrap:anywhere}

@@ -24,6 +24,7 @@
     const meta = document.createElement("p");
     meta.className = "meta";
     const lines = [["Language:", book.language], ["Format:", book.format]];
+    if (book.author) lines.push(["Author:", book.author]);
     if (book.publisher) lines.push(["Publisher:", book.publisher]);
     lines.forEach(([label, value], index) => {
       const strong = document.createElement("b");
@@ -40,7 +41,20 @@
     download.href = book.pdf;
     download.setAttribute("download", book.pdf.split("/").pop() || "book.pdf");
     download.textContent = "Download PDF";
-    article.append(cover, badge, title, meta, open, download);
+    const parts = [cover, badge, title, meta];
+    if (book.source) {
+      const source = document.createElement("p");
+      source.className = "meta";
+      const link = document.createElement("a");
+      link.href = book.source;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.textContent = book.source;
+      source.append(document.createTextNode("Source: "), link);
+      parts.push(source);
+    }
+    parts.push(open, download);
+    article.append(...parts);
     return article;
   }
 

@@ -14,7 +14,7 @@ describe("Hajj & Umrah Books", () => {
     expect(catalog.categories).toHaveLength(1);
     expect(catalog.categories[0].id).toBe("hajj-umrah-books");
     expect(catalog.categories[0].title).toBe("Hajj & Umrah Books");
-    expect(catalog.categories[0].books).toHaveLength(3);
+    expect(catalog.categories[0].books).toHaveLength(4);
     expect(book).toMatchObject({
       id: "hajj-aur-umrah-kai-masail",
       title: "Hajj Aur Umrah Kai Masail",
@@ -38,6 +38,15 @@ describe("Hajj & Umrah Books", () => {
       language: "English",
       publisher: "Dar al-Iftaa al-Misriyyah",
       pages: 56,
+    });
+    expect(catalog.categories[0].books[3]).toMatchObject({
+      slug: "hajj-rituals-sistani",
+      title: "Hajj Rituals",
+      language: "English",
+      author: "Al-Sayyid Ali Al-Husseini Al-Sistani",
+      publisher: "The Office of His Eminence Al-Sayyid Ali Al-Husseini Al-Sistani",
+      source: "https://www.sistani.org/files-new/book-pdf/english-book-47.pdf",
+      pages: 150,
     });
   });
 

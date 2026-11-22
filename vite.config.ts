@@ -83,7 +83,7 @@ function demoRouting(): Plugin {
     }
     if (pathOnly === "/explore") nextPath = "/explore.html";
     else if (pathOnly === "/library") nextPath = "/library.html";
-    else if (pathOnly === "/library/hajj-aur-umrah-kai-masail" || pathOnly === "/library/umrah-and-visit-guide-ministry-of-hajj" || pathOnly === "/library/rites-of-hajj-and-umrah-dar-al-iftaa") nextPath = "/kitab/reader.html";
+    else if (pathOnly === "/library/hajj-aur-umrah-kai-masail" || pathOnly === "/library/umrah-and-visit-guide-ministry-of-hajj" || pathOnly === "/library/rites-of-hajj-and-umrah-dar-al-iftaa" || pathOnly === "/library/hajj-rituals-sistani") nextPath = "/kitab/reader.html";
     else if (pathOnly === "/visitors") nextPath = "/visitors.html";
     else if (pathOnly === "/" || pathOnly === "/index.html") nextPath = "/index.html";
     else if (pathOnly === "/auth" || pathOnly === "/reset-password" || pathOnly === "/volunteer" || pathOnly === "/volunteer/training" || pathOnly === "/service-fee" || pathOnly === "/classroom" || pathOnly === "/classroom/admin" || pathOnly.startsWith("/classroom/day/") || pathOnly === "/admin/classroom") nextPath = "/app.html";
