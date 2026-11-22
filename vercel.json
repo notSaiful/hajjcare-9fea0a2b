@@ -8,6 +8,7 @@
     { "source": "/", "destination": "/index.html" },
     { "source": "/explore", "destination": "/explore.html" },
     { "source": "/library", "destination": "/library.html" },
+    { "source": "/library/hajj-aur-umrah-kai-masail", "destination": "/kitab/reader.html" },
     { "source": "/visitors", "destination": "/visitors.html" },
     { "source": "/auth", "destination": "/app.html" },
     { "source": "/volunteer/training", "destination": "/app.html" },
@@ -23,9 +24,17 @@
     { "source": "/privacy", "destination": "/privacy-policy.html" },
     { "source": "/account-deletion", "destination": "/privacy-policy.html" },
     { "source": "/sukoon", "destination": "/sukoon.html" },
-    { "source": "/((?!videos/|api/).*)", "destination": "/index.html" }
+    { "source": "/((?!videos/|api/|kitab/).*)", "destination": "/index.html" }
   ],
   "headers": [
+    {
+      "source": "/kitab/(.*\\.pdf)",
+      "headers": [
+        { "key": "Content-Type", "value": "application/pdf" },
+        { "key": "Accept-Ranges", "value": "bytes" },
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
+    },
     {
       "source": "/videos/(.*)",
       "headers": [
