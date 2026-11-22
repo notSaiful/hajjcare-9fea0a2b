@@ -16,6 +16,34 @@
           "cover": "/kitab/hajj-aur-umrah-kai-masail-cover.jpg",
           "pdf": "/kitab/hajj-aur-umrah-kai-masail-hindi.pdf",
           "reader": "/library/hajj-aur-umrah-kai-masail"
+        },
+        {
+          "id": "umrah-and-visit-guide-ministry-of-hajj",
+          "slug": "umrah-and-visit-guide-ministry-of-hajj",
+          "title": "Umrah & Visit Guide",
+          "language": "English",
+          "category": "Hajj & Umrah Books",
+          "format": "PDF",
+          "status": "Published",
+          "publisher": "Ministry of Hajj and Umrah, Kingdom of Saudi Arabia",
+          "pages": 19,
+          "cover": "/kitab/umrah-and-visit-guide-ministry-of-hajj-cover.jpg",
+          "pdf": "/kitab/umrah-and-visit-guide-ministry-of-hajj.pdf",
+          "reader": "/library/umrah-and-visit-guide-ministry-of-hajj"
+        },
+        {
+          "id": "rites-of-hajj-and-umrah-dar-al-iftaa",
+          "slug": "rites-of-hajj-and-umrah-dar-al-iftaa",
+          "title": "The Rites of Hajj and 'Umrah Booklet",
+          "language": "English",
+          "category": "Hajj & Umrah Books",
+          "format": "PDF",
+          "status": "Published",
+          "publisher": "Dar al-Iftaa al-Misriyyah",
+          "pages": 56,
+          "cover": "/kitab/rites-of-hajj-and-umrah-dar-al-iftaa-cover.jpg",
+          "pdf": "/kitab/rites-of-hajj-and-umrah-dar-al-iftaa.pdf",
+          "reader": "/library/rites-of-hajj-and-umrah-dar-al-iftaa"
         }
       ]
     }

@@ -23,7 +23,14 @@
     title.textContent = book.title;
     const meta = document.createElement("p");
     meta.className = "meta";
-    meta.innerHTML = "<b>Language:</b> " + book.language + "<br><b>Format:</b> " + book.format;
+    const lines = [["Language:", book.language], ["Format:", book.format]];
+    if (book.publisher) lines.push(["Publisher:", book.publisher]);
+    lines.forEach(([label, value], index) => {
+      const strong = document.createElement("b");
+      strong.textContent = label;
+      meta.append(strong, document.createTextNode(" " + value));
+      if (index < lines.length - 1) meta.append(document.createElement("br"));
+    });
     const open = document.createElement("a");
     open.className = "kitab-open";
     open.href = book.reader;

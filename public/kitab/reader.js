@@ -1,6 +1,7 @@
 import { getDocument, GlobalWorkerOptions } from "/kitab/pdfjs/pdf.min.mjs";
 
-const PDF_URL = "/kitab/hajj-aur-umrah-kai-masail-hindi.pdf";
+const FALLBACK_SLUG = "hajj-aur-umrah-kai-masail";
+let pdfUrl = "/kitab/hajj-aur-umrah-kai-masail-hindi.pdf";
 const canvas = document.getElementById("page-canvas");
 const frame = document.getElementById("pdf-frame");
 const status = document.getElementById("reader-status");
@@ -15,7 +16,7 @@ function useFrame(message) {
   status.textContent = message;
   canvas.hidden = true;
   frame.hidden = false;
-  frame.src = PDF_URL + "#page=" + pageNum;
+  frame.src = pdfUrl + "#page=" + pageNum;
 }
 
 async function show(num) {
@@ -42,7 +43,34 @@ async function show(num) {
 
 GlobalWorkerOptions.workerSrc = "/kitab/pdfjs/pdf.worker.min.mjs";
 
-getDocument({ url: PDF_URL, rangeChunkSize: 65536, disableAutoFetch: true }).promise
+const slug = location.pathname.split("/").filter(Boolean).pop() || FALLBACK_SLUG;
+const catalog = await fetch("/kitab/books.json").then((response) => response.json());
+const books = (catalog.categories || []).flatMap((category) => category.books || []);
+const book = books.find((item) => item.slug === slug || item.id === slug) || books.find((item) => item.slug === FALLBACK_SLUG);
+if (book) {
+  pdfUrl = book.pdf;
+  document.title = book.title + " — HajCare AI";
+  const heading = document.querySelector("main h1");
+  if (heading) heading.textContent = book.title;
+  const countLabel = document.getElementById("page-count");
+  if (countLabel) countLabel.textContent = book.pages + " pages";
+  const meta = document.querySelector("main .meta");
+  if (meta) {
+    const bits = ["Language: " + book.language, "Format: " + book.format];
+    if (book.publisher) bits.push("Publisher: " + book.publisher);
+    meta.textContent = bits.join(" · ") + " · ";
+    if (countLabel) meta.append(countLabel);
+  }
+  const download = document.getElementById("download");
+  if (download) {
+    download.href = book.pdf;
+    download.setAttribute("download", book.pdf.split("/").pop() || "book.pdf");
+  }
+  const frameTitle = document.getElementById("pdf-frame");
+  if (frameTitle) frameTitle.title = book.title + " PDF";
+}
+
+getDocument({ url: pdfUrl, rangeChunkSize: 65536, disableAutoFetch: true }).promise
   .then((loaded) => {
     doc = loaded;
     count.textContent = loaded.numPages + " pages";
