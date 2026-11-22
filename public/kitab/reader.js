@@ -55,4 +55,8 @@ getDocument({ url: PDF_URL, rangeChunkSize: 65536, disableAutoFetch: true }).pro
 document.getElementById("prev").addEventListener("click", () => { void show(pageNum - 1); });
 document.getElementById("next").addEventListener("click", () => { void show(pageNum + 1); });
 pageInput.addEventListener("change", () => { void show(Number(pageInput.value) || 1); });
-window.addEventListener("resize", () => { if (doc) void show(pageNum); });
+let resizeTimer = 0;
+window.addEventListener("resize", () => {
+  window.clearTimeout(resizeTimer);
+  resizeTimer = window.setTimeout(() => { if (doc) void show(pageNum); }, 250);
+});
