@@ -7,6 +7,7 @@ import { useClassroomVideoRows } from "@/data/classroomRemote";
 import { boardClips } from "@/data/classroomVideoRows";
 import { PREVIEW_EDIT_KEY } from "@/data/classroomUnlock";
 import { SectionAttach } from "@/components/classroom/SectionAttach";
+import { VideoStatusDashboard } from "@/components/classroom/VideoStatusDashboard";
 import { Shell } from "@/components/classroom/ClassroomLms";
 
 function useEditMode() {
@@ -39,6 +40,8 @@ export default function ClassroomVideosAdmin() {
   const [params, setParams] = useSearchParams();
   const requested = Number(params.get("day"));
   const dayNumber = Number.isInteger(requested) && requested >= 1 && requested <= 100 ? requested : 1;
+  const requestedSection = params.get("section");
+  const section = SECTION_ORDER.includes(requestedSection as SectionKey) ? requestedSection as SectionKey : null;
   const day = classroomDay(dayNumber);
 
   return (
@@ -68,6 +71,13 @@ export default function ClassroomVideosAdmin() {
         </label>
         {edit && day ? (
           <>
+            <VideoStatusDashboard
+              remoteOk={remote.ok}
+              rows={remote.rows}
+              day={day.day}
+              section={section}
+              onPick={(nextDay, nextSection) => setParams({ day: String(nextDay), section: nextSection })}
+            />
             <label className="mt-4 block text-sm font-semibold text-[#1b4a38]">
               Din
               <select

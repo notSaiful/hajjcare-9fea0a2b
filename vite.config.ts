@@ -68,6 +68,25 @@ function classroomVideosApi(): Plugin {
   };
 }
 
+function classroomVideoCheckApi(): Plugin {
+  const serve: Connect.NextHandleFunction = (req, res, next) => {
+    const pathOnly = (req.url || "/").split("?")[0];
+    if (pathOnly !== "/api/classroom-video-check") return next();
+    import("./api/classroom-video-check.js").then(async ({ handleClassroomVideoCheck }) => {
+      await handleClassroomVideoCheck(req, res);
+    }).catch(next);
+  };
+  return {
+    name: "hajcare-classroom-video-check-api",
+    configureServer(server) {
+      server.middlewares.use(serve);
+    },
+    configurePreviewServer(server) {
+      server.middlewares.use(serve);
+    },
+  };
+}
+
 function demoRouting(): Plugin {
   const rewrite: Connect.NextHandleFunction = (req, res, next) => {
     const raw = req.url || "/";
@@ -193,7 +212,7 @@ export default defineConfig(({ mode }) => {
     host: "::",
     port: 8080,
   },
-  plugins: [classroomApi(), classroomVideosApi(), react(), demoRouting(), trainingClientConfig(mode), trainingRegisterClientConfig(mode), supabasePreconnect(mode), mode === "development" && componentTagger()].filter(Boolean),
+  plugins: [classroomApi(), classroomVideosApi(), classroomVideoCheckApi(), react(), demoRouting(), trainingClientConfig(mode), trainingRegisterClientConfig(mode), supabasePreconnect(mode), mode === "development" && componentTagger()].filter(Boolean),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
