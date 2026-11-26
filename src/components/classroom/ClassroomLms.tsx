@@ -59,6 +59,7 @@ import { useTextToSpeech } from "@/hooks/useTextToSpeech";
 import { attachmentsForDay, browserFileClips, fileObjectUrl, maslakWarning, type PreviewClip } from "@/data/classroomAttachments";
 import { useClassroomVideoRows } from "@/data/classroomRemote";
 import { boardClips } from "@/data/classroomVideoRows";
+import { applyStoredOverride, useVideoOverrideRevision } from "@/data/classroomOverrides";
 import { dayIsFinished, dayIsUnlocked, firstOpenDay, PREVIEW_EDIT_KEY } from "@/data/classroomUnlock";
 import { SectionAttach } from "@/components/classroom/SectionAttach";
 
@@ -702,14 +703,19 @@ export function ClassroomDayPage() {
     navigate(`/classroom/day/${openDay}?notice=locked`, { replace: true });
   }, [day, unlocked, navigate, openDay]);
   const remote = useClassroomVideoRows();
-  const clipsFor = useCallback((key: SectionKey) => boardClips({
-    remoteOk: remote.ok,
-    rows: remote.rows,
-    day: day?.day ?? 0,
-    section: key,
-    catalogue: day?.sections[key],
-    browserFiles: day ? browserFileClips(day.day, key) : [],
-  }), [remote.ok, remote.rows, day]);
+  const overrideRevision = useVideoOverrideRevision();
+  const clipsFor = useCallback((key: SectionKey) => {
+    const clips = boardClips({
+      remoteOk: remote.ok,
+      rows: remote.rows,
+      day: day?.day ?? 0,
+      section: key,
+      catalogue: day?.sections[key],
+      browserFiles: day ? browserFileClips(day.day, key) : [],
+    });
+    if (remote.ok || !day || day.day > 30 || overrideRevision < 0) return clips;
+    return applyStoredOverride(day.day, key, clips);
+  }, [remote.ok, remote.rows, day, overrideRevision]);
   const attachmentRevision = useAttachmentRevision();
   const [fileUrls, setFileUrls] = useState<Record<string, string>>({});
   const [open, setOpen] = useState<SectionKey | null>(null);
