@@ -7,7 +7,7 @@ import { useClassroomVideoRows } from "@/data/classroomRemote";
 import { boardClips } from "@/data/classroomVideoRows";
 import { PREVIEW_EDIT_KEY } from "@/data/classroomUnlock";
 import { SectionAttach } from "@/components/classroom/SectionAttach";
-import { VideoLinkPaste } from "@/components/classroom/VideoLinkPaste";
+import { VideoStatusDashboard } from "@/components/classroom/VideoStatusDashboard";
 import { Shell } from "@/components/classroom/ClassroomLms";
 
 function useEditMode() {
@@ -40,6 +40,8 @@ export default function ClassroomVideosAdmin() {
   const [params, setParams] = useSearchParams();
   const requested = Number(params.get("day"));
   const dayNumber = Number.isInteger(requested) && requested >= 1 && requested <= 100 ? requested : 1;
+  const requestedSection = params.get("section");
+  const section = SECTION_ORDER.includes(requestedSection as SectionKey) ? requestedSection as SectionKey : null;
   const day = classroomDay(dayNumber);
 
   return (
@@ -69,6 +71,13 @@ export default function ClassroomVideosAdmin() {
         </label>
         {edit && day ? (
           <>
+            <VideoStatusDashboard
+              remoteOk={remote.ok}
+              rows={remote.rows}
+              day={day.day}
+              section={section}
+              onPick={(nextDay, nextSection) => setParams({ day: String(nextDay), section: nextSection })}
+            />
             <label className="mt-4 block text-sm font-semibold text-[#1b4a38]">
               Din
               <select
@@ -90,7 +99,6 @@ export default function ClassroomVideosAdmin() {
             <Link to={`/classroom/day/${day.day}`} className="mt-3 flex h-12 items-center justify-center rounded-2xl border border-[#1a4d3c] text-base font-semibold text-[#1a4d3c]">
               Is din ka board
             </Link>
-            {day.day <= 30 ? <VideoLinkPaste day={day.day} /> : null}
             <ol className="mt-4 space-y-4">
               {SECTION_ORDER.map((key) => (
                 <SectionEditor key={key} dayNumber={day.day} section={key} revision={revision} remoteOk={remote.ok} rows={remote.rows} />

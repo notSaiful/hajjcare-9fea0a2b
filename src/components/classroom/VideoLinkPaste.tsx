@@ -1,13 +1,19 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { classroomDay, SECTION_LABEL, type SectionKey } from "@/data/classroomCatalogue";
 import { clipsFromSlot, type Maslak } from "@/data/classroomAttachments";
 import { clearVideoOverride, readVideoOverride, writeVideoOverride } from "@/data/classroomOverrides";
 import { parseClassroomVideoLink } from "@/data/classroomVideoLink";
+import { clearMismatch, readMismatch, useMismatchRevision, writeMismatch } from "@/data/classroomVideoStatus";
 
 const PASTE_SECTIONS: SectionKey[] = ["quran", "hadith", "dua", "lesson", "doctor", "expert", "naat"];
 
-export function VideoLinkPaste({ day }: { day: number }) {
-  const [section, setSection] = useState<SectionKey>("lesson");
+export function VideoLinkPaste({ day, section: sectionProp, onSectionChange }: { day: number; section?: SectionKey; onSectionChange?: (section: SectionKey) => void }) {
+  const [sectionState, setSectionState] = useState<SectionKey>(sectionProp ?? "lesson");
+  const section = sectionProp ?? sectionState;
+  function setSection(next: SectionKey) {
+    setSectionState(next);
+    onSectionChange?.(next);
+  }
   const [link, setLink] = useState("");
   const [note, setNote] = useState("");
   const [maslak, setMaslak] = useState<Maslak>("neutral");
@@ -16,6 +22,12 @@ export function VideoLinkPaste({ day }: { day: number }) {
   const original = useMemo(() => (content ? clipsFromSlot(content.sections[section]) : []), [content, section]);
   const parsed = parseClassroomVideoLink(link);
   const saved = readVideoOverride(day, section);
+  useMismatchRevision();
+  const mismatch = readMismatch(day, section);
+  const [mismatchNote, setMismatchNote] = useState(mismatch?.note ?? "");
+  useEffect(() => {
+    setMismatchNote(readMismatch(day, section)?.note ?? "");
+  }, [day, section]);
   const originalYoutube = original.find((clip) => clip.kind === "youtube" && clip.youtubeId);
 
   if (day > 30) return <p className="mt-3 text-sm text-[#6d6456]">Paste link din 1 se 30 tak hai.</p>;
@@ -82,6 +94,35 @@ export function VideoLinkPaste({ day }: { day: number }) {
       </div>
       {message ? <p data-paste-status className="mt-2 text-sm font-semibold text-[#1b4a38]" role="status">{message}</p> : null}
       {link.trim() && !parsed ? <p className="mt-2 text-sm font-semibold text-[#8a2a2a]" role="alert">Sirf YouTube link ya seedha https mp4/webm link chalega.</p> : null}
+      <label className="mt-3 flex min-h-12 items-center gap-3 rounded-2xl border border-[#5b3a8c] bg-[#f6f1fb] px-3 py-2">
+        <input
+          data-flag-mismatch
+          type="checkbox"
+          className="h-6 w-6"
+          checked={Boolean(mismatch)}
+          onChange={(event) => {
+            if (event.target.checked) writeMismatch(day, section, mismatchNote);
+            else clearMismatch(day, section);
+          }}
+        />
+        <span>
+          <span className="block text-sm font-semibold text-[#5b3a8c]">Flag mismatch</span>
+          <span className="block text-xs text-[#6d6456]">Manual only. Yeh content check nahi karta.</span>
+        </span>
+      </label>
+      <label className="mt-2 block text-sm font-semibold text-[#5b3a8c]">
+        Mismatch note
+        <input
+          data-mismatch-note
+          value={mismatchNote}
+          onChange={(event) => {
+            setMismatchNote(event.target.value);
+            if (mismatch) writeMismatch(day, section, event.target.value);
+          }}
+          placeholder="Topic se video alag hai"
+          className="mt-1 h-12 w-full rounded-2xl border border-[#e4dcc8] px-3 text-[#1b4a38]"
+        />
+      </label>
     </section>
   );
 }
